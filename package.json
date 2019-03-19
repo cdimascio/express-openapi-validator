@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "compile": "tsc",
-    "test": "mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.ts"
+    "test": "mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts"
   },
   "keywords": [],
   "author": "Carmine DiMascio <cdimascio@gmail.com>",
