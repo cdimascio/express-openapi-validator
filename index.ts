@@ -33,7 +33,7 @@ export function OpenApiMiddleware(opts: OpenApiMiddlewareOpts) {
   console.log('----routeMap---', this.routeMap)
 };
 
-OpenApiMiddleware.prototype.middleware = function() {
+ OpenApiMiddleware.prototype.middleware = function() {
   return (req, res, next) => {
     const { path, method } = req;
     if (path && method) {
