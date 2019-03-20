@@ -1,9 +1,13 @@
 # express-middelware-openapi
 
-under construction
+Automatically validate API requests, given an OpenAPI 3.0 specification, 
+
+...under construction...
 
 
 ## Install
+
+Try this pre-release alpha version:
 
 ```shell
 npm i express-middleware-openapi
