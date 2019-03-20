@@ -1,6 +1,6 @@
 # express-middelware-openapi
 
-Automatically validate API requests, given an OpenAPI 3.0 specification, 
+Automatically validate API requests using an OpenAPI 3.0 specification, 
 
 🚧👷under construction 🚧👷
 
