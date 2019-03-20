@@ -16,9 +16,6 @@ app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// const ov = OpenAPIRequestValidator();
-// var router = express.Router();
-
 app.use(
   new OpenApiMiddleware({
     apiSpecPath: './openapi.yaml',
@@ -31,7 +28,7 @@ app.use(
     },
   }).middleware()
 );
-/* GET home page. */
+
 app.get('/v1/pets', function(req, res, next) {
   console.log('at /v1/pets here');
   res.json({
@@ -48,7 +45,5 @@ app.post('/v1/pets', function(req, res, next) {
 export const server = http.createServer(app);
 server.listen(3000);
 console.log('Listening on port 3000');
-console.log('Try visiting http://localhost:3000/greet?name=Jason');
-console.log('-----STARTED[---');
 
 export default app;
