@@ -1,4 +1,4 @@
-# express-middelware-openapi
+# express-middleware-openapi
 
 ![](https://travis-ci.org/cdimascio/express-middleware-openapi.svg?branch=master) ![](https://img.shields.io/badge/license-MIT-blue.svg)
 
