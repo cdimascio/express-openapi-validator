@@ -28,14 +28,20 @@ app.use(
       console.log('---error trans---', a, b);
 
       return a;
-    }
+    },
   }).middleware()
 );
 /* GET home page. */
 app.get('/v1/pets', function(req, res, next) {
   console.log('at /v1/pets here');
   res.json({
-    test: 'hi'
+    test: 'hi',
+  });
+});
+
+app.post('/v1/pets', function(req, res, next) {
+  res.json({
+    test: 'hi',
   });
 });
 

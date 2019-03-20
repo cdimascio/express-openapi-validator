@@ -1,6 +1,7 @@
 import { Application, ErrorRequestHandler, RequestHandler } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
+const util = require('util');
 const jsYaml = require('js-yaml');
 import OpenAPIFramework, {
   BasePath,
@@ -33,6 +34,7 @@ export function OpenApiMiddleware(opts: OpenApiMiddlewareOpts) {
     throw new Error(`spec could not be read at ${opts.apiSpecPath}`);
   const apiDoc = handleYaml(apiContents);
   const framework = createFramework({ ...opts, apiDoc });
+  this.apiDoc = framework.apiDoc;
   this.opts = opts;
   this.opts.name = this.opts.name || 'express-middleware-openapi';
   this.routeMap = buildRouteMap(framework);
@@ -45,8 +47,18 @@ OpenApiMiddleware.prototype.middleware = function() {
   return (req, res, next) => {
     const { path, method } = req;
     if (path && method) {
-      const schema = this.routeMap[path][method.toUpperCase()];
-      console.log('found schema', schema);
+      // TODO add option to enable undocumented routes to pass through without 404
+      const documentedRoute = this.routeMap[path];
+      if (!documentedRoute) return res.status(404).end();
+
+      // TODO add option to enable undocumented methods to pass through
+      const schema = documentedRoute[method.toUpperCase()];
+      if (!schema) return res.status(415).end();
+
+      // TODO coercer and request validator fail on null parameters
+      if (!schema.parameters) {
+        schema.parameters = [];
+      }
 
       // Check if route is in map (throw error - option to ignore)
       if (this.opts.enableObjectCoercion) {
@@ -60,7 +72,12 @@ OpenApiMiddleware.prototype.middleware = function() {
 
       const validationResult = new OpenAPIRequestValidator({
         errorTransformer: this.errorTransformer,
-        ...schema,
+        parameters: schema.parameters || [],
+        requestBody: schema.requestBody,
+        // schemas: this.apiDoc.definitions, // v2
+        componentSchemas: this.apiDoc.components // v3
+          ? this.apiDoc.components.schemas
+          : undefined,
       }).validate(req);
 
       if (validationResult && validationResult.errors.length > 0) {
