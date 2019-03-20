@@ -6,7 +6,7 @@ ExpressJs middleware that automatically validates API requests using an OpenAPI 
 
 <p align="center">
   <br>
-🚧👷under construction 🚧👷
+🚧👷<i>under construction</i> 🚧👷
 </p>
 
 ## Install
