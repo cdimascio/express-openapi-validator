@@ -30,6 +30,8 @@ new OpenApiMiddleware({
 }).install(app);
 ```
 
+(see complete [example](#example))
+
 ### Advanced
 
 ```javascript
