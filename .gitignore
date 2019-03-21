@@ -3,3 +3,5 @@ node_modules
 *.orig
 dist
 /sample
+/coverage
+.coveralls.yml
