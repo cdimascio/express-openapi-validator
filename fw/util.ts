@@ -1,11 +1,11 @@
 import { OpenAPIV3 } from 'openapi-types';
-import { Logger } from 'ts-log';
-import { URL } from 'url';
+// import { Logger } from 'ts-log';
+// import { URL } from 'url';
 import BasePath from './base.path';
-import { IOpenAPIFramework } from './types';
-const difunc = require('difunc');
+// import { IOpenAPIFramework } from './types';
+// const difunc = require('difunc');
 const fs = require('fs');
-const isDir = require('is-dir');
+// const isDir = require('is-dir');
 const jsYaml = require('js-yaml');
 const path = require('path');
 

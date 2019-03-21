@@ -1,7 +1,7 @@
-import { IOpenAPIDefaultSetter } from 'openapi-default-setter';
-import { IOpenAPIRequestCoercer } from 'openapi-request-coercer';
-import { IOpenAPIRequestValidator } from 'openapi-request-validator';
-import { IOpenAPIResponseValidator } from 'openapi-response-validator';
+// import { IOpenAPIDefaultSetter } from 'openapi-default-setter';
+// import { IOpenAPIRequestCoercer } from 'openapi-request-coercer';
+// import { IOpenAPIRequestValidator } from 'openapi-request-validator';
+// import { IOpenAPIResponseValidator } from 'openapi-response-validator';
 import {
   IOpenAPISecurityHandler,
   SecurityHandlers,
@@ -110,28 +110,28 @@ export interface OpenAPIFrameworkPathContext {
   getPathDoc(): any;
 }
 
-export interface OpenAPIFrameworkOperationContext {
-  additionalFeatures: any[];
-  allowsFeatures: boolean;
-  apiDoc: any;
-  basePaths: BasePath[];
-  consumes: string[];
-  features: {
-    coercer?: IOpenAPIRequestCoercer;
-    defaultSetter?: IOpenAPIDefaultSetter;
-    requestValidator?: IOpenAPIRequestValidator;
-    responseValidator?: IOpenAPIResponseValidator;
-    securityHandler?: IOpenAPISecurityHandler;
-  };
-  methodName: string;
-  methodParameters: any[];
-  operationDoc: any;
-  operationHandler: any;
-  path: string;
-}
+// export interface OpenAPIFrameworkOperationContext {
+//   additionalFeatures: any[];
+//   allowsFeatures: boolean;
+//   apiDoc: any;
+//   basePaths: BasePath[];
+//   consumes: string[];
+//   features: {
+//     coercer?: IOpenAPIRequestCoercer;
+//     // defaultSetter?: IOpenAPIDefaultSetter;
+//     requestValidator?: IOpenAPIRequestValidator;
+//     // responseValidator?: IOpenAPIResponseValidator;
+//     securityHandler?: IOpenAPISecurityHandler;
+//   };
+//   methodName: string;
+//   methodParameters: any[];
+//   operationDoc: any;
+//   operationHandler: any;
+//   path: string;
+// }
 
 export interface OpenAPIFrameworkVisitor {
   visitApi?(context: OpenAPIFrameworkAPIContext): void;
   visitPath?(context: OpenAPIFrameworkPathContext): void;
-  visitOperation?(context: OpenAPIFrameworkOperationContext): void;
+  // visitOperation?(context: OpenAPIFrameworkOperationContext): void;
 }
