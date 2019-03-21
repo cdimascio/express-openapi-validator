@@ -115,5 +115,31 @@ describe(packageJson.name, () => {
         .then(r => {
           console.log(r.body);
         }));
+
+    // TODO write test when route exists, but doc does not
+  });
+
+  describe.only('GET /pets/:id', () => {
+    it('should return 400 when path param should be int, but instead is string', async () => {
+      const id = 'my_id';
+      return request(app)
+        .get(`/v1/pets/${id}`)
+        .expect(400)
+        .then(r => {
+          console.log(r.body);
+          expect(r.body[0].path).equals('id');
+          expect(r.body[0].message).equals('should be integer');
+        });
+    });
+    it('should return 200 and get the id from the response', async () => {
+      const id = 10;
+      return request(app)
+        .get(`/v1/pets/${id}`)
+        .expect(200)
+        .then(r => {
+          console.log(r.body);
+          expect(r.body.id).equals(id);
+        });
+    });
   });
 });
