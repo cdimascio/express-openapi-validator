@@ -16,18 +16,17 @@ app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(
-  new OpenApiMiddleware({
-    apiSpecPath: './openapi.yaml',
-    validate: true,
-    enableObjectCoercion: true, // should be default
-    errorTransformer: (a, b) => {
-      console.log('---error trans---', a, b);
+new OpenApiMiddleware(app, {
+  apiSpecPath: './openapi.yaml',
+  validate: true,
+  enableObjectCoercion: true, // should be default
+  errorTransformer: (a, b) => {
+    console.log('---error trans---', a, b);
 
-      return a;
-    },
-  }).middleware()
-);
+    return a;
+  },
+}).install();
+
 
 app.get('/v1/pets', function(req, res, next) {
   console.log('at /v1/pets here');
@@ -39,6 +38,22 @@ app.get('/v1/pets', function(req, res, next) {
 app.post('/v1/pets', function(req, res, next) {
   res.json({
     test: 'hi',
+  });
+});
+
+app.get('/v1/vets/:id', function(req, res, next) {
+  console.log('---- get /pets/:id', req.params);
+  // here
+  res.json({
+    id: req.params.id,
+  });
+});
+
+app.get('/v1/pets/:id', function(req, res, next) {
+  console.log('---- get /pets/:id', req.params);
+  // here
+  res.json({
+    id: req.params.id,
   });
 });
 
