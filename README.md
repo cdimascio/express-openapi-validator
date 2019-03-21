@@ -4,11 +4,6 @@
 
 ExpressJs middleware that automatically validates API requests using an OpenAPI 3.0 specification,
 
-<p align="center">
-  <br>
-🚧👷<i>under construction</i> 🚧👷
-</p>
-
 ## Install
 
 Try this pre-release alpha version:
