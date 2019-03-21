@@ -2,3 +2,4 @@
 node_modules
 *.orig
 dist
+/sample
