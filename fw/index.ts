@@ -1,8 +1,8 @@
-import fsRoutes from 'fs-routes';
-import OpenAPIDefaultSetter from 'openapi-default-setter';
-import OpenAPIRequestCoercer from 'openapi-request-coercer';
-import OpenAPIRequestValidator from 'openapi-request-validator';
-import OpenAPIResponseValidator from 'openapi-response-validator';
+// import fsRoutes from 'fs-routes';
+// import OpenAPIDefaultSetter from 'openapi-default-setter';
+// import OpenAPIRequestCoercer from 'openapi-request-coercer';
+// import OpenAPIRequestValidator from 'openapi-request-validator';
+// import OpenAPIResponseValidator from 'openapi-response-validator';
 import OpenAPISchemaValidator from 'openapi-schema-validator';
 import OpenAPISecurityHandler from 'openapi-security-handler';
 import { OpenAPI, OpenAPIV2, OpenAPIV3 } from 'openapi-types';
@@ -13,7 +13,7 @@ import {
   OpenAPIFrameworkAPIContext,
   OpenAPIFrameworkArgs,
   OpenAPIFrameworkConstructorArgs,
-  OpenAPIFrameworkOperationContext,
+  // OpenAPIFrameworkOperationContext,
   OpenAPIFrameworkPathContext,
   OpenAPIFrameworkPathObject,
   OpenAPIFrameworkVisitor,
@@ -55,7 +55,7 @@ export {
   OpenAPIFrameworkPathContext,
   OpenAPIFrameworkPathObject,
   OpenAPIFrameworkAPIContext,
-  OpenAPIFrameworkOperationContext,
+  // OpenAPIFrameworkOperationContext,
 };
 export default class OpenAPIFramework implements IOpenAPIFramework {
   public readonly apiDoc;
