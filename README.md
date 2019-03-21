@@ -19,7 +19,7 @@ npm i express-middleware-openapi
 
 ## Usage
 
-see [app.ts](example/app.js) for an example.
+see [app.js](example/app.js) for a complete example.
 
 ### Basic
 
