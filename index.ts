@@ -48,10 +48,7 @@ export function OpenApiMiddleware(
   this.apiDoc = framework.apiDoc;
   this.opts = opts;
   this.opts.name = this.opts.name || 'express-middleware-openapi';
-  // this.routeMap = buildRouteMap(framework);
-  // this.pathParams = buildPathParamsList(framework);
   this.routes = buildRoutes(framework);
-  // this.routeMap = _.keyBy(this.routes, r => r.expressRoute);
   this.routeMap = this.routes.reduce((a, r) => {
     const routeMethod = a[r.expressRoute];
     if (routeMethod) {
@@ -61,14 +58,12 @@ export function OpenApiMiddleware(
     }
     return a;
   }, {});
-  // registerPathParams(app, pathParams);
 
   // console.log(JSON.stringify(framework.apiDoc, null, 4), framework.basePaths);
   console.log(opts);
 }
 
 OpenApiMiddleware.prototype.install = function() {
-  // install param on routes with paths
   const noPathParamRoutes = [];
   const pathParms = [];
   for (const route of this.routes) {
@@ -78,6 +73,8 @@ OpenApiMiddleware.prototype.install = function() {
       pathParms.push(...route.pathParams);
     }
   }
+
+  // install param on routes with paths
   for (const p of _.uniq(pathParms)) {
     this.app.param(p, this.middleware()); //pathParamMiddleware);
   }
@@ -152,99 +149,6 @@ function createFramework(args: OpenApiMiddlewareOpts): OpenAPIFramework {
   return framework;
 }
 
-// function buildRouteMap(framework) {
-//   const routeMap = {};
-//   framework.initialize({
-//     visitApi(ctx: OpenAPIFrameworkAPIContext) {
-//       const apiDoc = ctx.getApiDoc();
-//       for (const bp of ctx.basePaths) {
-//         for (const path of Object.keys(apiDoc.paths)) {
-//           for (const [method, schema] of Object.entries(apiDoc.paths[path])) {
-//             const pathKey = `${bp.path}${path}`;
-//             const methodKey = method.toUpperCase();
-//             const routeMethod = routeMap[pathKey];
-//             console.log(
-//               '=======params path=====',
-//               pathKey,
-//               pathKey
-//                 .split('/')
-//                 .map(toExpressParams)
-//                 .join('/')
-//             );
-//             if (routeMethod) {
-//               // add a new method
-//               routeMethod[methodKey] = schema;
-//             } else {
-//               // create the path key and add first method
-//               routeMap[pathKey] = { [methodKey]: schema };
-//             }
-//           }
-//         }
-//       }
-//     },
-//   });
-//   return routeMap;
-// }
-
-function registerPathParams(app, pathParams) {
-  for (const p of pathParams) {
-    // app.param(p, pathParamMiddleware);
-    app.param(p, pathParamMiddleware);
-  }
-}
-
-function pathParamMiddleware(req, res, next, value, name) {
-  console.log('---path param middleware---');
-  if (req.pathParams) {
-    // Path parameters have already been parsed by
-    req.params[name] = req.pathParams[name] || req.params[name];
-  }
-
-  next();
-}
-
-// /**
-//  * Parses all Swagger path parameters and sets `req.pathParams`.
-//  * NOTE: This middleware cannot set `req.params`.  That requires special path-param middleware (see above)
-//  */
-// function parsePathParams(req, res, next) {
-//   // if (util.isSwaggerRequest(req)) {
-//   const swaggerParamRegExp = /\{([^/}]+)}/g;
-//   req.pathParams = {};
-
-//   if (req.swagger.pathName.indexOf('{') >= 0) {
-//     // Convert the Swagger path to a RegExp
-//     let paramNames = [];
-//     let pathPattern = req.swagger.pathName.replace(
-//       swaggerParamRegExp,
-//       (match, paramName) => {
-//         paramNames.push(paramName);
-//         return '([^\/]+)';
-//       }
-//     );
-
-//     // Exec the RegExp to get the path param values from the URL
-//     let values = new RegExp(pathPattern + '/?$', 'i').exec(req.path);
-
-//     // Parse each path param
-//     for (let i = 1; i < values.length; i++) {
-//       let paramName = paramNames[i - 1];
-//       let paramValue = decodeURIComponent(values[i]);
-//       let param = _.find(req.swagger.params, { in: 'path', name: paramName });
-
-//       console.log('    Parsing the "%s" path parameter', paramName);
-//       req.pathParams[paramName] = paramParser.parseParameter(
-//         param,
-//         paramValue,
-//         param
-//       );
-//     }
-//   }
-//   // }
-
-//   next();
-// }
-
 function buildPathParamsList(framework) {
   const pathParams = new Set();
   const apiDoc = framework.apiDoc;
@@ -260,29 +164,7 @@ function buildPathParamsList(framework) {
   return Array.from(pathParams);
 }
 
-// function buildRouteList(framework) {
-//   const apiDoc = framework.apiDoc;
-//   const routes = [];
-//   for (const [path, methods] of Object.entries(apiDoc.paths)) {
-//     for (const [method, schema] of Object.entries(methods)) {
-//       const pathParams = new Set();
-//       for (const param of schema.parameters || []) {
-//         if (param.in === 'path') {
-//           pathParams.add(param.name);
-//         }
-//       }
-//       routes.push({
-//         route: path,
-//         method,
-//         pathParams,
-//       });
-//     }
-//   }
-//   return routes;
-// }
-
 function buildRoutes(framework) {
-  // const routeMap = {};
   const routes = [];
   framework.initialize({
     visitApi(ctx: OpenAPIFrameworkAPIContext) {
@@ -315,33 +197,6 @@ function buildRoutes(framework) {
   });
 
   return routes;
-
-  //       for (const path of Object.keys(apiDoc.paths)) {
-  //         for (const [method, schema] of Object.entries(apiDoc.paths[path])) {
-  //           const pathKey = `${bp.path}${path}`;
-  //           const methodKey = method.toUpperCase();
-  //           const routeMethod = routeMap[pathKey];
-  //           console.log(
-  //             '=======params path=====',
-  //             pathKey,
-  //             pathKey
-  //               .split('/')
-  //               .map(toExpressParams)
-  //               .join('/')
-  //           );
-  //           if (routeMethod) {
-  //             // add a new method
-  //             routeMethod[methodKey] = schema;
-  //           } else {
-  //             // create the path key and add first method
-  //             routeMap[pathKey] = { [methodKey]: schema };
-  //           }
-  //         }
-  //       }
-  //     }
-  //   },
-  // });
-  // return routeMap;
 }
 
 function loadSpecFile(filePath) {
