@@ -53,7 +53,7 @@ new OpenApiMiddleware({
 }).install(app);
 ```
 
-## Example
+## Example API Server
 
 Try the complete example below:
 
@@ -103,6 +103,6 @@ console.log('Listening on port 3000');
 module.exports = app;
 ```
 
-## [Example Project](https://github.com/cdimascio/express-middleware-openapi-example) 
+## [Example API Server (Full Project Source)](https://github.com/cdimascio/express-middleware-openapi-example) 
 
 A full working example lives [here](https://github.com/cdimascio/express-middleware-openapi-example)
