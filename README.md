@@ -21,6 +21,17 @@ npm i express-middleware-openapi
 
 see [app.ts](test/app.ts) for an example.
 
+### Basic
+
+```javascript
+new OpenApiMiddleware({
+  apiSpecPath: './openapi.yaml',
+  enableObjectCoercion: true, // should be default
+}).install(app);
+```
+
+### Advanced
+
 ```javascript
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
@@ -59,7 +70,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
-  validateApiDoc: true, // default
   enableObjectCoercion: true, // will be default
 }).install(app);
 
