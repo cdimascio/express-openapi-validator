@@ -21,7 +21,6 @@ see [app.js](example/app.js) for a complete example.
 ```javascript
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
-  enableObjectCoercion: true, // should be default
 }).install(app);
 ```
 
@@ -32,13 +31,21 @@ new OpenApiMiddleware({
 ```javascript
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
-  validateApiDoc: true, // default
-  enableObjectCoercion: true, // should be default
-  errorTransform: v => ({ // optional error transform
-    statusCode: v.status, // the http status to return
-    error: { // the custom error object
-      code: v.status,
-      message: v.errors[0].message,
+  // default is true
+  // validates the openapi spec, throws if invalid
+  validateApiDoc: true,
+  // default is true
+  // attempts to coerce a value's type to that defined in the openapi spec
+  enableObjectCoercion: true,
+  // default is undefined
+  // provide a custom error transform to customize how errors are shaped
+  errorTransform: validationResult => ({
+    // the http status code to return
+    statusCode: validationResult.status,
+    // the custom error object to return
+    error: {
+      code: validationResult.status,
+      message: validationResult.errors[0].message,
     },
   }),
 }).install(app);
