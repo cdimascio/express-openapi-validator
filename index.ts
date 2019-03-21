@@ -1,32 +1,30 @@
 import * as _ from 'lodash';
 import {
-  Application,
-  ErrorRequestHandler,
-  RequestHandler,
+  // Application,
+  // ErrorRequestHandler,
+  // RequestHandler,
   ExpressApp,
 } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
-const util = require('util');
+// const util = require('util');
 const jsYaml = require('js-yaml');
 import OpenAPIFramework, {
   BasePath,
   OpenAPIFrameworkArgs,
   OpenAPIFrameworkConstructorArgs,
 } from './fw';
-import OpenAPISchemaValidator from 'openapi-schema-validator';
-import OpenAPIRequestValidator, {
-  OpenAPIRequestValidatorError,
-} from 'openapi-request-validator';
+// import OpenAPISchemaValidator from 'openapi-schema-validator';
+import OpenAPIRequestValidator from // OpenAPIRequestValidatorError,
+'openapi-request-validator';
 import OpenAPIRequestCoercer from 'openapi-request-coercer';
-import { OpenAPIResponseValidatorError } from 'openapi-response-validator';
-import { SecurityHandlers } from 'openapi-security-handler';
-import { OpenAPI, OpenAPIV3 } from 'openapi-types';
+// import { OpenAPIResponseValidatorError } from 'openapi-response-validator';
+// import { SecurityHandlers } from 'openapi-security-handler';
+// import { OpenAPI, OpenAPIV3 } from 'openapi-types';
 import {
   OpenAPIFrameworkVisitor,
   OpenAPIFrameworkAPIContext,
 } from './fw/types';
-// import BasePath from './fw/base.path';
 
 export interface OpenApiMiddlewareOpts extends OpenAPIFrameworkArgs {
   name: string;
@@ -86,8 +84,6 @@ OpenApiMiddleware.prototype.middleware = function() {
     if (path && method) {
       // TODO add option to enable undocumented routes to pass through without 404
       const documentedRoute = this.routeMap[path];
-      console.log('------doc route', path, documentedRoute);
-      // next();
       if (!documentedRoute) return res.status(404).end();
 
       // TODO add option to enable undocumented methods to pass through
@@ -145,21 +141,6 @@ function createFramework(args: OpenApiMiddlewareOpts): OpenAPIFramework {
   return framework;
 }
 
-function buildPathParamsList(framework) {
-  const pathParams = new Set();
-  const apiDoc = framework.apiDoc;
-  for (const methods of Object.values(apiDoc.paths)) {
-    for (const schema of Object.values(methods)) {
-      for (const param of schema.parameters || []) {
-        if (param.in === 'path') {
-          pathParams.add(param.name);
-        }
-      }
-    }
-  }
-  return Array.from(pathParams);
-}
-
 function buildRoutes(framework) {
   const routes = [];
   framework.initialize({
@@ -191,7 +172,6 @@ function buildRoutes(framework) {
       }
     },
   });
-
   return routes;
 }
 
