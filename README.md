@@ -4,7 +4,7 @@
 
 ExpressJs middleware that automatically validates API requests using an OpenAPI 3.0 specification,
 
-Try on the [sample project](https://github.com/cdimascio/express-middleware-openapi-example)
+Try out the [sample project](https://github.com/cdimascio/express-middleware-openapi-example)
 
 ## Install
 
