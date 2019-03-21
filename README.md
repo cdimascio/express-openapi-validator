@@ -26,6 +26,13 @@ new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
   validateApiDoc: true, // default
   enableObjectCoercion: true, // should be default
+  errorTransform: v => ({ // optional error transform
+    statusCode: v.status, // the http status to return
+    error: { // the custom error object
+      code: v.status,
+      message: v.errors[0].message,
+    },
+  }),
 }).install(app);
 ```
 
@@ -57,10 +64,7 @@ new OpenApiMiddleware({
 }).install(app);
 
 app.get('/v1/pets', function(req, res, next) {
-  res.json([
-    { id: 1, name: 'max' },
-    { id: 2, name: 'mini' },
-  ]);
+  res.json([{ id: 1, name: 'max' }, { id: 2, name: 'mini' }]);
 });
 
 app.post('/v1/pets', function(req, res, next) {
@@ -72,7 +76,7 @@ app.post('/v1/pets', function(req, res, next) {
 app.get('/v1/pets/:id', function(req, res, next) {
   res.json({
     id: req.params.id,
-    name: 'sparky'
+    name: 'sparky',
   });
 });
 
