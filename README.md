@@ -21,7 +21,7 @@ npm i express-middleware-openapi
 
 see [app.ts](test/app.ts) for an example.
 
-```
+```javascript
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
   validateApiDoc: true, // default
@@ -33,7 +33,7 @@ new OpenApiMiddleware({
 
 Try the complete example below:
 
-```
+```javascript
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -52,41 +52,27 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
-  validateApiDoc: true, // is the default
-  enableObjectCoercion: true, // should be default
-  errorTransformer: (a, b) => {
-    console.log('---error trans---', a, b);
-
-    return a;
-  },
+  validateApiDoc: true, // default
+  enableObjectCoercion: true, // will be default
 }).install(app);
 
 app.get('/v1/pets', function(req, res, next) {
-  console.log('at /v1/pets here');
-  res.json({
-    test: 'hi',
-  });
+  res.json([
+    { id: 1, name: 'max' },
+    { id: 2, name: 'mini' },
+  ]);
 });
 
 app.post('/v1/pets', function(req, res, next) {
   res.json({
-    test: 'hi',
-  });
-});
-
-app.get('/v1/vets/:id', function(req, res, next) {
-  console.log('---- get /pets/:id', req.params);
-  // here
-  res.json({
-    id: req.params.id,
+    name: 'sparky',
   });
 });
 
 app.get('/v1/pets/:id', function(req, res, next) {
-  console.log('---- get /pets/:id', req.params);
-  // here
   res.json({
     id: req.params.id,
+    name: 'sparky'
   });
 });
 
