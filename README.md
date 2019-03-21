@@ -22,9 +22,11 @@ npm i express-middleware-openapi
 see [app.ts](test/app.ts) for an example.
 
 ```
-new OpenApiMiddleware(app, {
+const app = express();
+
+new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
-  validateApiDoc: true, // is the the default
+  validateApiDoc: true, // default
   enableObjectCoercion: true, // should be default
-}).install();
+}).install(app);
 ```
