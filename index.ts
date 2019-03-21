@@ -15,8 +15,7 @@ import OpenAPIFramework, {
   OpenAPIFrameworkConstructorArgs,
 } from './fw';
 // import OpenAPISchemaValidator from 'openapi-schema-validator';
-import OpenAPIRequestValidator from // OpenAPIRequestValidatorError,
-'openapi-request-validator';
+import OpenAPIRequestValidator from 'openapi-request-validator'; // OpenAPIRequestValidatorError,
 import OpenAPIRequestCoercer from 'openapi-request-coercer';
 // import { OpenAPIResponseValidatorError } from 'openapi-response-validator';
 // import { SecurityHandlers } from 'openapi-security-handler';
@@ -25,10 +24,16 @@ import {
   OpenAPIFrameworkVisitor,
   OpenAPIFrameworkAPIContext,
 } from './fw/types';
+import { ValidationError } from 'ajv';
 
+export interface ErrorResponse {
+  statusCode: number;
+  error: any;
+}
 export interface OpenApiMiddlewareOpts extends OpenAPIFrameworkArgs {
   name: string;
   apiSpecPath: string;
+  errorTransform?: (validationResult: any) => ErrorResponse;
 }
 
 export function OpenApiMiddleware(opts: OpenApiMiddlewareOpts) {
@@ -117,8 +122,24 @@ OpenApiMiddleware.prototype.middleware = function() {
 
       if (validationResult && validationResult.errors.length > 0) {
         const { errors, status } = validationResult;
-        console.log('----provide to custom error handler', errors, status);
-        return res.status(status).json(errors);
+        const transform =
+          this.opts.errorTransform ||
+          (v => ({
+            statusCode: v.status,
+            error: { errors: v.errors },
+          }));
+
+        const { statusCode, error } = transform(validationResult);
+        console.log(
+          '----provide to custom error handler',
+          errors,
+          status,
+          '-----',
+          error,
+          statusCode
+        );
+
+        return res.status(statusCode).json(error);
       }
     }
     next();

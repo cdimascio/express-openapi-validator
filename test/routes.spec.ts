@@ -22,7 +22,7 @@ describe(packageJson.name, () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(r => {
-          const e = r.body;
+          const e = r.body.errors;
           expect(e).to.have.length(2);
           expect(e[0].path).to.equal('limit');
           expect(e[1].path).to.equal('test');
@@ -62,7 +62,7 @@ describe(packageJson.name, () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .then(r => {
-          const e = r.body;
+          const e = r.body.errors;
           expect(e).to.have.length(1);
           expect(e[0].path).to.equal('limit');
           expect(e[0].message).to.equal('should be >= 5');
@@ -78,7 +78,7 @@ describe(packageJson.name, () => {
         })
         .expect(400)
         .then(r => {
-          const e = r.body;
+          const e = r.body.errors;
           expect(e[0].message).to.equal("should have required property 'name'");
         }));
 
@@ -88,7 +88,7 @@ describe(packageJson.name, () => {
         .send({})
         .expect(400)
         .then(r => {
-          const e = r.body;
+          const e = r.body.errors;
           expect(e[0].message).to.equal("should have required property 'name'");
         }));
 
@@ -126,9 +126,9 @@ describe(packageJson.name, () => {
         .get(`/v1/pets/${id}`)
         .expect(400)
         .then(r => {
-          console.log(r.body);
-          expect(r.body[0].path).equals('id');
-          expect(r.body[0].message).equals('should be integer');
+          const e = r.body.errors;
+          expect(e[0].path).equals('id');
+          expect(e[0].message).equals('should be integer');
         });
     });
     it('should return 200 and get the id from the response', async () => {
