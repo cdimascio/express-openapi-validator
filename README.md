@@ -21,7 +21,7 @@ npm i express-middleware-openapi
 
 see [app.ts](test/app.ts) for an example.
 
-```
+```javascript
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
   validateApiDoc: true, // default
@@ -33,7 +33,7 @@ new OpenApiMiddleware({
 
 Try the complete example below:
 
-```
+```javascript
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
