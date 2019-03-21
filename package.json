@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "compile": "tsc",
-    "test": "mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts"
+    "test": "nyc --reporter=text --reporter=lcov mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
+    "coveralls": "cat ./coverage/lcov.info | coveralls -v"
   },
   "keywords": [],
   "author": "Carmine DiMascio <cdimascio@gmail.com>",
@@ -18,16 +19,18 @@
     "openapi-types": "1.3.4"
   },
   "devDependencies": {
-    "@types/node": "^11.11.3",
     "@types/mocha": "^5.2.6",
+    "@types/node": "^11.11.3",
     "@types/supertest": "^2.0.7",
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
     "cookie-parser": "^1.4.4",
+    "coveralls": "^3.0.3",
     "express": "^4.16.4",
     "mocha": "^6.0.2",
     "morgan": "^1.9.1",
     "nodemon": "^1.18.10",
+    "nyc": "^13.3.0",
     "prettier": "^1.15.3",
     "source-map-support": "0.5.11",
     "supertest": "^4.0.2",
