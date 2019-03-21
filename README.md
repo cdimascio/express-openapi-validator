@@ -24,7 +24,7 @@ see [app.ts](test/app.ts) for an example.
 ```
 new OpenApiMiddleware(app, {
   apiSpecPath: './openapi.yaml',
-  validate: true,
+  validateApiDoc: true, // is the the default
   enableObjectCoercion: true, // should be default
 }).install();
 ```
