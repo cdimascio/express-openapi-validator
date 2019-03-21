@@ -1,13 +1,10 @@
 {
-    "compilerOptions": {
-      "declaration": true,
-      "lib": ["es6"],
-      "module": "CommonJS",
-      "outDir": "dist",
-      "sourceMap": true
-    },
-    "files": [
-      "index.ts"
-    ]
-  }
-  
+  "compilerOptions": {
+    "declaration": true,
+    "lib": ["es6", "dom"],
+    "module": "CommonJS",
+    "outDir": "dist",
+    "sourceMap": true
+  },
+  "files": ["index.ts"]
+}
