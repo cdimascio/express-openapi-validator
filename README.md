@@ -52,13 +52,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
-  validateApiDoc: true, // is the default
-  enableObjectCoercion: true, // should be default
-  errorTransformer: (a, b) => {
-    console.log('---error trans---', a, b);
-
-    return a;
-  },
+  validateApiDoc: true, // default
+  enableObjectCoercion: true, // will be default
 }).install(app);
 
 app.get('/v1/pets', function(req, res, next) {
