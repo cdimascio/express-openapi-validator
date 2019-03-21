@@ -42,11 +42,14 @@ export function OpenApiMiddleware(opts: OpenApiMiddlewareOpts) {
   if (!apiContents)
     throw new Error(`spec could not be read at ${opts.apiSpecPath}`);
 
+  opts.enableObjectCoercion = opts.enableObjectCoercion || true;
+  opts.name = opts.name || 'express-middleware-openapi';
+
   const apiDoc = handleYaml(apiContents);
   const framework = createFramework({ ...opts, apiDoc });
-  this.apiDoc = framework.apiDoc;
+
   this.opts = opts;
-  this.opts.name = this.opts.name || 'express-middleware-openapi';
+  this.apiDoc = framework.apiDoc;
   this.routes = buildRoutes(framework);
   this.routeMap = this.routes.reduce((a, r) => {
     const routeMethod = a[r.expressRoute];

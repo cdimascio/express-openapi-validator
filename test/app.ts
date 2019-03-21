@@ -18,8 +18,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
-  validateApiDoc: true, // is the default
-  enableObjectCoercion: true, // should be default
+  // validateApiDoc: true, // the default
+  // enableObjectCoercion: true, // the default
   errorTransformer: (a, b) => {
     console.log('---error trans---', a, b);
 
