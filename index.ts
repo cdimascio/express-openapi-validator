@@ -130,15 +130,6 @@ OpenApiMiddleware.prototype.middleware = function() {
           }));
 
         const { statusCode, error } = transform(validationResult);
-        console.log(
-          '----provide to custom error handler',
-          errors,
-          status,
-          '-----',
-          error,
-          statusCode
-        );
-
         return res.status(statusCode).json(error);
       }
     }
