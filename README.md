@@ -1,13 +1,8 @@
 # express-middleware-openapi
 
-![](https://travis-ci.org/cdimascio/express-middleware-openapi.svg?branch=master) ![](https://img.shields.io/badge/license-MIT-blue.svg)
+![](https://travis-ci.org/cdimascio/express-middleware-openapi.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-middleware-openapi/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-middleware-openapi?branch=master) ![](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ExpressJs middleware that automatically validates API requests using an OpenAPI 3.0 specification,
-
-<p align="center">
-  <br>
-🚧👷<i>under construction</i> 🚧👷
-</p>
 
 ## Install
 
@@ -19,7 +14,20 @@ npm i express-middleware-openapi
 
 ## Usage
 
-see [app.ts](test/app.ts) for an example.
+see [app.js](example/app.js) for a complete example.
+
+### Basic
+
+```javascript
+new OpenApiMiddleware({
+  apiSpecPath: './openapi.yaml',
+  enableObjectCoercion: true, // should be default
+}).install(app);
+```
+
+(see complete [example](#example))
+
+### Advanced
 
 ```javascript
 new OpenApiMiddleware({
@@ -59,7 +67,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
-  validateApiDoc: true, // default
   enableObjectCoercion: true, // will be default
 }).install(app);
 
