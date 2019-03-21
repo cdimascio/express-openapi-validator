@@ -33,10 +33,7 @@ export interface OpenApiMiddlewareOpts extends OpenAPIFrameworkArgs {
   apiSpecPath: string;
 }
 
-export function OpenApiMiddleware(
-  app: ExpressApp,
-  opts: OpenApiMiddlewareOpts
-) {
+export function OpenApiMiddleware(opts: OpenApiMiddlewareOpts) {
   if (!opts.apiSpecPath) throw new Error('apiSpecPath required');
   const apiContents = loadSpecFile(opts.apiSpecPath);
   if (!apiContents)
@@ -44,7 +41,6 @@ export function OpenApiMiddleware(
 
   const apiDoc = handleYaml(apiContents);
   const framework = createFramework({ ...opts, apiDoc });
-  this.app = app;
   this.apiDoc = framework.apiDoc;
   this.opts = opts;
   this.opts.name = this.opts.name || 'express-middleware-openapi';
@@ -63,7 +59,7 @@ export function OpenApiMiddleware(
   console.log(opts);
 }
 
-OpenApiMiddleware.prototype.install = function() {
+OpenApiMiddleware.prototype.install = function(app: ExpressApp) {
   const noPathParamRoutes = [];
   const pathParms = [];
   for (const route of this.routes) {
@@ -76,11 +72,11 @@ OpenApiMiddleware.prototype.install = function() {
 
   // install param on routes with paths
   for (const p of _.uniq(pathParms)) {
-    this.app.param(p, this.middleware()); //pathParamMiddleware);
+    app.param(p, this.middleware()); //pathParamMiddleware);
   }
   // install use on routes without paths
-  this.app.all(_.uniq(noPathParamRoutes), this.middleware());
-  // this.app.use(_.uniq(noPathParamRoutes), this.middleware());
+  app.all(_.uniq(noPathParamRoutes), this.middleware());
+  // app.use(_.uniq(noPathParamRoutes), this.middleware());
 };
 
 OpenApiMiddleware.prototype.middleware = function() {
