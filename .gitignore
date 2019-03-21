@@ -5,3 +5,4 @@ dist
 /sample
 /coverage
 .coveralls.yml
+.nyc_output
