@@ -100,3 +100,7 @@ console.log('Listening on port 3000');
 
 module.exports = app;
 ```
+
+## [Example Project](https://github.com/cdimascio/express-middleware-openapi-example) 
+
+A full working example lives [here](https://github.com/cdimascio/express-middleware-openapi-example)
