@@ -16,7 +16,7 @@ app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-new OpenApiMiddleware(app, {
+new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
   validateApiDoc: true, // is the default
   enableObjectCoercion: true, // should be default
@@ -25,7 +25,7 @@ new OpenApiMiddleware(app, {
 
     return a;
   },
-}).install();
+}).install(app);
 
 app.get('/v1/pets', function(req, res, next) {
   console.log('at /v1/pets here');

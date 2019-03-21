@@ -119,7 +119,7 @@ describe(packageJson.name, () => {
     // TODO write test when route exists, but doc does not
   });
 
-  describe.only('GET /pets/:id', () => {
+  describe('GET /pets/:id', () => {
     it('should return 400 when path param should be int, but instead is string', async () => {
       const id = 'my_id';
       return request(app)

@@ -3,25 +3,23 @@ const { OpenApiMiddleware } = require('../');
 const packageJson = require('../package.json');
 
 describe(packageJson.name, () => {
-  it('existing spec', async () => {
+  it('should succeed when spec exists and is valid', async () => {
     const oam = new OpenApiMiddleware({
       apiSpecPath: './openapi.yaml',
-      validate: true,
-      enableObjectCoercion: true // should be default
+      enableObjectCoercion: true, // should be default
     });
 
     expect(oam)
-      .to.have.property('middleware')
+      .to.have.property('install')
       .that.is.a('function');
   });
 
-  it('missing spec', async () => {
+  it('should throw when spec is missing', async () => {
     const createMiddleware = () =>
       new OpenApiMiddleware({
         apiSpecPath: './not-found.yaml',
-        validate: true,
-        enableObjectCoercion: true // should be default
-      }).middleware();
+        enableObjectCoercion: true, // should be default
+      });
 
     expect(createMiddleware).to.throw(
       'spec could not be read at ./not-found.yaml'
