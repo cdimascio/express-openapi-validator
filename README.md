@@ -8,8 +8,6 @@ Try out the [sample project](https://github.com/cdimascio/express-middleware-ope
 
 ## Install
 
-Try this pre-release alpha version:
-
 ```shell
 npm i express-middleware-openapi
 ```
