@@ -7,7 +7,6 @@ import OpenAPIFramework, {
 import OpenAPIRequestValidator from 'openapi-request-validator';
 import OpenAPIRequestCoercer from 'openapi-request-coercer';
 import { OpenAPIFrameworkAPIContext } from './fw/types';
-import { handleYaml, loadSpecFile } from './fw/util';
 import { methodNotAllowed, notFoundError } from './errors';
 
 // import { OpenAPIResponseValidatorError } from 'openapi-response-validator';
@@ -26,15 +25,11 @@ export interface OpenApiMiddlewareOpts extends OpenAPIFrameworkArgs {
 
 export function OpenApiMiddleware(opts: OpenApiMiddlewareOpts) {
   if (!opts.apiSpecPath) throw new Error('apiSpecPath required');
-  const apiContents = loadSpecFile(opts.apiSpecPath);
-  if (!apiContents)
-    throw new Error(`spec could not be read at ${opts.apiSpecPath}`);
 
   opts.enableObjectCoercion = opts.enableObjectCoercion || true;
   opts.name = opts.name || 'express-middleware-openapi';
 
-  const apiDoc = handleYaml(apiContents);
-  const framework = createFramework({ ...opts, apiDoc });
+  const framework = createFramework({ ...opts, apiDoc: opts.apiSpecPath });
 
   this.opts = opts;
   this.apiDoc = framework.apiDoc;
