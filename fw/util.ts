@@ -220,7 +220,7 @@ export function copy(obj) {
 //   return null;
 // }
 
-export function handleFilePath(filePath) {
+export function loadSpecFile(filePath) {
   if (typeof filePath === 'string') {
     const absolutePath = path.resolve(process.cwd(), filePath);
     if (fs.existsSync(absolutePath)) {
@@ -232,7 +232,7 @@ export function handleFilePath(filePath) {
       }
     }
   }
-  return filePath;
+  return null;
 }
 
 export function handleYaml(apiDoc) {

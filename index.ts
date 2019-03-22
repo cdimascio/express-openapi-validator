@@ -1,18 +1,18 @@
 import * as _ from 'lodash';
 import { ExpressApp } from 'express';
-import * as fs from 'fs';
-import * as path from 'path';
-const jsYaml = require('js-yaml');
 import OpenAPIFramework, {
   OpenAPIFrameworkArgs,
   OpenAPIFrameworkConstructorArgs,
 } from './fw';
-import OpenAPIRequestValidator from 'openapi-request-validator'; // OpenAPIRequestValidatorError,
+import OpenAPIRequestValidator from 'openapi-request-validator';
 import OpenAPIRequestCoercer from 'openapi-request-coercer';
+import { OpenAPIFrameworkAPIContext } from './fw/types';
+import { handleYaml, loadSpecFile } from './fw/util';
+import { methodNotAllowed, notFoundError } from './errors';
+
 // import { OpenAPIResponseValidatorError } from 'openapi-response-validator';
 // import { SecurityHandlers } from 'openapi-security-handler';
 // import { OpenAPI, OpenAPIV3 } from 'openapi-types';
-import { OpenAPIFrameworkAPIContext } from './fw/types';
 
 export interface ErrorResponse {
   statusCode: number;
@@ -23,26 +23,6 @@ export interface OpenApiMiddlewareOpts extends OpenAPIFrameworkArgs {
   apiSpecPath: string;
   errorTransform?: (validationResult: any) => ErrorResponse;
 }
-
-const methodNotAllowed = (path, method) => ({
-  status: 405,
-  errors: [
-    {
-      path,
-      message: `${method} method not allowed`,
-    },
-  ],
-});
-
-const notFoundError = path => ({
-  status: 404,
-  errors: [
-    {
-      path,
-      message: 'Not found',
-    },
-  ],
-});
 
 export function OpenApiMiddleware(opts: OpenApiMiddlewareOpts) {
   if (!opts.apiSpecPath) throw new Error('apiSpecPath required');
@@ -83,13 +63,13 @@ OpenApiMiddleware.prototype.install = function(app: ExpressApp) {
 
   // install param on routes with paths
   for (const p of _.uniq(pathParms)) {
-    app.param(p, this.middleware()); //pathParamMiddleware);
+    app.param(p, this._middleware());
   }
   // install use on routes without paths
-  app.all(_.uniq(noPathParamRoutes), this.middleware());
+  app.all(_.uniq(noPathParamRoutes), this._middleware());
 };
 
-OpenApiMiddleware.prototype.middleware = function() {
+OpenApiMiddleware.prototype._middleware = function() {
   return (req, res, next) => {
     const { path: rpath, method, route } = req;
     var path = Array.isArray(route.path)
@@ -213,25 +193,4 @@ function buildRoutes(framework) {
     },
   });
   return routes;
-}
-
-function loadSpecFile(filePath) {
-  if (typeof filePath === 'string') {
-    const absolutePath = path.resolve(process.cwd(), filePath);
-    if (fs.existsSync(absolutePath)) {
-      try {
-        // json or module
-        return require(absolutePath);
-      } catch (e) {
-        return fs.readFileSync(absolutePath, 'utf8');
-      }
-    }
-  }
-  return null;
-}
-
-function handleYaml(apiDoc) {
-  return typeof apiDoc === 'string'
-    ? jsYaml.safeLoad(apiDoc, { json: true })
-    : apiDoc;
 }
