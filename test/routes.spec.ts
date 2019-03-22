@@ -75,9 +75,7 @@ describe(packageJson.name, () => {
     it('should return 400 if required body is missing', async () =>
       request(app)
         .post('/v1/pets')
-        .set({
-          'content-type': 'application/json',
-        })
+        .set('content-type', 'application/json')
         .expect(400)
         .then(r => {
           const e = r.body.errors;
@@ -106,7 +104,7 @@ describe(packageJson.name, () => {
         }));
   });
 
-  describe('POST /unknown-routes', () => {
+  describe.only('POST failures', () => {
     it('should return 200 when post props are met', async () =>
       request(app)
         .post('/v1/unknown-route')
@@ -118,6 +116,18 @@ describe(packageJson.name, () => {
           console.log(r.body);
         }));
 
+    it('should return 415 when post props are met', async () =>
+      request(app)
+        .post('/v1/pets')
+        .send('<xml>stuff</xml>')
+        .set('content-type', 'application/xml')
+        .expect(415)
+        .then(r => {
+          const e = r.body.errors;
+          expect(e[0].message).to.equal(
+            'Unsupported Content-Type application/xml'
+          );
+        }));
     // TODO write test when route exists, but doc does not
   });
 
