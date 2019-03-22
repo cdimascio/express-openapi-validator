@@ -109,8 +109,8 @@ OpenApiMiddleware.prototype.middleware = function() {
   return (req, res, next) => {
     const { path: rpath, method, route } = req;
     var path = Array.isArray(route.path)
-      ? route.path.find(() => rpath) || req.path
-      : route.path || rpath || req.path;
+      ? route.path.find(r => r === rpath)
+      : route.path || rpath;
     if (path && method) {
       // TODO add option to enable undocumented routes to pass through without 404
       const documentedRoute = this.routeMap[path];
