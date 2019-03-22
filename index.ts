@@ -62,25 +62,25 @@ OpenApiMiddleware.prototype.install = function(app: ExpressApp) {
   }
   // install use on routes without paths
   app.all(_.uniq(noPathParamRoutes), this._middleware());
+
+  // TODOD add middleware to capture routes not defined in openapi spec and throw not 404
 };
 
 OpenApiMiddleware.prototype._middleware = function() {
   return (req, res, next) => {
     const { path: rpath, method, route } = req;
-    var path = Array.isArray(route.path)
-      ? route.path.find(r => r === rpath)
-      : route.path || rpath;
+    const path = identifyRoutePath(route, rpath);
     if (path && method) {
-      // TODO add option to enable undocumented routes to pass through without 404
       const documentedRoute = this.routeMap[path];
       if (!documentedRoute) {
+        // TODO add option to enable undocumented routes to pass through without 404
+        // TODO this should not occur as we only set up middleware and params on routes defined in the openapi spec
         const { statusCode, error } = this._transformValidationResult(
           notFoundError(path)
         );
         return res.status(statusCode).json(error);
       }
 
-      // TODO add option to enable undocumented methods to pass through
       const schema = documentedRoute[method.toUpperCase()];
       if (!schema) {
         const { statusCode, error } = this._transformValidationResult(
@@ -88,6 +88,9 @@ OpenApiMiddleware.prototype._middleware = function() {
         );
         return res.status(statusCode).json(error);
       }
+
+      // this req matched an openapi route, mark it
+      req.openapi = {};
 
       // TODO coercer and request validator fail on null parameters
       if (!schema.parameters) {
@@ -139,6 +142,12 @@ OpenApiMiddleware.prototype._transformValidationResult = function(
     return transform(validationResult);
   }
 };
+
+function identifyRoutePath(route, path) {
+  return Array.isArray(route.path)
+    ? route.path.find(r => r === path)
+    : route.path || path;
+}
 
 function toExpressParams(part) {
   return part.replace(/\{([^}]+)}/g, ':$1');
