@@ -116,7 +116,7 @@ describe(packageJson.name, () => {
           console.log(r.body);
         }));
 
-    it('should return 415 when post props are met', async () =>
+    it('should return 415 when media type is not supported', async () =>
       request(app)
         .post('/v1/pets')
         .send('<xml>stuff</xml>')
@@ -127,6 +127,16 @@ describe(packageJson.name, () => {
           expect(e[0].message).to.equal(
             'Unsupported Content-Type application/xml'
           );
+        }));
+
+    it('should return 405 when method is not allows', async () =>
+      request(app)
+        .patch('/v1/pets')
+        .send({ name: 'test' })
+        .expect(405)
+        .then(r => {
+          const e = r.body.errors;
+          expect(e[0].message).to.equal('PATCH method not allowed');
         }));
     // TODO write test when route exists, but doc does not
   });
