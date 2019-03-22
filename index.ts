@@ -88,7 +88,9 @@ OpenApiMiddleware.prototype.install = function(app: ExpressApp) {
 OpenApiMiddleware.prototype.middleware = function() {
   return (req, res, next) => {
     const { path: rpath, method, route } = req;
-    const path = route.path || rpath;
+    var path = Array.isArray(route.path)
+      ? route.path.find(() => rpath)
+      : route.path || rpath;
     if (path && method) {
       // TODO add option to enable undocumented routes to pass through without 404
       const documentedRoute = this.routeMap[path];
