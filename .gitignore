@@ -6,3 +6,4 @@ dist
 /coverage
 .coveralls.yml
 .nyc_output
+secrets.zip
