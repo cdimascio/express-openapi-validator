@@ -3,8 +3,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
-const http = require('http');
+
 const { OpenApiMiddleware } = require('../');
+const { startServer, routes } = require('./app.common');
 
 var app = express();
 
@@ -31,38 +32,8 @@ new OpenApiMiddleware({
   },
 }).install(app);
 
-app.get('/v1/pets', function(req, res, next) {
-  console.log('at /v1/pets here');
-  res.json({
-    test: 'hi',
-  });
-});
+routes(app);
 
-app.post('/v1/pets', function(req, res, next) {
-  res.json({
-    test: 'hi',
-  });
-});
-
-app.get('/v1/vets/:id', function(req, res, next) {
-  console.log('---- get /pets/:id', req.params);
-  // here
-  res.json({
-    id: req.params.id,
-  });
-});
-
-app.get('/v1/pets/:id', function(req, res, next) {
-  console.log('---- get /pets/:id', req.params);
-  // here
-  res.json({
-    id: req.params.id,
-  });
-});
-
-export const server = http.createServer(app);
-const port = 3001;
-server.listen(port);
-console.log(`Listening on port ${port}`);
+startServer(app, 3001);
 
 export default app;

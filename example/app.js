@@ -4,7 +4,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 var http = require('http');
-var OpenApiMiddleware = require('../').OpenApiMiddleware;
+var OpenApiMiddleware = require('express-middleware-openapi').OpenApiMiddleware;
 var app = express();
 
 app.use(bodyParser.json());
@@ -15,7 +15,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 new OpenApiMiddleware({
-  apiSpecPath: './openapi.yaml',
+  apiSpecPath: '../openapi.yaml',
   validateApiDoc: true, // the default
   enableObjectCoercion: true, // the default
 }).install(app);
@@ -36,6 +36,14 @@ app.get('/v1/pets/:id', function(req, res, next) {
     name: 'sparky',
   });
 });
+
+app.get('/v1/pets/:id/attributes', function(req, res, next) {
+  res.json({
+    id: req.params.id,
+    name: 'sparky',
+  });
+});
+
 
 var server = http.createServer(app);
 server.listen(3000);

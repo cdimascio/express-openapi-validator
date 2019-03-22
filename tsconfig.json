@@ -2,9 +2,10 @@
   "compilerOptions": {
     "declaration": true,
     "lib": ["es6", "dom"],
-    "module": "CommonJS",
+    "module": "commonjs",
     "outDir": "dist",
     "sourceMap": true
   },
-  "files": ["index.ts"]
+  "exclude": ["node_modules"],
+  "include": ["typings.d.ts", "index.ts", "fw/**/*.ts", "errors/**/*.ts"]
 }

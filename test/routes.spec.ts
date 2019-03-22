@@ -1,17 +1,10 @@
 const expect = require('chai').expect;
 import * as request from 'supertest';
-import app, { server } from './app';
-import { server as server2 } from './app.with.transform';
+import app from './app';
 
 const packageJson = require('../package.json');
 
 describe(packageJson.name, () => {
-  after(done => {
-    console.log('done', app);
-    server.close();
-    server2.close();
-    done();
-  });
   it(`should test something`, () => {
     expect('a').to.equal('a');
   });
