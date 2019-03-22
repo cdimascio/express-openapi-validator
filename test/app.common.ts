@@ -35,4 +35,15 @@ export function routes(app) {
       id: req.params.id,
     });
   });
+
+  app.post('/v1/route_defined_in_express_not_openapi', function(
+    req,
+    res,
+    next
+  ) {
+    // here
+    res.json({
+      id: req.params.id,
+    });
+  });
 }
