@@ -36,7 +36,7 @@ import {
   getBasePathsFromServers,
   // getMethodDoc,
   // getSecurityDefinitionByPath,
-  handleFilePath,
+  loadSpecFile,
   handleYaml,
   // injectDependencies,
   // METHOD_ALIASES,
@@ -125,7 +125,10 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
     });
 
     this.enableObjectCoercion = !!args.enableObjectCoercion;
-    this.originalApiDoc = handleYaml(handleFilePath(args.apiDoc));
+    this.originalApiDoc = handleYaml(loadSpecFile(args.apiDoc));
+    if (!this.originalApiDoc) {
+      throw new Error(`spec could not be read at ${args.apiDoc}`);
+    }
     this.apiDoc = copy(this.originalApiDoc);
     this.basePaths = this.apiDoc.openapi
       ? getBasePathsFromServers(this.apiDoc.servers)
