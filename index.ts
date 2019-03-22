@@ -36,25 +36,25 @@ export interface OpenApiMiddlewareOpts extends OpenAPIFrameworkArgs {
   errorTransform?: (validationResult: any) => ErrorResponse;
 }
 
-const unsupportedMediaTypeError = {
-  statusCode: 415,
+const methodNotAllowed = (path, method) => ({
+  status: 405,
   errors: [
     {
-      status: 415,
-      message: 'unsupported media type',
+      path,
+      message: `${method} method not allowed`,
     },
   ],
-};
+});
 
-const notFoundError = {
+const notFoundError = path => ({
   status: 404,
   errors: [
     {
-      status: 404,
-      message: 'not found',
+      path,
+      message: 'Not found',
     },
   ],
-};
+});
 
 export function OpenApiMiddleware(opts: OpenApiMiddlewareOpts) {
   if (!opts.apiSpecPath) throw new Error('apiSpecPath required');
@@ -109,14 +109,14 @@ OpenApiMiddleware.prototype.middleware = function() {
   return (req, res, next) => {
     const { path: rpath, method, route } = req;
     var path = Array.isArray(route.path)
-      ? route.path.find(() => rpath)
-      : route.path || rpath;
+      ? route.path.find(() => rpath) || req.path
+      : route.path || rpath || req.path;
     if (path && method) {
       // TODO add option to enable undocumented routes to pass through without 404
       const documentedRoute = this.routeMap[path];
       if (!documentedRoute) {
         const { statusCode, error } = this._transformValidationResult(
-          notFoundError
+          notFoundError(path)
         );
         return res.status(statusCode).json(error);
         // return res.status(404).end();
@@ -126,7 +126,7 @@ OpenApiMiddleware.prototype.middleware = function() {
       const schema = documentedRoute[method.toUpperCase()];
       if (!schema) {
         const { statusCode, error } = this._transformValidationResult(
-          unsupportedMediaTypeError
+          methodNotAllowed(path, method)
         );
         return res.status(statusCode).json(error);
       }
