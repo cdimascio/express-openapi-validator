@@ -1,6 +1,6 @@
 # express-middleware-openapi
 
-![](https://travis-ci.org/cdimascio/express-middleware-openapi.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-middleware-openapi/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-middleware-openapi?branch=master) ![](https://img.shields.io/badge/license-MIT-blue.svg)
+![](https://travis-ci.org/cdimascio/express-middleware-openapi.svg?branch=master) ![](https://img.shields.io/npm/v/express-middleware-openapi.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-middleware-openapi/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-middleware-openapi?branch=master) ![](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ExpressJs middleware that automatically validates API requests using an OpenAPI 3.0 specification,
 
