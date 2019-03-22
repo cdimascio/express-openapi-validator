@@ -1,11 +1,11 @@
 {
   "name": "express-middleware-openapi",
-  "version": "0.1.23-alpha",
+  "version": "0.1.24-alpha",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "compile": "rm -rf dist/ && tsc",
-    "test": "nyc --reporter=text --reporter=lcov mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
+    "test": "mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
     "coveralls": "cat ./coverage/lcov.info | coveralls -v"
   },
   "keywords": [],
