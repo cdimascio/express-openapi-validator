@@ -104,7 +104,7 @@ describe(packageJson.name, () => {
         }));
   });
 
-  describe.only('POST failures', () => {
+  describe('POST failures', () => {
     it('should return 200 when post props are met', async () =>
       request(app)
         .post('/v1/unknown-route')
