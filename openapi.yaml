@@ -164,6 +164,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+
+  /route_not_defined_within_express:
+    get:
+      description: Returns attributes for this pet
+      operationId: route-not-defined-within-express
+      parameters:
+        - name: name
+          in: query
+          description: the name
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: pet response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Attribute"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
 components:
   schemas:
     NewPet:

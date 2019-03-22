@@ -98,15 +98,64 @@ describe(packageJson.name, () => {
   });
 
   describe('POST failures', () => {
-    it('should return 200 when post props are met', async () =>
+    it('should return 400 if route is defined in openapi but not express and is called with invalid parameters', async () =>
       request(app)
-        .post('/v1/unknown-route')
+        .get('/v1/route_not_defined_within_express')
+        .expect(400)
+        .then(r => {
+          const e = r.body.errors;
+          expect(e[0].message).to.equal("should have required property 'name'");
+        }));
+
+    it('should return 404 if route is defined in swagger but not express', async () =>
+      request(app)
+        .get('/v1/route_not_defined_within_express')
+        .query({ name: 'test' })
+        .expect(404)
+        .then(r => {
+          const e = r.body;
+          // There is no route defined by express, hence the validator verifies parameters,
+          // then it fails over to the express error handler. In this case returns empty
+          expect(e).to.be.empty;
+        }));
+
+    it('should return 405 if route is defined in swagger but not express and media type is invalid', async () =>
+      request(app)
+        .post('/v1/route_not_defined_within_express')
+        .send()
+        .expect(405)
+        .then(r => {
+          const e = r.body.errors;
+          expect(e[0].message).to.equal('POST method not allowed');
+          expect(e[0].path).to.equal('/v1/route_not_defined_within_express');
+        }));
+
+    it('should return 404 for unknown_route', async () =>
+      request(app)
+        .post('/v1/unknown_route')
         .send({
           name: 'test',
         })
         .expect(404)
         .then(r => {
-          console.log(r.body);
+          const e = r.body;
+          // There is no route defined by express, hence the validator verifies parameters,
+          // then it fails over to the express error handler. In this case returns empty
+          expect(e).to.be.empty;
+        }));
+
+    it.skip('should return 404 for a route defined in express and not openapi', async () =>
+      request(app)
+        .post('/v1/route_defined_in_express_not_openapi')
+        .send({
+          name: 'test',
+        })
+        .expect(404)
+        .then(r => {
+          const e = r.body;
+          // There is no route defined by express, hence the validator verifies parameters,
+          // then it fails over to the express error handler. In this case returns empty
+          expect(e).to.be.empty;
         }));
 
     it('should return 415 when media type is not supported', async () =>
