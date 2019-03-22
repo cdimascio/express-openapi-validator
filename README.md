@@ -30,15 +30,17 @@ new OpenApiMiddleware({
 
 ```javascript
 new OpenApiMiddleware({
+
+  // required: path to an openapi 3 spec
   apiSpecPath: './openapi.yaml',
-  // default is true
-  // validates the openapi spec, throws if invalid
+
+  // default true: validates the openapi spec, throws if invalid
   validateApiDoc: true,
-  // default is true
-  // attempts to coerce a value's type to that defined in the openapi spec
+
+  // default: trueattempts to coerce a value's type to that defined in the openapi spec
   enableObjectCoercion: true,
-  // default is undefined
-  // provide a custom error transform to customize how errors are shaped
+  
+  // optional: provide a custom error transform to customize how errors are shaped
   errorTransform: validationResult => ({
     // the http status code to return
     statusCode: validationResult.status,
