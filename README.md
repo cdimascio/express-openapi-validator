@@ -1,14 +1,10 @@
 # express-middleware-openapi
 
-![](https://travis-ci.org/cdimascio/express-middleware-openapi.svg?branch=master) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-middleware-openapi/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-middleware-openapi?branch=master) ![](https://img.shields.io/badge/license-MIT-blue.svg)
+![](https://travis-ci.org/cdimascio/express-middleware-openapi.svg?branch=master) ![](https://img.shields.io/npm/v/express-middleware-openapi.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-middleware-openapi/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-middleware-openapi?branch=master) ![](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ExpressJs middleware that automatically validates API requests using an OpenAPI 3.0 specification,
 
-Try out the [sample project](https://github.com/cdimascio/express-middleware-openapi-example)
-
 ## Install
-
-Try this pre-release alpha version:
 
 ```shell
 npm i express-middleware-openapi
@@ -24,21 +20,21 @@ new OpenApiMiddleware({
 }).install(app);
 ```
 
-(see complete [example](#example))
-
 ### Advanced
 
 ```javascript
 new OpenApiMiddleware({
+
+  // required: path to an openapi 3 spec
   apiSpecPath: './openapi.yaml',
-  // default is true
-  // validates the openapi spec, throws if invalid
+
+  // default true: validates the openapi spec, throws if invalid
   validateApiDoc: true,
-  // default is true
-  // attempts to coerce a value's type to that defined in the openapi spec
+
+  // default: trueattempts to coerce a value's type to that defined in the openapi spec
   enableObjectCoercion: true,
-  // default is undefined
-  // provide a custom error transform to customize how errors are shaped
+  
+  // optional: provide a custom error transform to customize how errors are shaped
   errorTransform: validationResult => ({
     // the http status code to return
     statusCode: validationResult.status,
@@ -50,6 +46,8 @@ new OpenApiMiddleware({
   }),
 }).install(app);
 ```
+
+(see complete [example](#example))
 
 ## Example API Server
 
@@ -103,7 +101,7 @@ module.exports = app;
 
 ## [Example API Server (Full Project Source)](https://github.com/cdimascio/express-middleware-openapi-example) 
 
-A full working example lives [here](https://github.com/cdimascio/express-middleware-openapi-example)
+A fully working example lives [here](https://github.com/cdimascio/express-middleware-openapi-example)
 
 ## Example validation responses
 
