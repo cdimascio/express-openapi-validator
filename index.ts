@@ -36,6 +36,30 @@ export interface OpenApiMiddlewareOpts extends OpenAPIFrameworkArgs {
   errorTransform?: (validationResult: any) => ErrorResponse;
 }
 
+const unsupportedMediaTypeError = {
+  statusCode: 415,
+  error: {
+    errors: [
+      {
+        status: 415,
+        message: 'unsupported media type',
+      },
+    ],
+  },
+};
+
+const notFoundError = {
+  statusCode: 404,
+  error: {
+    errors: [
+      {
+        status: 404,
+        message: 'not found',
+      },
+    ],
+  },
+};
+
 export function OpenApiMiddleware(opts: OpenApiMiddlewareOpts) {
   if (!opts.apiSpecPath) throw new Error('apiSpecPath required');
   const apiContents = loadSpecFile(opts.apiSpecPath);
@@ -94,11 +118,22 @@ OpenApiMiddleware.prototype.middleware = function() {
     if (path && method) {
       // TODO add option to enable undocumented routes to pass through without 404
       const documentedRoute = this.routeMap[path];
-      if (!documentedRoute) return res.status(404).end();
+      if (!documentedRoute) {
+        const { statusCode, error } = this._transformValidationResult(
+          notFoundError
+        );
+        return res.status(statusCode).json(error);
+        // return res.status(404).end();
+      }
 
       // TODO add option to enable undocumented methods to pass through
       const schema = documentedRoute[method.toUpperCase()];
-      if (!schema) return res.status(415).end();
+      if (!schema) {
+        const { statusCode, error } = this._transformValidationResult(
+          unsupportedMediaTypeError
+        );
+        return res.status(statusCode).json(error);
+      }
 
       // TODO coercer and request validator fail on null parameters
       if (!schema.parameters) {
@@ -126,20 +161,40 @@ OpenApiMiddleware.prototype.middleware = function() {
       }).validate(req);
 
       if (validationResult && validationResult.errors.length > 0) {
-        const { errors, status } = validationResult;
-        const transform =
-          this.opts.errorTransform ||
-          (v => ({
-            statusCode: v.status,
-            error: { errors: v.errors },
-          }));
-
-        const { statusCode, error } = transform(validationResult);
+        const { statusCode, error } = this._transformValidationResult(
+          validationResult
+        );
         return res.status(statusCode).json(error);
+        // const { errors, status } = validationResult;
+        // const transform =
+        //   this.opts.errorTransform ||
+        //   (v => ({
+        //     statusCode: v.status,
+        //     error: { errors: v.errors },
+        //   }));
+
+        // const { statusCode, error } = transform(validationResult);
+        // return res.status(statusCode).json(error);
       }
     }
     next();
   };
+};
+
+OpenApiMiddleware.prototype._transformValidationResult = function(
+  validationResult
+) {
+  if (validationResult && validationResult.errors.length > 0) {
+    const { errors, status } = validationResult;
+    const transform =
+      this.opts.errorTransform ||
+      (v => ({
+        statusCode: v.status,
+        error: { errors: v.errors },
+      }));
+
+    return transform(validationResult);
+  }
 };
 
 function toExpressParams(part) {
