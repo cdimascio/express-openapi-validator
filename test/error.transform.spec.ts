@@ -1,16 +1,8 @@
 const expect = require('chai').expect;
 import * as request from 'supertest';
-import app, { server } from './app.with.transform';
-import { server as server2 } from './app';
+import app from './app.with.transform';
 
 describe('custom error transform', () => {
-  after(done => {
-    console.log('done', app);
-    server.close();
-    server2.close();
-    done();
-  });
-
   it('should transform the error output', async () => {
     const id = 'my_id';
     return request(app)
