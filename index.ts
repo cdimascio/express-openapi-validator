@@ -1,30 +1,18 @@
 import * as _ from 'lodash';
-import {
-  // Application,
-  // ErrorRequestHandler,
-  // RequestHandler,
-  ExpressApp,
-} from 'express';
+import { ExpressApp } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
-// const util = require('util');
 const jsYaml = require('js-yaml');
 import OpenAPIFramework, {
-  BasePath,
   OpenAPIFrameworkArgs,
   OpenAPIFrameworkConstructorArgs,
 } from './fw';
-// import OpenAPISchemaValidator from 'openapi-schema-validator';
 import OpenAPIRequestValidator from 'openapi-request-validator'; // OpenAPIRequestValidatorError,
 import OpenAPIRequestCoercer from 'openapi-request-coercer';
 // import { OpenAPIResponseValidatorError } from 'openapi-response-validator';
 // import { SecurityHandlers } from 'openapi-security-handler';
 // import { OpenAPI, OpenAPIV3 } from 'openapi-types';
-import {
-  OpenAPIFrameworkVisitor,
-  OpenAPIFrameworkAPIContext,
-} from './fw/types';
-import { ValidationError } from 'ajv';
+import { OpenAPIFrameworkAPIContext } from './fw/types';
 
 export interface ErrorResponse {
   statusCode: number;
@@ -80,9 +68,6 @@ export function OpenApiMiddleware(opts: OpenApiMiddlewareOpts) {
     }
     return a;
   }, {});
-
-  // console.log(JSON.stringify(framework.apiDoc, null, 4), framework.basePaths);
-  console.log(opts);
 }
 
 OpenApiMiddleware.prototype.install = function(app: ExpressApp) {
@@ -102,7 +87,6 @@ OpenApiMiddleware.prototype.install = function(app: ExpressApp) {
   }
   // install use on routes without paths
   app.all(_.uniq(noPathParamRoutes), this.middleware());
-  // app.use(_.uniq(noPathParamRoutes), this.middleware());
 };
 
 OpenApiMiddleware.prototype.middleware = function() {
@@ -119,7 +103,6 @@ OpenApiMiddleware.prototype.middleware = function() {
           notFoundError(path)
         );
         return res.status(statusCode).json(error);
-        // return res.status(404).end();
       }
 
       // TODO add option to enable undocumented methods to pass through
@@ -161,16 +144,6 @@ OpenApiMiddleware.prototype.middleware = function() {
           validationResult
         );
         return res.status(statusCode).json(error);
-        // const { errors, status } = validationResult;
-        // const transform =
-        //   this.opts.errorTransform ||
-        //   (v => ({
-        //     statusCode: v.status,
-        //     error: { errors: v.errors },
-        //   }));
-
-        // const { statusCode, error } = transform(validationResult);
-        // return res.status(statusCode).json(error);
       }
     }
     next();
