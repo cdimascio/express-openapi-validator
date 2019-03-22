@@ -24,8 +24,6 @@ new OpenApiMiddleware({
 }).install(app);
 ```
 
-(see complete [example](#example))
-
 ### Advanced
 
 ```javascript
@@ -52,6 +50,8 @@ new OpenApiMiddleware({
   }),
 }).install(app);
 ```
+
+(see complete [example](#example))
 
 ## Example API Server
 
