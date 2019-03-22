@@ -38,26 +38,22 @@ export interface OpenApiMiddlewareOpts extends OpenAPIFrameworkArgs {
 
 const unsupportedMediaTypeError = {
   statusCode: 415,
-  error: {
-    errors: [
-      {
-        status: 415,
-        message: 'unsupported media type',
-      },
-    ],
-  },
+  errors: [
+    {
+      status: 415,
+      message: 'unsupported media type',
+    },
+  ],
 };
 
 const notFoundError = {
-  statusCode: 404,
-  error: {
-    errors: [
-      {
-        status: 404,
-        message: 'not found',
-      },
-    ],
-  },
+  status: 404,
+  errors: [
+    {
+      status: 404,
+      message: 'not found',
+    },
+  ],
 };
 
 export function OpenApiMiddleware(opts: OpenApiMiddlewareOpts) {
@@ -185,7 +181,6 @@ OpenApiMiddleware.prototype._transformValidationResult = function(
   validationResult
 ) {
   if (validationResult && validationResult.errors.length > 0) {
-    const { errors, status } = validationResult;
     const transform =
       this.opts.errorTransform ||
       (v => ({
