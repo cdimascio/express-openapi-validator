@@ -4,7 +4,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 
-const { OpenApiMiddleware } = require('../');
+const { OpenApiMiddleware } = require('../src');
 const { startServer, routes } = require('./app.common');
 
 var app = express();

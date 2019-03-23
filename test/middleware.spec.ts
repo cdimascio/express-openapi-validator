@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const { OpenApiMiddleware } = require('../');
+const { OpenApiMiddleware } = require('../src');
 const packageJson = require('../package.json');
 
 describe(packageJson.name, () => {
