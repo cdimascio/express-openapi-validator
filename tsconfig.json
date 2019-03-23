@@ -7,5 +7,5 @@
     "sourceMap": true
   },
   "exclude": ["node_modules"],
-  "include": ["typings.d.ts", "index.ts", "fw/**/*.ts", "errors/**/*.ts"]
+  "include": ["typings.d.ts", "src/**/*.ts"]
 }
