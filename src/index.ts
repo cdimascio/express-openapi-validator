@@ -3,10 +3,10 @@ import { ExpressApp } from 'express';
 import OpenAPIFramework, {
   OpenAPIFrameworkArgs,
   OpenAPIFrameworkConstructorArgs,
-} from './fw';
+} from './framework';
 import OpenAPIRequestValidator from 'openapi-request-validator';
 import OpenAPIRequestCoercer from 'openapi-request-coercer';
-import { OpenAPIFrameworkAPIContext } from './fw/types';
+import { OpenAPIFrameworkAPIContext } from './framework/types';
 import { methodNotAllowed, notFoundError } from './errors';
 
 // import { OpenAPIResponseValidatorError } from 'openapi-response-validator';
