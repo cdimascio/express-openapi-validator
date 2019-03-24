@@ -12,7 +12,6 @@ describe(packageJson.name, () => {
       .expect(400)
       .then(r => {
         const e = r.body.errors;
-        console.log(e)
         expect(e).to.have.length(1);
         expect(e[0].path).to.equal('x-attribute-id');
       }));

@@ -184,7 +184,7 @@ describe(packageJson.name, () => {
   });
 
   describe('GET /pets/:id', () => {
-    it('should return 400 when path param should be int, but instead is string', async () => {
+    it.only('should return 400 when path param should be int, but instead is string', async () => {
       const id = 'my_id';
       return request(app)
         .get(`/v1/pets/${id}`)
@@ -195,13 +195,25 @@ describe(packageJson.name, () => {
           expect(e[0].message).equals('should be integer');
         });
     });
+
+    it.only('should return 400 when path param should be int, but instead is string', async () => {
+      const id = 10;
+      const attributeId = 12;
+      return request(app)
+        .get(`/v1/pets/${id}/attributes/${attributeId}`)
+        .expect(200)
+        .then(r => {
+          const e = r.body.errors;
+          // TODO add assert
+        });
+    });
+
     it('should return 200 and get the id from the response', async () => {
       const id = 10;
       return request(app)
         .get(`/v1/pets/${id}`)
         .expect(200)
         .then(r => {
-          console.log(r.body);
           expect(r.body.id).equals(id);
         });
     });

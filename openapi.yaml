@@ -165,6 +165,38 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /pets/{id}/attributes/{attribute_id}:
+    get:
+      description: Returns the attribute specified by attribute_id
+      operationId: find attributes by pet id
+      parameters:
+        - name: id
+          in: path
+          description: ID of pet to fetch
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - in: path
+          name: attribute_id
+          schema:
+            type: integer
+            format: int64
+          required: true
+      responses:
+        "200":
+          description: pet response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Attribute"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
   /route_not_defined_within_express:
     get:
       description: Returns attributes for this pet
