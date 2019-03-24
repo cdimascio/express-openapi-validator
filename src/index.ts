@@ -9,6 +9,7 @@ import OpenAPIRequestCoercer from 'openapi-request-coercer';
 import { OpenAPIFrameworkAPIContext } from './framework/types';
 import { methodNotAllowed, notFoundError } from './errors';
 
+import * as middlewares from './middlewares';
 // import { OpenAPIResponseValidatorError } from 'openapi-response-validator';
 // import { SecurityHandlers } from 'openapi-security-handler';
 // import { OpenAPI, OpenAPIV3 } from 'openapi-types';
@@ -43,6 +44,21 @@ export function OpenApiMiddleware(opts: OpenApiMiddlewareOpts) {
     }
     return a;
   }, {});
+
+  this.openApiRouteMap = this.routes.reduce((a, r) => {
+    const routeMethod = a[r.openApiRoute];
+    const schema = { ...r.schema, expressRoute: r.expressRoute };
+    if (routeMethod) {
+      routeMethod[r.method] = schema;
+    } else {
+      a[r.openApiRoute] = { [r.method]: schema };
+    }
+    return a;
+  }, {});
+
+  this.routeMatchRegex = buildRouteMatchRegex(
+    this.routes.map(r => r.expressRoute)
+  );
 }
 
 OpenApiMiddleware.prototype.install = function(app: ExpressApp) {
@@ -57,13 +73,23 @@ OpenApiMiddleware.prototype.install = function(app: ExpressApp) {
   }
 
   // install param on routes with paths
-  for (const p of _.uniq(pathParms)) {
-    app.param(p, this._middleware());
-  }
-  // install use on routes without paths
-  app.all(_.uniq(noPathParamRoutes), this._middleware());
+  // for (const p of _.uniq(pathParms)) {
+  //   app.param(p, this._middleware());
+  // }
+  // // install use on routes without paths
+  // app.all(_.uniq(noPathParamRoutes), this._middleware());
 
   // TODOD add middleware to capture routes not defined in openapi spec and throw not 404
+  app.use(
+    middlewares.core(this.opts, this.apiDoc, this.openApiRouteMap),
+    middlewares.validateRequest({
+      loggingKey: this.opts.name,
+      enableObjectCoercion: this.opts.enableObjectCoercion,
+      errorTransformer: this.opts.errorTransformer,
+    })
+  );
+
+  // app.use(unlessDocumented())
 };
 
 OpenApiMiddleware.prototype._middleware = function() {
@@ -143,6 +169,29 @@ OpenApiMiddleware.prototype._transformValidationResult = function(
   }
 };
 
+function unlessDocumented(middleware, documentedRoutes) {
+  const re = buildRouteMatchRegex(documentedRoutes);
+  return (req, res, next) => {
+    const isDocumented = path => re.test(path);
+    if (isDocumented(req.path)) {
+      return next();
+    } else {
+      return middleware(req, res, next);
+    }
+  };
+}
+function buildRouteMatchRegex(routes) {
+  const matchers = routes
+    .map(route => {
+      return `^${route}/?$`;
+    })
+    .join('|');
+
+  console.log(matchers);
+  return new RegExp(`^(?!${matchers})`);
+
+  // ^(?!^\/test/?$|^\/best/:id/?$|^\/yo/?$)(.*)$
+}
 function identifyRoutePath(route, path) {
   return Array.isArray(route.path)
     ? route.path.find(r => r === path)
@@ -160,7 +209,7 @@ function createFramework(args: OpenApiMiddlewareOpts): OpenAPIFramework {
     ...(args as OpenAPIFrameworkArgs),
   };
 
-  console.log(frameworkArgs);
+  // console.log(frameworkArgs);
   const framework = new OpenAPIFramework(frameworkArgs);
   return framework;
 }
@@ -179,8 +228,8 @@ function buildRoutes(framework) {
                 pathParams.add(param.name);
               }
             }
-            const openApiRoute = `${bp.path}${path}`;
-            const expressRoute = openApiRoute
+            const openApiRoute = `${path}`;
+            const expressRoute = `${bp.path}${openApiRoute}`
               .split('/')
               .map(toExpressParams)
               .join('/');
