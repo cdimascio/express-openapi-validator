@@ -21,12 +21,12 @@ new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
   validateApiDoc: true, // is the default
   enableObjectCoercion: true, // should be default
-  errorTransform: v => {
+  errorTransformer: e => {
     return {
-      statusCode: v.status,
+      statusCode: e.status,
       error: {
-        code: v.status,
-        message: v.errors[0].message,
+        code: e.status,
+        message: e.errors[0].message,
       },
     };
   },

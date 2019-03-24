@@ -21,13 +21,11 @@ export function routes(app) {
       });
     })
     .get('/:id', function(req, res, next) {
-      console.log('----/router_1/:id');
       res.json({
         name: `${req.metnod}: /router_1/${req.params.id}`,
       });
     })
     .get('/:id/best/:bid', function(req, res, next) {
-      console.log('----/router_1/:id/best/:bid');
       res.json({
         name: `${req.metnod}: /router_1/${req.params.id}/best/${
           req.params.bid
@@ -38,7 +36,6 @@ export function routes(app) {
   app.use('/v1/router_1', router1);
 
   app.get('/v1/pets', function(req, res, next) {
-    console.log('hi');
     res.json({
       test: 'hi',
     });
@@ -73,7 +70,6 @@ export function routes(app) {
     res,
     next
   ) {
-    // here
     res.json({
       id: req.params.id,
     });
