@@ -10,6 +10,7 @@ describe('custom error transform', () => {
       .expect(400)
       .then(r => {
         const e = r.body;
+
         expect(e.code).equals(400);
         expect(e.message).equals('should be integer');
       });

@@ -130,7 +130,7 @@ describe(packageJson.name, () => {
           expect(e[0].path).to.equal('/v1/route_not_defined_within_express');
         }));
 
-    it('should return 404 for unknown_route', async () =>
+    it('should return 404 for route not defined in openapi or express', async () =>
       request(app)
         .post('/v1/unknown_route')
         .send({
@@ -138,13 +138,12 @@ describe(packageJson.name, () => {
         })
         .expect(404)
         .then(r => {
-          const e = r.body;
-          // There is no route defined by express, hence the validator verifies parameters,
-          // then it fails over to the express error handler. In this case returns empty
-          expect(e).to.be.empty;
+          const e = r.body.errors;
+          expect(e[0].message).to.equal('Not found');
+          expect(e[0].path).to.equal('/v1/unknown_route');
         }));
 
-    it.skip('should return 404 for a route defined in express and not openapi', async () =>
+    it('should return 404 for a route defined in express, but not documented in openapi', async () =>
       request(app)
         .post('/v1/route_defined_in_express_not_openapi')
         .send({
@@ -152,10 +151,11 @@ describe(packageJson.name, () => {
         })
         .expect(404)
         .then(r => {
-          const e = r.body;
-          // There is no route defined by express, hence the validator verifies parameters,
-          // then it fails over to the express error handler. In this case returns empty
-          expect(e).to.be.empty;
+          const e = r.body.errors;
+          expect(e[0].message).to.equal('Not found');
+          expect(e[0].path).to.equal(
+            '/v1/route_defined_in_express_not_openapi'
+          );
         }));
 
     it('should return 415 when media type is not supported', async () =>
@@ -184,7 +184,7 @@ describe(packageJson.name, () => {
   });
 
   describe('GET /pets/:id', () => {
-    it.only('should return 400 when path param should be int, but instead is string', async () => {
+    it('should return 400 when path param should be int, but instead is string', async () => {
       const id = 'my_id';
       return request(app)
         .get(`/v1/pets/${id}`)
@@ -196,7 +196,7 @@ describe(packageJson.name, () => {
         });
     });
 
-    it.only('should return 400 when path param should be int, but instead is string', async () => {
+    it('should return 400 when path param should be int, but instead is string', async () => {
       const id = 10;
       const attributeId = 12;
       return request(app)
