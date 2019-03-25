@@ -4,6 +4,10 @@ import app from './app';
 const packageJson = require('../package.json');
 
 describe(packageJson.name, () => {
+  after(() => {
+    app.server.close();
+  });
+
   it('should throw 400 if required header is missing', async () =>
     request(app)
       .get('/v1/pets/10/attributes')
