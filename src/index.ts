@@ -5,14 +5,13 @@ import { OpenApiContext } from './openapi.context';
 import * as middlewares from './middlewares';
 
 export interface ErrorResponse {
-  statusCode: number;
+  status: number;
   error: any;
 }
 
 export interface OpenApiMiddlewareOpts extends OpenAPIFrameworkArgs {
   name: string;
   apiSpecPath: string;
-  errorTransformer?: (validationResult: any) => ErrorResponse;
 }
 
 export function OpenApiMiddleware(opts: OpenApiMiddlewareOpts) {
@@ -54,7 +53,6 @@ OpenApiMiddleware.prototype.install = function(app: ExpressApp) {
       apiDoc: this.apiDoc,
       loggingKey: this.opts.name,
       enableObjectCoercion: this.opts.enableObjectCoercion,
-      errorTransformer: this.opts.errorTransformer,
     })
   );
 };

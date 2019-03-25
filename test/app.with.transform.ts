@@ -19,20 +19,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
-  validateApiDoc: true, // is the default
-  enableObjectCoercion: true, // should be default
-  errorTransformer: e => {
-    return {
-      statusCode: e.status,
-      error: {
-        code: e.status,
-        message: e.errors[0].message,
-      },
-    };
-  },
 }).install(app);
 
 routes(app);
+
+// Register error handler
+app.use((err, req, res, next) => {
+  const firstError = err.errors[0];
+  res.status(err.status).json({
+    code: err.status,
+    message: firstError.message,
+  });
+});
 
 startServer(app, 3001);
 
