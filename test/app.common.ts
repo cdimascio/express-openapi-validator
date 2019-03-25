@@ -1,15 +1,18 @@
 import * as express from 'express';
+const BASE_PATH = '/v1';
+
 export function startServer(app, port) {
   const http = require('http');
   const server = http.createServer(app);
   server.listen(port);
   console.log(`Listening on port ${port}`);
   app.server = server;
+  app.basePath = BASE_PATH;
   return app;
 }
 
 export function routes(app) {
-  const basePath = '/v1';
+  const basePath = BASE_PATH;
   const router1 = express
     .Router()
     .post('/', function(req, res, next) {
