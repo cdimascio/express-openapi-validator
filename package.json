@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "compile": "rm -rf dist/ && tsc",
-    "test": "nyc --reporter=text --reporter=lcov mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts --exit",
+    "test": "NODE_ENV=test; nyc --reporter=text --reporter=lcov mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts --exit",
     "coveralls": "cat ./coverage/lcov.info | coveralls -v"
   },
   "keywords": [],
