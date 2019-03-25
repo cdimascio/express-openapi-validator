@@ -70,7 +70,7 @@ app.get('/v1/pets/:id', function(req, res, next) {
   res.json({ id: req.params.id, name: 'sparky' });
 });
 
-// Register error handler!
+// Register error handler
 app.use((err, req, res, next) => {
   // format error
   res.status(err.status).json({
