@@ -3,6 +3,7 @@ import * as request from 'supertest';
 import app from './app';
 const packageJson = require('../package.json');
 
+const basePath = app.basePath;
 describe(packageJson.name, () => {
   after(() => {
     app.server.close();
@@ -10,7 +11,7 @@ describe(packageJson.name, () => {
 
   it('should throw 400 if required header is missing', async () =>
     request(app)
-      .get('/v1/pets/10/attributes')
+      .get(`${basePath}/pets/10/attributes`)
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(400)
