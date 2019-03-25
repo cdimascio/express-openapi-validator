@@ -1,30 +1,22 @@
 import OpenAPIRequestValidator from 'openapi-request-validator';
 import OpenAPIRequestCoercer from 'openapi-request-coercer';
-import { methodNotAllowed, notFoundError } from '../errors';
-
-export function validateRequest({
-  apiDoc,
-  loggingKey,
-  enableObjectCoercion,
-  errorTransformer,
-}) {
+import { validationError } from '../errors';
+import ono from 'ono';
+export function validateRequest({ apiDoc, loggingKey, enableObjectCoercion }) {
   return (req, res, next) => {
-    console.log(
-      'validateRequest_mw: ',
-      req.openapi.openApiRoute,
-      req.openapi.expressRoute
-    );
     const path = req.openapi.expressRoute;
     if (!path) {
-      const err = notFoundError(req.path);
-      return sendValidationError(res, err, errorTransformer);
+      const message = 'not found';
+      const err = validationError(404, req.path, message);
+      throw ono(err, message);
     }
     const schema = req.openapi.schema;
     if (!schema) {
       // add openapi metadata to make this case more clear
       // its not obvious that missig schema means methodNotAllowed
-      const err = methodNotAllowed(path, req.method);
-      return sendValidationError(res, err, errorTransformer);
+      const message = `${req.method} method not allowed`;
+      const err = validationError(405, req.path, message);
+      throw ono(err, message);
     }
 
     if (!schema.parameters) {
@@ -49,7 +41,8 @@ export function validateRequest({
     }
 
     const validationResult = new OpenAPIRequestValidator({
-      //   errorTransformer, // TODO create custom error transformere here as there are a lot of props we can utilize
+      // TODO create custom error transformere here as there are a lot of props we can utilize
+      // errorTransformer,
       parameters: schema.parameters || [],
       requestBody: schema.requestBody,
       // schemas: this.apiDoc.definitions, // v2
@@ -59,33 +52,9 @@ export function validateRequest({
     }).validate(req);
 
     if (validationResult && validationResult.errors.length > 0) {
-      return sendValidationError(res, validationResult, errorTransformer);
+      const message = validationResult.errors[0].message;
+      throw ono(validationResult, message);
     }
     next();
   };
-}
-
-function sendValidationError(res, validationResult, transformer) {
-  console.log(
-    'validateRequest_mw: validation error',
-    validationResult,
-    transformer
-  );
-  if (!validationResult) throw Error('validationResult missing');
-
-  const transform =
-    transformer ||
-    (v => ({
-      statusCode: v.status,
-      // TODO content-type shoudl be set and retuned
-      error: { errors: v.errors },
-    }));
-  const x = transform(validationResult);
-  if (!x || !x.statusCode || !x.error) {
-    throw Error(
-      'invalid error transform. must return an object with shape { statusCode, error}'
-    );
-  }
-  // TODO throw rather than returning a result
-  return res.status(x.statusCode).json(x.error);
 }

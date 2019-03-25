@@ -29,7 +29,6 @@ export class OpenApiSpecLoader {
       ...(args as OpenAPIFrameworkArgs),
     };
 
-    console.log(frameworkArgs);
     const framework = new OpenAPIFramework(frameworkArgs);
     return framework;
   }

@@ -93,7 +93,7 @@ describe(packageJson.name, () => {
         })
         .expect(200)
         .then(r => {
-          console.log(r.body);
+          expect(r.body.id).to.equal('new-id');
         }));
   });
 
@@ -139,7 +139,7 @@ describe(packageJson.name, () => {
         .expect(404)
         .then(r => {
           const e = r.body.errors;
-          expect(e[0].message).to.equal('Not found');
+          expect(e[0].message).to.equal('not found');
           expect(e[0].path).to.equal('/v1/unknown_route');
         }));
 
@@ -152,7 +152,7 @@ describe(packageJson.name, () => {
         .expect(404)
         .then(r => {
           const e = r.body.errors;
-          expect(e[0].message).to.equal('Not found');
+          expect(e[0].message).to.equal('not found');
           expect(e[0].path).to.equal(
             '/v1/route_defined_in_express_not_openapi'
           );
@@ -196,15 +196,15 @@ describe(packageJson.name, () => {
         });
     });
 
-    it('should return 400 when path param should be int, but instead is string', async () => {
-      const id = 10;
-      const attributeId = 12;
+    it('should handle multiple path params with coereion', async () => {
+      const id = '10';
+      const attributeId = '12';
       return request(app)
         .get(`/v1/pets/${id}/attributes/${attributeId}`)
         .expect(200)
         .then(r => {
-          const e = r.body.errors;
-          // TODO add assert
+          expect(r.body.id).equals(Number.parseInt(id));
+          expect(r.body.attribute_id).equals(Number.parseInt(attributeId));
         });
     });
 

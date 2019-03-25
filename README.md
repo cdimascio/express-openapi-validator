@@ -24,25 +24,8 @@ new OpenApiMiddleware({
 
 ```javascript
 new OpenApiMiddleware({
-
   // required: path to an openapi 3 spec
   apiSpecPath: './openapi.yaml',
-
-  // default true: validates the openapi spec, throws if invalid
-  validateApiDoc: true,
-
-  // default: trueattempts to coerce a value's type to that defined in the openapi spec
-  enableObjectCoercion: true,
-  
-  // optional: provide a custom error transform to customize how errors are shaped
-  errorTransform: validationResult => ({
-    // the http status code to return
-    statusCode: validationResult.status,
-    // the custom error object to return
-    error: {
-      code: validationResult.status,
-      message: validationResult.errors[0].message,
-    },
   }),
 }).install(app);
 ```
@@ -99,7 +82,7 @@ console.log('Listening on port 3000');
 module.exports = app;
 ```
 
-## [Example API Server (Full Project Source)](https://github.com/cdimascio/express-middleware-openapi-example) 
+## [Example API Server (Full Project Source)](https://github.com/cdimascio/express-middleware-openapi-example)
 
 A fully working example lives [here](https://github.com/cdimascio/express-middleware-openapi-example)
 

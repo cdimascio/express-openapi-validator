@@ -43,7 +43,7 @@ export function routes(app) {
 
   app.post('/v1/pets', function(req, res, next) {
     res.json({
-      test: 'hi',
+      id: 'new-id',
     });
   });
 
@@ -61,7 +61,8 @@ export function routes(app) {
 
   app.get('/v1/pets/:id/attributes/:attribute_id', function(req, res, next) {
     res.json({
-      id: req.params.attribute_id,
+      id: req.params.id,
+      attribute_id: req.params.attribute_id,
     });
   });
 
