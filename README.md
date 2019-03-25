@@ -12,6 +12,8 @@ npm i express-middleware-openapi
 
 ## Usage
 
+Register openapi validation middleware
+
 ```javascript
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
