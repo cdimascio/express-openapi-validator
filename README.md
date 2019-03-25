@@ -35,9 +35,7 @@ app.use((err, req, res, next) => {
 });
 ```
 
-(see complete [example](#example))
-
-## Example API Server
+## Example Express API Server
 
 Try the complete example below:
 
