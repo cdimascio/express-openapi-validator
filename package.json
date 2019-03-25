@@ -1,6 +1,6 @@
 {
   "name": "express-middleware-openapi",
-  "version": "0.2.31-beta",
+  "version": "0.2.32-beta",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
