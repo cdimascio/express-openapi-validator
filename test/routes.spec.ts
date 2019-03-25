@@ -119,6 +119,17 @@ describe(packageJson.name, () => {
           expect(e).to.be.empty;
         }));
 
+    it('should throw 404 on a route defined in express, but not documented in the openapi spec', async () =>
+      request(app)
+        .get('/v1/router1/10')
+        .set('Accept', 'application/json')
+        .expect(404)
+        .then(r => {
+          const e = r.body.errors[0];
+          expect(e.message).to.equal('not found');
+          expect(e.path).to.equal('/v1/router1/10');
+        }));
+
     it('should return 405 if route is defined in swagger but not express and media type is invalid', async () =>
       request(app)
         .post('/v1/route_not_defined_within_express')

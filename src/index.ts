@@ -3,28 +3,24 @@ import { ExpressApp } from 'express';
 import { OpenAPIFrameworkArgs } from './framework';
 import { OpenApiContext } from './openapi.context';
 import * as middlewares from './middlewares';
+import ono from 'ono';
 
-export interface ErrorResponse {
-  status: number;
-  error: any;
-}
+const loggingKey = 'express-middleware-openapi';
 
-export interface OpenApiMiddlewareOpts extends OpenAPIFrameworkArgs {
-  name: string;
+export interface OpenApiMiddlewareOpts {
   apiSpecPath: string;
 }
 
-export function OpenApiMiddleware(opts: OpenApiMiddlewareOpts) {
-  if (!opts.apiSpecPath) throw new Error('apiSpecPath required');
-  opts.enableObjectCoercion = opts.enableObjectCoercion || true;
-  opts.name = opts.name || 'express-middleware-openapi';
+export function OpenApiMiddleware(options: OpenApiMiddlewareOpts) {
+  if (!options.apiSpecPath) throw ono('apiSpecPath required');
 
-  const contextOpts = { ...opts, apiDoc: opts.apiSpecPath };
-  const openApiContext = new OpenApiContext(contextOpts);
+  const openApiContext = new OpenApiContext({ apiDoc: options.apiSpecPath });
 
+  const opts: OpenAPIFrameworkArgs = {
+    enableObjectCoercion: true,
+    apiDoc: openApiContext.apiDoc,
+  };
   this.opts = opts;
-  this.apiDoc = openApiContext.apiDoc;
-  this.expressRouteMap = openApiContext.expressRouteMap;
   this.context = openApiContext;
 }
 
@@ -39,7 +35,6 @@ OpenApiMiddleware.prototype.install = function(app: ExpressApp) {
   // install param on routes with paths
   for (const p of _.uniq(pathParams)) {
     app.param(p, (req, res, next, value, name) => {
-      console.log(name, value);
       if (req.openapi.pathParams) {
         // override path params
         req.params[name] = req.openapi.pathParams[name] || req.params[name];
@@ -47,11 +42,12 @@ OpenApiMiddleware.prototype.install = function(app: ExpressApp) {
       next();
     });
   }
+
   app.use(
     middlewares.applyOpenApiMetadata(this.context),
     middlewares.validateRequest({
-      apiDoc: this.apiDoc,
-      loggingKey: this.opts.name,
+      apiDoc: this.context.apiDoc,
+      loggingKey,
       enableObjectCoercion: this.opts.enableObjectCoercion,
     })
   );
