@@ -1,4 +1,4 @@
-# express-middleware-openapi
+# express-openapi-validator
 
 ![](https://travis-ci.com/cdimascio/express-middleware-openapi.svg?branch=master) ![](https://img.shields.io/npm/v/express-middleware-openapi.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-middleware-openapi/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-middleware-openapi?branch=master) ![](https://img.shields.io/badge/license-MIT-blue.svg)
 
