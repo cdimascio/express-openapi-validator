@@ -63,16 +63,11 @@ app.get('/v1/pets', function(req, res, next) {
 });
 
 app.post('/v1/pets', function(req, res, next) {
-  res.json({
-    name: 'sparky',
-  });
+  res.json({ name: 'sparky' });
 });
 
 app.get('/v1/pets/:id', function(req, res, next) {
-  res.json({
-    id: req.params.id,
-    name: 'sparky',
-  });
+  res.json({ id: req.params.id, name: 'sparky' });
 });
 
 // Register error handler!
