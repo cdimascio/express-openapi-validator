@@ -18,6 +18,18 @@ new OpenApiMiddleware({
 }).install(app);
 ```
 
+You should also register a custom error handler
+
+```
+// Register error handler!
+app.use((err, req, res, next) => {
+  // format error
+  res.status(err.status).json({
+    errors: err.errors,
+  });
+});
+```
+
 (see complete [example](#example))
 
 ## Example API Server
