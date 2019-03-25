@@ -76,4 +76,10 @@ export function routes(app) {
       id: req.params.id,
     });
   });
+
+  app.get('/not_under_an_openapi_basepath', function(req, res, next) {
+    res.json({
+      id: '/not_under_an_openapi_basepath',
+    });
+  });
 }

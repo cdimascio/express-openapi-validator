@@ -136,7 +136,7 @@ paths:
   /pets/{id}/attributes:
     get:
       description: Returns attributes for this pet
-      operationId: find attributes by pet id
+      operationId: find attributes
       parameters:
         - name: id
           in: path

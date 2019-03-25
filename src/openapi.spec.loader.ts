@@ -14,10 +14,12 @@ export class OpenApiSpecLoader {
 
   load() {
     const framework = this.createFramework(this.opts);
-    const apiDoc = framework.apiDoc;
+    const apiDoc = framework.apiDoc || {};
+    const basePaths = framework.basePaths || [];
     const routes = this.discoverRoutes(framework);
     return {
       apiDoc,
+      basePaths,
       routes,
     };
   }

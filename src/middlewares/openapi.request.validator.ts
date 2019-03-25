@@ -4,6 +4,12 @@ import { validationError } from '../errors';
 import ono from 'ono';
 export function validateRequest({ apiDoc, loggingKey, enableObjectCoercion }) {
   return (req, res, next) => {
+    if (!req.openapi) {
+      // this path was not found in open api and
+      // this path is not defined under an openapi base path
+      // skip it
+      return next();
+    }
     const path = req.openapi.expressRoute;
     if (!path) {
       const message = 'not found';
