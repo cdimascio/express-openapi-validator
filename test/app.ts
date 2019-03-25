@@ -4,7 +4,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 
-const { OpenApiMiddleware } = require('../src');
+const { OpenApiValidator } = require('../src');
 const { startServer, routes } = require('./app.common');
 
 var app = express();
@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-new OpenApiMiddleware({
+new OpenApiValidator({
   apiSpecPath: './openapi.yaml',
 }).install(app);
 
