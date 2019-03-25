@@ -95,6 +95,8 @@ A fully working example lives [here](https://github.com/cdimascio/express-openap
 
 #### Validate a query parameter with a value constraint
 
+`/pets/:id` should be of type integer, express-openapi-validator returns:
+
 ```shell
 curl http://localhost:3000/v1/pets/as |jq
 {
@@ -110,6 +112,8 @@ curl http://localhost:3000/v1/pets/as |jq
 ```
 
 #### Validate a query parameter with a range constraint
+
+`/pets?limit=?` should be of type integer with a value greater than 5, express-openapi-validator returns:
 
 ```shell
 curl http://localhost:3000/v1/pets?limit=1 |jq
@@ -133,6 +137,8 @@ curl http://localhost:3000/v1/pets?limit=1 |jq
 
 #### Validate the query parameter's value type
 
+`POST /pets` is defined to only accept media type application/json, express-openapi-validator returns:
+
 ```shell
 curl --request POST \
   --url http://localhost:3000/v1/pets \
@@ -150,6 +156,8 @@ curl --request POST \
 ```
 
 #### Validate a POST body to ensure required parameters are present
+
+`POST /pets` request body is required to contain the `name` properly, express-openapi-validator returns:
 
 ```shell
 λ  my-test curl --request POST \
