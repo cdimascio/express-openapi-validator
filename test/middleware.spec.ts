@@ -1,10 +1,10 @@
 const expect = require('chai').expect;
-const { OpenApiMiddleware } = require('../src');
+const { OpenApiValidator } = require('../src');
 const packageJson = require('../package.json');
 
 describe(packageJson.name, () => {
   it('should succeed when spec exists and is valid', async () => {
-    const oam = new OpenApiMiddleware({
+    const oam = new OpenApiValidator({
       apiSpecPath: './openapi.yaml',
       enableObjectCoercion: true, // should be default
     });
@@ -16,7 +16,7 @@ describe(packageJson.name, () => {
 
   it('should throw when spec is missing', async () => {
     const createMiddleware = () =>
-      new OpenApiMiddleware({
+      new OpenApiValidator({
         apiSpecPath: './not-found.yaml',
         enableObjectCoercion: true, // should be default
       });

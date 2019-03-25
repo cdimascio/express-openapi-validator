@@ -1,21 +1,21 @@
 # express-openapi-validator
 
-![](https://travis-ci.com/cdimascio/express-middleware-openapi.svg?branch=master) ![](https://img.shields.io/npm/v/express-middleware-openapi.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-middleware-openapi/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-middleware-openapi?branch=master) ![](https://img.shields.io/badge/license-MIT-blue.svg)
+![](https://travis-ci.com/cdimascio/express-openapi-validator.svg?branch=master) ![](https://img.shields.io/npm/v/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) ![](https://img.shields.io/badge/license-MIT-blue.svg)
 
-ExpressJs middleware that automatically validates API requests using an OpenAPI 3.0 specification,
+An OpenApi validator for ExpressJS that automatically validates API requests using an OpenAPI 3.0 specification,
 
 ## Install
 
 ```shell
-npm i express-middleware-openapi
+npm i express-openapi-validator
 ```
 
 ## Usage
 
-Register openapi validation middleware
+Install the openapi validator
 
 ```javascript
-new OpenApiMiddleware({
+new OpenApiValidator({
   apiSpecPath: './openapi.yaml',
 }).install(app);
 ```
@@ -44,7 +44,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 var http = require('http');
-var OpenApiMiddleware = require('express-middleware-openapi').OpenApiMiddleware;
+var OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
 var app = express();
 
 app.use(bodyParser.json());
@@ -54,7 +54,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-new OpenApiMiddleware({
+new OpenApiValidator({
   apiSpecPath: './openapi.yaml',
 }).install(app);
 

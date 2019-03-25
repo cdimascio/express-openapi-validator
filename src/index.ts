@@ -7,11 +7,11 @@ import ono from 'ono';
 
 const loggingKey = 'express-middleware-openapi';
 
-export interface OpenApiMiddlewareOpts {
+export interface OpenApiValidatorOpts {
   apiSpecPath: string;
 }
 
-export function OpenApiMiddleware(options: OpenApiMiddlewareOpts) {
+export function OpenApiValidator(options: OpenApiValidatorOpts) {
   if (!options.apiSpecPath) throw ono('apiSpecPath required');
 
   const openApiContext = new OpenApiContext({ apiDoc: options.apiSpecPath });
@@ -24,7 +24,7 @@ export function OpenApiMiddleware(options: OpenApiMiddlewareOpts) {
   this.context = openApiContext;
 }
 
-OpenApiMiddleware.prototype.install = function(app: ExpressApp) {
+OpenApiValidator.prototype.install = function(app: ExpressApp) {
   const pathParams = [];
   for (const route of this.context.routes) {
     if (route.pathParams.length > 0) {
