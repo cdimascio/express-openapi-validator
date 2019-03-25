@@ -177,3 +177,7 @@ curl --request POST \
 ```
 
 #### ...and much more. Try it out!
+
+## License
+
+[MIT](LICENSE)
