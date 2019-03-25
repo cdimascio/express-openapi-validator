@@ -3,10 +3,10 @@
 // import { IOpenAPIRequestValidator } from 'openapi-request-validator';
 // import { IOpenAPIResponseValidator } from 'openapi-response-validator';
 import {
-  IOpenAPISecurityHandler,
+  // IOpenAPISecurityHandler,
   SecurityHandlers,
 } from 'openapi-security-handler';
-import { IJsonSchema, OpenAPI, OpenAPIV2, OpenAPIV3 } from 'openapi-types';
+import { IJsonSchema, OpenAPIV2, OpenAPIV3 } from 'openapi-types';
 import { Logger } from 'ts-log';
 import BasePath from './base.path';
 export {
@@ -52,10 +52,10 @@ interface SecurityRequirement {
 
 type SecurityScope = string;
 
-type SecurityHandlerCallback = (
-  error: SecurityHandlerError,
-  result: boolean
-) => void;
+// type SecurityHandlerCallback = (
+//   error: SecurityHandlerError,
+//   result: boolean
+// ) => void;
 
 interface SecurityHandlerError {
   status?: number;
