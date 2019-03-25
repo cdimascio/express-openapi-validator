@@ -9,26 +9,26 @@ const fs = require('fs');
 const jsYaml = require('js-yaml');
 const path = require('path');
 
-export const METHOD_ALIASES = {
-  // HTTP style
-  DELETE: 'delete',
-  GET: 'get',
-  HEAD: 'head',
-  OPTIONS: 'options',
-  PATCH: 'patch',
-  POST: 'post',
-  PUT: 'put',
+// export const METHOD_ALIASES = {
+//   // HTTP style
+//   DELETE: 'delete',
+//   GET: 'get',
+//   HEAD: 'head',
+//   OPTIONS: 'options',
+//   PATCH: 'patch',
+//   POST: 'post',
+//   PUT: 'put',
 
-  // js style
-  del: 'delete',
-  delete: 'delete',
-  get: 'get',
-  head: 'head',
-  options: 'options',
-  patch: 'patch',
-  post: 'post',
-  put: 'put',
-};
+//   // js style
+//   del: 'delete',
+//   delete: 'delete',
+//   get: 'get',
+//   head: 'head',
+//   options: 'options',
+//   patch: 'patch',
+//   post: 'post',
+//   put: 'put',
+// };
 
 // export function addOperationTagToApiDoc(apiDoc, tag) {
 //   const apiDocTags = apiDoc.tags || [];
