@@ -87,9 +87,9 @@ console.log('Listening on port 3000');
 module.exports = app;
 ```
 
-## [Example API Server (Full Project Source)](https://github.com/cdimascio/express-middleware-openapi-example)
+## [Example Express API Server](https://github.com/cdimascio/express-openapi-validator-example) (clone it)
 
-A fully working example lives [here](https://github.com/cdimascio/express-middleware-openapi-example)
+A fully working example lives [here](https://github.com/cdimascio/express-openapi-validator-example)
 
 ## Example validation responses
 
