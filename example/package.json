@@ -15,6 +15,6 @@
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.4",
     "morgan": "^1.9.1",
-    "express-middleware-openapi": "file:../"
+    "express-middleware-openapi": "file:../dist"
   }
 }
