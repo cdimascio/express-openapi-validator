@@ -9,6 +9,7 @@ export function startServer(app, port) {
 }
 
 export function routes(app) {
+  const basePath = '/v1';
   const router1 = express
     .Router()
     .post('/', function(req, res, next) {
@@ -34,40 +35,44 @@ export function routes(app) {
       });
     });
 
-  app.use('/v1/router_1', router1);
+  app.use(`${basePath}/router_1`, router1);
 
-  app.get('/v1/pets', function(req, res, next) {
+  app.get(`${basePath}/pets`, function(req, res, next) {
     res.json({
       test: 'hi',
     });
   });
 
-  app.post('/v1/pets', function(req, res, next) {
+  app.post(`${basePath}/pets`, function(req, res, next) {
     res.json({
       id: 'new-id',
     });
   });
 
-  app.get('/v1/pets/:id', function(req, res, next) {
+  app.get(`${basePath}/pets/:id`, function(req, res, next) {
     res.json({
       id: req.params.id,
     });
   });
 
-  app.get('/v1/pets/:id/attributes', function(req, res, next) {
+  app.get(`${basePath}/pets/:id/attributes`, function(req, res, next) {
     res.json({
       id: req.params.id,
     });
   });
 
-  app.get('/v1/pets/:id/attributes/:attribute_id', function(req, res, next) {
+  app.get(`${basePath}/pets/:id/attributes/:attribute_id`, function(
+    req,
+    res,
+    next
+  ) {
     res.json({
       id: req.params.id,
       attribute_id: req.params.attribute_id,
     });
   });
 
-  app.post('/v1/route_defined_in_express_not_openapi', function(
+  app.post(`${basePath}/route_defined_in_express_not_openapi`, function(
     req,
     res,
     next
