@@ -5,8 +5,8 @@
 - (done) add tests with an indepently defined router
 - (done) throw error (e.g 404) when route is defined in express but not in openapi spec
 - exclude routes
-- only throw not found on routes with a openapi base path
+- (done) only throw not found on routes with a openapi base path
 - test with merge middleware
 - test with case insensitive and case sensitive routing
-- test empty base path
+- (validated) test empty base path
 - (done) test base path with trailing slash
