@@ -16,8 +16,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 new OpenApiMiddleware({
   apiSpecPath: '../openapi.yaml',
-  validateApiDoc: true, // the default
-  enableObjectCoercion: true, // the default
 }).install(app);
 
 app.get('/v1/pets', function(req, res, next) {
@@ -44,6 +42,21 @@ app.get('/v1/pets/:id/attributes', function(req, res, next) {
   });
 });
 
+// Register error handler!
+app.use((err, req, res, next) => {
+  // format error
+  res.status(err.status).json({
+    errors: err.errors,
+  });
+});
+
+// Register error handler!
+app.use((err, req, res, next) => {
+  // format error
+  res.status(err.status).json({
+    errors: err.errors,
+  });
+});
 
 var server = http.createServer(app);
 server.listen(3000);

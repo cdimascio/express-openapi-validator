@@ -12,21 +12,9 @@ npm i express-middleware-openapi
 
 ## Usage
 
-### Basic
-
 ```javascript
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
-}).install(app);
-```
-
-### Advanced
-
-```javascript
-new OpenApiMiddleware({
-  // required: path to an openapi 3 spec
-  apiSpecPath: './openapi.yaml',
-  }),
 }).install(app);
 ```
 
@@ -55,7 +43,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
-  enableObjectCoercion: true, // will be default
 }).install(app);
 
 app.get('/v1/pets', function(req, res, next) {
@@ -72,6 +59,14 @@ app.get('/v1/pets/:id', function(req, res, next) {
   res.json({
     id: req.params.id,
     name: 'sparky',
+  });
+});
+
+// Register error handler!
+app.use((err, req, res, next) => {
+  // format error
+  res.status(err.status).json({
+    errors: err.errors,
   });
 });
 
