@@ -5,6 +5,9 @@ import app from './app';
 const packageJson = require('../package.json');
 
 describe(packageJson.name, () => {
+  after(() => {
+    app.server.close();
+  });
   it(`should test something`, () => {
     expect('a').to.equal('a');
   });
