@@ -100,7 +100,15 @@ describe(packageJson.name, () => {
         }));
   });
 
-  describe('POST failures', () => {
+  describe('when a route is not defined in express or not documented in openapi, it', () => {
+    it('should not validate a route defined in express, but not under an openapi basepath', async () =>
+      request(app)
+        .get('/not_under_an_openapi_basepath')
+        .expect(200)
+        .then(r => {
+          expect(r.body.id).to.equal('/not_under_an_openapi_basepath');
+        }));
+
     it('should return 400 if route is defined in openapi but not express and is called with invalid parameters', async () =>
       request(app)
         .get('/v1/route_not_defined_within_express')
@@ -124,13 +132,13 @@ describe(packageJson.name, () => {
 
     it('should throw 404 on a route defined in express, but not documented in the openapi spec', async () =>
       request(app)
-        .get('/v1/router1/10')
+        .get('/v1/router_1/10')
         .set('Accept', 'application/json')
         .expect(404)
         .then(r => {
           const e = r.body.errors[0];
           expect(e.message).to.equal('not found');
-          expect(e.path).to.equal('/v1/router1/10');
+          expect(e.path).to.equal('/v1/router_1/10');
         }));
 
     it('should return 405 if route is defined in swagger but not express and media type is invalid', async () =>

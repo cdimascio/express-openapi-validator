@@ -4,16 +4,25 @@ import { OpenApiContext } from '../openapi.context';
 
 export function applyOpenApiMetadata(openApiContext: OpenApiContext) {
   return (req, res, next) => {
-    req.openapi = {};
     const matched = lookupRoute(req);
 
     if (matched) {
+      req.openapi = {};
       const { expressRoute, openApiRoute, pathParams, schema } = matched;
       req.openapi.expressRoute = expressRoute;
       req.openapi.openApiRoute = openApiRoute;
       req.openapi.pathParams = pathParams;
       req.openapi.schema = schema;
       req.params = pathParams;
+    } else {
+      // add openapi object if the route was not matched
+      // but is contained beneath a base path
+      for (const bp of openApiContext.basePaths) {
+        if (req.path.startsWith(bp.path + '/')) {
+          req.openapi = {};
+          break;
+        }
+      }
     }
     next();
   };
