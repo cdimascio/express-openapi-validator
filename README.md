@@ -12,7 +12,7 @@ npm i express-middleware-openapi
 
 ## Usage
 
-### Basic
+Register openapi validation middleware
 
 ```javascript
 new OpenApiMiddleware({
@@ -20,31 +20,15 @@ new OpenApiMiddleware({
 }).install(app);
 ```
 
-### Advanced
+Then, register a custom error handler
 
 ```javascript
-new OpenApiMiddleware({
-
-  // required: path to an openapi 3 spec
-  apiSpecPath: './openapi.yaml',
-
-  // default true: validates the openapi spec, throws if invalid
-  validateApiDoc: true,
-
-  // default: trueattempts to coerce a value's type to that defined in the openapi spec
-  enableObjectCoercion: true,
-  
-  // optional: provide a custom error transform to customize how errors are shaped
-  errorTransform: validationResult => ({
-    // the http status code to return
-    statusCode: validationResult.status,
-    // the custom error object to return
-    error: {
-      code: validationResult.status,
-      message: validationResult.errors[0].message,
-    },
-  }),
-}).install(app);
+app.use((err, req, res, next) => {
+  // format error
+  res.status(err.status).json({
+    errors: err.errors,
+  });
+});
 ```
 
 (see complete [example](#example))
@@ -72,7 +56,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 new OpenApiMiddleware({
   apiSpecPath: './openapi.yaml',
-  enableObjectCoercion: true, // will be default
 }).install(app);
 
 app.get('/v1/pets', function(req, res, next) {
@@ -80,15 +63,18 @@ app.get('/v1/pets', function(req, res, next) {
 });
 
 app.post('/v1/pets', function(req, res, next) {
-  res.json({
-    name: 'sparky',
-  });
+  res.json({ name: 'sparky' });
 });
 
 app.get('/v1/pets/:id', function(req, res, next) {
-  res.json({
-    id: req.params.id,
-    name: 'sparky',
+  res.json({ id: req.params.id, name: 'sparky' });
+});
+
+// Register error handler
+app.use((err, req, res, next) => {
+  // format error
+  res.status(err.status).json({
+    errors: err.errors,
   });
 });
 
@@ -99,7 +85,7 @@ console.log('Listening on port 3000');
 module.exports = app;
 ```
 
-## [Example API Server (Full Project Source)](https://github.com/cdimascio/express-middleware-openapi-example) 
+## [Example API Server (Full Project Source)](https://github.com/cdimascio/express-middleware-openapi-example)
 
 A fully working example lives [here](https://github.com/cdimascio/express-middleware-openapi-example)
 

@@ -5,6 +5,9 @@ import app from './app';
 const packageJson = require('../package.json');
 
 describe(packageJson.name, () => {
+  after(() => {
+    app.server.close();
+  });
   it(`should test something`, () => {
     expect('a').to.equal('a');
   });
@@ -93,7 +96,7 @@ describe(packageJson.name, () => {
         })
         .expect(200)
         .then(r => {
-          console.log(r.body);
+          expect(r.body.id).to.equal('new-id');
         }));
   });
 
@@ -119,6 +122,17 @@ describe(packageJson.name, () => {
           expect(e).to.be.empty;
         }));
 
+    it('should throw 404 on a route defined in express, but not documented in the openapi spec', async () =>
+      request(app)
+        .get('/v1/router1/10')
+        .set('Accept', 'application/json')
+        .expect(404)
+        .then(r => {
+          const e = r.body.errors[0];
+          expect(e.message).to.equal('not found');
+          expect(e.path).to.equal('/v1/router1/10');
+        }));
+
     it('should return 405 if route is defined in swagger but not express and media type is invalid', async () =>
       request(app)
         .post('/v1/route_not_defined_within_express')
@@ -130,7 +144,7 @@ describe(packageJson.name, () => {
           expect(e[0].path).to.equal('/v1/route_not_defined_within_express');
         }));
 
-    it('should return 404 for unknown_route', async () =>
+    it('should return 404 for route not defined in openapi or express', async () =>
       request(app)
         .post('/v1/unknown_route')
         .send({
@@ -138,13 +152,12 @@ describe(packageJson.name, () => {
         })
         .expect(404)
         .then(r => {
-          const e = r.body;
-          // There is no route defined by express, hence the validator verifies parameters,
-          // then it fails over to the express error handler. In this case returns empty
-          expect(e).to.be.empty;
+          const e = r.body.errors;
+          expect(e[0].message).to.equal('not found');
+          expect(e[0].path).to.equal('/v1/unknown_route');
         }));
 
-    it.skip('should return 404 for a route defined in express and not openapi', async () =>
+    it('should return 404 for a route defined in express, but not documented in openapi', async () =>
       request(app)
         .post('/v1/route_defined_in_express_not_openapi')
         .send({
@@ -152,10 +165,11 @@ describe(packageJson.name, () => {
         })
         .expect(404)
         .then(r => {
-          const e = r.body;
-          // There is no route defined by express, hence the validator verifies parameters,
-          // then it fails over to the express error handler. In this case returns empty
-          expect(e).to.be.empty;
+          const e = r.body.errors;
+          expect(e[0].message).to.equal('not found');
+          expect(e[0].path).to.equal(
+            '/v1/route_defined_in_express_not_openapi'
+          );
         }));
 
     it('should return 415 when media type is not supported', async () =>
@@ -195,13 +209,25 @@ describe(packageJson.name, () => {
           expect(e[0].message).equals('should be integer');
         });
     });
+
+    it('should handle multiple path params with coereion', async () => {
+      const id = '10';
+      const attributeId = '12';
+      return request(app)
+        .get(`/v1/pets/${id}/attributes/${attributeId}`)
+        .expect(200)
+        .then(r => {
+          expect(r.body.id).equals(Number.parseInt(id));
+          expect(r.body.attribute_id).equals(Number.parseInt(attributeId));
+        });
+    });
+
     it('should return 200 and get the id from the response', async () => {
       const id = 10;
       return request(app)
         .get(`/v1/pets/${id}`)
         .expect(200)
         .then(r => {
-          console.log(r.body);
           expect(r.body.id).equals(id);
         });
     });
