@@ -7,6 +7,7 @@ An OpenApi validator for ExpressJS that automatically validates API requests usi
 <p align="center">
 <img src="https://raw.githubusercontent.com/cdimascio/express-openapi-validator/master/assets/express-openapi-validator.png" width="500">
 </p>
+
 ## Install
 
 ```shell
