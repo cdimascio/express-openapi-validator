@@ -1,8 +1,8 @@
 # express-openapi-validator
 
-![](https://travis-ci.com/cdimascio/express-openapi-validator.svg?branch=master) ![](https://img.shields.io/npm/v/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) ![](https://img.shields.io/badge/license-MIT-blue.svg)
+![](https://travis-ci.com/cdimascio/express-middleware-openapi.svg?branch=master) ![](https://img.shields.io/npm/v/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) ![](https://img.shields.io/badge/license-MIT-blue.svg)
 
-An OpenApi validator for ExpressJS that automatically validates API requests using an OpenAPI 3.0 specification,
+An OpenApi validator for ExpressJS that automatically validates API requests using an OpenAPI 3.0 specification.
 
 ## Install
 
