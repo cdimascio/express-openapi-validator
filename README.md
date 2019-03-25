@@ -21,7 +21,6 @@ new OpenApiMiddleware({
 You should also register a custom error handler
 
 ```javascript
-// Register error handler!
 app.use((err, req, res, next) => {
   // format error
   res.status(err.status).json({
