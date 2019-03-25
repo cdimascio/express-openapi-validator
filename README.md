@@ -20,7 +20,7 @@ new OpenApiMiddleware({
 }).install(app);
 ```
 
-Then, register a custom error handler
+Then, register an error handler to customize errors
 
 ```javascript
 app.use((err, req, res, next) => {
