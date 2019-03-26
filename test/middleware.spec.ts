@@ -1,12 +1,12 @@
-const expect = require('chai').expect;
-const { OpenApiValidator } = require('../src');
+import { expect } from 'chai';
+import { OpenApiValidator } from '../src';
+
 const packageJson = require('../package.json');
 
 describe(packageJson.name, () => {
   it('should succeed when spec exists and is valid', async () => {
     const oam = new OpenApiValidator({
       apiSpecPath: './openapi.yaml',
-      enableObjectCoercion: true, // should be default
     });
 
     expect(oam)
@@ -18,7 +18,6 @@ describe(packageJson.name, () => {
     const createMiddleware = () =>
       new OpenApiValidator({
         apiSpecPath: './not-found.yaml',
-        enableObjectCoercion: true, // should be default
       });
 
     expect(createMiddleware).to.throw(

@@ -1,9 +1,10 @@
-const expect = require('chai').expect;
+import { expect } from 'chai';
 import * as request from 'supertest';
 import app from './app';
-const packageJson = require('../package.json');
 
+const packageJson = require('../package.json');
 const basePath = app.basePath;
+
 describe(packageJson.name, () => {
   after(() => {
     app.server.close();
