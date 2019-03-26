@@ -30,6 +30,7 @@
     "@types/supertest": "^2.0.7",
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
+    "codacy-coverage": "^3.4.0",
     "cookie-parser": "^1.4.4",
     "coveralls": "^3.0.3",
     "express": "^4.16.4",
