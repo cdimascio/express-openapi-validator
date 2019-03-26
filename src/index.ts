@@ -5,7 +5,7 @@ import { OpenApiContext } from './openapi.context';
 import * as middlewares from './middlewares';
 import ono from 'ono';
 
-const loggingKey = 'express-middleware-openapi';
+const loggingKey = 'express-openapi-validator';
 
 export interface OpenApiValidatorOpts {
   apiSpecPath: string;
