@@ -27,7 +27,7 @@ export class OpenApiSpecLoader {
   private createFramework(args: OpenAPIFrameworkArgs): OpenAPIFramework {
     const frameworkArgs: OpenAPIFrameworkConstructorArgs = {
       featureType: 'middleware',
-      name: 'express-middleware-openapi',
+      name: 'express-openapi-validator',
       ...(args as OpenAPIFrameworkArgs),
     };
 
