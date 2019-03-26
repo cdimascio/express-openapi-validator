@@ -6,7 +6,8 @@
   "scripts": {
     "compile": "rm -rf dist/ && tsc",
     "test": "nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
-    "coveralls": "cat coverage/lcov.info | coveralls -v"
+    "coveralls": "cat coverage/lcov.info | coveralls -v",
+    "codacy": "cat coverage/lcov.info | codacy-coverage"
   },
   "keywords": [],
   "author": "Carmine DiMascio <cdimascio@gmail.com>",
