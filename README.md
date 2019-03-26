@@ -1,8 +1,14 @@
 # express-openapi-validator
 
-![](https://travis-ci.com/cdimascio/express-middleware-openapi.svg?branch=master) ![](https://img.shields.io/npm/v/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) ![](https://img.shields.io/badge/license-MIT-blue.svg)
+![](https://travis-ci.com/cdimascio/express-openapi-validator.svg?branch=master) ![](https://img.shields.io/npm/v/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-middleware-openapi/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-middleware-openapi?branch=master) ![](https://img.shields.io/badge/license-MIT-blue.svg)
 
 An OpenApi validator for ExpressJS that automatically validates API requests using an OpenAPI 3.0 specification.
+
+<p align="center">
+<img src="https://raw.githubusercontent.com/cdimascio/express-openapi-validator/master/assets/express-openapi-validator.png" width="500">
+</p>
+
+[express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) is unopinionated and does not impose any  coding convention or project structure. Simply, install the validator onto your express app, then define and implement routes the way you prefer. See an [example](#example-express-api-server).
 
 ## Install
 
@@ -31,9 +37,7 @@ app.use((err, req, res, next) => {
 });
 ```
 
-(see complete [example](#example))
-
-## Example API Server
+## Example Express API Server
 
 Try the complete example below:
 
@@ -85,13 +89,15 @@ console.log('Listening on port 3000');
 module.exports = app;
 ```
 
-## [Example API Server (Full Project Source)](https://github.com/cdimascio/express-middleware-openapi-example)
+## [Example Express API Server](https://github.com/cdimascio/express-openapi-validator-example) (clone it)
 
-A fully working example lives [here](https://github.com/cdimascio/express-middleware-openapi-example)
+A fully working example lives [here](https://github.com/cdimascio/express-openapi-validator-example)
 
 ## Example validation responses
 
 #### Validate a query parameter with a value constraint
+
+`/pets/:id` should be of type integer, express-openapi-validator returns:
 
 ```shell
 curl http://localhost:3000/v1/pets/as |jq
@@ -108,6 +114,8 @@ curl http://localhost:3000/v1/pets/as |jq
 ```
 
 #### Validate a query parameter with a range constraint
+
+`/pets?limit=?` should be of type integer with a value greater than 5, express-openapi-validator returns:
 
 ```shell
 curl http://localhost:3000/v1/pets?limit=1 |jq
@@ -131,6 +139,8 @@ curl http://localhost:3000/v1/pets?limit=1 |jq
 
 #### Validate the query parameter's value type
 
+`POST /pets` is defined to only accept media type application/json, express-openapi-validator returns:
+
 ```shell
 curl --request POST \
   --url http://localhost:3000/v1/pets \
@@ -148,6 +158,8 @@ curl --request POST \
 ```
 
 #### Validate a POST body to ensure required parameters are present
+
+`POST /pets` request body is required to contain the `name` properly, express-openapi-validator returns:
 
 ```shell
 λ  my-test curl --request POST \
@@ -167,3 +179,7 @@ curl --request POST \
 ```
 
 #### ...and much more. Try it out!
+
+## License
+
+[MIT](LICENSE)
