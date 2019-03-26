@@ -50,13 +50,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Register error handler!
-app.use((err, req, res, next) => {
-  // format error
-  res.status(err.status).json({
-    errors: err.errors,
-  });
-});
 
 var server = http.createServer(app);
 server.listen(3000);
