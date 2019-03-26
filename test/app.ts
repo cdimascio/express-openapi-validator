@@ -1,11 +1,11 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var logger = require('morgan');
+import * as express from 'express';
+import * as path from 'path';
+import * as cookieParser from 'cookie-parser';
+import * as bodyParser from 'body-parser';
+import * as logger from 'morgan';
 
-const { OpenApiValidator } = require('../src');
-const { startServer, routes } = require('./app.common');
+import { OpenApiValidator } from '../src';
+import { startServer, routes } from './app.common';
 
 var app = express();
 

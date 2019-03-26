@@ -1,5 +1,5 @@
-const pathToRegexp = require('path-to-regexp');
-const _ = require('lodash');
+import * as pathToRegexp from 'path-to-regexp';
+import * as _ from 'lodash';
 import { OpenApiContext } from '../openapi.context';
 
 export function applyOpenApiMetadata(openApiContext: OpenApiContext) {

@@ -1,4 +1,4 @@
-const expect = require('chai').expect;
+import { expect } from 'chai';
 import * as request from 'supertest';
 import app from './app';
 
@@ -224,15 +224,17 @@ describe(packageJson.name, () => {
     it('should handle multiple path params with coereion', async () => {
       const id = '10';
       const attributeId = '12';
-      return request(app)
-        .get(`${basePath}/pets/${id}/attributes/${attributeId}`)
-        // .expect(200)
-        .then(r => {
-          console.log(`${basePath}/pets/${id}/attributes/${attributeId}`)
-          console.log(r.body);
-          expect(r.body.id).equals(Number.parseInt(id));
-          expect(r.body.attribute_id).equals(Number.parseInt(attributeId));
-        });
+      return (
+        request(app)
+          .get(`${basePath}/pets/${id}/attributes/${attributeId}`)
+          // .expect(200)
+          .then(r => {
+            console.log(`${basePath}/pets/${id}/attributes/${attributeId}`);
+            console.log(r.body);
+            expect(r.body.id).equals(Number.parseInt(id));
+            expect(r.body.attribute_id).equals(Number.parseInt(attributeId));
+          })
+      );
     });
 
     it('should return 200 and get the id from the response', async () => {
