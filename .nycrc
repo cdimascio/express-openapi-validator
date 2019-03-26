@@ -1,7 +1,7 @@
 {
     "check-coverage": true,
     "per-file": true,
-    "lines": 63,
+    "lines": 62,
     "statements": 40,
     "functions": 15,
     "branches": 50,
