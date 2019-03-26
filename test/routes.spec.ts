@@ -151,7 +151,7 @@ describe(packageJson.name, () => {
           const e = r.body.errors;
           expect(e[0].message).to.equal('POST method not allowed');
           expect(e[0].path).to.equal(
-            `${basePath}/route_not_defined_within_express`
+            `${basePath}/route_not_defined_within_express`,
           );
         }));
 
@@ -179,7 +179,7 @@ describe(packageJson.name, () => {
           const e = r.body.errors;
           expect(e[0].message).to.equal('not found');
           expect(e[0].path).to.equal(
-            `${basePath}/route_defined_in_express_not_openapi`
+            `${basePath}/route_defined_in_express_not_openapi`,
           );
         }));
 
@@ -192,7 +192,7 @@ describe(packageJson.name, () => {
         .then(r => {
           const e = r.body.errors;
           expect(e[0].message).to.equal(
-            'Unsupported Content-Type application/xml'
+            'Unsupported Content-Type application/xml',
           );
         }));
 

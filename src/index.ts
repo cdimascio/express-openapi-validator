@@ -49,6 +49,6 @@ OpenApiValidator.prototype.install = function(app: ExpressApp) {
       apiDoc: this.context.apiDoc,
       loggingKey,
       enableObjectCoercion: this.opts.enableObjectCoercion,
-    })
+    }),
   );
 };

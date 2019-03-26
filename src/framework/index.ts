@@ -107,7 +107,7 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
         throw new Error(
           `${this.loggingPrefix}args.${arg.name} must be a ${
             arg.type
-          } when given`
+          } when given`,
         );
       }
 
@@ -119,7 +119,7 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
         throw new Error(
           `${this.loggingPrefix}args.${arg.name} must be an instance of ${
             arg.className
-          } when given`
+          } when given`,
         );
       }
     });
@@ -164,14 +164,14 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
 
       if (apiDocValidation.errors.length) {
         this.logger.error(
-          `${this.loggingPrefix}Validating schema before populating paths`
+          `${this.loggingPrefix}Validating schema before populating paths`,
         );
         this.logger.error(
           `${this.loggingPrefix}validation errors`,
-          JSON.stringify(apiDocValidation.errors, null, '  ')
+          JSON.stringify(apiDocValidation.errors, null, '  '),
         );
         throw new Error(
-          `${this.loggingPrefix}args.apiDoc was invalid.  See the output.`
+          `${this.loggingPrefix}args.apiDoc was invalid.  See the output.`,
         );
       }
     }
@@ -203,16 +203,16 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
 
       if (apiDocValidation.errors.length) {
         this.logger.error(
-          `${this.loggingPrefix}Validating schema after populating paths`
+          `${this.loggingPrefix}Validating schema after populating paths`,
         );
         this.logger.error(
           `${this.loggingPrefix}validation errors`,
-          JSON.stringify(apiDocValidation.errors, null, '  ')
+          JSON.stringify(apiDocValidation.errors, null, '  '),
         );
         throw new Error(
           `${
             this.loggingPrefix
-          }args.apiDoc was invalid after populating paths.  See the output.`
+          }args.apiDoc was invalid after populating paths.  See the output.`,
         );
       }
     }
