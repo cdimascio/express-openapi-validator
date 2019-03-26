@@ -7,19 +7,19 @@ import * as path from 'path';
 export function assertRegExpAndSecurity(framework, tuple) {
   if (!Array.isArray(tuple)) {
     throw new Error(
-      `${framework.name}args.pathSecurity expects an array of tuples.`
+      `${framework.name}args.pathSecurity expects an array of tuples.`,
     );
   } else if (!(tuple[0] instanceof RegExp)) {
     throw new Error(
       `${
         framework.name
-      }args.pathSecurity tuples expect the first argument to be a RegExp.`
+      }args.pathSecurity tuples expect the first argument to be a RegExp.`,
     );
   } else if (!Array.isArray(tuple[1])) {
     throw new Error(
       `${
         framework.name
-      }args.pathSecurity tuples expect the second argument to be a security Array.`
+      }args.pathSecurity tuples expect the second argument to be a security Array.`,
     );
   }
 }
@@ -58,7 +58,7 @@ export function sortApiDocTags(apiDoc) {
 }
 
 export function getBasePathsFromServers(
-  servers: OpenAPIV3.ServerObject[]
+  servers: OpenAPIV3.ServerObject[],
 ): BasePath[] {
   if (!servers) {
     return [new BasePath({ url: '' })];

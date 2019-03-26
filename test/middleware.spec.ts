@@ -21,7 +21,7 @@ describe(packageJson.name, () => {
       });
 
     expect(createMiddleware).to.throw(
-      'spec could not be read at ./not-found.yaml'
+      'spec could not be read at ./not-found.yaml',
     );
   });
 });

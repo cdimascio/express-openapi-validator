@@ -1,7 +1,7 @@
 export const validationError = (
   status: number,
   path: string,
-  message: string
+  message: string,
 ) => ({
   status,
   errors: [

@@ -67,7 +67,7 @@ export function routes(app) {
   app.get(`${basePath}/pets/:id/attributes/:attribute_id`, function(
     req,
     res,
-    next
+    next,
   ) {
     res.json({
       id: req.params.id,
@@ -78,7 +78,7 @@ export function routes(app) {
   app.post(`${basePath}/route_defined_in_express_not_openapi`, function(
     req,
     res,
-    next
+    next,
   ) {
     res.json({
       id: req.params.id,
