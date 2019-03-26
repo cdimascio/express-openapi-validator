@@ -11,7 +11,8 @@ install:
 script:
 - npm run compile
 - npm test
-- npm run coveralls
+# - npm run coveralls
+- npm run codacy
 env:
   global:
     secure: ytiwXpn7JDc0fhB2KQa2z/OM9LNyVqf/5XCg6LX1WtXRn3R6qYfqCMBUq+eu/Pvym5SlPUwPwZEzRwSBUBivAhNsSPMNGnzNVyX+OxVruXlaD+Wsx3ROTGnwTpPEh7JUXXpytWmG6IAXwyhOvnhAgILjDFaRPkRNc/9Y1zsRTtFxiaisN/6X4IFxGRdI6OVobLEDKmnUBa2nDw5fZws+hOGWlv7b1NqbzXJ1yrOTH0E/uPsill3aWqXuDSEtv4VhAk0z9Xyw4Bi28XtDNQNSou8LkGmN4QzXHdKz73UgY3RaKQ99PVhyTZz0TrvL54BSB/poUoXnu3ZZODKA9GIrthnHW6rn3u0ovnHRAA+L2CLBTqFbGoctOe3XhnUcDBmcvH3FnE+IcLdSeeEjDO+oGIZdut2af2aPj+rA7Hd76+I/CGEf8osnfZVuLYYWW+semuTCF4rDSI+EPu8Rb3w3POCzskkinONnxdYQpcEw01ltMBUnJxLi7fYVpLeSNsOs5rBMOL+LlbsnG505UvmqaFlzyt7GzvcCXW0hrBAARjq3ADAmtSBVZuzMWebN2X93wjZZ9SLyVtCdVNtCxCwA3X0zYJ1dH6roSNi99gMDG9fxbb+Hhc/0+9+u7Sn2CMvOLy9LiV+lm0MeANDOitRb6OTLuOKlLLjr8lvvJxf9qwE=
