@@ -2,6 +2,7 @@
 // import { IOpenAPIRequestCoercer } from 'openapi-request-coercer';
 // import { IOpenAPIRequestValidator } from 'openapi-request-validator';
 // import { IOpenAPIResponseValidator } from 'openapi-response-validator';
+import { Request } from 'express';
 import {
   // IOpenAPISecurityHandler,
   SecurityHandlers,
@@ -134,4 +135,8 @@ export interface OpenAPIFrameworkVisitor {
   visitApi?(context: OpenAPIFrameworkAPIContext): void;
   visitPath?(context: OpenAPIFrameworkPathContext): void;
   // visitOperation?(context: OpenAPIFrameworkOperationContext): void;
+}
+
+export interface OpenApiRequest extends Request {
+  openapi;
 }

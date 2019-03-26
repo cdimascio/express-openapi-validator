@@ -1,9 +1,10 @@
 import * as _ from 'lodash';
-import { ExpressApp } from 'express';
+import { Application, Response, NextFunction } from 'express';
 import { OpenAPIFrameworkArgs } from './framework';
 import { OpenApiContext } from './openapi.context';
 import * as middlewares from './middlewares';
 import ono from 'ono';
+import { OpenApiRequest } from './framework/types';
 
 const loggingKey = 'express-openapi-validator';
 
@@ -24,7 +25,7 @@ export function OpenApiValidator(options: OpenApiValidatorOpts) {
   this.context = openApiContext;
 }
 
-OpenApiValidator.prototype.install = function(app: ExpressApp) {
+OpenApiValidator.prototype.install = function(app: Application) {
   const pathParams = [];
   for (const route of this.context.routes) {
     if (route.pathParams.length > 0) {
@@ -34,7 +35,7 @@ OpenApiValidator.prototype.install = function(app: ExpressApp) {
 
   // install param on routes with paths
   for (const p of _.uniq(pathParams)) {
-    app.param(p, (req, res, next, value, name) => {
+    app.param(p, (req: OpenApiRequest, res, next, value, name) => {
       if (req.openapi.pathParams) {
         // override path params
         req.params[name] = req.openapi.pathParams[name] || req.params[name];
