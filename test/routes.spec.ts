@@ -3,11 +3,11 @@ import * as request from 'supertest';
 import app from './app';
 
 const packageJson = require('../package.json');
-const basePath = app.basePath;
+const basePath = (<any>app).basePath;
 
 describe(packageJson.name, () => {
   after(() => {
-    app.server.close();
+    (<any>app).server.close();
   });
   it(`should test something`, () => {
     expect('a').to.equal('a');

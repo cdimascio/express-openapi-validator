@@ -17,22 +17,22 @@ export function routes(app) {
     .Router()
     .post('/', function(req, res, next) {
       res.json({
-        name: `${req.metnod}: /router_1`,
+        name: `${req.method}: /router_1`,
       });
     })
     .get('/', function(req, res, next) {
       res.json({
-        name: `${req.metnod}: /router_1`,
+        name: `${req.method}: /router_1`,
       });
     })
     .get('/:id', function(req, res, next) {
       res.json({
-        name: `${req.metnod}: /router_1/${req.params.id}`,
+        name: `${req.method}: /router_1/${req.params.id}`,
       });
     })
     .get('/:id/best/:bid', function(req, res, next) {
       res.json({
-        name: `${req.metnod}: /router_1/${req.params.id}/best/${
+        name: `${req.method}: /router_1/${req.params.id}/best/${
           req.params.bid
         }`,
       });
