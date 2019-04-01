@@ -14,15 +14,8 @@ export function applyOpenApiMetadata(openApiContext: OpenApiContext) {
       req.openapi.pathParams = pathParams;
       req.openapi.schema = schema;
       req.params = pathParams;
-    } else {
-      // add openapi object if the route was not matched
-      // but is contained beneath a base path
-      for (const bp of openApiContext.basePaths) {
-        if (req.path.startsWith(bp.path + '/')) {
-          req.openapi = {};
-          break;
-        }
-      }
+    } else if (openApiContext.isManagedRoute(req.path)) {
+      req.openapi = {};
     }
     next();
   };

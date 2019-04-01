@@ -7,7 +7,7 @@ export class OpenApiContext {
   openApiRouteMap = {};
   routes = [];
   apiDoc;
-  basePaths: BasePath[];
+  private basePaths: Set<string>;
   constructor(opts: OpenAPIFrameworkArgs) {
     const openApiRouteDiscovery = new OpenApiSpecLoader(opts);
     const { apiDoc, basePaths, routes } = openApiRouteDiscovery.load();
@@ -35,6 +35,13 @@ export class OpenApiContext {
       }
     }
     return routes;
+  }
+
+  isManagedRoute(path) {
+    for (const bp of this.basePaths) {
+      if (path.startsWith(bp)) return true;
+    }
+    return false;
   }
 
   routePair(route) {

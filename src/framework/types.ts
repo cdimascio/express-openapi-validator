@@ -1,12 +1,5 @@
-// import { IOpenAPIDefaultSetter } from 'openapi-default-setter';
-// import { IOpenAPIRequestCoercer } from 'openapi-request-coercer';
-// import { IOpenAPIRequestValidator } from 'openapi-request-validator';
-// import { IOpenAPIResponseValidator } from 'openapi-response-validator';
 import { Request } from 'express';
-import {
-  // IOpenAPISecurityHandler,
-  SecurityHandlers,
-} from 'openapi-security-handler';
+import { SecurityHandlers } from 'openapi-security-handler';
 import { IJsonSchema, OpenAPIV2, OpenAPIV3 } from 'openapi-types';
 import { Logger } from 'ts-log';
 import BasePath from './base.path';
@@ -15,32 +8,6 @@ export {
   OpenAPIFrameworkConstructorArgs,
   OpenAPIErrorTransformer,
 };
-
-export class ConsoleDebugAdapterLogger implements Logger {
-  /**
-   * `console.debug` is just an alias for `.log()`, and we want debug logging to be optional.
-   * This class delegates to `console` and overrides `.debug()` to be a no-op.
-   */
-  public debug(message?: any, ...optionalParams: any[]): void {
-    // no-op
-  }
-
-  public error(message?: any, ...optionalParams: any[]): void {
-    console.error(message, ...optionalParams);
-  }
-
-  public info(message?: any, ...optionalParams: any[]): void {
-    console.info(message, ...optionalParams);
-  }
-
-  public trace(message?: any, ...optionalParams: any[]): void {
-    console.trace(message, ...optionalParams);
-  }
-
-  public warn(message?: any, ...optionalParams: any[]): void {
-    console.warn(message, ...optionalParams);
-  }
-}
 
 // TODO move this to openapi-request-validator
 type OpenAPIErrorTransformer = ({}, {}) => object;
@@ -111,26 +78,6 @@ export interface OpenAPIFrameworkPathContext {
   getPathDoc(): any;
 }
 
-// export interface OpenAPIFrameworkOperationContext {
-//   additionalFeatures: any[];
-//   allowsFeatures: boolean;
-//   apiDoc: any;
-//   basePaths: BasePath[];
-//   consumes: string[];
-//   features: {
-//     coercer?: IOpenAPIRequestCoercer;
-//     // defaultSetter?: IOpenAPIDefaultSetter;
-//     requestValidator?: IOpenAPIRequestValidator;
-//     // responseValidator?: IOpenAPIResponseValidator;
-//     securityHandler?: IOpenAPISecurityHandler;
-//   };
-//   methodName: string;
-//   methodParameters: any[];
-//   operationDoc: any;
-//   operationHandler: any;
-//   path: string;
-// }
-
 export interface OpenAPIFrameworkVisitor {
   visitApi?(context: OpenAPIFrameworkAPIContext): void;
   visitPath?(context: OpenAPIFrameworkPathContext): void;
@@ -139,4 +86,31 @@ export interface OpenAPIFrameworkVisitor {
 
 export interface OpenApiRequest extends Request {
   openapi;
+}
+
+/* istanbul ignore next */
+export class ConsoleDebugAdapterLogger implements Logger {
+  /**
+   * `console.debug` is just an alias for `.log()`, and we want debug logging to be optional.
+   * This class delegates to `console` and overrides `.debug()` to be a no-op.
+   */
+  public debug(message?: any, ...optionalParams: any[]): void {
+    // no-op
+  }
+
+  public error(message?: any, ...optionalParams: any[]): void {
+    console.error(message, ...optionalParams);
+  }
+
+  public info(message?: any, ...optionalParams: any[]): void {
+    console.info(message, ...optionalParams);
+  }
+
+  public trace(message?: any, ...optionalParams: any[]): void {
+    console.trace(message, ...optionalParams);
+  }
+
+  public warn(message?: any, ...optionalParams: any[]): void {
+    console.warn(message, ...optionalParams);
+  }
 }
