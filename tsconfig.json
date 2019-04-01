@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "declaration": true,
+    "target": "es2015",
     "lib": ["es6", "dom"],
     "module": "commonjs",
     "outDir": "dist",

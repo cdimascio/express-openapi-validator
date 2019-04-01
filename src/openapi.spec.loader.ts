@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-
 import OpenAPIFramework, {
   OpenAPIFrameworkArgs,
   OpenAPIFrameworkConstructorArgs,
@@ -15,8 +14,12 @@ export class OpenApiSpecLoader {
   load() {
     const framework = this.createFramework(this.opts);
     const apiDoc = framework.apiDoc || {};
-    const basePaths = framework.basePaths || [];
-    const routes = this.discoverRoutes(framework);
+    const bps = framework.basePaths || [];
+    const basePaths = bps.reduce((acc, bp) => {
+      const all = bp.all().forEach(path => acc.add(path));
+      return acc;
+    }, new Set());
+    const routes = this.discoverRoutes(framework, basePaths);
     return {
       apiDoc,
       basePaths,
@@ -35,13 +38,13 @@ export class OpenApiSpecLoader {
     return framework;
   }
 
-  private discoverRoutes(framework) {
+  private discoverRoutes(framework: OpenAPIFramework, basePaths: Set<string>) {
     const routes = [];
     const toExpressParams = this.toExpressParams;
     framework.initialize({
       visitApi(ctx: OpenAPIFrameworkAPIContext) {
         const apiDoc = ctx.getApiDoc();
-        for (const bp of ctx.basePaths) {
+        for (const bp of basePaths) {
           for (const [path, methods] of Object.entries(apiDoc.paths)) {
             for (const [method, schema] of Object.entries(methods)) {
               const pathParams = new Set();
@@ -50,7 +53,7 @@ export class OpenApiSpecLoader {
                   pathParams.add(param.name);
                 }
               }
-              const openApiRoute = `${bp.path}${path}`;
+              const openApiRoute = `${bp}${path}`;
               const expressRoute = `${openApiRoute}`
                 .split('/')
                 .map(toExpressParams)

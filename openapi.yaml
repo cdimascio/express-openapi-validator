@@ -12,7 +12,24 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 servers:
-  - url: http://petstore.swagger.io/v1
+  - url: /v1
+  - url: http://{name}.swagger.io:{port}/{version}
+    variables:
+      name:
+        default: petstore
+        enum:
+          - petstore
+          - storeofpets
+      port:
+        enum:
+          - '443'
+          - '8443'
+        default: '443'
+      version:
+        default: v1
+        enum:
+          - v1
+          - v2
 paths:
   /pets:
     get:

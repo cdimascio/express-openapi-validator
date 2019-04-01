@@ -1,15 +1,23 @@
+import * as pathToRegexp from 'path-to-regexp';
 import { OpenAPIV3 } from 'openapi-types';
-import { URL } from 'url';
+
+interface ServerUrlVariables {
+  [key: string]: ServerUrlValues;
+}
+interface ServerUrlValues {
+  enum: string[];
+  default?: string;
+}
 
 export default class BasePath {
-  public readonly variables: { [key: string]: { enum: string[] } } = {};
+  public readonly variables: ServerUrlVariables = {};
   public readonly path: string = '';
+  private allPaths: string[] = null;
 
   constructor(server: OpenAPIV3.ServerObject) {
     // break the url into parts
     // baseUrl param added to make the parsing of relative paths go well
-    const serverUrl = new URL(server.url, 'http://localhost');
-    let urlPath = decodeURI(serverUrl.pathname).replace(/\/$/, '');
+    let urlPath = this.findUrlPath(server.url);
     if (/{\w+}/.test(urlPath)) {
       // has variable that we need to check out
       urlPath = urlPath.replace(/{(\w+)}/g, (substring, p1) => `:${p1}`);
@@ -17,13 +25,44 @@ export default class BasePath {
     this.path = urlPath;
     for (const variable in server.variables) {
       if (server.variables.hasOwnProperty(variable)) {
-        this.variables[variable] = { enum: server.variables[variable].enum };
+        const v = server.variables[variable];
+        const enums = v.enum || [];
+        if (enums.length === 0 && v.default) enums.push(v.default);
+
+        this.variables[variable] = {
+          enum: enums,
+          default: v.default,
+        };
       }
     }
   }
 
-  public hasVariables() {
+  public hasVariables(): boolean {
     return Object.keys(this.variables).length > 0;
+  }
+
+  public all(): string[] {
+    if (!this.hasVariables()) return [this.path];
+    if (this.allPaths) return this.allPaths;
+    // TODO performance optimization
+    // ignore variables that are not part of path params
+    const allParams = Object.entries(this.variables).reduce((acc, v) => {
+      const [key, value] = v;
+      const params = value.enum.map(e => ({
+        [key]: e,
+      }));
+      acc.push(params);
+      return acc;
+    }, []);
+
+    const allParamCombos = cartesian(...allParams);
+    const toPath = pathToRegexp.compile(this.path);
+    const paths = new Set();
+    for (const combo of allParamCombos) {
+      paths.add(toPath(combo));
+    }
+    this.allPaths = Array.from(paths);
+    return this.allPaths;
   }
 
   public static fromServers(servers: OpenAPIV3.ServerObject[]) {
@@ -32,4 +71,42 @@ export default class BasePath {
     }
     return servers.map(server => new BasePath(server));
   }
+
+  private findUrlPath(u) {
+    const findColonSlashSlash = p => {
+      const r = /:\/\//.exec(p);
+      if (r) return r.index;
+      return -1;
+    };
+    const findFirstSlash = p => {
+      const r = /\//.exec(p);
+      if (r) return r.index;
+      return -1;
+    };
+
+    const fcssIdx = findColonSlashSlash(u);
+    const startSearchIdx = fcssIdx !== -1 ? fcssIdx + 3 : 0;
+    const startPathIdx = findFirstSlash(u.substring(startSearchIdx));
+    if (startPathIdx === -1) return '/';
+
+    const pathIdx = startPathIdx + startSearchIdx;
+    return u.substring(pathIdx);
+  }
+}
+
+function cartesian(...arg) {
+  const r = [],
+    max = arg.length - 1;
+  function helper(obj, i) {
+    const values = arg[i];
+    for (var j = 0, l = values.length; j < l; j++) {
+      const a = { ...obj };
+      const key = Object.keys(values[j])[0];
+      a[key] = values[j][key];
+      if (i == max) r.push(a);
+      else helper(a, i + 1);
+    }
+  }
+  helper({}, 0);
+  return r;
 }

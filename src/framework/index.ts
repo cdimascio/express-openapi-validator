@@ -1,11 +1,6 @@
-// import fsRoutes from 'fs-routes';
-// import OpenAPIDefaultSetter from 'openapi-default-setter';
-// import OpenAPIRequestCoercer from 'openapi-request-coercer';
-// import OpenAPIRequestValidator from 'openapi-request-validator';
-// import OpenAPIResponseValidator from 'openapi-response-validator';
 import OpenAPISchemaValidator from 'openapi-schema-validator';
 import OpenAPISecurityHandler from 'openapi-security-handler';
-import { OpenAPI, OpenAPIV2, OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV2, OpenAPIV3 } from 'openapi-types';
 import BasePath from './base.path';
 import {
   ConsoleDebugAdapterLogger,
@@ -13,39 +8,17 @@ import {
   OpenAPIFrameworkAPIContext,
   OpenAPIFrameworkArgs,
   OpenAPIFrameworkConstructorArgs,
-  // OpenAPIFrameworkOperationContext,
   OpenAPIFrameworkPathContext,
   OpenAPIFrameworkPathObject,
   OpenAPIFrameworkVisitor,
 } from './types';
 import {
-  // addOperationTagToApiDoc,
-  // allowsCoercionFeature,
-  // allowsDefaultsFeature,
-  // allowsFeatures,
-  // allowsResponseValidationFeature,
-  // allowsValidationFeature,
   assertRegExpAndSecurity,
-  // byDefault,
-  // byDirectory,
-  // byMethods,
-  // byRoute,
-  // byString,
   copy,
-  // getAdditionalFeatures,
   getBasePathsFromServers,
-  // getMethodDoc,
-  // getSecurityDefinitionByPath,
   loadSpecFile,
   handleYaml,
-  // injectDependencies,
-  // METHOD_ALIASES,
-  // resolveParameterRefs,
-  // resolveResponseRefs,
   sortApiDocTags,
-  // sortOperationDocTags,
-  // toAbsolutePath,
-  // withNoDuplicates,
 } from './util';
 
 export {
@@ -63,18 +36,18 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
   public readonly featureType;
   public readonly loggingPrefix;
   public readonly name;
-  private customFormats;
-  private dependencies;
-  private enableObjectCoercion;
-  private errorTransformer;
-  private externalSchemas;
+  // private customFormats;
+  // private dependencies;
+  // private enableObjectCoercion;
+  // private errorTransformer;
+  // private externalSchemas;
   private originalApiDoc;
-  private operations;
-  private paths;
-  private pathsIgnore;
+  // private operations;
+  // private paths;
+  // private pathsIgnore;
   private pathSecurity;
-  private routesGlob;
-  private routesIndexFileRegExp;
+  // private routesGlob;
+  // private routesIndexFileRegExp;
   private securityHandlers;
   private validateApiDoc;
   private validator;
@@ -124,7 +97,7 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
       }
     });
 
-    this.enableObjectCoercion = !!args.enableObjectCoercion;
+    // this.enableObjectCoercion = !!args.enableObjectCoercion;
     this.originalApiDoc = handleYaml(loadSpecFile(args.apiDoc));
     if (!this.originalApiDoc) {
       throw new Error(`spec could not be read at ${args.apiDoc}`);
@@ -145,17 +118,17 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
         (this.apiDoc as OpenAPIV2.Document).swagger,
       extensions: this.apiDoc[`x-${this.name}-schema-extension`],
     });
-    this.customFormats = args.customFormats;
-    this.dependencies = args.dependencies;
-    this.errorTransformer = args.errorTransformer;
-    this.externalSchemas = args.externalSchemas;
-    this.operations = args.operations;
-    this.pathsIgnore = args.pathsIgnore;
+    // this.customFormats = args.customFormats;
+    // this.dependencies = args.dependencies;
+    // this.errorTransformer = args.errorTransformer;
+    // this.externalSchemas = args.externalSchemas;
+    // this.operations = args.operations;
+    // this.pathsIgnore = args.pathsIgnore;
     this.pathSecurity = Array.isArray(args.pathSecurity)
       ? args.pathSecurity
       : [];
-    this.routesGlob = args.routesGlob;
-    this.routesIndexFileRegExp = args.routesIndexFileRegExp;
+    // this.routesGlob = args.routesGlob;
+    // this.routesIndexFileRegExp = args.routesIndexFileRegExp;
     this.securityHandlers = args.securityHandlers;
     this.pathSecurity.forEach(assertRegExpAndSecurity.bind(null, this));
 
