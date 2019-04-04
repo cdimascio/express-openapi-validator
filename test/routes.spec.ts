@@ -227,10 +227,8 @@ describe(packageJson.name, () => {
       return (
         request(app)
           .get(`${basePath}/pets/${id}/attributes/${attributeId}`)
-          // .expect(200)
+          .expect(200)
           .then(r => {
-            console.log(`${basePath}/pets/${id}/attributes/${attributeId}`);
-            console.log(r.body);
             expect(r.body.id).equals(Number.parseInt(id));
             expect(r.body.attribute_id).equals(Number.parseInt(attributeId));
           })
