@@ -2,13 +2,13 @@
 
 ![](https://travis-ci.com/cdimascio/express-openapi-validator.svg?branch=master) ![](https://img.shields.io/npm/v/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg)](https://coveralls.io/github/cdimascio/express-openapi-validator) ![](https://img.shields.io/badge/license-MIT-blue.svg)
 
-An OpenApi validator for ExpressJS that automatically validates API requests using an OpenAPI 3.0 specification.
+An OpenApi validator for ExpressJS that automatically validates API requests using an OpenAPI 3 specification.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/cdimascio/express-openapi-validator/master/assets/express-openapi-validator.png" width="500">
 </p>
 
-[express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) is unopinionated and does not impose any  coding convention or project structure. Simply, install the validator onto your express app, point it to your OpenApi 3 specification, then define and implement routes the way you prefer. See an [example](#example-express-api-server).
+[express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) is unopinionated and does not impose any  coding convention or project structure. Simply, install the validator onto your express app, point it to your OpenAPI 3 specification, then define and implement routes the way you prefer. See an [example](#example-express-api-server).
 
 ## Install
 
