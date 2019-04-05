@@ -10,7 +10,7 @@
     "coveralls": "cat coverage/lcov.info | coveralls -v",
     "codacy": "cat coverage/lcov.info | codacy-coverage"
   },
-  "keywords": [],
+  "keywords": ["openapi", "expressjs", "request validation", "middleware", "nodejs"],
   "author": "Carmine DiMascio <cdimascio@gmail.com>",
   "license": "MIT",
   "dependencies": {
