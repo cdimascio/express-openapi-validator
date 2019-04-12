@@ -1,6 +1,6 @@
 {
   "name": "express-openapi-validator",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -10,7 +10,14 @@
     "coveralls": "cat coverage/lcov.info | coveralls -v",
     "codacy": "cat coverage/lcov.info | codacy-coverage"
   },
-  "keywords": ["openapi", "expressjs", "request validation", "middleware", "nodejs"],
+  "keywords": [
+    "openapi",
+    "openapi 3",
+    "expressjs",
+    "request validation",
+    "middleware",
+    "nodejs"
+  ],
   "author": "Carmine DiMascio <cdimascio@gmail.com>",
   "license": "MIT",
   "dependencies": {
