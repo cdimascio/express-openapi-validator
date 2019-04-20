@@ -44,7 +44,8 @@ export class OpenApiSpecLoader {
     framework.initialize({
       visitApi(ctx: OpenAPIFrameworkAPIContext) {
         const apiDoc = ctx.getApiDoc();
-        for (const bp of basePaths) {
+        for (const bpa of basePaths) {
+          const bp = bpa.replace(/\/$/, '');
           for (const [path, methods] of Object.entries(apiDoc.paths)) {
             for (const [method, schema] of Object.entries(methods)) {
               const pathParams = new Set();
