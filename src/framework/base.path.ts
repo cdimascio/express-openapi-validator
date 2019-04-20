@@ -90,7 +90,8 @@ export default class BasePath {
     if (startPathIdx === -1) return '/';
 
     const pathIdx = startPathIdx + startSearchIdx;
-    return u.substring(pathIdx);
+    // extract path portion of url and remove trailing slash if one exists
+    return u.replace(/\/$/, '').substring(pathIdx);
   }
 }
 
