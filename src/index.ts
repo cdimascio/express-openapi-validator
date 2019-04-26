@@ -12,44 +12,49 @@ export interface OpenApiValidatorOpts {
   apiSpecPath: string;
 }
 
-export function OpenApiValidator(options: OpenApiValidatorOpts) {
-  if (!options.apiSpecPath) throw ono('apiSpecPath required');
+export class OpenApiValidator {
+  private opts: OpenAPIFrameworkArgs;
+  private context: OpenApiContext;
 
-  const openApiContext = new OpenApiContext({ apiDoc: options.apiSpecPath });
+  constructor(options: OpenApiValidatorOpts) {
+    if (!options.apiSpecPath) throw ono('apiSpecPath required');
 
-  const opts: OpenAPIFrameworkArgs = {
-    enableObjectCoercion: true,
-    apiDoc: openApiContext.apiDoc,
-  };
-  this.opts = opts;
-  this.context = openApiContext;
-}
+    const openApiContext = new OpenApiContext({ apiDoc: options.apiSpecPath });
 
-OpenApiValidator.prototype.install = function(app: Application) {
-  const pathParams = [];
-  for (const route of this.context.routes) {
-    if (route.pathParams.length > 0) {
-      pathParams.push(...route.pathParams);
-    }
+    const opts: OpenAPIFrameworkArgs = {
+      enableObjectCoercion: true,
+      apiDoc: openApiContext.apiDoc,
+    };
+    this.opts = opts;
+    this.context = openApiContext;
   }
 
-  // install param on routes with paths
-  for (const p of _.uniq(pathParams)) {
-    app.param(p, (req: OpenApiRequest, res, next, value, name) => {
-      if (req.openapi.pathParams) {
-        // override path params
-        req.params[name] = req.openapi.pathParams[name] || req.params[name];
+  install(app: Application) {
+    const pathParams = [];
+    for (const route of this.context.routes) {
+      if (route.pathParams.length > 0) {
+        pathParams.push(...route.pathParams);
       }
-      next();
-    });
-  }
+    }
 
-  app.use(
-    middlewares.applyOpenApiMetadata(this.context),
-    middlewares.validateRequest({
-      apiDoc: this.context.apiDoc,
-      loggingKey,
-      enableObjectCoercion: this.opts.enableObjectCoercion,
-    }),
-  );
-};
+    // install param on routes with paths
+    for (const p of _.uniq(pathParams)) {
+      app.param(p, (req: OpenApiRequest, res, next, value, name) => {
+        if (req.openapi.pathParams) {
+          // override path params
+          req.params[name] = req.openapi.pathParams[name] || req.params[name];
+        }
+        next();
+      });
+    }
+
+    app.use(
+      middlewares.applyOpenApiMetadata(this.context),
+      middlewares.validateRequest({
+        apiDoc: this.context.apiDoc,
+        loggingKey,
+        enableObjectCoercion: this.opts.enableObjectCoercion,
+      }),
+    );
+  }
+}
