@@ -1,6 +1,6 @@
 {
   "name": "express-openapi-validator",
-  "version": "0.30.0",
+  "version": "0.41.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -9,6 +9,9 @@
     "test:coverage": "nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
     "coveralls": "cat coverage/lcov.info | coveralls -v",
     "codacy": "cat coverage/lcov.info | codacy-coverage"
+  },
+  "repository": {
+    "url": "https://github.com/cdimascio/express-openapi-validator"
   },
   "keywords": [
     "openapi",
