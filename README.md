@@ -82,6 +82,24 @@ app.get('/v1/pets/:id', function(req, res, next) {
   res.json({ id: req.params.id, name: 'sparky' });
 });
 
+// 4. Add a route upload file(s)
+app.post('/v1/pets/:id/photos', function(req, res, next) {
+  // DO something with the file
+  // files are found in req.files
+  // non-file multipar params can be found as such: req.body['my-param']
+  console.log(req.files);
+
+  res.json({
+    files_metadata: req.files.map(f => ({
+      originalname: f.originalname,
+      encoding: f.encoding,
+      mimetype: f.mimetype,
+      // Buffer of file conents
+      // buffer: f.buffer,
+    })),
+  });
+});
+
 // 5. Create an Express error handler
 app.use((err, req, res, next) => {
   // 6. Customize errors
