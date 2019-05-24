@@ -9,10 +9,6 @@ describe(packageJson.name, () => {
   after(() => {
     (<any>app).server.close();
   });
-  it(`should test something`, () => {
-    expect('a').to.equal('a');
-  });
-
   describe(`GET ${basePath}/pets`, () => {
     it('should throw 400 on missing required query parameter', async () =>
       request(app)

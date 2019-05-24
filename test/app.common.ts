@@ -90,4 +90,14 @@ export function routes(app) {
       id: '/not_under_an_openapi_basepath',
     });
   });
+
+  app.post('/v1/pets/:id/photos', function(req, res, next) {
+    // req.file is the `avatar` file
+    // req.body will hold the text fields, if there were any
+    const files = req.files;
+    res.status(200).json({
+      files,
+      metadata: req.body.metadata,
+    });
+  });
 }
