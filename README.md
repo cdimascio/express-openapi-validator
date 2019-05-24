@@ -180,6 +180,22 @@ curl --request POST \
 }
 ```
 
+#### Validate a POST multipart/form-data request
+
+```shell
+curl -XPOST http://localhost:3000/v1/pets/10/photos -F filez=@app.js | jq
+{
+  "errors": [
+    {
+      "path": "file",
+      "errorCode": "required.openapi.validation",
+      "message": "should have required property 'file'",
+      "location": "body"
+    }
+  ]
+}
+```
+
 #### ...and much more. Try it out!
 
 ## License
