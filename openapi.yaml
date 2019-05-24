@@ -150,6 +150,38 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  /pets/{id}/photos:
+    post:
+      description: upload a photo of the pet
+      operationId: uploadPetPhoto
+      parameters:
+        - name: id
+          in: path
+          description: ID of pet to fetch
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - metadata
+              properties:
+                file:
+                  description: The photo
+                  type: string
+                  format: binary
+                metadata:
+                  type: string
+              # $ref: '#/components/schemas/NewPhoto'
+      responses:
+        '200':
+          description: photo uploaded
+
   /pets/{id}/attributes:
     get:
       description: Returns attributes for this pet
@@ -276,6 +308,16 @@ components:
             id:
               type: integer
               format: int64
+
+    NewPhoto:
+      type: object
+      required:
+        - file
+      properties:
+        file:
+          description: The photo
+          type: string
+          format: binary
 
     Error:
       required:

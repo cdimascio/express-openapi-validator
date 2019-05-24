@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { Application, Response, NextFunction } from 'express';
+import { Application, Request, Response, NextFunction } from 'express';
 import { OpenAPIFrameworkArgs } from './framework';
 import { OpenApiContext } from './openapi.context';
 import * as middlewares from './middlewares';
@@ -10,15 +10,17 @@ const loggingKey = 'express-openapi-validator';
 
 export interface OpenApiValidatorOpts {
   apiSpecPath: string;
+  multerOpts?: {};
 }
 
 export class OpenApiValidator {
   private opts: OpenAPIFrameworkArgs;
   private context: OpenApiContext;
+  private multerOpts: {};
 
   constructor(options: OpenApiValidatorOpts) {
     if (!options.apiSpecPath) throw ono('apiSpecPath required');
-
+    this.multerOpts = options.multerOpts;
     const openApiContext = new OpenApiContext({ apiDoc: options.apiSpecPath });
 
     const opts: OpenAPIFrameworkArgs = {
@@ -50,6 +52,7 @@ export class OpenApiValidator {
 
     app.use(
       middlewares.applyOpenApiMetadata(this.context),
+      middlewares.multipart(this.context, this.multerOpts),
       middlewares.validateRequest({
         apiDoc: this.context.apiDoc,
         loggingKey,
