@@ -82,7 +82,7 @@ app.get('/v1/pets/:id', function(req, res, next) {
   res.json({ id: req.params.id, name: 'sparky' });
 });
 
-// 4. Add a route upload file(s)
+// 4. Define route(s) to upload file(s)
 app.post('/v1/pets/:id/photos', function(req, res, next) {
   // files are found in req.files
   // non-file multipart params can be found as such: req.body['my-param']
