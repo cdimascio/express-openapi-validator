@@ -40,6 +40,7 @@ app.use((err, req, res, next) => {
 ## Example Express API Server
 
 Try the complete example below:
+(_it includes file upload as well!_)
 
 ```javascript
 var express = require('express');
