@@ -16,9 +16,9 @@ export class OpenApiSpecLoader {
     const apiDoc = framework.apiDoc || {};
     const bps = framework.basePaths || [];
     const basePaths = bps.reduce((acc, bp) => {
-      const all = bp.all().forEach(path => acc.add(path));
+      bp.all().forEach(path => acc.add(path));
       return acc;
-    }, new Set());
+    }, new Set<string>());
     const routes = this.discoverRoutes(framework, basePaths);
     return {
       apiDoc,

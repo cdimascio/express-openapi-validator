@@ -13,7 +13,7 @@ export class OpenApiContext {
     const { apiDoc, basePaths, routes } = openApiRouteDiscovery.load();
 
     this.apiDoc = apiDoc;
-    this.basePaths = basePaths;
+    this.basePaths = <Set<string>> basePaths;
     this.routes = this.initializeRoutes(routes);
   }
 
