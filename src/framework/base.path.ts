@@ -57,7 +57,7 @@ export default class BasePath {
 
     const allParamCombos = cartesian(...allParams);
     const toPath = pathToRegexp.compile(this.path);
-    const paths = new Set();
+    const paths = new Set<string>();
     for (const combo of allParamCombos) {
       paths.add(toPath(combo));
     }
