@@ -46,15 +46,19 @@ export function validateRequest({ apiDoc, loggingKey, enableObjectCoercion }) {
       }).coerce(req);
     }
 
+    // get component.paramters
     const componentParameters = apiDoc.components
-        ? apiDoc.components.parameters
-        : undefined;
-    for (let i=0; i < schema.parameters.length; i++) {
+      ? apiDoc.components.parameters
+      : undefined;
+
+    // fetch $ref schema, and inline it with the paramter
+    // workaround for https://github.com/kogosoftwarellc/open-api/issues/483
+    for (let i = 0; i < schema.parameters.length; i++) {
       const a = schema.parameters[i];
       if (a.$ref) {
-        const id = a.$ref.replace('#/components/parameters/','');
+        const id = a.$ref.replace('#/components/parameters/', '');
         schema.parameters[i] = componentParameters[id];
-        console.log()
+        console.log();
       }
     }
 
@@ -64,6 +68,7 @@ export function validateRequest({ apiDoc, loggingKey, enableObjectCoercion }) {
       parameters: schema.parameters || [],
       requestBody: schema.requestBody,
       // schemas: this.apiDoc.definitions, // v2
+
       componentSchemas: apiDoc.components // v3
         ? apiDoc.components.schemas
         : undefined,

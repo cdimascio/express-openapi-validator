@@ -109,13 +109,15 @@ paths:
       description: Returns a user based on a single ID, if the user does not have access to the pet
       operationId: find pet by id
       parameters:
-        - name: id
-          in: path
-          description: ID of pet to fetch
-          required: true
-          schema:
-            type: integer
-            format: int64
+        - $ref: '#/components/parameters/id'
+        
+        # - name: id
+        #   in: path
+        #   description: ID of pet to fetch
+        #   required: true
+        #   schema:
+        #     type: integer
+        #     format: int64
       responses:
         '200':
           description: pet response
@@ -272,6 +274,16 @@ paths:
                 $ref: '#/components/schemas/Error'
 
 components:
+  parameters:
+    id:
+      name: id
+      in: path
+      description: ID of pet to fetch
+      required: true
+      schema:
+        type: integer
+        format: int64
+
   schemas:
     NewPet:
       required:
