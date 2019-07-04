@@ -40,6 +40,7 @@ app.use((err, req, res, next) => {
 ## Example Express API Server
 
 Try the complete example below:
+(_it includes file upload as well!_)
 
 ```javascript
 var express = require('express');
@@ -82,12 +83,10 @@ app.get('/v1/pets/:id', function(req, res, next) {
   res.json({ id: req.params.id, name: 'sparky' });
 });
 
-// 4. Add a route upload file(s)
+// 4. Define route(s) to upload file(s)
 app.post('/v1/pets/:id/photos', function(req, res, next) {
-  // DO something with the file
   // files are found in req.files
-  // non-file multipar params can be found as such: req.body['my-param']
-  console.log(req.files);
+  // non-file multipart params can be found as such: req.body['my-param']
 
   res.json({
     files_metadata: req.files.map(f => ({
@@ -95,7 +94,7 @@ app.post('/v1/pets/:id/photos', function(req, res, next) {
       encoding: f.encoding,
       mimetype: f.mimetype,
       // Buffer of file conents
-      // buffer: f.buffer,
+      buffer: f.buffer,
     })),
   });
 });
