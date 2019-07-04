@@ -46,6 +46,18 @@ export function validateRequest({ apiDoc, loggingKey, enableObjectCoercion }) {
       }).coerce(req);
     }
 
+    const componentParameters = apiDoc.components
+        ? apiDoc.components.parameters
+        : undefined;
+    for (let i=0; i < schema.parameters.length; i++) {
+      const a = schema.parameters[i];
+      if (a.$ref) {
+        const id = a.$ref.replace('#/components/parameters/','');
+        schema.parameters[i] = componentParameters[id];
+        console.log()
+      }
+    }
+
     const validationResult = new OpenAPIRequestValidator({
       // TODO create custom error transformere here as there are a lot of props we can utilize
       // errorTransformer,
