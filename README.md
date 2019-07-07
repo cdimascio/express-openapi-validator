@@ -22,9 +22,10 @@ Install the openapi validator
 
 ```javascript
 new OpenApiValidator({
-  apiSpecPath: './openapi.yaml',
+  apiSpec: './openapi.yaml',
 }).install(app);
 ```
+
 
 Then, register an error handler to customize errors
 
@@ -36,6 +37,25 @@ app.use((err, req, res, next) => {
   });
 });
 ```
+
+#### Alternatively...
+The `apiSpec` may be the spec itself e.g. 
+
+```javascript
+const apiSpec = {
+  openapi: "3.0.0",
+  info: {...},
+  servers: [...],
+  paths: {...},
+  components: {
+    responses: {...},
+    schemas: {...}
+  }
+}
+
+new OpenApiValidator({ apiSpec }).install(app);
+```
+
 
 ## Example Express API Server
 
