@@ -7,28 +7,45 @@ import * as logger from 'morgan';
 import { OpenApiValidator } from '../src';
 import { startServer, routes } from './app.common';
 
-var app = express();
+export function createApp(opts?: any, port: number = 3000) {
+  var app = express();
 
-app.use(bodyParser.json());
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+  app.use(bodyParser.json());
+  app.use(logger('dev'));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
+  app.use(cookieParser());
+  app.use(express.static(path.join(__dirname, 'public')));
 
-new OpenApiValidator({
-  apiSpecPath: './openapi.yaml',
-}).install(app);
+  new OpenApiValidator(opts).install(app);
 
-routes(app);
+  routes(app);
 
-// Register error handler
-app.use((err, req, res, next) => {
-  res.status(err.status).json({
-    errors: err.errors,
+  // Register error handler
+  app.use((err, req, res, next) => {
+    res.status(err.status).json({
+      errors: err.errors,
+    });
   });
-});
 
-startServer(app, 3000);
+  const server = startServer(app, port);
+  const shutDown = () => {
+    console.log('Received kill signal, shutting down gracefully');
+    server.close(() => {
+      console.log('Closed out remaining connections');
+      process.exit(0);
+    });
 
-export default app;
+    setTimeout(() => {
+      console.error(
+        'Could not close connections in time, forcefully shutting down',
+      );
+      process.exit(1);
+    }, 10000);
+  };
+  process.on('SIGTERM', shutDown);
+  process.on('SIGINT', shutDown);
+
+  // export default app;
+  return app;
+}

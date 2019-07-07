@@ -98,7 +98,12 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
     });
 
     // this.enableObjectCoercion = !!args.enableObjectCoercion;
-    this.originalApiDoc = handleYaml(loadSpecFile(args.apiDoc));
+    const apiDoc = (typeof args.apiDoc === 'string') 
+      ? handleYaml(loadSpecFile(args.apiDoc))
+      : args.apiDoc
+
+    this.originalApiDoc = apiDoc;
+    
     if (!this.originalApiDoc) {
       throw new Error(`spec could not be read at ${args.apiDoc}`);
     }

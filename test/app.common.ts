@@ -8,7 +8,7 @@ export function startServer(app, port) {
   console.log(`Listening on port ${port}`);
   app.server = server;
   app.basePath = BASE_PATH;
-  return app;
+  return server;
 }
 
 export function routes(app) {
