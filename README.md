@@ -39,7 +39,7 @@ app.use((err, req, res, next) => {
 ```
 
 #### Alternatively...
-The `apiSpec` may be the spec itself e.g. 
+The `apiSpec` option may be specified as the spec object itself, rather than a path e.g. 
 
 ```javascript
 const apiSpec = {
