@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
-import app from './app';
+import { createApp } from './app';
 
+const app = createApp({ apiSpecPath: './openapi.yaml' }, 3003);
 const packageJson = require('../package.json');
 const basePath = (<any>app).basePath;
 

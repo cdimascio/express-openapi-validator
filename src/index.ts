@@ -4,12 +4,14 @@ import { OpenAPIFrameworkArgs } from './framework';
 import { OpenApiContext } from './openapi.context';
 import * as middlewares from './middlewares';
 import ono from 'ono';
+import { OpenAPIV3 } from 'openapi-types';
 import { OpenApiRequest } from './framework/types';
 
 const loggingKey = 'express-openapi-validator';
 
 export interface OpenApiValidatorOpts {
-  apiSpecPath: string;
+  apiSpecPath?: string;
+  apiSpec?: OpenAPIV3.Document | string;
   multerOpts?: {};
 }
 
@@ -19,9 +21,16 @@ export class OpenApiValidator {
   private multerOpts: {};
 
   constructor(options: OpenApiValidatorOpts) {
-    if (!options.apiSpecPath) throw ono('apiSpecPath required');
+    if (!options.apiSpecPath && !options.apiSpec)
+      throw ono('apiSpecPath or apiSpec required');
+    if (options.apiSpecPath && options.apiSpec)
+      throw ono('apiSpecPath or apiSpec required. not both.');
+
     this.multerOpts = options.multerOpts;
-    const openApiContext = new OpenApiContext({ apiDoc: options.apiSpecPath });
+    
+    const openApiContext = new OpenApiContext({
+      apiDoc: options.apiSpecPath || options.apiSpec,
+    });
 
     const opts: OpenAPIFrameworkArgs = {
       enableObjectCoercion: true,
