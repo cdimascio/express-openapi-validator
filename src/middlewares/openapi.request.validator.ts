@@ -2,7 +2,11 @@ import OpenAPIRequestValidator from 'openapi-request-validator';
 import OpenAPIRequestCoercer from 'openapi-request-coercer';
 import { validationError } from '../errors';
 import ono from 'ono';
+
 export function validateRequest({ apiDoc, loggingKey, enableObjectCoercion }) {
+  const openApiRequestValidatorMap = new Map();
+  const openApiRequestCoercerMap = new Map();
+
   return (req, res, next) => {
     if (!req.openapi) {
       // this path was not found in open api and
@@ -36,48 +40,81 @@ export function validateRequest({ apiDoc, loggingKey, enableObjectCoercion }) {
       req.params = req.openapi.pathParams || req.params;
     }
 
+    const { validator, coercer } = getOrInitValidatorAndCoercer(
+      path,
+      req.method,
+      apiDoc,
+      schema,
+      loggingKey,
+      enableObjectCoercion,
+    );
+
     // Check if route is in map (throw error - option to ignore)
     if (enableObjectCoercion) {
-      // this modifies the request object with coerced types
-      new OpenAPIRequestCoercer({
-        loggingKey,
-        enableObjectCoercion,
-        parameters: schema.parameters,
-      }).coerce(req);
+      coercer.coerce(req);
     }
 
-    // get component.paramters
-    const componentParameters = apiDoc.components
-      ? apiDoc.components.parameters
-      : undefined;
-
-    // fetch $ref schema, and inline it with the paramter
-    // workaround for https://github.com/kogosoftwarellc/open-api/issues/483
-    for (let i = 0; i < schema.parameters.length; i++) {
-      const a = schema.parameters[i];
-      if (a.$ref) {
-        const id = a.$ref.replace('#/components/parameters/', '');
-        schema.parameters[i] = componentParameters[id];
-        console.log();
-      }
-    }
-
-    const validationResult = new OpenAPIRequestValidator({
-      // TODO create custom error transformere here as there are a lot of props we can utilize
-      // errorTransformer,
-      parameters: schema.parameters || [],
-      requestBody: schema.requestBody,
-      // schemas: this.apiDoc.definitions, // v2
-
-      componentSchemas: apiDoc.components // v3
-        ? apiDoc.components.schemas
-        : undefined,
-    }).validate(req);
-
+    const validationResult = validator.validate(req);
     if (validationResult && validationResult.errors.length > 0) {
       const message = validationResult.errors[0].message;
       throw ono(validationResult, message);
     }
     next();
-  };
+  }
+
+  function getOrInitValidatorAndCoercer(
+    path,
+    method,
+    apiDoc,
+    schema,
+    loggingKey,
+    enableObjectCoercion,
+  ) {
+    // do not change path case as its affected (or not) by case-senstive routing
+    const key = `${path}_${method.toLowerCase()}`;
+
+    let validator = openApiRequestValidatorMap.get(key);
+    if (!validator) {
+      const componentParameters = apiDoc.components
+        ? apiDoc.components.parameters
+        : undefined;
+
+      // fetch $ref schema, and inline it with the paramter
+      // workaround for https://github.com/kogosoftwarellc/open-api/issues/483
+      for (let i = 0; i < schema.parameters.length; i++) {
+        const a = schema.parameters[i];
+        if (a.$ref) {
+          const id = a.$ref.replace('#/components/parameters/', '');
+          schema.parameters[i] = componentParameters[id];
+          console.log();
+        }
+      }
+
+      validator = new OpenAPIRequestValidator({
+        // TODO create custom error transformere here as there 
+        // are a lot of props we can utilize errorTransformer,
+        parameters: schema.parameters || [],
+        requestBody: schema.requestBody,
+        componentSchemas: apiDoc.components
+          ? apiDoc.components.schemas
+          : undefined,
+      });
+      openApiRequestValidatorMap.set(key, validator);
+    }
+
+    let coercer = openApiRequestCoercerMap.get(key);
+    if (!coercer) {
+      coercer = new OpenAPIRequestCoercer({
+        loggingKey,
+        enableObjectCoercion,
+        parameters: schema.parameters,
+      });
+    }
+    openApiRequestCoercerMap.set(key, coercer);
+
+    return {
+      validator,
+      coercer,
+    };
+  }
 }
