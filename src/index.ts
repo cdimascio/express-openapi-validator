@@ -59,14 +59,24 @@ export class OpenApiValidator {
       });
     }
 
+    console.log(this.context.apiDoc)
+    const aoav = new middlewares.RequestValidator(this.context.apiDoc, {
+      coerceTypes: true,
+      removeAdditional: true,
+      useDefaults: true,
+    });
+
+    const validateMiddleware = (req, res, next) => aoav.validate(req, res, next)
+
     app.use(
       middlewares.applyOpenApiMetadata(this.context),
       middlewares.multipart(this.context, this.multerOpts),
-      middlewares.validateRequest({
-        apiDoc: this.context.apiDoc,
-        loggingKey,
-        enableObjectCoercion: this.opts.enableObjectCoercion,
-      }),
-    );
+      validateMiddleware);
+    //   middlewares.validateRequest({
+    //     apiDoc: this.context.apiDoc,
+    //     loggingKey,
+    //     enableObjectCoercion: this.opts.enableObjectCoercion,
+    //   }),
+    // );
   }
 }
