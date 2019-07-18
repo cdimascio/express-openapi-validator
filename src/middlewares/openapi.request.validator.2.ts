@@ -197,7 +197,12 @@ export class RequestValidator {
       } else {
         const errors = validator.errors;
         const errorText = this.ajv.errorsText(errors, { dataVar: 'request' });
-        throw validationError(400, path, errorText, errors);
+        
+        if (errors.length > 0) {
+            const message = errors[0].message;
+            throw ono(errors, message);
+          }
+        // throw validationError(400, path, errorText, errors);
         // next(
         //   new AoavError(`Error while validating request: ${errorText}`, errors),
         // );
@@ -227,10 +232,9 @@ export class RequestValidator {
 
       const reqField = reqFields[$in];
       if (!reqField) {
-          throw validationError(400, path, `Parameter 'in' has incorrect value '${$in}' for [${parameter.name}]`);
-        // throw new Error(
-        //   `Parameter 'in' has incorrect value '${$in}' for [${parameter.name}]`,
-        // );
+        const message = `Parameter 'in' has incorrect value '${$in}' for [${parameter.name}]`;
+        const err = validationError(400, path, message);
+        throw ono(err, message);
       }
 
       let parameterSchema = parameter.schema;
@@ -240,10 +244,9 @@ export class RequestValidator {
       }
 
       if (!parameterSchema) {
-        throw validationError(400, path,  `Not available parameter 'schema' or 'content' for [${parameter.name}]`,);
-        // throw new Error(
-        //   `Not available parameter 'schema' or 'content' for [${parameter.name}]`,
-        // );
+        const message = `Not available parameter 'schema' or 'content' for [${parameter.name}]`
+        const err = validationError(400, path, message);
+        throw ono(err, message);
       }
 
       if (!schema[reqField].properties) {
