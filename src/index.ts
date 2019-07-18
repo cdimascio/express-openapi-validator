@@ -74,11 +74,11 @@ export class OpenApiValidator {
       middlewares.applyOpenApiMetadata(this.context),
       middlewares.multipart(this.context, this.multerOpts),
       validateMiddleware);
-    //   middlewares.validateRequest({
-    //     apiDoc: this.context.apiDoc,
-    //     loggingKey,
-    //     enableObjectCoercion: this.opts.enableObjectCoercion,
-    //   }),
+      // middlewares.validateRequest({
+      //   apiDoc: this.context.apiDoc,
+      //   loggingKey,
+      //   enableObjectCoercion: this.opts.enableObjectCoercion,
+      // }),
     // );
   }
 }

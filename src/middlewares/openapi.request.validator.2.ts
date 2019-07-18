@@ -196,16 +196,19 @@ export class RequestValidator {
         next();
       } else {
         const errors = validator.errors;
-        const errorText = this.ajv.errorsText(errors, { dataVar: 'request' });
-        
+
         if (errors.length > 0) {
-            const message = errors[0].message;
-            throw ono(errors, message);
-          }
-        // throw validationError(400, path, errorText, errors);
-        // next(
-        //   new AoavError(`Error while validating request: ${errorText}`, errors),
-        // );
+          const error = {
+            status: 400,
+            errors: errors.map(e => ({
+              path: (e.params && e.params.missingProperty) || e.schemaPath,
+              message: e.message,
+              errorCode: `${e.keyword}.openapi.validation`,
+            })),
+          };
+          const message = this.ajv.errorsText(errors, { dataVar: 'request' });
+          throw ono(error, message);
+        }
       }
     };
   }
@@ -244,7 +247,7 @@ export class RequestValidator {
       }
 
       if (!parameterSchema) {
-        const message = `Not available parameter 'schema' or 'content' for [${parameter.name}]`
+        const message = `Not available parameter 'schema' or 'content' for [${parameter.name}]`;
         const err = validationError(400, path, message);
         throw ono(err, message);
       }
@@ -268,12 +271,3 @@ export class RequestValidator {
     return { schema, parseJson };
   }
 }
-
-// export class AoavError extends Error {
-//   private data;
-//   constructor(message, errors) {
-//     super(message);
-//     this.name = this.constructor.name;
-//     this.data = errors;
-//   }
-// }
