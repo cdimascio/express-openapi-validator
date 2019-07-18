@@ -14,7 +14,7 @@ const basePath = (<any>app).basePath;
       (<any>app).server.close();
     });
     describe(`GET ${basePath}/pets`, () => {
-      it.only('should throw 400 on missing required query parameter', async () =>
+      it('should throw 400 on missing required query parameter', async () =>
         request(app)
           .get(`${basePath}/pets`)
           .set('Accept', 'application/json')
