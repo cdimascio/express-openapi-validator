@@ -201,7 +201,7 @@ export class RequestValidator {
           const error = {
             status: 400,
             errors: errors.map(e => ({
-              path: (e.params && e.params.missingProperty) || e.schemaPath,
+              path: (e.params && e.params.missingProperty) || e.dataPath || e.schemaPath,
               message: e.message,
               errorCode: `${e.keyword}.openapi.validation`,
             })),

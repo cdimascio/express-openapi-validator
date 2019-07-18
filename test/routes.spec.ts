@@ -63,7 +63,7 @@ const basePath = (<any>app).basePath;
           .then(r => {
             const e = r.body.errors;
             expect(e).to.have.length(1);
-            expect(e[0].path).to.equal('limit');
+            expect(e[0].path).to.contain('limit');
             expect(e[0].message).to.equal('should be >= 5');
           }));
     });
