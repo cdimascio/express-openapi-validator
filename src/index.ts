@@ -66,7 +66,9 @@ export class OpenApiValidator {
       useDefaults: true,
     });
 
-    const validateMiddleware = (req, res, next) => aoav.validate(req, res, next)
+    const validateMiddleware = (req, res, next) => {
+      return aoav.validate(req, res, next);
+    }
 
     app.use(
       middlewares.applyOpenApiMetadata(this.context),
