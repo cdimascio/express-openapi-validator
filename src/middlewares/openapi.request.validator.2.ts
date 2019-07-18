@@ -101,6 +101,14 @@ export class RequestValidator {
       );
     }
 
+    // if (this._apiDocs.components.parameters) {
+    //   Object.entries(this._apiDocs.components.requestBodies).forEach(
+    //     ([id, schema]: any[]) => {
+    //       ajv.addSchema(schema, `#/components/schemas/${id}`);
+    //     },
+    //   );
+    // }
+
     // if (this._apiDocs.components.responses) {
     //   Object.entries(this._apiDocs.components[type]).forEach(([id, schema]) => {
     //     ajv.addSchema(schema, `#/components/${type}/${id}`);
@@ -126,27 +134,27 @@ export class RequestValidator {
     // const pathSchema = this._apiDocs.paths[path][method];
 
     if (!req.openapi) {
-        // this path was not found in open api and
-        // this path is not defined under an openapi base path
-        // skip it
-        return next();
-      }
-      const path = req.openapi.expressRoute;
-      if (!path) {
-        const message = 'not found';
-        const err = validationError(404, req.path, message);
-        throw ono(err, message);
-      }
-      const pathSchema = req.openapi.schema;
-      if (!pathSchema) {
-        // add openapi metadata to make this case more clear
-        // its not obvious that missig schema means methodNotAllowed
-        const message = `${req.method} method not allowed`;
-        const err = validationError(405, req.path, message);
-        throw ono(err, message);
-      }
+      // this path was not found in open api and
+      // this path is not defined under an openapi base path
+      // skip it
+      return next();
+    }
+    const path = req.openapi.expressRoute;
+    if (!path) {
+      const message = 'not found';
+      const err = validationError(404, req.path, message);
+      throw ono(err, message);
+    }
+    const pathSchema = req.openapi.schema;
+    if (!pathSchema) {
+      // add openapi metadata to make this case more clear
+      // its not obvious that missig schema means methodNotAllowed
+      const message = `${req.method} method not allowed`;
+      const err = validationError(405, req.path, message);
+      throw ono(err, message);
+    }
 
-    const parameters = this.parametersToSchema(pathSchema.parameters);
+    const parameters = this.parametersToSchema(path, pathSchema.parameters);
     let body = pathSchema.requestBody || {};
 
     const schema = {
@@ -189,14 +197,15 @@ export class RequestValidator {
       } else {
         const errors = validator.errors;
         const errorText = this.ajv.errorsText(errors, { dataVar: 'request' });
-        next(
-          new AoavError(`Error while validating request: ${errorText}`, errors),
-        );
+        throw validationError(400, path, errorText, errors);
+        // next(
+        //   new AoavError(`Error while validating request: ${errorText}`, errors),
+        // );
       }
     };
   }
 
-  parametersToSchema(parameters = []) {
+  parametersToSchema(path, parameters = []) {
     const schema = { query: {}, headers: {}, params: {}, cookies: {} };
     const reqFields = {
       query: 'query',
@@ -218,9 +227,10 @@ export class RequestValidator {
 
       const reqField = reqFields[$in];
       if (!reqField) {
-        throw new Error(
-          `Parameter 'in' has incorrect value '${$in}' for [${parameter.name}]`,
-        );
+          throw validationError(400, path, `Parameter 'in' has incorrect value '${$in}' for [${parameter.name}]`);
+        // throw new Error(
+        //   `Parameter 'in' has incorrect value '${$in}' for [${parameter.name}]`,
+        // );
       }
 
       let parameterSchema = parameter.schema;
@@ -230,9 +240,10 @@ export class RequestValidator {
       }
 
       if (!parameterSchema) {
-        throw new Error(
-          `Not available parameter 'schema' or 'content' for [${parameter.name}]`,
-        );
+        throw validationError(400, path,  `Not available parameter 'schema' or 'content' for [${parameter.name}]`,);
+        // throw new Error(
+        //   `Not available parameter 'schema' or 'content' for [${parameter.name}]`,
+        // );
       }
 
       if (!schema[reqField].properties) {
@@ -255,11 +266,11 @@ export class RequestValidator {
   }
 }
 
-export class AoavError extends Error {
-  private data;
-  constructor(message, errors) {
-    super(message);
-    this.name = this.constructor.name;
-    this.data = errors;
-  }
-}
+// export class AoavError extends Error {
+//   private data;
+//   constructor(message, errors) {
+//     super(message);
+//     this.name = this.constructor.name;
+//     this.data = errors;
+//   }
+// }
