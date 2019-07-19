@@ -149,13 +149,13 @@ export class RequestValidator {
     }
 
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
-    let body = pathSchema.requestBody || {};
+    let body = this.requestBodyToSchema(path, pathSchema.requestBody || {});
 
     const schema = {
       // $schema: "http://json-schema.org/draft-04/schema#",
       required: ['query', 'headers', 'params'],
       properties: {
-        body,
+        body: body,
         ...parameters.schema,
       },
     };
@@ -208,6 +208,10 @@ export class RequestValidator {
         }
       }
     };
+  }
+
+  private requestBodyToSchema(path, requestBody) {
+    return (requestBody && requestBody.content && requestBody.content[TYPE_JSON]) || {};
   }
 
   private parametersToSchema(path, parameters = []) {
