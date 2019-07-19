@@ -222,7 +222,7 @@ const basePath = (<any>app).basePath;
           .expect(400)
           .then(r => {
             const e = r.body.errors;
-            expect(e[0].path).equals('id');
+            expect(e[0].path).contains('id');
             expect(e[0].message).equals('should be integer');
           });
       });
