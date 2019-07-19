@@ -106,32 +106,20 @@ export class RequestValidator {
   }
 
   validate(req, res, next) {
-    const key = `${req.method}-${req.path}`;
-
-    if (!this._middlewareCache[key]) {
-      this._middlewareCache[key] = this.buildMiddleware(req, res, next);
-    }
-
-    return this._middlewareCache[key](req, res, next);
-  }
-
-  private buildMiddleware(req, res, next) {
-    // const method = req.method.toLowerCase();
-    // const path = req.route.path.replace(/:(\w+)/gi, '{$1}');
-    // const pathSchema = this._apiDocs.paths[path][method];
-
     if (!req.openapi) {
       // this path was not found in open api and
       // this path is not defined under an openapi base path
       // skip it
       return next();
     }
+
     const path = req.openapi.expressRoute;
     if (!path) {
       const message = 'not found';
       const err = validationError(404, req.path, message);
       throw ono(err, message);
     }
+
     const pathSchema = req.openapi.schema;
     if (!pathSchema) {
       // add openapi metadata to make this case more clear
@@ -141,17 +129,27 @@ export class RequestValidator {
       throw ono(err, message);
     }
 
-    const shouldUpdatePathParams =
-      Object.keys(req.openapi.pathParams).length > 0;
+    const contentType = req.headers['content-type'];
+    const key = `${req.method}-${req.path}-${req.headers['content-type']}`;
 
-    if (shouldUpdatePathParams) {
-      req.params = req.openapi.pathParams || req.params;
+    if (!this._middlewareCache[key]) {
+      this._middlewareCache[key] = this.buildMiddleware(
+        path,
+        pathSchema,
+        contentType,
+      );
     }
 
+    return this._middlewareCache[key](req, res, next);
+  }
+
+  private buildMiddleware(path, pathSchema, contentType) {
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
     const requestBody = pathSchema.requestBody;
-    let body = this.requestBodyToSchema(req, requestBody);
+
+    let body = this.requestBodyToSchema(path, contentType, requestBody);
     let requiredAdds = requestBody && requestBody.required ? ['body'] : [];
+
     const schema = {
       // $schema: "http://json-schema.org/draft-04/schema#",
       required: ['query', 'headers', 'params'].concat(requiredAdds),
@@ -164,6 +162,13 @@ export class RequestValidator {
     const validator = this.ajv.compile(schema);
 
     return (req, res, next) => {
+      const shouldUpdatePathParams =
+        Object.keys(req.openapi.pathParams).length > 0;
+
+      if (shouldUpdatePathParams) {
+        req.params = req.openapi.pathParams || req.params;
+      }
+
       req.schema = schema;
       /**
        * support json in request params, query, headers and cookies
@@ -211,18 +216,16 @@ export class RequestValidator {
     };
   }
 
-  private requestBodyToSchema(req, requestBody: any = {}) {
+  private requestBodyToSchema(path, contentType, requestBody: any = {}) {
     if (requestBody.content) {
-        const type = req.headers['content-type']; // || TYPE_JSON;
-        const content = requestBody.content[type];
-        if (!content) 
-        {
-            const message = `Unsupported Content-Type ${type}`;
-            const err = validationError(415, req.path, message);
-            throw ono(err, message)
-        } 
-        return content.schema || {}
-    }   
+      const content = requestBody.content[contentType];
+      if (!content) {
+        const message = `unsupported media type ${contentType}`;
+        const err = validationError(415, path, message);
+        throw ono(err, message);
+      }
+      return content.schema || {};
+    }
     return {};
   }
 
