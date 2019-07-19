@@ -1,5 +1,4 @@
 import OpenAPISchemaValidator from 'openapi-schema-validator';
-import OpenAPISecurityHandler from 'openapi-security-handler';
 import { OpenAPIV2, OpenAPIV3 } from 'openapi-types';
 import BasePath from './base.path';
 import {
@@ -13,7 +12,6 @@ import {
   OpenAPIFrameworkVisitor,
 } from './types';
 import {
-  assertRegExpAndSecurity,
   copy,
   getBasePathsFromServers,
   loadSpecFile,
@@ -28,7 +26,6 @@ export {
   OpenAPIFrameworkPathContext,
   OpenAPIFrameworkPathObject,
   OpenAPIFrameworkAPIContext,
-  // OpenAPIFrameworkOperationContext,
 };
 export default class OpenAPIFramework implements IOpenAPIFramework {
   public readonly apiDoc;
@@ -36,19 +33,8 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
   public readonly featureType;
   public readonly loggingPrefix;
   public readonly name;
-  // private customFormats;
-  // private dependencies;
-  // private enableObjectCoercion;
-  // private errorTransformer;
-  // private externalSchemas;
+
   private originalApiDoc;
-  // private operations;
-  // private paths;
-  // private pathsIgnore;
-  private pathSecurity;
-  // private routesGlob;
-  // private routesIndexFileRegExp;
-  private securityHandlers;
   private validateApiDoc;
   private validator;
   private logger;
@@ -69,8 +55,6 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
       { name: 'externalSchemas', type: 'object' },
       { name: 'featureType', required: true },
       { name: 'name', required: true },
-      { name: 'pathSecurity', class: Array, className: 'Array' },
-      { name: 'securityHandlers', type: 'object' },
     ].forEach(arg => {
       if (arg.required && !(arg.name in args)) {
         throw new Error(`${this.loggingPrefix}args.${arg.name} is required`);
@@ -84,17 +68,6 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
         );
       }
 
-      if (
-        arg.class &&
-        arg.name in args &&
-        !(args[arg.name] instanceof arg.class)
-      ) {
-        throw new Error(
-          `${this.loggingPrefix}args.${arg.name} must be an instance of ${
-            arg.className
-          } when given`,
-        );
-      }
     });
 
     // this.enableObjectCoercion = !!args.enableObjectCoercion;
@@ -123,20 +96,6 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
         (this.apiDoc as OpenAPIV2.Document).swagger,
       extensions: this.apiDoc[`x-${this.name}-schema-extension`],
     });
-    // this.customFormats = args.customFormats;
-    // this.dependencies = args.dependencies;
-    // this.errorTransformer = args.errorTransformer;
-    // this.externalSchemas = args.externalSchemas;
-    // this.operations = args.operations;
-    // this.pathsIgnore = args.pathsIgnore;
-    this.pathSecurity = Array.isArray(args.pathSecurity)
-      ? args.pathSecurity
-      : [];
-    // this.routesGlob = args.routesGlob;
-    // this.routesIndexFileRegExp = args.routesIndexFileRegExp;
-    this.securityHandlers = args.securityHandlers;
-    this.pathSecurity.forEach(assertRegExpAndSecurity.bind(null, this));
-
     if (this.validateApiDoc) {
       const apiDocValidation = this.validator.validate(this.apiDoc);
 
@@ -156,20 +115,6 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
   }
 
   public initialize(visitor: OpenAPIFrameworkVisitor) {
-    const securitySchemes = (this.apiDoc as OpenAPIV3.Document).openapi
-      ? (this.apiDoc.components || {}).securitySchemes
-      : this.apiDoc.securityDefinitions;
-
-    const apiSecurityMiddleware =
-      this.securityHandlers && this.apiDoc.security && securitySchemes
-        ? new OpenAPISecurityHandler({
-            securityDefinitions: securitySchemes,
-            securityHandlers: this.securityHandlers,
-            operationSecurity: this.apiDoc.security,
-            loggingKey: `${this.name}-security`,
-          })
-        : null;
-
     const getApiDoc = () => {
       return copy(this.apiDoc);
     };
