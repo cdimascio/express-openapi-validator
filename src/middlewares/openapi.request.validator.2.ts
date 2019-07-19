@@ -149,11 +149,12 @@ export class RequestValidator {
     }
 
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
-    let body = this.requestBodyToSchema(path, pathSchema.requestBody || {});
-
+    const requestBody = pathSchema.requestBody;
+    let body = this.requestBodyToSchema(path, requestBody);
+    let requiredAdds = requestBody && requestBody.required ? ['body'] : [];
     const schema = {
       // $schema: "http://json-schema.org/draft-04/schema#",
-      required: ['query', 'headers', 'params'],
+      required: ['query', 'headers', 'params'].concat(requiredAdds),
       properties: {
         body,
         ...parameters.schema,
@@ -187,7 +188,7 @@ export class RequestValidator {
       const valid = validator(reqToValidate);
       // save errors, Ajv overwrites errors on each validation call (race condition?)
       // TODO look into Ajv async errors plugins
-      const errors = [...(validator.errors || [])]
+      const errors = [...(validator.errors || [])];
       if (valid) {
         next();
       } else {
@@ -211,7 +212,11 @@ export class RequestValidator {
   }
 
   private requestBodyToSchema(path, requestBody) {
-    return (requestBody && requestBody.content && requestBody.content[TYPE_JSON]) || {};
+    const content =
+      (requestBody && requestBody.content && requestBody.content[TYPE_JSON]) ||
+      {};
+    const schema = content.schema;
+    return schema || {};
   }
 
   private parametersToSchema(path, parameters = []) {
