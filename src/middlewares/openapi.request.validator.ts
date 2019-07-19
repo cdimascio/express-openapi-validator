@@ -86,7 +86,6 @@ export function validateRequest({ apiDoc, loggingKey, enableObjectCoercion }) {
         if (a.$ref) {
           const id = a.$ref.replace('#/components/parameters/', '');
           schema.parameters[i] = componentParameters[id];
-          console.log();
         }
       }
 

@@ -59,7 +59,6 @@ export class OpenApiValidator {
       });
     }
 
-    console.log(this.context.apiDoc)
     const aoav = new middlewares.RequestValidator(this.context.apiDoc, {
       coerceTypes: true,
       removeAdditional: true,
