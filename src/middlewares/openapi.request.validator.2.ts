@@ -155,7 +155,7 @@ export class RequestValidator {
       // $schema: "http://json-schema.org/draft-04/schema#",
       required: ['query', 'headers', 'params'],
       properties: {
-        body: body,
+        body,
         ...parameters.schema,
       },
     };
@@ -185,12 +185,12 @@ export class RequestValidator {
           : undefined,
       };
       const valid = validator(reqToValidate);
-
+      // save errors, Ajv overwrites errors on each validation call (race condition?)
+      // TODO look into Ajv async errors plugins
+      const errors = [...(validator.errors || [])]
       if (valid) {
         next();
       } else {
-        const errors = validator.errors;
-
         if (errors.length > 0) {
           const error = {
             status: 400,
