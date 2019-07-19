@@ -1,5 +1,4 @@
 import { Request } from 'express';
-import { SecurityHandlers } from 'openapi-security-handler';
 import { IJsonSchema, OpenAPIV2, OpenAPIV3 } from 'openapi-types';
 import { Logger } from 'ts-log';
 import BasePath from './base.path';
@@ -19,11 +18,6 @@ interface SecurityRequirement {
 }
 
 type SecurityScope = string;
-
-// type SecurityHandlerCallback = (
-//   error: SecurityHandlerError,
-//   result: boolean
-// ) => void;
 
 interface SecurityHandlerError {
   status?: number;
@@ -60,7 +54,6 @@ interface OpenAPIFrameworkArgs {
   pathsIgnore?: RegExp;
   routesGlob?: string;
   routesIndexFileRegExp?: RegExp;
-  securityHandlers?: SecurityHandlers; // TODO define the handlers more here
   validateApiDoc?: boolean;
   logger?: Logger;
 }
