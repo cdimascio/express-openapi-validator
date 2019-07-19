@@ -94,6 +94,7 @@ export class RequestValidator {
     if (this._apiDocs.components.requestBodies) {
       Object.entries(this._apiDocs.components.requestBodies).forEach(
         ([id, schema]: any[]) => {
+          // TODO add support for content all content types
           ajv.addSchema(
             schema.content[TYPE_JSON].schema,
             `#/components/requestBodies/${id}`,
