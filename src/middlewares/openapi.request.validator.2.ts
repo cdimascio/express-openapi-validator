@@ -129,8 +129,9 @@ export class RequestValidator {
       throw ono(err, message);
     }
 
-    const contentType = req.headers['content-type'];
-    const key = `${req.method}-${req.path}-${req.headers['content-type']}`;
+    // cache middleware by combining method, path, and contentType
+    const contentType = this.extractContentType(req);
+    const key = `${req.method}-${req.path}-${contentType}`;
 
     if (!this._middlewareCache[key]) {
       this._middlewareCache[key] = this.buildMiddleware(
@@ -141,6 +142,16 @@ export class RequestValidator {
     }
 
     return this._middlewareCache[key](req, res, next);
+  }
+
+  private extractContentType(req) {
+    let contentType = req.headers['content-type'] || 'not_provided';
+    let end = contentType.indexOf(';')
+    end = end === -1 ? contentType.length : end;
+    if (contentType) {
+        return contentType.substring(0, end);
+    }
+    return contentType;
   }
 
   private buildMiddleware(path, pathSchema, contentType) {
