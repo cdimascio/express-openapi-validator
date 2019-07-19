@@ -150,7 +150,7 @@ export class RequestValidator {
 
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
     const requestBody = pathSchema.requestBody;
-    let body = this.requestBodyToSchema(path, requestBody);
+    let body = this.requestBodyToSchema(req, requestBody);
     let requiredAdds = requestBody && requestBody.required ? ['body'] : [];
     const schema = {
       // $schema: "http://json-schema.org/draft-04/schema#",
@@ -211,12 +211,19 @@ export class RequestValidator {
     };
   }
 
-  private requestBodyToSchema(path, requestBody) {
-    const content =
-      (requestBody && requestBody.content && requestBody.content[TYPE_JSON]) ||
-      {};
-    const schema = content.schema;
-    return schema || {};
+  private requestBodyToSchema(req, requestBody: any = {}) {
+    if (requestBody.content) {
+        const type = req.headers['content-type']; // || TYPE_JSON;
+        const content = requestBody.content[type];
+        if (!content) 
+        {
+            const message = `Unsupported Content-Type ${type}`;
+            const err = validationError(415, req.path, message);
+            throw ono(err, message)
+        } 
+        return content.schema || {}
+    }   
+    return {};
   }
 
   private parametersToSchema(path, parameters = []) {
