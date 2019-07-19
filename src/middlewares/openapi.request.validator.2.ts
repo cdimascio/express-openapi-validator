@@ -1,4 +1,5 @@
 import * as Ajv from 'ajv';
+
 import { validationError } from '../errors';
 import ono from 'ono';
 
@@ -101,34 +102,20 @@ export class RequestValidator {
       );
     }
 
-    // if (this._apiDocs.components.parameters) {
-    //   Object.entries(this._apiDocs.components.requestBodies).forEach(
-    //     ([id, schema]: any[]) => {
-    //       ajv.addSchema(schema, `#/components/schemas/${id}`);
-    //     },
-    //   );
-    // }
-
-    // if (this._apiDocs.components.responses) {
-    //   Object.entries(this._apiDocs.components[type]).forEach(([id, schema]) => {
-    //     ajv.addSchema(schema, `#/components/${type}/${id}`);
-    //   });
-    // }
-
     return ajv;
   }
 
   validate(req, res, next) {
-    const cacheKey = `${req.method}-${req.path}`;
+    const key = `${req.method}-${req.path}`;
 
-    if (!this._middlewareCache[cacheKey]) {
-      this._middlewareCache[cacheKey] = this.buildMiddleware(req, res, next);
+    if (!this._middlewareCache[key]) {
+      this._middlewareCache[key] = this.buildMiddleware(req, res, next);
     }
 
-    return this._middlewareCache[cacheKey](req, res, next);
+    return this._middlewareCache[key](req, res, next);
   }
 
-  buildMiddleware(req, res, next) {
+  private buildMiddleware(req, res, next) {
     // const method = req.method.toLowerCase();
     // const path = req.route.path.replace(/:(\w+)/gi, '{$1}');
     // const pathSchema = this._apiDocs.paths[path][method];
@@ -152,6 +139,13 @@ export class RequestValidator {
       const message = `${req.method} method not allowed`;
       const err = validationError(405, req.path, message);
       throw ono(err, message);
+    }
+
+    const shouldUpdatePathParams =
+      Object.keys(req.openapi.pathParams).length > 0;
+
+    if (shouldUpdatePathParams) {
+      req.params = req.openapi.pathParams || req.params;
     }
 
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
@@ -201,7 +195,10 @@ export class RequestValidator {
           const error = {
             status: 400,
             errors: errors.map(e => ({
-              path: (e.params && e.params.missingProperty) || e.dataPath || e.schemaPath,
+              path:
+                (e.params && e.params.missingProperty) ||
+                e.dataPath ||
+                e.schemaPath,
               message: e.message,
               errorCode: `${e.keyword}.openapi.validation`,
             })),
@@ -213,7 +210,7 @@ export class RequestValidator {
     };
   }
 
-  parametersToSchema(path, parameters = []) {
+  private parametersToSchema(path, parameters = []) {
     const schema = { query: {}, headers: {}, params: {}, cookies: {} };
     const reqFields = {
       query: 'query',
