@@ -45,6 +45,7 @@ export class RequestValidator {
   private _middlewareCache;
   private _apiDocs;
   private ajv;
+
   constructor(apiDocs, options = {}) {
     this._middlewareCache = {};
     this._apiDocs = apiDocs;
@@ -147,10 +148,10 @@ export class RequestValidator {
 
   private extractContentType(req) {
     let contentType = req.headers['content-type'] || 'not_provided';
-    let end = contentType.indexOf(';')
+    let end = contentType.indexOf(';');
     end = end === -1 ? contentType.length : end;
     if (contentType) {
-        return contentType.substring(0, end);
+      return contentType.substring(0, end);
     }
     return contentType;
   }
@@ -193,6 +194,18 @@ export class RequestValidator {
           req[item.reqField][item.name] = JSON.parse(
             req[item.reqField][item.name],
           );
+        }
+      });
+
+      /**
+       * array deserialization
+       * filter=foo,bar,baz
+       * filter=foo|bar|baz
+       * filter=foo%20bar%20baz
+       */
+      parameters.parseArray.forEach(item => {
+        if (req[item.reqField] && req[item.reqField][item.name]) {
+          req[item.reqField][item.name] = req[item.reqField][item.name].split(item.delimiter);
         }
       });
 
@@ -249,7 +262,13 @@ export class RequestValidator {
       path: 'params',
       cookie: 'cookies',
     };
+    const arrayDelimiter = {
+      form: ',',
+      spaceDelimited: ' ',
+      pipeDelimited: '|',
+    };
     const parseJson = [];
+    const parseArray = [];
 
     parameters.forEach(parameter => {
       if (parameter.hasOwnProperty('$ref')) {
@@ -280,6 +299,17 @@ export class RequestValidator {
         throw ono(err, message);
       }
 
+      if (parameter.schema && parameter.schema.type === 'array' && !parameter.explode) {
+        const delimiter = arrayDelimiter[parameter.style];
+        if (!delimiter) {
+          const message = `Parameter 'style' has incorrect value '${parameter.style}' for [${parameter.name}]`;
+          const err = validationError(400, path, message);
+          throw ono(err, message);
+        }
+
+        parseArray.push({ name, reqField, delimiter });
+      }
+
       if (!schema[reqField].properties) {
         schema[reqField] = {
           type: 'object',
@@ -296,6 +326,6 @@ export class RequestValidator {
       }
     });
 
-    return { schema, parseJson };
+    return { schema, parseJson, parseArray };
   }
 }
