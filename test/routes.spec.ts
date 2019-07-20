@@ -66,6 +66,50 @@ const basePath = (<any>app).basePath;
             expect(e[0].path).to.contain('limit');
             expect(e[0].message).to.equal('should be >= 5');
           }));
+
+      it('should return 200 when JSON in query param', async () =>
+        request(app)
+          .get(`${basePath}/pets`)
+          .query(`limit=10&test=one&testJson={"foo": "bar"}`)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200));
+
+      it('should return 400 when improper JSON in query param', async () =>
+        request(app)
+          .get(`${basePath}/pets`)
+          .query(`limit=10&test=one&testJson={"foo": "test"}`)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .then(r => {
+            const e = r.body.errors;
+            expect(e).to.have.length(1);
+            expect(e[0].path).to.contain('testJson');
+            expect(e[0].message).to.equal('should be equal to one of the allowed values');
+          }));
+
+      it('should return 200 when separated array in query param', async () =>
+        request(app)
+          .get(`${basePath}/pets`)
+          .query(`limit=10&test=one&testArray=foo,bar,baz`)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200));
+
+      it('should return 400 when improper separated array in query param', async () =>
+        request(app)
+          .get(`${basePath}/pets`)
+          .query(`limit=10&test=one&testArray=foo,bar,test`)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .then(r => {
+            const e = r.body.errors;
+            expect(e).to.have.length(1);
+            expect(e[0].path).to.contain('testArray');
+            expect(e[0].message).to.equal('should be equal to one of the allowed values');
+          }));
     });
 
     describe('POST /pets', () => {
