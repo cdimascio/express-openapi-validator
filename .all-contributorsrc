@@ -1,0 +1,35 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "cdimascio",
+      "name": "Carmine DiMascio",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/4706618?v=4",
+      "profile": "http://www.twitter.com/carminedimascio",
+      "contributions": [
+        "code",
+        "test",
+        "infra"
+      ]
+    },
+    {
+      "login": "sheldhur",
+      "name": "Sheldhur Mornor",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/4166193?v=4",
+      "profile": "http://litr.cc/",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "express-openapi-validator",
+  "projectOwner": "cdimascio",
+  "repoType": "github",
+  "repoHost": "https://github.com"
+}
