@@ -1,4 +1,4 @@
-import OpenAPISchemaValidator from './openapi.schema.validator';
+import { OpenAPISchemaValidator } from './openapi.schema.validator';
 import BasePath from './base.path';
 import {
   ConsoleDebugAdapterLogger,
