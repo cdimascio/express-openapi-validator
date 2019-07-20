@@ -1,0 +1,25 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "cdimascio",
+      "name": "Carmine DiMascio",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/4706618?v=4",
+      "profile": "http://www.twitter.com/carminedimascio",
+      "contributions": [
+        "code",
+        "test",
+        "infra"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "express-openapi-validator",
+  "projectOwner": "cdimascio",
+  "repoType": "github",
+  "repoHost": "https://github.com"
+}
