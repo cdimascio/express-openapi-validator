@@ -1,8 +1,8 @@
 import * as Ajv from 'ajv';
 import * as merge from 'lodash.merge'
-const draftSchema = require('ajv/lib/refs/json-schema-draft-04.json');
+import * as draftSchema from 'ajv/lib/refs/json-schema-draft-04.json';
 // https://github.com/OAI/OpenAPI-Specification/blob/master/schemas/v3.0/schema.json
-const openapi3Schema = require('./openapi.v3.schema.json');
+import * as openapi3Schema from './openapi.v3.schema.json';
 
 export default class OpenAPISchemaValidator{
     private validator: Ajv.ValidateFunction;
