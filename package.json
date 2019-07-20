@@ -8,8 +8,7 @@
     "test": "mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
     "test:coverage": "nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
     "coveralls": "cat coverage/lcov.info | coveralls -v",
-    "codacy": "cat coverage/lcov.info | codacy-coverage",
-    "publish": "npm run compile && npm test && npm publish"
+    "codacy": "cat coverage/lcov.info | codacy-coverage"
   },
   "repository": {
     "url": "https://github.com/cdimascio/express-openapi-validator"
