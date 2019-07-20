@@ -88,7 +88,46 @@
 								"two"
 							]
 						}
-					}
+					},
+					{
+						"name": "testJson",
+						"in": "query",
+						"description": "JSON in query params",
+                        "content": {
+                          "application/json": {
+                            "schema": {
+                              "type": "object",
+                              "properties": {
+                                "foo": {
+                                  "type": "string",
+                                  "enum": [
+                                    "bar",
+                                    "baz"
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+					},
+					{
+						"name": "testArray",
+						"in": "query",
+						"description": "Array in query param",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+                                "enum": [
+                                  "foo",
+                                  "bar",
+                                  "baz"
+                                ]
+							}
+						},
+                        "style": "form",
+                        "explode": false
+                    }
 				],
 				"responses": {
 					"200": {
