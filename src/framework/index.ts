@@ -1,5 +1,4 @@
-import OpenAPISchemaValidator from 'openapi-schema-validator';
-import { OpenAPIV2, OpenAPIV3 } from 'openapi-types';
+import { OpenAPISchemaValidator } from './openapi.schema.validator';
 import BasePath from './base.path';
 import {
   ConsoleDebugAdapterLogger,
@@ -44,43 +43,19 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
     this.featureType = args.featureType;
     this.loggingPrefix = args.name ? `${this.name}: ` : '';
     this.logger = args.logger ? args.logger : new ConsoleDebugAdapterLogger();
-    // monkey patch for node v6:
-    if (!this.logger.debug) {
-      this.logger.debug = this.logger.info;
-    }
 
-    [
-      { name: 'apiDoc', required: true },
-      { name: 'errorTransformer', type: 'function' },
-      { name: 'externalSchemas', type: 'object' },
-      { name: 'featureType', required: true },
-      { name: 'name', required: true },
-    ].forEach(arg => {
-      if (arg.required && !(arg.name in args)) {
-        throw new Error(`${this.loggingPrefix}args.${arg.name} is required`);
-      }
-
-      if (arg.type && arg.name in args && typeof args[arg.name] !== arg.type) {
-        throw new Error(
-          `${this.loggingPrefix}args.${arg.name} must be a ${
-            arg.type
-          } when given`,
-        );
-      }
-
-    });
-
-    // this.enableObjectCoercion = !!args.enableObjectCoercion;
-    const apiDoc = (typeof args.apiDoc === 'string') 
-      ? handleYaml(loadSpecFile(args.apiDoc))
-      : args.apiDoc
+    const apiDoc =
+      typeof args.apiDoc === 'string'
+        ? handleYaml(loadSpecFile(args.apiDoc))
+        : args.apiDoc;
 
     this.originalApiDoc = apiDoc;
-    
+
     if (!this.originalApiDoc) {
       throw new Error(`spec could not be read at ${args.apiDoc}`);
     }
     this.apiDoc = copy(this.originalApiDoc);
+
     this.basePaths = this.apiDoc.openapi
       ? getBasePathsFromServers(this.apiDoc.servers)
       : [
@@ -88,14 +63,15 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
             url: (this.apiDoc.basePath || '').replace(/\/$/, ''),
           }),
         ];
+
     this.validateApiDoc =
       'validateApiDoc' in args ? !!args.validateApiDoc : true;
+
     this.validator = new OpenAPISchemaValidator({
-      version:
-        (this.apiDoc as OpenAPIV3.Document).openapi ||
-        (this.apiDoc as OpenAPIV2.Document).swagger,
+      version: this.apiDoc.openapi,
       extensions: this.apiDoc[`x-${this.name}-schema-extension`],
     });
+
     if (this.validateApiDoc) {
       const apiDocValidation = this.validator.validate(this.apiDoc);
 
@@ -133,9 +109,7 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
           JSON.stringify(apiDocValidation.errors, null, '  '),
         );
         throw new Error(
-          `${
-            this.loggingPrefix
-          }args.apiDoc was invalid after populating paths.  See the output.`,
+          `${this.loggingPrefix}args.apiDoc was invalid after populating paths.  See the output.`,
         );
       }
     }
