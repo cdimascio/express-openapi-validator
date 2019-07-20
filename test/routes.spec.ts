@@ -63,7 +63,7 @@ const basePath = (<any>app).basePath;
           .then(r => {
             const e = r.body.errors;
             expect(e).to.have.length(1);
-            expect(e[0].path).to.equal('limit');
+            expect(e[0].path).to.contain('limit');
             expect(e[0].message).to.equal('should be >= 5');
           }));
     });
@@ -105,7 +105,7 @@ const basePath = (<any>app).basePath;
           }));
     });
 
-    describe('when a route is not defined in express or not documented in openapi, it', () => {
+    describe('when a route defined either in express or openapi, but not both', () => {
       it('should not validate a route defined in express, but not under an openapi basepath', async () =>
         request(app)
           .get('/not_under_an_openapi_basepath')
@@ -148,7 +148,7 @@ const basePath = (<any>app).basePath;
             expect(e.path).to.equal(`${basePath}/router_1/10`);
           }));
 
-      it('should return 405 if route is defined in swagger but not express and media type is invalid', async () =>
+      it('should return 405 if route is defined in swagger but not express and the method is invalid', async () =>
         request(app)
           .post(`${basePath}/route_not_defined_within_express`)
           .send()
@@ -198,7 +198,7 @@ const basePath = (<any>app).basePath;
           .then(r => {
             const e = r.body.errors;
             expect(e[0].message).to.equal(
-              'Unsupported Content-Type application/xml',
+              'unsupported media type application/xml',
             );
           }));
 
@@ -222,7 +222,7 @@ const basePath = (<any>app).basePath;
           .expect(400)
           .then(r => {
             const e = r.body.errors;
-            expect(e[0].path).equals('id');
+            expect(e[0].path).contains('id');
             expect(e[0].message).equals('should be integer');
           });
       });
