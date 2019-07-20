@@ -139,14 +139,13 @@ A fully working example lives [here](https://github.com/cdimascio/express-openap
 `/pets/:id` should be of type integer, express-openapi-validator returns:
 
 ```shell
-curl http://localhost:3000/v1/pets/as |jq
+curl -s http://localhost:3000/v1/pets/as |jq
 {
   "errors": [
     {
-      "path": "id",
-      "errorCode": "type.openapi.validation",
+      "path": ".params.id",
       "message": "should be integer",
-      "location": "path"
+      "errorCode": "type.openapi.validation"
     }
   ]
 }
@@ -157,20 +156,18 @@ curl http://localhost:3000/v1/pets/as |jq
 `/pets?limit=?` should be of type integer with a value greater than 5. It should also require an additional query paramter, `test`, express-openapi-validator returns:
 
 ```shell
-curl http://localhost:3000/v1/pets?limit=1 |jq
+curl -s http://localhost:3000/v1/pets?limit=1 |jq
 {
   "errors": [
     {
-      "path": "limit",
-      "errorCode": "minimum.openapi.validation",
+      "path": ".query.limit",
       "message": "should be >= 5",
-      "location": "query"
+      "errorCode": "minimum.openapi.validation"
     },
     {
       "path": "test",
-      "errorCode": "required.openapi.validation",
       "message": "should have required property 'test'",
-      "location": "query"
+      "errorCode": "required.openapi.validation"
     }
   ]
 }
@@ -181,16 +178,17 @@ curl http://localhost:3000/v1/pets?limit=1 |jq
 `POST /pets` is defined to only accept media type application/json, express-openapi-validator returns:
 
 ```shell
-curl --request POST \
+curl -s --request POST \
   --url http://localhost:3000/v1/pets \
   --header 'content-type: application/xml' \
   --data '{
         "name": "test"
-}' |jq
+}' |jq 
 {
   "errors": [
     {
-      "message": "Unsupported Content-Type application/xml"
+      "path": "/v1/pets",
+      "message": "unsupported media type application/xml"
     }
   ]
 }
@@ -201,17 +199,16 @@ curl --request POST \
 `POST /pets` request body is required to contain the `name` properly, express-openapi-validator returns:
 
 ```shell
-λ  my-test curl --request POST \
+curl -s --request POST \
   --url http://localhost:3000/v1/pets \
   --header 'content-type: application/json' \
-  --data '{
-}'|jq
+  --data '{}' |jq
+{
   "errors": [
     {
       "path": "name",
-      "errorCode": "required.openapi.validation",
       "message": "should have required property 'name'",
-      "location": "body"
+      "errorCode": "required.openapi.validation"
     }
   ]
 }
@@ -220,14 +217,13 @@ curl --request POST \
 #### Validate a POST multipart/form-data request
 
 ```shell
-curl -XPOST http://localhost:3000/v1/pets/10/photos -F filez=@app.js | jq
+curl -s -XPOST http://localhost:3000/v1/pets/10/photos -F fileZZ=@app.js | jq
 {
   "errors": [
     {
       "path": "file",
-      "errorCode": "required.openapi.validation",
       "message": "should have required property 'file'",
-      "location": "body"
+      "errorCode": "required.openapi.validation"
     }
   ]
 }
