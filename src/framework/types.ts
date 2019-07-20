@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { IJsonSchema, OpenAPIV2, OpenAPIV3 } from 'openapi-types';
+import { IJsonSchema, OpenAPIV3 } from 'openapi-types';
 import { Logger } from 'ts-log';
 import BasePath from './base.path';
 export {
@@ -42,7 +42,7 @@ interface OpenAPIFrameworkConstructorArgs extends OpenAPIFrameworkArgs {
 }
 
 interface OpenAPIFrameworkArgs {
-  apiDoc: OpenAPIV2.Document | OpenAPIV3.Document | string;
+  apiDoc: OpenAPIV3.Document | string;
   customFormats?: { string: (arg: any) => boolean };
   dependencies?: { [service: string]: any };
   enableObjectCoercion?: boolean;

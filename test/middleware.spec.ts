@@ -1,7 +1,6 @@
 import { expect } from 'chai';
 import { OpenApiValidator } from '../src';
-
-const packageJson = require('../package.json');
+import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
   it('should succeed when spec exists and is valid', async () => {

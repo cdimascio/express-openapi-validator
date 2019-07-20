@@ -1,9 +1,7 @@
 import * as Ajv from 'ajv';
-
 import { validationError } from '../errors';
 import ono from 'ono';
-
-const draftSchema = require('ajv/lib/refs/json-schema-draft-04.json');
+import * as draftSchema from 'ajv/lib/refs/json-schema-draft-04.json';
 
 const TYPE_JSON = 'application/json';
 
@@ -205,7 +203,9 @@ export class RequestValidator {
        */
       parameters.parseArray.forEach(item => {
         if (req[item.reqField] && req[item.reqField][item.name]) {
-          req[item.reqField][item.name] = req[item.reqField][item.name].split(item.delimiter);
+          req[item.reqField][item.name] = req[item.reqField][item.name].split(
+            item.delimiter,
+          );
         }
       });
 
@@ -299,7 +299,11 @@ export class RequestValidator {
         throw ono(err, message);
       }
 
-      if (parameter.schema && parameter.schema.type === 'array' && !parameter.explode) {
+      if (
+        parameter.schema &&
+        parameter.schema.type === 'array' &&
+        !parameter.explode
+      ) {
         const delimiter = arrayDelimiter[parameter.style];
         if (!delimiter) {
           const message = `Parameter 'style' has incorrect value '${parameter.style}' for [${parameter.name}]`;
