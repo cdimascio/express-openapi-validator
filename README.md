@@ -8,7 +8,7 @@ An OpenApi validator for ExpressJS that automatically validates API requests usi
 <img src="https://raw.githubusercontent.com/cdimascio/express-openapi-validator/master/assets/express-openapi-validator.png" width="500">
 </p>
 
-[express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) is unopinionated and does not impose any  coding convention or project structure. Simply, install the validator onto your express app, point it to your OpenAPI 3 specification, then define and implement routes the way you prefer. See an [example](#example-express-api-server).
+[express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) is unopinionated and does not impose any coding convention or project structure. Simply, install the validator onto your express app, point it to your OpenAPI 3 specification, then define and implement routes the way you prefer. See an [example](#example-express-api-server).
 
 ## Install
 
@@ -26,7 +26,6 @@ new OpenApiValidator({
 }).install(app);
 ```
 
-
 Then, register an error handler to customize errors
 
 ```javascript
@@ -39,7 +38,8 @@ app.use((err, req, res, next) => {
 ```
 
 #### Alternatively...
-The `apiSpec` option may be specified as the spec object itself, rather than a path e.g. 
+
+The `apiSpec` option may be specified as the spec object itself, rather than a path e.g.
 
 ```javascript
 const apiSpec = {
@@ -55,7 +55,6 @@ const apiSpec = {
 
 new OpenApiValidator({ apiSpec }).install(app);
 ```
-
 
 ## Example Express API Server
 
@@ -123,6 +122,7 @@ app.post('/v1/pets/:id/photos', function(req, res, next) {
 app.use((err, req, res, next) => {
   // 6. Customize errors
   res.status(err.status).json({
+    message: err.message,
     errors: err.errors,
   });
 });
@@ -183,7 +183,7 @@ curl -s --request POST \
   --header 'content-type: application/xml' \
   --data '{
         "name": "test"
-}' |jq 
+}' |jq
 {
   "errors": [
     {
