@@ -50,7 +50,7 @@
     "mocha": "^6.2.0",
     "morgan": "^1.9.1",
     "nodemon": "^1.19.1",
-    "nyc": "^13.3.0",
+    "nyc": "^14.1.1",
     "prettier": "^1.18.2",
     "source-map-support": "0.5.11",
     "supertest": "^4.0.2",
