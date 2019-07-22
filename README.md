@@ -32,6 +32,7 @@ Then, register an error handler to customize errors
 app.use((err, req, res, next) => {
   // format error
   res.status(err.status).json({
+    message: err.message,
     errors: err.errors,
   });
 });
