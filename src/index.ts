@@ -4,8 +4,7 @@ import { OpenAPIFrameworkArgs } from './framework';
 import { OpenApiContext } from './openapi.context';
 import * as middlewares from './middlewares';
 import ono from 'ono';
-import { OpenAPIV3 } from 'openapi-types';
-import { OpenApiRequest } from './framework/types';
+import { OpenAPIV3, OpenApiRequest } from './framework/types';
 
 const loggingKey = 'express-openapi-validator';
 
