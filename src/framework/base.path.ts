@@ -1,5 +1,5 @@
 import * as pathToRegexp from 'path-to-regexp';
-import { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from './types';
 
 interface ServerUrlVariables {
   [key: string]: ServerUrlValues;

@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from 'openapi-types';
+import { OpenAPIV3 } from './types';
 import BasePath from './base.path';
 import * as fs from 'fs';
 import * as jsYaml from 'js-yaml';
