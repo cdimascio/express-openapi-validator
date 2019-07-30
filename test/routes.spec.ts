@@ -111,6 +111,28 @@ const basePath = (<any>app).basePath;
             expect(e[0].path).to.contain('testArray');
             expect(e[0].message).to.equal('should be equal to one of the allowed values');
           }));
+
+      it('should return 200 when array explode in query param', async () =>
+        request(app)
+          .get(`${basePath}/pets`)
+          .query(`limit=10&test=one&testArrayExplode=foo`)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200));
+
+      it('should return 400 when improper array explode in query param', async () =>
+        request(app)
+          .get(`${basePath}/pets`)
+          .query(`limit=10&test=one&testArrayExplode=foo&testArrayExplode=bar&testArrayExplode=test`)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(400)
+          .then(r => {
+            const e = r.body.errors;
+            expect(e).to.have.length(1);
+            expect(e[0].path).to.contain('testArrayExplode');
+            expect(e[0].message).to.equal('should be equal to one of the allowed values');
+          }));
     });
 
     describe('POST /pets', () => {
