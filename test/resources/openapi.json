@@ -118,16 +118,34 @@
 							"type": "array",
 							"items": {
 								"type": "string",
-                                "enum": [
-                                  "foo",
-                                  "bar",
-                                  "baz"
-                                ]
+								"enum": [
+									"foo",
+									"bar",
+									"baz"
+								]
 							}
 						},
-                        "style": "form",
-                        "explode": false
-                    }
+						"style": "form",
+						"explode": false
+					},
+					{
+						"name": "testArrayExplode",
+						"in": "query",
+						"description": "Array explode in query param",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"enum": [
+									"foo",
+									"bar",
+									"baz"
+								]
+							}
+						},
+						"style": "form",
+						"explode": true
+					}
 				],
 				"responses": {
 					"200": {
