@@ -209,6 +209,19 @@ export class RequestValidator {
         }
       });
 
+      /**
+       * forcing convert to array if scheme describes param as array + explode
+       */
+      parameters.parseArrayExplode.forEach(item => {
+        if (
+          req[item.reqField] &&
+          req[item.reqField][item.name] &&
+          !(req[item.reqField][item.name] instanceof Array)
+        ) {
+          req[item.reqField][item.name] = [req[item.reqField][item.name]];
+        }
+      });
+
       const reqToValidate = {
         ...req,
         cookies: req.cookies
@@ -269,6 +282,7 @@ export class RequestValidator {
     };
     const parseJson = [];
     const parseArray = [];
+    const parseArrayExplode = [];
 
     parameters.forEach(parameter => {
       if (parameter.hasOwnProperty('$ref')) {
@@ -314,6 +328,14 @@ export class RequestValidator {
         parseArray.push({ name, reqField, delimiter });
       }
 
+      if (
+        parameter.schema &&
+        parameter.schema.type === 'array' &&
+        parameter.explode
+      ) {
+        parseArrayExplode.push({ name, reqField });
+      }
+
       if (!schema[reqField].properties) {
         schema[reqField] = {
           type: 'object',
@@ -330,6 +352,6 @@ export class RequestValidator {
       }
     });
 
-    return { schema, parseJson, parseArray };
+    return { schema, parseJson, parseArray, parseArrayExplode };
   }
 }
