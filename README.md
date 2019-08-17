@@ -24,7 +24,7 @@ Install the openapi validator
 
 ```javascript
 new OpenApiValidator({
-  apiSpec: './openapi.yaml',
+  apiSpec: './test/resources/openapi.yaml',
 }).install(app);
 ```
 
@@ -84,7 +84,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 2. (optionally) Serve the OpenAPI spec
-const spec = path.join(__dirname, 'openapi.yaml');
 app.use('/spec', express.static(spec));
 
 // 3. Install the OpenApiValidator onto your express app
