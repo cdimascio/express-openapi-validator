@@ -43,12 +43,11 @@ describe(packageJson.name, () => {
       })
       .expect(400)
       .then(r => {
-        expect(r.body.errors)
+        const e = r.body.errors;
+        expect(e)
           .to.be.an('array')
           .with.length(1);
-        expect(r.body.errors[0].message).to.equal(
-          'should NOT have additional properties',
-        );
+        expect(e[0].message).to.equal('should NOT have additional properties');
       }));
 
   it('should return 200 if additonalProperities=true and extra props are sent', async () =>
