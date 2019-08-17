@@ -4,10 +4,10 @@ import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as logger from 'morgan';
 
-import { OpenApiValidator } from '../src';
+import { OpenApiValidator } from '../../src';
 import { startServer, routes } from './app.common';
 
-export function createApp(opts?: any, port: number = 3000) {
+export async function createApp(opts?: any, port: number = 3000) {
   var app = express();
 
   app.use(bodyParser.json());
@@ -28,7 +28,7 @@ export function createApp(opts?: any, port: number = 3000) {
     });
   });
 
-  const server = startServer(app, port);
+  const server = await startServer(app, port);
   const shutDown = () => {
     console.log('Received kill signal, shutting down gracefully');
     server.close(() => {
