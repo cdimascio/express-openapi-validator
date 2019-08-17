@@ -1,0 +1,40 @@
+openapi: '3.0.1'
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  description: A sample API that uses a petstore as an example to demonstrate features in the OpenAPI 3.0 specification
+
+servers:
+  - url: /v1/
+
+paths:
+  /pets:
+    post:
+      description: Creates a new pet in the store.  Duplicates are allowed
+      operationId: addPet
+      requestBody:
+        description: Pet to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPet'
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewPet'
+
+components:
+  schemas:
+    NewPet:
+      additionalProperties: false
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        tag:
+          type: string

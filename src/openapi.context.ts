@@ -1,5 +1,5 @@
 import { OpenApiSpecLoader } from './openapi.spec.loader';
-import { OpenAPIFrameworkArgs, BasePath } from './framework';
+import { OpenAPIFrameworkArgs } from './framework';
 
 export class OpenApiContext {
   // TODO cleanup structure (group related functionality)

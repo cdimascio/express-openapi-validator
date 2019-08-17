@@ -17,8 +17,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // 1. Install the OpenApiValidator on your express app
+const apiSpec = path.join('..', 'test', 'resources', 'openapi.yaml');
 new OpenApiValidator({
-  apiSpecPath: '../openapi.yaml',
+  apiSpec,
 }).install(app);
 
 // 2. Add routes

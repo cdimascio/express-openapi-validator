@@ -1,12 +1,12 @@
+import * as path from 'path';
 import { expect } from 'chai';
 import { OpenApiValidator } from '../src';
 import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
   it('should succeed when spec exists and is valid', async () => {
-    const oam = new OpenApiValidator({
-      apiSpecPath: './openapi.yaml',
-    });
+    const apiSpec = path.join('test', 'resources', 'openapi.yaml');
+    const oam = new OpenApiValidator({ apiSpec });
 
     expect(oam)
       .to.have.property('install')

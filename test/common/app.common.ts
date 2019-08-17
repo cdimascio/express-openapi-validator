@@ -1,14 +1,18 @@
+import * as http from 'http';
 import * as express from 'express';
 const BASE_PATH = '/v1';
 
-export function startServer(app, port) {
-  const http = require('http');
-  const server = http.createServer(app);
-  server.listen(port);
-  console.log(`Listening on port ${port}`);
-  app.server = server;
-  app.basePath = BASE_PATH;
-  return server;
+export function startServer(app, port): Promise<http.Server> {
+  return new Promise((resolve, reject) => {
+    const http = require('http');
+    const server = http.createServer(app);
+    app.server = server;
+    app.basePath = BASE_PATH;
+    server.listen(port, () => {
+      console.log(`Listening on port ${port}`);
+      resolve(server);
+    });
+  });
 }
 
 export function routes(app) {
@@ -32,9 +36,7 @@ export function routes(app) {
     })
     .get('/:id/best/:bid', function(req, res, next) {
       res.json({
-        name: `${req.method}: /router_1/${req.params.id}/best/${
-          req.params.bid
-        }`,
+        name: `${req.method}: /router_1/${req.params.id}/best/${req.params.bid}`,
       });
     });
 
@@ -43,11 +45,13 @@ export function routes(app) {
   app.get(`${basePath}/pets`, function(req, res, next) {
     res.json({
       test: 'hi',
+      ...req.body,
     });
   });
 
   app.post(`${basePath}/pets`, function(req, res, next) {
     res.json({
+      ...req.body,
       id: 'new-id',
     });
   });
