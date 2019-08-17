@@ -1,4 +1,4 @@
-import * as http from 'http'
+import * as http from 'http';
 import * as express from 'express';
 const BASE_PATH = '/v1';
 
@@ -45,11 +45,13 @@ export function routes(app) {
   app.get(`${basePath}/pets`, function(req, res, next) {
     res.json({
       test: 'hi',
+      ...req.body,
     });
   });
 
   app.post(`${basePath}/pets`, function(req, res, next) {
     res.json({
+      ...req.body,
       id: 'new-id',
     });
   });
