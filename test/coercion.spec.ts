@@ -6,7 +6,7 @@ import { createApp } from './common/app';
 
 const packageJson = require('../package.json');
 
-describe.only(packageJson.name, () => {
+describe(packageJson.name, () => {
   let app = null;
   let basePath = null;
 
