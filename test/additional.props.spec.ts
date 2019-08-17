@@ -20,7 +20,7 @@ describe(packageJson.name, () => {
     app.server.close();
   });
 
-  it.skip('should return 400 when post has extra props', async () =>
+  it('should return 400 when post has extra props', async () =>
     request(app)
       .post(`${basePath}/pets`)
       .send({
