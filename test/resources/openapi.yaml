@@ -325,6 +325,7 @@ components:
 
   schemas:
     NewPet:
+      additionalProperties: false
       required:
         - name
       properties:
@@ -332,6 +333,7 @@ components:
           type: string
         tag:
           type: string
+
 
     Pet:
       allOf:

@@ -1,12 +1,21 @@
+import * as path from 'path';
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { createApp } from './app';
+import { createApp } from './common/app';
 import * as packageJson from '../package.json';
 
-const app = createApp({ apiSpecPath: './openapi.yaml' }, 3004);
-const basePath = (<any>app).basePath;
-
 describe(packageJson.name, () => {
+  let app = null;
+  let basePath = null;
+
+  before(() => {
+    const apiSpec = path.join('test', 'resources', 'openapi.yaml');
+    return createApp({ apiSpec }, 3004).then(a => {
+      app = a;
+      basePath = (<any>app).basePath;
+    });
+  });
+
   after(() => {
     (<any>app).server.close();
   });
