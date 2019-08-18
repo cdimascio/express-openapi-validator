@@ -8,7 +8,7 @@ servers:
   - url: /v1/
 
 paths:
-  /pets:
+  /additional_props/false:
     post:
       description: Creates a new pet in the store.  Duplicates are allowed
       operationId: addPet
@@ -18,19 +18,48 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewPet'
+              $ref: '#/components/schemas/PetAdditionalFalse'
       responses:
         '200':
           description: pet response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NewPet'
+                $ref: '#/components/schemas/PetAdditionalFalse'
+
+  /additional_props/true:
+    post:
+      description: Creates a new pet in the store.  Duplicates are allowed
+      operationId: addPet
+      requestBody:
+        description: Pet to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PetAdditionalTrue'
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PetAdditionalTrue'
 
 components:
   schemas:
-    NewPet:
+    PetAdditionalFalse:
       additionalProperties: false
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        tag:
+          type: string
+
+    PetAdditionalTrue:
+      additionalProperties: true
       required:
         - name
       properties:

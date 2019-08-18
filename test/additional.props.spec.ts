@@ -1,3 +1,5 @@
+import * as path from 'path';
+import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
@@ -9,31 +11,50 @@ describe(packageJson.name, () => {
   let basePath = null;
 
   before(async () => {
-    app = await createApp(
-      { apiSpec: './test/resources/additional.properties.yaml' },
-      3005,
+    // Set up the express app
+    const apiSpec = path.join(
+      'test',
+      'resources',
+      'additional.properties.yaml',
     );
+    app = await createApp({ apiSpec }, 3005);
     basePath = app.basePath;
+
+    // Define new coercion routes
+    app.use(
+      `${basePath}/additional_props`,
+      express
+        .Router()
+        .post(`/false`, (req, res) => res.json(req.body))
+        .post(`/true`, (req, res) => res.json(req.body)),
+    );
   });
 
   after(() => {
     app.server.close();
   });
 
-  it.skip('should return 400 when post has extra props', async () =>
+  it('should return 400 if additionalProperties=false, but extra props sent', async () =>
     request(app)
-      .post(`${basePath}/pets`)
+      .post(`${basePath}/additional_props/false`)
       .send({
         name: 'test',
-        unknown_prop: 'test',
+        extra_prop: 'test',
       })
       .expect(400)
       .then(r => {
-        expect(r.body.errors)
-          .to.be.an('array')
-          .with.length(1);
-        expect(r.body.errors[0].message).to.equal(
-          'should NOT have additional properties',
-        );
+        expect(r.body.errors).to.be.an('array')
+        expect(r.body.errors).to.have.length(1);
+        const message = r.body.errors[0].message;
+        expect(message).to.equal('should NOT have additional properties');
       }));
+
+  it('should return 200 if additonalProperities=true and extra props are sent', async () =>
+    request(app)
+      .post(`${basePath}/additional_props/true`)
+      .send({
+        name: 'test',
+        extra_prop: 'test',
+      })
+      .expect(200));
 });
