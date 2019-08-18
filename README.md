@@ -46,7 +46,7 @@ The `apiSpec` option may be specified as the spec object itself, rather than a p
 
 ```javascript
 const apiSpec = {
-  openapi: "3.0.0",
+  openapi: "3.0.1",
   info: {...},
   servers: [...],
   paths: {...},
