@@ -48,8 +48,15 @@ export class OpenApiSpecLoader {
           const bp = bpa.replace(/\/$/, '');
           for (const [path, methods] of Object.entries(apiDoc.paths)) {
             for (const [method, schema] of Object.entries(methods)) {
+              if (method === 'parameters') {
+                continue;
+              }
+              const schemaParameters = new Set();
+              (schema.parameters || []).forEach(parameter => schemaParameters.add(parameter));
+              ((methods as any).parameters || []).forEach(parameter => schemaParameters.add(parameter));
+              schema.parameters = Array.from(schemaParameters);
               const pathParams = new Set();
-              for (const param of schema.parameters || []) {
+              for (const param of schema.parameters) {
                 if (param.in === 'path') {
                   pathParams.add(param.name);
                 }

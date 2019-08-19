@@ -1,0 +1,36 @@
+openapi: '3.0.2'
+info:
+  version: 1.0.0
+  title: Path Level Parameters
+  description: Path Level Parameters Test
+
+servers:
+  - url: /v1/
+
+paths:
+  /path_level_parameters:
+    parameters:
+      - $ref: '#components/parameters/pathLevelParameter'
+    get:
+      parameters:
+        - $ref: '#components/parameters/operationLevelParameter'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+
+components:
+  parameters:
+    pathLevelParameter:
+      name: pathLevel
+      in: query
+      required: true
+      schema:
+        type: string
+    operationLevelParameter:
+      name: operationLevel
+      in: query
+      required: true
+      schema:
+        type: string
