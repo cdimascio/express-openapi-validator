@@ -156,7 +156,12 @@ export class RequestValidator {
 
   private buildMiddleware(path, pathSchema, contentType) {
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
-    const requestBody = pathSchema.requestBody;
+    let requestBody = pathSchema.requestBody;
+
+    if (requestBody && requestBody.hasOwnProperty('$ref')) {
+      const id = requestBody.$ref.replace(/^.+\//i, '');
+      requestBody = this._apiDocs.components.requestBodies[id];
+    }
 
     let body = this.requestBodyToSchema(path, contentType, requestBody);
     let requiredAdds = requestBody && requestBody.required ? ['body'] : [];
