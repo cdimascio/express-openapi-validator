@@ -1,0 +1,33 @@
+openapi: '3.0.2'
+info:
+  version: 1.0.0
+  title: requestBodies $ref
+  description: requestBodies $ref Test
+
+servers:
+  - url: /v1/
+
+paths:
+  /request_bodies_ref:
+    post:
+      requestBody:
+        $ref: '#components/requestBodies/TestBody'
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+
+components:
+  requestBodies:
+    TestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              testProperty:
+                type: string
+            required:
+              - testProperty
