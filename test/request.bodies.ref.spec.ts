@@ -12,11 +12,7 @@ describe(packageJson.name, () => {
 
   before(async () => {
     // Set up the express app
-    const apiSpec = path.join(
-      'test',
-      'resources',
-      'request.bodies.ref.yaml',
-    );
+    const apiSpec = path.join('test', 'resources', 'request.bodies.ref.yaml');
     app = await createApp({ apiSpec }, 3005);
     basePath = app.basePath;
 
@@ -25,7 +21,7 @@ describe(packageJson.name, () => {
       `${basePath}`,
       express
         .Router()
-        .post(`/request_bodies_ref`, (req, res) => res.json(req.body))
+        .post(`/request_bodies_ref`, (req, res) => res.json(req.body)),
     );
   });
 
@@ -39,17 +35,19 @@ describe(packageJson.name, () => {
       .send({})
       .expect(400)
       .then(r => {
-        expect(r.body.errors).to.be.an('array')
+        expect(r.body.errors).to.be.an('array');
         expect(r.body.errors).to.have.length(1);
         const message = r.body.errors[0].message;
-        expect(message).to.equal('should have required property \'testProperty\'');
+        expect(message).to.equal(
+          "should have required property 'testProperty'",
+        );
       }));
 
   it('should return 200 if testProperty body property is provided', async () =>
     request(app)
       .post(`${basePath}/request_bodies_ref`)
       .send({
-        testProperty: 'abc'
+        testProperty: 'abc',
       })
       .expect(200));
 });
