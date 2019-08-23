@@ -243,14 +243,17 @@ export class RequestValidator {
         if (errors.length > 0) {
           const error = {
             status: 400,
-            errors: errors.map(e => ({
-              path:
-                (e.params && e.params.missingProperty) ||
-                e.dataPath ||
-                e.schemaPath,
-              message: e.message,
-              errorCode: `${e.keyword}.openapi.validation`,
-            })),
+            errors: errors.map(e => {
+              const required =
+                e.params &&
+                e.params.missingProperty &&
+                e.dataPath + '.' + e.params.missingProperty;
+              return {
+                path: required || e.dataPath || e.schemaPath,
+                message: e.message,
+                errorCode: `${e.keyword}.openapi.validation`,
+              };
+            }),
           };
           const message = this.ajv.errorsText(errors, { dataVar: 'request' });
           throw ono(error, message);
@@ -313,7 +316,7 @@ export class RequestValidator {
       }
 
       if (!parameterSchema) {
-        const message = `Not available parameter 'schema' or 'content' for [${parameter.name}]`;
+        const message = `No available parameter 'schema' or 'content' for [${parameter.name}]`;
         const err = validationError(400, path, message);
         throw ono(err, message);
       }
