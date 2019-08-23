@@ -167,7 +167,7 @@ curl -s http://localhost:3000/v1/pets?limit=1 |jq
       "errorCode": "minimum.openapi.validation"
     },
     {
-      "path": "test",
+      "path": ".query.test",
       "message": "should have required property 'test'",
       "errorCode": "required.openapi.validation"
     }
@@ -208,7 +208,7 @@ curl -s --request POST \
 {
   "errors": [
     {
-      "path": "name",
+      "path": ".query.name",
       "message": "should have required property 'name'",
       "errorCode": "required.openapi.validation"
     }
