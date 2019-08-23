@@ -25,6 +25,16 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "trebler",
+      "name": "Andrey Trebler",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/5610569?v=4",
+      "profile": "https://github.com/trebler",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
