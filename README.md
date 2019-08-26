@@ -65,16 +65,16 @@ Try the complete example below:
 (_it includes file upload as well!_)
 
 ```javascript
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var logger = require('morgan');
-var http = require('http');
-var app = express();
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const logger = require('morgan');
+const http = require('http');
+const app = express();
 
 // 1. Import the express-openapi-validator library
-var OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
+const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
 
 app.use(bodyParser.json());
 app.use(logger('dev'));
