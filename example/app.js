@@ -1,11 +1,11 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var logger = require('morgan');
-var http = require('http');
-var OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
-var app = express();
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const logger = require('morgan');
+const http = require('http');
+const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
+const app = express();
 
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
@@ -72,7 +72,7 @@ app.use((err, req, res, next) => {
   }
 });
 
-var server = http.createServer(app);
+const server = http.createServer(app);
 server.listen(3000);
 console.log('Listening on port 3000');
 
