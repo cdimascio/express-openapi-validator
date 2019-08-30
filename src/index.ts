@@ -50,6 +50,7 @@ export class OpenApiValidator {
     }
 
     const aoav = new middlewares.RequestValidator(this.context.apiDoc, {
+      nullable: true,
       coerceTypes: true,
       removeAdditional: false,
       useDefaults: true,
