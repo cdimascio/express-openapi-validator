@@ -331,6 +331,7 @@ components:
       properties:
         name:
           type: string
+          nullable: true
         tag:
           type: string
 
