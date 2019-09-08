@@ -13,14 +13,12 @@ describe(packageJson.name, () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'nullable.yaml');
-    app = await createApp({ apiSpec }, 3005);
+    app = await createApp({ apiSpec, coerceTypes: false }, 3005);
     basePath = app.basePath;
 
     app.use(
       `${basePath}`,
-      express
-        .Router()
-        .post(`/pets/nullable`, (req, res) => res.json(req.body)),
+      express.Router().post(`/pets/nullable`, (req, res) => res.json(req.body)),
     );
   });
 
@@ -39,14 +37,51 @@ describe(packageJson.name, () => {
         expect(r.body.name).to.be.null;
       }));
 
-      it('should fill null with default (name: nullable false/default)', async () =>
-      request(app)
-        .post(`${basePath}/pets`)
-        .send({
-          name: null,
-        })
-        .expect(200)
-        .then(r => {
-          expect(r.body.name).to.equal('');
-        }));
+  it('should not fill an explicity null with default when coerceTypes is false', async () =>
+    request(app)
+      .post(`${basePath}/pets`)
+      .send({
+        name: null,
+      })
+      .expect(400));
+
+  it('should fill unspecified field with default when coerceTypes is false', async () =>
+    request(app)
+      .post(`${basePath}/pets`)
+      .send({
+        name: 'name',
+      })
+      .expect(200)
+      .then(r => {
+        expect(r.body.tag).to.equal('my default value');
+      }));
+
+  it('should fail if required and not provided (nullable true)', async () =>
+    request(app)
+      .post(`${basePath}/pets/nullable`)
+      .send({})
+      .expect(400)
+      .then(r => {
+        expect(r.body.errors[0].path).to.equal('.body.name');
+      }));
+
+  it('should fail if required and not provided (nullable false', async () =>
+    request(app)
+      .post(`${basePath}/pets`)
+      .send({})
+      .expect(400)
+      .then(r => {
+        expect(r.body.errors[0].path).to.equal('.body.name');
+      }));
+
+  it('should fail if required and provided as null when nullable is false', async () =>
+    request(app)
+      .post(`${basePath}/pets`)
+      .send({
+        name: null,
+      })
+      .expect(400)
+      .then(r => {
+        expect(r.body.errors[0].path).to.equal('.body.name');
+      }));
 });
