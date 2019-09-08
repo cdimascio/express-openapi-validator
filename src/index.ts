@@ -8,11 +8,13 @@ import { OpenAPIV3, OpenApiRequest } from './framework/types';
 export interface OpenApiValidatorOpts {
   apiSpecPath?: string;
   apiSpec?: OpenAPIV3.Document | string;
+  coerceTypes?: boolean;
   multerOpts?: {};
 }
 
 export class OpenApiValidator {
   private context: OpenApiContext;
+  private coerceTypes: boolean;
   private multerOpts: {};
 
   constructor(options: OpenApiValidatorOpts) {
@@ -21,6 +23,7 @@ export class OpenApiValidator {
     if (options.apiSpecPath && options.apiSpec)
       throw ono('apiSpecPath or apiSpec required. not both.');
 
+    this.coerceTypes = options.coerceTypes == null ? true : options.coerceTypes;
     this.multerOpts = options.multerOpts;
 
     const openApiContext = new OpenApiContext({
@@ -51,7 +54,7 @@ export class OpenApiValidator {
 
     const aoav = new middlewares.RequestValidator(this.context.apiDoc, {
       nullable: true,
-      coerceTypes: true,
+      coerceTypes: this.coerceTypes,
       removeAdditional: false,
       useDefaults: true,
     });
