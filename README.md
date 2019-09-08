@@ -59,6 +59,23 @@ const apiSpec = {
 new OpenApiValidator({ apiSpec }).install(app);
 ```
 
+## Options
+
+```javascript
+new OpenApiValidator(options).install(app);
+```
+
+**`apiSpec:`** a string value specifying the path to the OpenAPI 3.0.x spec or a JSON object representing an OpenAPI spec.
+
+**`coerceTypes:`** change data type of data to match type keyword. See the example in Coercing data types and coercion rules. Option values:
+
+- false (default) - no type coercion.
+- true - coerce scalar data types.
+- "array" - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
+
+**`multerOpts:`** the [multer opts](https://github.com/expressjs/multer) to passthrough to multer
+
+
 ## Example Express API Server
 
 Try the complete example below:
