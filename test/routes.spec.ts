@@ -53,17 +53,17 @@ describe(packageJson.name, () => {
           // .expect('Content-Type', /json/)
           .expect(200));
 
-      it('should return 200 with unknown query parameter', async () =>
+      it('should return 400 with unknown query parameter', async () =>
         request(apps[i])
           .get(`${basePath}/pets`)
           .query({
             test: 'one',
             limit: 10,
-            bad_param: 'test',
+            unknown_param: 'test',
           })
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
-          .expect(200));
+          .expect(400));
 
       it('should return 400 when improper range specified', async () =>
         request(apps[i])

@@ -178,6 +178,8 @@ export class RequestValidator {
     const validator = this.ajv.compile(schema);
 
     return (req, res, next) => {
+      this.rejectUnknownQueryParams(req.query, schema.properties.query);
+
       const shouldUpdatePathParams =
         Object.keys(req.openapi.pathParams).length > 0;
 
@@ -260,6 +262,19 @@ export class RequestValidator {
         }
       }
     };
+  }
+
+  private rejectUnknownQueryParams(query, schema) {
+    if (!schema.properties) return;
+    const knownQueryParams = new Set(Object.keys(schema.properties));
+    const queryParams = Object.keys(query);
+    for (const q of queryParams) {
+      if (!knownQueryParams.has(q)) {
+        const message = `Unknown query parameter ${q}`;
+        const err = validationError(400, `.query.${q}`, message);
+        throw ono(err, message);
+      }
+    }
   }
 
   private requestBodyToSchema(path, contentType, requestBody: any = {}) {
