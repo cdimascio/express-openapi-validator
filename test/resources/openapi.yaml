@@ -32,6 +32,8 @@ servers:
           - v2
 paths:
   /pets:
+    description: endpoints for pets
+    summary: endpoints for pets
     get:
       description: |
         Returns all pets from the system that the user has access to

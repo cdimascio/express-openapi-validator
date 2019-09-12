@@ -48,7 +48,7 @@ export class OpenApiSpecLoader {
           const bp = bpa.replace(/\/$/, '');
           for (const [path, methods] of Object.entries(apiDoc.paths)) {
             for (const [method, schema] of Object.entries(methods)) {
-              if (method === 'parameters') {
+              if (['parameters', 'summary', 'description'].includes(method)) {
                 continue;
               }
               const schemaParameters = new Set();
