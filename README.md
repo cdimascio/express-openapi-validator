@@ -69,8 +69,8 @@ new OpenApiValidator(options).install(app);
 
 **`coerceTypes:`** change data type of data to match type keyword. See the example in Coercing data types and coercion rules. Option values:
 
-- false (default) - no type coercion.
-- true - coerce scalar data types.
+- true - (default) coerce scalar data types.
+- false - no type coercion.
 - "array" - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
 **`multerOpts:`** the [multer opts](https://github.com/expressjs/multer) to passthrough to multer
