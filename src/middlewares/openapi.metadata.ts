@@ -17,7 +17,7 @@ export function applyOpenApiMetadata(openApiContext: OpenApiContext) {
     } else if (openApiContext.isManagedRoute(req.path)) {
       req.openapi = {};
     }
-    next();
+    -next();
   };
 
   function lookupRoute(req) {

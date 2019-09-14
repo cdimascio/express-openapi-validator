@@ -7,7 +7,11 @@ import * as logger from 'morgan';
 import { OpenApiValidator } from '../../src';
 import { startServer, routes } from './app.common';
 
-export async function createApp(opts?: any, port: number = 3000) {
+export async function createApp(
+  opts?: any,
+  port: number = 3000,
+  useRoutes: boolean = true,
+) {
   var app = express();
 
   app.use(bodyParser.json());
@@ -19,10 +23,11 @@ export async function createApp(opts?: any, port: number = 3000) {
 
   new OpenApiValidator(opts).install(app);
 
-  routes(app);
+  if (useRoutes) routes(app);
 
   // Register error handler
   app.use((err, req, res, next) => {
+    console.error(err);
     res.status(err.status || 500).json({
       errors: err.errors,
     });
