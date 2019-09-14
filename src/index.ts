@@ -63,10 +63,15 @@ export class OpenApiValidator {
       return aoav.validate(req, res, next);
     };
 
+    const resOav = new middlewares.ResponseValidator(this.context.apiDoc, {
+      coerceTypes: this.coerceTypes,
+    });
+
     app.use(
       middlewares.applyOpenApiMetadata(this.context),
       middlewares.multipart(this.context, this.multerOpts),
       validateMiddleware,
+      resOav.validate(),
     );
   }
 }
