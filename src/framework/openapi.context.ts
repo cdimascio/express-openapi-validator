@@ -1,5 +1,5 @@
 import { OpenApiSpecLoader } from './openapi.spec.loader';
-import { OpenAPIFrameworkArgs } from './framework';
+import { OpenAPIFrameworkArgs } from './index';
 
 export class OpenApiContext {
   // TODO cleanup structure (group related functionality)
@@ -13,7 +13,7 @@ export class OpenApiContext {
     const { apiDoc, basePaths, routes } = openApiRouteDiscovery.load();
 
     this.apiDoc = apiDoc;
-    this.basePaths = <Set<string>> basePaths;
+    this.basePaths = <Set<string>>basePaths;
     this.routes = this.initializeRoutes(routes);
   }
 

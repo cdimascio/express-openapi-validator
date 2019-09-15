@@ -1,6 +1,6 @@
 import * as pathToRegexp from 'path-to-regexp';
 import * as _ from 'lodash';
-import { OpenApiContext } from '../openapi.context';
+import { OpenApiContext } from '../framework/openapi.context';
 
 export function applyOpenApiMetadata(openApiContext: OpenApiContext) {
   return (req, res, next) => {
