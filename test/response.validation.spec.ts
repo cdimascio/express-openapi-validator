@@ -52,9 +52,10 @@ describe(packageJson.name, () => {
     const statusCode = 200;
 
     try {
+      const validators = v._getOrBuildValidator(null, responses);
       v._validate({
+        validators,
         body: { id: 1, name: 'test', tag: 'tag' },
-        responses,
         statusCode,
       });
     } catch (e) {
@@ -71,10 +72,11 @@ describe(packageJson.name, () => {
     const responses = petsResponseSchema();
     const statusCode = 200;
 
+    const validators = v._getOrBuildValidator(null, responses);
     try {
       v._validate({
+        validators,
         body: [{ id: 'bad-id', name: 'test', tag: 'tag' }],
-        responses,
         statusCode,
       });
     } catch (e) {
@@ -85,8 +87,8 @@ describe(packageJson.name, () => {
 
     try {
       v._validate({
+        validators,
         body: { id: 1, name: 'test', tag: 'tag' },
-        responses,
         statusCode,
       });
     } catch (e) {
@@ -96,8 +98,8 @@ describe(packageJson.name, () => {
 
     try {
       v._validate({
+        validators,
         body: [{ id: 1, name: [], tag: 'tag' }],
-        responses,
         statusCode,
       });
     } catch (e) {
@@ -121,7 +123,8 @@ describe(packageJson.name, () => {
       },
     ];
     try {
-      v._validate({ body, responses, statusCode });
+      const validators = v._getOrBuildValidator(null, responses);
+      v._validate({ validators, body, statusCode });
       expect('here').to.be.null;
     } catch (e) {
       // TODO include params.additionalProperty: value in error message
