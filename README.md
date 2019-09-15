@@ -105,7 +105,7 @@ app.use('/spec', express.static(spec));
 
 // 3. Install the OpenApiValidator onto your express app
 new OpenApiValidator({
-  apiSpecPath: './openapi.yaml',
+  apiSpec: './openapi.yaml',
 }).install(app);
 
 // 4. Define routes using Express

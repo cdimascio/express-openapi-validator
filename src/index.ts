@@ -6,28 +6,26 @@ import ono from 'ono';
 import { OpenAPIV3, OpenApiRequest } from './framework/types';
 
 export interface OpenApiValidatorOpts {
-  apiSpecPath?: string;
-  apiSpec?: OpenAPIV3.Document | string;
+  apiSpec: OpenAPIV3.Document | string;
   coerceTypes?: boolean;
+  validateResponses?: boolean;
+  validateRequests?: boolean;
   multerOpts?: {};
 }
 
 export class OpenApiValidator {
   private context: OpenApiContext;
-  private coerceTypes: boolean;
-  private multerOpts: {};
+  private options: OpenApiValidatorOpts;
 
   constructor(options: OpenApiValidatorOpts) {
-    if (!options.apiSpecPath && !options.apiSpec)
-      throw ono('apiSpecPath or apiSpec required');
-    if (options.apiSpecPath && options.apiSpec)
-      throw ono('apiSpecPath or apiSpec required. not both.');
+    if (!options.apiSpec) throw ono('apiSpec required.');
+    if (options.coerceTypes == null) options.coerceTypes = true;
+    if (options.validateRequests == null) options.validateRequests = true;
 
-    this.coerceTypes = options.coerceTypes == null ? true : options.coerceTypes;
-    this.multerOpts = options.multerOpts;
+    this.options = options;
 
     const openApiContext = new OpenApiContext({
-      apiDoc: options.apiSpecPath || options.apiSpec,
+      apiDoc: options.apiSpec,
     });
 
     this.context = openApiContext;
@@ -52,9 +50,10 @@ export class OpenApiValidator {
       });
     }
 
+    const coerceTypes = this.options.coerceTypes;
     const aoav = new middlewares.RequestValidator(this.context.apiDoc, {
       nullable: true,
-      coerceTypes: this.coerceTypes,
+      coerceTypes,
       removeAdditional: false,
       useDefaults: true,
     });
@@ -64,14 +63,16 @@ export class OpenApiValidator {
     };
 
     const resOav = new middlewares.ResponseValidator(this.context.apiDoc, {
-      coerceTypes: this.coerceTypes,
+      coerceTypes,
     });
 
-    app.use(
+    const use = [
       middlewares.applyOpenApiMetadata(this.context),
-      middlewares.multipart(this.context, this.multerOpts),
-      validateMiddleware,
-      resOav.validate(),
-    );
+      middlewares.multipart(this.context, this.options.multerOpts),
+    ];
+    if (this.options.validateRequests) use.push(validateMiddleware);
+    if (this.options.validateResponses) use.push(resOav.validate());
+
+    app.use(use);
   }
 }
