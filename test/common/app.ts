@@ -23,15 +23,15 @@ export async function createApp(
 
   new OpenApiValidator(opts).install(app);
 
-  if (useRoutes) routes(app);
-
-  // Register error handler
-  app.use((err, req, res, next) => {
-    console.error(err);
-    res.status(err.status || 500).json({
-      errors: err.errors,
+  if (useRoutes) {
+    routes(app);
+    // Register error handler
+    app.use((err, req, res, next) => {
+      res.status(err.status || 500).json({
+        errors: err.errors,
+      });
     });
-  });
+  }
 
   const server = await startServer(app, port);
   const shutDown = () => {

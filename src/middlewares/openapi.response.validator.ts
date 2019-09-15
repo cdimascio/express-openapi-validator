@@ -11,10 +11,14 @@ export class ResponseValidator {
   private ajv;
   private spec;
   private validatorsCache = {};
-  private useCache: boolean;
+
   constructor(openApiSpec, options: any = {}) {
     this.spec = openApiSpec;
     this.ajv = createResponseAjv(openApiSpec, options);
+    (<any>mung).onError = function(err, req, res) {
+      // monkey patch mung to rethrow exception
+      throw err;
+    };
   }
 
   validate() {
@@ -47,10 +51,7 @@ export class ResponseValidator {
   }
 
   _validate({ validators, body, statusCode }) {
-    // TODO build validators should be cached per endpoint
-    // const validators: any = this.buildValidators(responses);
-
-    // find a response by status code or 'default'
+    // find the validator for the 'status code' e.g 200, 2XX or 'default'
     let validator;
     const status = statusCode;
     if (status) {
@@ -65,7 +66,7 @@ export class ResponseValidator {
     }
 
     if (!validator) {
-      console.log('no validator found');
+      console.warn('no validator found');
       // assume valid
       return;
     }
@@ -75,9 +76,8 @@ export class ResponseValidator {
 
     if (!valid) {
       const errors = validator.errors;
-      console.log(errors);
       const message = this.ajv.errorsText(errors, {
-        dataVar: 'request',
+        dataVar: '', // responses
       });
       throw ono(ajvErrorsToValidatorError(500, errors), message);
     }

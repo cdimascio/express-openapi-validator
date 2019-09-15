@@ -20,6 +20,11 @@ paths:
     get:
       description: find pets
       operationId: findPets
+      parameters:
+        - name: mode
+          in: query
+          schema:
+            type: string
       responses:
         '200':
           description: pet response
