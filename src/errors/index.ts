@@ -1,4 +1,6 @@
-export const validationError = (
+import ono from 'ono';
+
+const _validationError = (
   status: number,
   path: string,
   message: string,
@@ -13,6 +15,11 @@ export const validationError = (
     },
   ],
 });
+
+export function validationError(status, path, message) {
+  const err = _validationError(status, path, message);
+  return ono(err, message);
+}
 
 export function ajvErrorsToValidatorError(status, errors) {
   return {

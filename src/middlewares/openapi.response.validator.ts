@@ -1,44 +1,54 @@
 import * as Ajv from 'ajv';
 import * as mung from 'express-mung';
-import * as draftSchema from 'ajv/lib/refs/json-schema-draft-04.json';
 import { validationError, ajvErrorsToValidatorError } from '../errors';
 import ono from 'ono';
 import { createResponseAjv } from './ajv';
+import { extractContentType } from './util';
 
 const TYPE_JSON = 'application/json';
 
 export class ResponseValidator {
   private ajv;
   private spec;
+  private validatorsCache = {};
+  private useCache: boolean;
   constructor(openApiSpec, options: any = {}) {
     this.spec = openApiSpec;
-    this.ajv = createResponseAjv(openApiSpec, options)
-    // this.ajv = new Ajv({
-    //   useDefaults: true,
-    //   allErrors: true,
-    //   unknownFormats: 'ignore',
-    //   missingRefs: 'fail',
-    //   // @ts-ignore TODO get Ajv updated to account for logger
-    //   logger: false,
-    //   meta: draftSchema,
-    // });
+    this.ajv = createResponseAjv(openApiSpec, options);
   }
+
   validate() {
     return mung.json((body, req: any, res) => {
       if (req.openapi) {
         const responses = req.openapi.schema && req.openapi.schema.responses;
+        const validators = this._getOrBuildValidator(req, responses);
         const statusCode = res.statusCode;
-        return this._validate({ body, responses, statusCode });
+        return this._validate({ validators, body, statusCode });
       }
       return body;
     });
   }
 
-  _validate({ body, responses, statusCode }) {
-    // TODO build validators should be cached per endpoint
-    const validators: any = this.buildValidators(responses);
+  _getOrBuildValidator(req, responses) {
+    if (!req) {
+      // use !req is only possible in unit tests
+      return this.buildValidators(responses);
+    }
 
-    // TODO Skip non JSON content validations
+    const contentType = extractContentType(req);
+    const key = `${req.method}-${req.path}-${contentType}`;
+
+    let validators = this.validatorsCache[key];
+    if (!validators) {
+      validators = this.buildValidators(responses);
+      this.validatorsCache[key] = validators;
+    }
+    return validators;
+  }
+
+  _validate({ validators, body, statusCode }) {
+    // TODO build validators should be cached per endpoint
+    // const validators: any = this.buildValidators(responses);
 
     // find a response by status code or 'default'
     let validator;
@@ -54,6 +64,11 @@ export class ResponseValidator {
       }
     }
 
+    if (!validator) {
+      console.log('no validator found');
+      // assume valid
+      return;
+    }
     const valid = validator({
       response: body,
     });
