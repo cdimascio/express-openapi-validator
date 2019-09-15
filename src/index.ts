@@ -1,9 +1,9 @@
-import * as _ from 'lodash';
-import { Application, Request, Response, NextFunction } from 'express';
-import { OpenApiContext } from './openapi.context';
-import * as middlewares from './middlewares';
 import ono from 'ono';
+import * as _ from 'lodash';
+import { Application } from 'express';
+import { OpenApiContext } from './framework/openapi.context';
 import { OpenAPIV3, OpenApiRequest } from './framework/types';
+import * as middlewares from './middlewares';
 
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;

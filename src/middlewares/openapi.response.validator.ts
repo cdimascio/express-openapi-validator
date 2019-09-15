@@ -1,9 +1,8 @@
+import ono from 'ono';
 import * as Ajv from 'ajv';
 import * as mung from 'express-mung';
-import { validationError, ajvErrorsToValidatorError } from '../errors';
-import ono from 'ono';
 import { createResponseAjv } from './ajv';
-import { extractContentType } from './util';
+import { extractContentType, ajvErrorsToValidatorError } from './util';
 
 const TYPE_JSON = 'application/json';
 

@@ -1,5 +1,5 @@
-import { OpenApiContext } from '../openapi.context';
-import { validationError } from '../errors';
+import { OpenApiContext } from '../framework/openapi.context';
+import { validationError } from './util';
 import * as multer from 'multer';
 
 export function multipart(openApiContext: OpenApiContext, multerOpts: {} = {}) {
