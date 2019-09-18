@@ -29,6 +29,7 @@ new OpenApiValidator({
   validateResponses: true, // false by default
 }).install(app);
 ```
+_Note: response validation is currently a beta feature_
 
 Then, register an error handler to customize errors
 
