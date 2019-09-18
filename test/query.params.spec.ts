@@ -49,7 +49,6 @@ describe(packageJson.name, () => {
       })
       .expect(400)
       .then(r => {
-        console.log(r.body);
         expect(r.body.errors).to.be.an('array');
       }));
 });

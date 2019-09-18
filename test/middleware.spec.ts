@@ -16,7 +16,7 @@ describe(packageJson.name, () => {
   it('should throw when spec is missing', async () => {
     const createMiddleware = () =>
       new OpenApiValidator({
-        apiSpecPath: './not-found.yaml',
+        apiSpec: './not-found.yaml',
       });
 
     expect(createMiddleware).to.throw(

@@ -25,6 +25,8 @@ Install the openapi validator
 ```javascript
 new OpenApiValidator({
   apiSpec: './test/resources/openapi.yaml',
+  validateRequests: true, // (default)
+  validateResponses: true, // false by default
 }).install(app);
 ```
 
@@ -67,6 +69,16 @@ new OpenApiValidator(options).install(app);
 
 **`apiSpec:`** a string value specifying the path to the OpenAPI 3.0.x spec or a JSON object representing an OpenAPI spec.
 
+**`validateRequests:`** enable response validation.
+
+- true - (default) validate requests
+- false - do not validate requests
+
+**`validateResponses:`** enable response validation.
+
+- true - validate responses
+- false - (default) do not validate responses
+
 **`coerceTypes:`** change data type of data to match type keyword. See the example in Coercing data types and coercion rules. Option values:
 
 - true - (default) coerce scalar data types.
@@ -74,7 +86,6 @@ new OpenApiValidator(options).install(app);
 - "array" - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
 **`multerOpts:`** the [multer opts](https://github.com/expressjs/multer) to passthrough to multer
-
 
 ## Example Express API Server
 
@@ -105,7 +116,7 @@ app.use('/spec', express.static(spec));
 
 // 3. Install the OpenApiValidator onto your express app
 new OpenApiValidator({
-  apiSpecPath: './openapi.yaml',
+  apiSpec: './openapi.yaml',
 }).install(app);
 
 // 4. Define routes using Express

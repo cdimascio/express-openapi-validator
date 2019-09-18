@@ -1,43 +1,12 @@
-import * as Ajv from 'ajv';
-import { validationError } from '../errors';
+import { createRequestAjv } from './ajv';
+import {
+  extractContentType,
+  validationError,
+  ajvErrorsToValidatorError,
+} from './util';
 import ono from 'ono';
-import * as draftSchema from 'ajv/lib/refs/json-schema-draft-04.json';
 
 const TYPE_JSON = 'application/json';
-
-const maxInt32 = 2 ** 31 - 1;
-const minInt32 = (-2) ** 31;
-
-const maxInt64 = 2 ** 63 - 1;
-const minInt64 = (-2) ** 63;
-
-const maxFloat = (2 - 2 ** -23) * 2 ** 127;
-const minFloat = 2 ** -126;
-
-const alwaysTrue = () => true;
-const base64regExp = /^[A-Za-z0-9+/]*(=|==)?$/;
-
-const formats = {
-  int32: {
-    validate: i => Number.isInteger(i) && i <= maxInt32 && i >= minInt32,
-    type: 'number',
-  },
-  int64: {
-    validate: i => Number.isInteger(i) && i <= maxInt64 && i >= minInt64,
-    type: 'number',
-  },
-  float: {
-    validate: i => typeof i === 'number' && (i <= maxFloat && i >= minFloat),
-    type: 'number',
-  },
-  double: {
-    validate: i => typeof i === 'number',
-    type: 'number',
-  },
-  byte: b => b.length % 4 === 0 && base64regExp.test(b),
-  binary: alwaysTrue,
-  password: alwaysTrue,
-};
 
 export class RequestValidator {
   private _middlewareCache;
@@ -47,62 +16,7 @@ export class RequestValidator {
   constructor(apiDocs, options = {}) {
     this._middlewareCache = {};
     this._apiDocs = apiDocs;
-    this.ajv = this.initAjv(options);
-  }
-
-  initAjv(options) {
-    const ajv = new Ajv({
-      ...options,
-      formats: { ...formats, ...options.formats },
-      schemaId: 'auto',
-      allErrors: true,
-      meta: draftSchema,
-    });
-    ajv.removeKeyword('propertyNames');
-    ajv.removeKeyword('contains');
-    ajv.removeKeyword('const');
-
-    /**
-     * Remove readOnly property in requestBody when validate.
-     * If you want validate response, then need secondary Ajv without modifying this keyword
-     * You can probably change this rule so that can't delete readOnly property in response
-     */
-    ajv.removeKeyword('readOnly');
-    ajv.addKeyword('readOnly', {
-      modifying: true,
-      compile: sch => {
-        if (sch) {
-          return (data, path, obj, propName) => {
-            delete obj[propName];
-            return true;
-          };
-        }
-
-        return () => true;
-      },
-    });
-
-    if (this._apiDocs.components.schemas) {
-      Object.entries(this._apiDocs.components.schemas).forEach(
-        ([id, schema]: any[]) => {
-          ajv.addSchema(schema, `#/components/schemas/${id}`);
-        },
-      );
-    }
-
-    if (this._apiDocs.components.requestBodies) {
-      Object.entries(this._apiDocs.components.requestBodies).forEach(
-        ([id, schema]: any[]) => {
-          // TODO add support for content all content types
-          ajv.addSchema(
-            schema.content[TYPE_JSON].schema,
-            `#/components/requestBodies/${id}`,
-          );
-        },
-      );
-    }
-
-    return ajv;
+    this.ajv = createRequestAjv(apiDocs, options);
   }
 
   validate(req, res, next) {
@@ -115,22 +29,18 @@ export class RequestValidator {
 
     const path = req.openapi.expressRoute;
     if (!path) {
-      const message = 'not found';
-      const err = validationError(404, req.path, message);
-      throw ono(err, message);
+      throw validationError(404, req.path, 'not found');
     }
 
     const pathSchema = req.openapi.schema;
     if (!pathSchema) {
       // add openapi metadata to make this case more clear
       // its not obvious that missig schema means methodNotAllowed
-      const message = `${req.method} method not allowed`;
-      const err = validationError(405, req.path, message);
-      throw ono(err, message);
+      throw validationError(405, req.path, `${req.method} method not allowed`);
     }
 
     // cache middleware by combining method, path, and contentType
-    const contentType = this.extractContentType(req);
+    const contentType = extractContentType(req);
     const key = `${req.method}-${req.path}-${contentType}`;
 
     if (!this._middlewareCache[key]) {
@@ -140,18 +50,7 @@ export class RequestValidator {
         contentType,
       );
     }
-
     return this._middlewareCache[key](req, res, next);
-  }
-
-  private extractContentType(req) {
-    let contentType = req.headers['content-type'] || 'not_provided';
-    let end = contentType.indexOf(';');
-    end = end === -1 ? contentType.length : end;
-    if (contentType) {
-      return contentType.substring(0, end);
-    }
-    return contentType;
   }
 
   private buildMiddleware(path, pathSchema, contentType) {
@@ -176,7 +75,6 @@ export class RequestValidator {
     };
 
     const validator = this.ajv.compile(schema);
-
     return (req, res, next) => {
       this.rejectUnknownQueryParams(req.query, schema.properties.query);
 
@@ -242,24 +140,9 @@ export class RequestValidator {
       if (valid) {
         next();
       } else {
-        if (errors.length > 0) {
-          const error = {
-            status: 400,
-            errors: errors.map(e => {
-              const required =
-                e.params &&
-                e.params.missingProperty &&
-                e.dataPath + '.' + e.params.missingProperty;
-              return {
-                path: required || e.dataPath || e.schemaPath,
-                message: e.message,
-                errorCode: `${e.keyword}.openapi.validation`,
-              };
-            }),
-          };
-          const message = this.ajv.errorsText(errors, { dataVar: 'request' });
-          throw ono(error, message);
-        }
+        const err = ajvErrorsToValidatorError(400, errors);
+        const message = this.ajv.errorsText(errors, { dataVar: 'request' });
+        throw ono(err, message);
       }
     };
   }
@@ -270,9 +153,11 @@ export class RequestValidator {
     const queryParams = Object.keys(query);
     for (const q of queryParams) {
       if (!knownQueryParams.has(q)) {
-        const message = `Unknown query parameter ${q}`;
-        const err = validationError(400, `.query.${q}`, message);
-        throw ono(err, message);
+        throw validationError(
+          400,
+          `.query.${q}`,
+          `Unknown query parameter ${q}`,
+        );
       }
     }
   }
@@ -281,9 +166,11 @@ export class RequestValidator {
     if (requestBody.content) {
       const content = requestBody.content[contentType];
       if (!content) {
-        const message = `unsupported media type ${contentType}`;
-        const err = validationError(415, path, message);
-        throw ono(err, message);
+        throw validationError(
+          415,
+          path,
+          `unsupported media type ${contentType}`,
+        );
       }
       return content.schema || {};
     }
@@ -320,8 +207,7 @@ export class RequestValidator {
       const reqField = reqFields[$in];
       if (!reqField) {
         const message = `Parameter 'in' has incorrect value '${$in}' for [${parameter.name}]`;
-        const err = validationError(400, path, message);
-        throw ono(err, message);
+        throw validationError(400, path, message);
       }
 
       let parameterSchema = parameter.schema;
@@ -332,8 +218,7 @@ export class RequestValidator {
 
       if (!parameterSchema) {
         const message = `No available parameter 'schema' or 'content' for [${parameter.name}]`;
-        const err = validationError(400, path, message);
-        throw ono(err, message);
+        throw validationError(400, path, message);
       }
 
       if (
@@ -344,10 +229,8 @@ export class RequestValidator {
         const delimiter = arrayDelimiter[parameter.style];
         if (!delimiter) {
           const message = `Parameter 'style' has incorrect value '${parameter.style}' for [${parameter.name}]`;
-          const err = validationError(400, path, message);
-          throw ono(err, message);
+          throw validationError(400, path, message);
         }
-
         parseArray.push({ name, reqField, delimiter });
       }
 
