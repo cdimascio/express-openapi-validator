@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * Modification of richardschneider;s mung
  * https://github.com/richardschneider/express-mung *
