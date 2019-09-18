@@ -1,5 +1,6 @@
 import ono from 'ono';
 import * as Ajv from 'ajv';
+import mung from './modded.express.mung';
 import { createResponseAjv } from './ajv';
 import {
   extractContentType,
@@ -7,7 +8,6 @@ import {
   validationError,
 } from './util';
 
-const mung = require('./modded.express.mung');
 const TYPE_JSON = 'application/json';
 
 export class ResponseValidator {
@@ -25,6 +25,7 @@ export class ResponseValidator {
   }
 
   validate() {
+    console.log('=======', mung);
     return mung.json((body, req: any, res) => {
       if (req.openapi) {
         const responses = req.openapi.schema && req.openapi.schema.responses;
