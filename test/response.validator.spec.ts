@@ -23,6 +23,7 @@ describe(packageJson.name, () => {
           validators,
           body: { message: 'some error message', code: 400 },
           statusCode: 400,
+          path: '/some-path',
         }),
       ).to.not.exist;
     } catch (e) {
@@ -43,6 +44,7 @@ describe(packageJson.name, () => {
           validators,
           body: { message, code },
           statusCode: code,
+          path: '/some-path',
         }),
       ).to.not.exist;
     } catch (e) {
@@ -62,6 +64,7 @@ describe(packageJson.name, () => {
         validators,
         body: [{ id: 'bad-id', name: 'test', tag: 'tag' }],
         statusCode: 200,
+        path: '/some-path',
       });
     } catch (e) {
       expect(e).to.be.not.null;
@@ -74,6 +77,7 @@ describe(packageJson.name, () => {
         validators,
         body: { id: 1, name: 'test', tag: 'tag' },
         statusCode: 200,
+        path: '/some-path',
       });
     } catch (e) {
       expect(e).to.be.not.null;
@@ -85,6 +89,7 @@ describe(packageJson.name, () => {
         validators,
         body: [{ id: 1, name: [], tag: 'tag' }],
         statusCode: 200,
+        path: '/some-path',
       });
     } catch (e) {
       expect(e).to.be.not.null;
@@ -99,6 +104,7 @@ describe(packageJson.name, () => {
     const responses = petsResponseSchema();
     const validators = v._getOrBuildValidator(null, responses);
     const statusCode = 200;
+    const path = '/some-path';
     const body = [
       {
         id: 10,
@@ -108,7 +114,7 @@ describe(packageJson.name, () => {
       },
     ];
     try {
-      expect(v._validate({ validators, body, statusCode })).to.not.exist;
+      expect(v._validate({ validators, body, statusCode, path })).to.not.exist;
       expect('here').to.be.null;
     } catch (e) {
       // TODO include params.additionalProperty: value in error message

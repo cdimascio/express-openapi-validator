@@ -2,7 +2,11 @@ import ono from 'ono';
 import * as Ajv from 'ajv';
 import * as mung from 'express-mung';
 import { createResponseAjv } from './ajv';
-import { extractContentType, ajvErrorsToValidatorError } from './util';
+import {
+  extractContentType,
+  ajvErrorsToValidatorError,
+  validationError,
+} from './util';
 
 const TYPE_JSON = 'application/json';
 
@@ -26,7 +30,8 @@ export class ResponseValidator {
         const responses = req.openapi.schema && req.openapi.schema.responses;
         const validators = this._getOrBuildValidator(req, responses);
         const statusCode = res.statusCode;
-        return this._validate({ validators, body, statusCode });
+        const path = req.path;
+        return this._validate({ validators, body, statusCode, path });
       }
       return body;
     });
@@ -49,7 +54,7 @@ export class ResponseValidator {
     return validators;
   }
 
-  _validate({ validators, body, statusCode }) {
+  _validate({ validators, body, statusCode, path }) {
     // find the validator for the 'status code' e.g 200, 2XX or 'default'
     let validator;
     const status = statusCode;
@@ -59,8 +64,11 @@ export class ResponseValidator {
       else if (statusXX in validators) validator = validators[statusXX];
       else if (validators.default) validator = validator.default;
       else {
-        // TODO
-        throw new Error('unknown status code - TODO fix me ');
+        throw validationError(
+          500,
+          path,
+          `no schema defined for status code '${status}' in the openapi spec`,
+        );
       }
     }
 
