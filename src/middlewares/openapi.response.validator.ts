@@ -1,6 +1,5 @@
 import ono from 'ono';
 import * as Ajv from 'ajv';
-import * as mung from 'express-mung';
 import { createResponseAjv } from './ajv';
 import {
   extractContentType,
@@ -8,6 +7,7 @@ import {
   validationError,
 } from './util';
 
+const mung = require('./modded.express.mung');
 const TYPE_JSON = 'application/json';
 
 export class ResponseValidator {
@@ -18,9 +18,9 @@ export class ResponseValidator {
   constructor(openApiSpec, options: any = {}) {
     this.spec = openApiSpec;
     this.ajv = createResponseAjv(openApiSpec, options);
-    (<any>mung).onError = function(err, req, res) {
+    (<any>mung).onError = function(err, req, res, next) {
       // monkey patch mung to rethrow exception
-      throw err;
+      return next(err);
     };
   }
 
