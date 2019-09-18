@@ -2,8 +2,8 @@ import * as _ from 'lodash';
 import OpenAPIFramework, {
   OpenAPIFrameworkArgs,
   OpenAPIFrameworkConstructorArgs,
-} from './framework';
-import { OpenAPIFrameworkAPIContext } from './framework/types';
+} from './index';
+import { OpenAPIFrameworkAPIContext } from './types';
 
 export class OpenApiSpecLoader {
   private opts: OpenAPIFrameworkArgs;
