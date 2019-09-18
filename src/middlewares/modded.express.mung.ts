@@ -5,7 +5,7 @@
 
 'use strict';
 
-let mung = {};
+let mung: any = {};
 let faux_fin = { end: () => null };
 
 function isScalar(v) {
@@ -135,7 +135,7 @@ mung.headersAsync = function headersAsync(fn) {
       return mung.onError(e, req, res, next);
     };
     function headers_async_hook() {
-      if (res.headersSent) return original.apply(this, args);
+      if (res.headersSent) return original.apply(this, null); // (this, args)
       let args = arguments;
       res.end = () => null;
       try {
@@ -145,9 +145,9 @@ mung.headersAsync = function headersAsync(fn) {
             if (res.headersSent) return;
             original.apply(this, args);
           })
-          .catch(e => onError(e, req, res, next));
+          .catch(e => onError(e));
       } catch (e) {
-        onError(e, req, res, next);
+        onError(e);
       }
     }
     res.end = headers_async_hook;
@@ -205,4 +205,4 @@ mung.write = function write(fn, options = {}) {
   };
 };
 
-module.exports = mung;
+export default mung;

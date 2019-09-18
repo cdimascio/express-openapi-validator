@@ -10,5 +10,5 @@
   },
   
   "exclude": ["node_modules"],
-  "include": ["typings.d.ts", "src/**/*.ts", "src/middlewares/modded.express.mung.js"]
+  "include": ["typings.d.ts", "src/**/*.ts", "src/middlewares/modded.express.mung.ts"]
 }
