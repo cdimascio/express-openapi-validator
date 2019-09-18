@@ -25,7 +25,6 @@ export class ResponseValidator {
   }
 
   validate() {
-    console.log('=======', mung);
     return mung.json((body, req: any, res) => {
       if (req.openapi) {
         const responses = req.openapi.schema && req.openapi.schema.responses;
