@@ -25,7 +25,7 @@ export class ResponseValidator {
   }
 
   validate() {
-    return mung.json((body, req: any, res) => {
+    return mung.jsonAsync((body, req: any, res) => {
       if (req.openapi) {
         const responses = req.openapi.schema && req.openapi.schema.responses;
         const validators = this._getOrBuildValidator(req, responses);
