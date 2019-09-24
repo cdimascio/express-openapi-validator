@@ -72,8 +72,8 @@ new OpenApiValidator(options).install(app);
 
 **`validateRequests:`** enable response validation.
 
-- true - (default) validate requests
-- false - do not validate requests
+- true - (default) validate requests.
+- false - do not validate requests.
 
 **`validateResponses:`** enable response validation.
 
