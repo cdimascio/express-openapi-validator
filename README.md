@@ -205,7 +205,7 @@ curl -s http://localhost:3000/v1/pets/as |jq
 
 #### Validate a query parameter with a range constraint
 
-`/pets?limit=?` should be of type integer with a value greater than 5. It should also require an additional query paramter, `test`, express-openapi-validator returns:
+`/pets?limit=1` should be of type integer with a value greater than 5. It should also require an additional query paramter, `test`, express-openapi-validator returns:
 
 ```shell
 curl -s http://localhost:3000/v1/pets?limit=1 |jq
