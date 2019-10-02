@@ -26,6 +26,7 @@ components:
         application/json:
           schema:
             type: object
+            additionalProperties: false
             properties:
               testProperty:
                 type: string
