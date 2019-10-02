@@ -39,8 +39,13 @@ export function ajvErrorsToValidatorError(status, errors) {
         e.params &&
         e.params.missingProperty &&
         e.dataPath + '.' + e.params.missingProperty;
+      const additionalProperty =
+        e.params &&
+        e.params.additionalProperty &&
+        e.dataPath + '.' + e.params.additionalProperty;
+      const path = required || additionalProperty || e.dataPath || e.schemaPath;
       return {
-        path: required || e.dataPath || e.schemaPath,
+        path,
         message: e.message,
         errorCode: `${e.keyword}.openapi.validation`,
       };
