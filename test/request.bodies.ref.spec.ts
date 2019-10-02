@@ -50,4 +50,28 @@ describe(packageJson.name, () => {
         testProperty: 'abc',
       })
       .expect(200));
+
+  it('should return 400 if an additional property is encountered', async () =>
+    request(app)
+      .post(`${basePath}/request_bodies_ref`)
+      .send({
+        testProperty: 'abc',
+        invalidProperty: 'abc',
+        invalidProperty2: 'abc',
+      })
+      .expect(400)
+      .then(r => {
+        const errors = r.body.errors;
+        expect(errors)
+          .to.be.an('array')
+          .with.length(2);
+        expect(errors[0].path).to.equal('.body.invalidProperty');
+        expect(errors[0].message).to.equal(
+          'should NOT have additional properties',
+        );
+        expect(errors[1].path).to.equal('.body.invalidProperty2');
+        expect(errors[1].message).to.equal(
+          'should NOT have additional properties',
+        );
+      }));
 });
