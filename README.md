@@ -72,8 +72,8 @@ new OpenApiValidator(options).install(app);
 
 **`validateRequests:`** enable response validation.
 
-- true - (default) validate requests
-- false - do not validate requests
+- true - (default) validate requests.
+- false - do not validate requests.
 
 **`validateResponses:`** enable response validation.
 
@@ -159,6 +159,27 @@ app.use((err, req, res, next) => {
 });
 ```
 
+## The Base URL
+
+The validator will only validate requests — and (optionally) responses — that are under
+the server's [base URL](https://spec.openapis.org/oas/v3.0.0.html#serverVariableObject).
+
+This is useful for those times when the API and frontend are being served by the same
+application. ([More detail about the base URL](https://swagger.io/docs/specification/api-host-and-base-path/).)
+
+```yaml
+servers:
+  - url: https://api.example.com/v1
+``` 
+
+The validation applies to all paths defined under this base URL. Routes in your app
+that are _not_ under the base URL—such as pages—will not be validated.
+
+| URL                                  | Validated?                  |
+| :----------------------------------- | :-------------------------- |
+| `https://api.example.com/v1/users`   | :white_check_mark:          |
+| `https://api.example.com/index.html` | no; not under the base URL  |
+
 ## [Example Express API Server](https://github.com/cdimascio/express-openapi-validator-example) (clone it)
 
 A fully working example lives [here](https://github.com/cdimascio/express-openapi-validator-example)
@@ -184,7 +205,7 @@ curl -s http://localhost:3000/v1/pets/as |jq
 
 #### Validate a query parameter with a range constraint
 
-`/pets?limit=?` should be of type integer with a value greater than 5. It should also require an additional query paramter, `test`, express-openapi-validator returns:
+`/pets?limit=1` should be of type integer with a value greater than 5. It should also require an additional query paramter, `test`, express-openapi-validator returns:
 
 ```shell
 curl -s http://localhost:3000/v1/pets?limit=1 |jq
@@ -283,3 +304,7 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 ## License
 
 [MIT](LICENSE)
+
+
+
+<a href="https://www.buymeacoffee.com/m97tA5c" target="_blank"><img src="https://bmc-cdn.nyc3.digitaloceanspaces.com/BMC-button-images/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
