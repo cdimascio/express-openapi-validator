@@ -26,12 +26,12 @@ const _validationError = (
   ],
 });
 
-export function validationError(status, path, message) {
+export function validationError(status: number, path: string, message: string) {
   const err = _validationError(status, path, message);
   return ono(err, message);
 }
 
-export function ajvErrorsToValidatorError(status, errors) {
+export function ajvErrorsToValidatorError(status: number, errors) {
   return {
     status,
     errors: errors.map(e => {
