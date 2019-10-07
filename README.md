@@ -80,6 +80,49 @@ new OpenApiValidator(options).install(app);
 - true - validate responses
 - false - (default) do not validate responses
 
+**`securityHandlers:`** register authentication handlers
+
+  - `securityHandlers` is an object of security keys to functions. Each key must corresponsd to the name of a `securityScheme`.  
+  - The object signature is as follows:
+	
+	```
+	{
+  		securityKey: function(
+    		req: Express.Request, 
+			scopes: string[], 
+    		schema: OpenApiV3.SecuritySchemaObject
+  		): void,
+  		...
+  	}
+	```
+	
+	The function must throw an error to cause authentication to fail
+	
+	- throw an error if authentication fails
+	- If the error thrown contains the property `message`, its value will be used as the error string.
+	
+  - Example `securityHandlers`
+
+	```javascript
+	securityHandlers: {
+		apiKeyAuth: function(req, scopes, schema) {
+		   	console.log('apikey handler throws custom error');
+			throw { errors: [] };
+		},
+	}
+	```
+	
+	Each `securityHandlers` key must match a `components/securitySchemes` key
+		
+	```yaml
+	components:
+		securitySchemes:
+			apiKeyAuth:   # <-- Note this name must match the name in the handler above
+		      type: apiKey
+		      in: header
+		      name: X-API-Key
+	```
+	
 **`coerceTypes:`** change data type of data to match type keyword. See the example in Coercing data types and coercion rules. Option values:
 
 - true - (default) coerce scalar data types.
