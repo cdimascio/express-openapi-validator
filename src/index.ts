@@ -1,6 +1,6 @@
 import ono from 'ono';
 import * as _ from 'lodash';
-import { Application } from 'express';
+import { Application, Request } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
 import { OpenAPIV3, OpenApiRequest } from './framework/types';
 import * as middlewares from './middlewares';
@@ -10,6 +10,13 @@ export interface OpenApiValidatorOpts {
   coerceTypes?: boolean;
   validateResponses?: boolean;
   validateRequests?: boolean;
+  securityHandlers?: {
+    [key: string]: (
+      req: Request,
+      scopes: [],
+      schema: OpenAPIV3.SecuritySchemeObject,
+    ) => boolean | Promise<boolean>;
+  };
   multerOpts?: {};
 }
 
@@ -58,20 +65,25 @@ export class OpenApiValidator {
       useDefaults: true,
     });
 
-    const validateMiddleware = (req, res, next) => {
+    const requestValidator = (req, res, next) => {
       return aoav.validate(req, res, next);
     };
 
-    const resOav = new middlewares.ResponseValidator(this.context.apiDoc, {
+    const responseValidator = new middlewares.ResponseValidator(this.context.apiDoc, {
       coerceTypes,
     });
 
+    const securityMiddleware = middlewares.security(this.context);
+
+    const components = this.context.apiDoc.components;
     const use = [
       middlewares.applyOpenApiMetadata(this.context),
       middlewares.multipart(this.context, this.options.multerOpts),
     ];
-    if (this.options.validateRequests) use.push(validateMiddleware);
-    if (this.options.validateResponses) use.push(resOav.validate());
+    // TODO validate security functions exist for each security key
+    if (components && components.securitySchemes) use.push(securityMiddleware);
+    if (this.options.validateRequests) use.push(requestValidator);
+    if (this.options.validateResponses) use.push(responseValidator.validate());
 
     app.use(use);
   }

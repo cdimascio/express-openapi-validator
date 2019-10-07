@@ -129,28 +129,4 @@ export class ResponseValidator {
     }
     return validators;
   }
-
-  private validateBody(body) {}
-
-  private toOpenapiValidationError(error: Ajv.ErrorObject) {
-    const validationError = {
-      path: `instance${error.dataPath}`,
-      errorCode: `${error.keyword}.openapi.responseValidation`,
-      message: error.message,
-    };
-
-    validationError.path = validationError.path.replace(
-      /^instance\.(?:response\.)?/,
-      '',
-    );
-
-    validationError.message =
-      validationError.path + ' ' + validationError.message;
-
-    if (validationError.path === 'response') {
-      delete validationError.path;
-    }
-
-    return validationError;
-  }
 }
