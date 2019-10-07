@@ -1,0 +1,34 @@
+openapi: '3.0.2'
+info:
+  version: 1.0.0
+  title: requestBodies $ref
+  description: requestBodies $ref Test
+
+servers:
+  - url: /v1/
+
+paths:
+  /api_key:
+    get:
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        #'401':
+        #   description: unauthorized
+
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    BearerAuth:
+      type: http
+      scheme: bearer
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key

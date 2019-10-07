@@ -375,7 +375,6 @@ export interface OpenAPIFrameworkPathContext {
 export interface OpenAPIFrameworkVisitor {
   visitApi?(context: OpenAPIFrameworkAPIContext): void;
   visitPath?(context: OpenAPIFrameworkPathContext): void;
-  // visitOperation?(context: OpenAPIFrameworkOperationContext): void;
 }
 
 export interface OpenApiRequest extends Request {
