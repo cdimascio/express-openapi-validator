@@ -5,18 +5,19 @@ import { OpenApiContext } from './framework/openapi.context';
 import { OpenAPIV3, OpenApiRequest } from './framework/types';
 import * as middlewares from './middlewares';
 
+export type SecurityHandlers = {
+  [key: string]: (
+    req: Request,
+    scopes: string[],
+    schema: OpenAPIV3.SecuritySchemeObject,
+  ) => boolean | Promise<boolean>;
+};
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
   coerceTypes?: boolean;
   validateResponses?: boolean;
   validateRequests?: boolean;
-  securityHandlers?: {
-    [key: string]: (
-      req: Request,
-      scopes: [],
-      schema: OpenAPIV3.SecuritySchemeObject,
-    ) => boolean | Promise<boolean>;
-  };
+  securityHandlers?: SecurityHandlers;
   multerOpts?: {};
 }
 
@@ -69,11 +70,14 @@ export class OpenApiValidator {
       return aoav.validate(req, res, next);
     };
 
-    const responseValidator = new middlewares.ResponseValidator(this.context.apiDoc, {
-      coerceTypes,
-    });
+    const responseValidator = new middlewares.ResponseValidator(
+      this.context.apiDoc,
+      {
+        coerceTypes,
+      },
+    );
 
-    const securityMiddleware = middlewares.security(this.context);
+    const securityMiddleware = middlewares.security(this.options.securityHandlers);
 
     const components = this.context.apiDoc.components;
     const use = [
