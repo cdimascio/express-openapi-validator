@@ -29,7 +29,6 @@ new OpenApiValidator({
   validateResponses: true, // false by default
 }).install(app);
 ```
-_Note: response validation is currently a beta feature_
 
 Then, register an error handler to report and customize errors
 
@@ -79,6 +78,8 @@ new OpenApiValidator(options).install(app);
 
 - true - validate responses
 - false - (default) do not validate responses
+
+_Response validation is currently a beta feature_
 
 **`coerceTypes:`** change data type of data to match type keyword. See the example in Coercing data types and coercion rules. Option values:
 
