@@ -36,7 +36,7 @@ Then, register an error handler to report and customize errors
 ```javascript
 app.use((err, req, res, next) => {
   // format error
-  res.status(err.status).json({
+  res.status(err.status || 500).json({
     message: err.message,
     errors: err.errors,
   });
