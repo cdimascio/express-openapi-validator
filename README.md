@@ -42,7 +42,7 @@ app.use((err, req, res, next) => {
 });
 ```
 
-#### Alternatively...
+#### Optionally inline api specs
 
 The `apiSpec` option may be specified as the spec object itself, rather than a path e.g.
 
