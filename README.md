@@ -31,7 +31,7 @@ new OpenApiValidator({
 ```
 _Note: response validation is currently a beta feature_
 
-Then, register an error handler to customize errors
+Then, register an error handler to report and customize errors
 
 ```javascript
 app.use((err, req, res, next) => {
