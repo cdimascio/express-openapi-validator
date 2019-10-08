@@ -20,7 +20,7 @@ npm i express-openapi-validator
 
 ## Usage
 
-Install the openapi validator
+1. Install the openapi validator
 
 ```javascript
 new OpenApiValidator({
@@ -30,7 +30,7 @@ new OpenApiValidator({
 }).install(app);
 ```
 
-Then, register an error handler to report and customize errors
+2. Register an error handler
 
 ```javascript
 app.use((err, req, res, next) => {
