@@ -20,7 +20,7 @@ npm i express-openapi-validator
 
 ## Usage
 
-Install the openapi validator
+1. Install the openapi validator
 
 ```javascript
 new OpenApiValidator({
@@ -29,14 +29,13 @@ new OpenApiValidator({
   validateResponses: true, // false by default
 }).install(app);
 ```
-_Note: response validation is currently a beta feature_
 
-Then, register an error handler to customize errors
+2. Register an error handler
 
 ```javascript
 app.use((err, req, res, next) => {
   // format error
-  res.status(err.status).json({
+  res.status(err.status || 500).json({
     message: err.message,
     errors: err.errors,
   });
@@ -45,7 +44,7 @@ app.use((err, req, res, next) => {
 
 Using custom a `format`? see [Options](#Options)
 
-#### Optionally, inline the spec...
+#### Optionally inline the spec...
 
 The `apiSpec` option may be specified as the spec object itself, rather than a path e.g.
 
@@ -93,6 +92,8 @@ new OpenApiValidator(options).install(app);
 	```javascript
 	unknownFormats: ['phone-number', 'uuid']
 	```
+
+_Response validation is currently a beta feature_
 
 **`coerceTypes:`** change data type of data to match type keyword. See the example in Coercing data types and coercion rules. Option values:
 
