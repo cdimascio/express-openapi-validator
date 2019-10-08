@@ -30,5 +30,7 @@ components:
             properties:
               testProperty:
                 type: string
+                example: +15017122661
+                format: phone-number
             required:
               - testProperty
