@@ -42,7 +42,9 @@ app.use((err, req, res, next) => {
 });
 ```
 
-#### Optionally inline api specs
+Using custom a `format`? see [Options](#Options)
+
+#### Optionally inline the spec...
 
 The `apiSpec` option may be specified as the spec object itself, rather than a path e.g.
 
@@ -71,21 +73,33 @@ new OpenApiValidator(options).install(app);
 
 **`validateRequests:`** enable response validation.
 
-- true - (default) validate requests.
-- false - do not validate requests.
+- `true` - (default) validate requests.
+- `false` - do not validate requests.
 
 **`validateResponses:`** enable response validation.
 
-- true - validate responses
-- false - (default) do not validate responses
+- `true` - validate responses
+- `false` - (default) do not validate responses
+
+**`unknownFormats:`** handling of unknown and/or custom formats. Option values:
+
+- `true` (default) - if an unknown format is encountered, validation will report a 400 error.
+- `[string]` - an array of unknown format names that will be ignored by the validator. This option can be used to allow usage of third party schemas with format(s), but still fail if another unknown format is used. (_Recommended if unknown formats are used_)
+- `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
+
+	**example:**
+	
+	```javascript
+	unknownFormats: ['phone-number', 'uuid']
+	```
 
 _Response validation is currently a beta feature_
 
 **`coerceTypes:`** change data type of data to match type keyword. See the example in Coercing data types and coercion rules. Option values:
 
-- true - (default) coerce scalar data types.
-- false - no type coercion.
-- "array" - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
+- `true` - (default) coerce scalar data types.
+- `false` - no type coercion.
+- `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
 **`multerOpts:`** the [multer opts](https://github.com/expressjs/multer) to passthrough to multer
 

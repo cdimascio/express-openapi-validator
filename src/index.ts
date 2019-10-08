@@ -7,9 +7,10 @@ import * as middlewares from './middlewares';
 
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
-  coerceTypes?: boolean;
   validateResponses?: boolean;
   validateRequests?: boolean;
+  coerceTypes?: boolean;
+  unknownFormats?: string[] | string | boolean;
   multerOpts?: {};
 }
 
@@ -18,7 +19,9 @@ export class OpenApiValidator {
   private options: OpenApiValidatorOpts;
 
   constructor(options: OpenApiValidatorOpts) {
-    if (!options.apiSpec) throw ono('apiSpec required.');
+    this.validateOptions(options);
+
+    if (options.unknownFormats == null) options.unknownFormats === true;
     if (options.coerceTypes == null) options.coerceTypes = true;
     if (options.validateRequests == null) options.validateRequests = true;
 
@@ -50,29 +53,50 @@ export class OpenApiValidator {
       });
     }
 
-    const coerceTypes = this.options.coerceTypes;
-    const aoav = new middlewares.RequestValidator(this.context.apiDoc, {
+    const { coerceTypes, unknownFormats } = this.options;
+    const requestValidator = new middlewares.RequestValidator(this.context.apiDoc, {
       nullable: true,
       coerceTypes,
       removeAdditional: false,
       useDefaults: true,
+      unknownFormats,
     });
 
-    const validateMiddleware = (req, res, next) => {
-      return aoav.validate(req, res, next);
+    const requestValidatorMw= (req, res, next) => {
+      return requestValidator.validate(req, res, next);
     };
 
-    const resOav = new middlewares.ResponseValidator(this.context.apiDoc, {
+    const responseValidator = new middlewares.ResponseValidator(this.context.apiDoc, {
       coerceTypes,
+      unknownFormats,
     });
 
     const use = [
       middlewares.applyOpenApiMetadata(this.context),
       middlewares.multipart(this.context, this.options.multerOpts),
     ];
-    if (this.options.validateRequests) use.push(validateMiddleware);
-    if (this.options.validateResponses) use.push(resOav.validate());
+    if (this.options.validateRequests) use.push(requestValidatorMw);
+    if (this.options.validateResponses) use.push(responseValidator.validate());
 
     app.use(use);
+  }
+
+  private validateOptions(options: OpenApiValidatorOpts): void {
+    if (!options.apiSpec) throw ono('apiSpec required.');
+    const unknownFormats = options.unknownFormats;
+    if (typeof unknownFormats === 'boolean') {
+      if (!unknownFormats) {
+        throw ono(
+          "unknownFormats must contain an array of unknownFormats, 'ignore' or true",
+        );
+      }
+    } else if (
+      typeof unknownFormats === 'string' &&
+      unknownFormats !== 'ignore' &&
+      !Array.isArray(unknownFormats)
+    )
+      throw ono(
+        "unknownFormats must contain an array of unknownFormats, 'ignore' or true",
+      );
   }
 }
