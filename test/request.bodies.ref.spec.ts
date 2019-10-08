@@ -13,7 +13,7 @@ describe(packageJson.name, () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'request.bodies.ref.yaml');
-    app = await createApp({ apiSpec }, 3005);
+    app = await createApp({ apiSpec, unknownFormats: ['phone-number'] }, 3005);
     basePath = app.basePath;
 
     // Define new coercion routes
