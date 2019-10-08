@@ -93,8 +93,6 @@ new OpenApiValidator(options).install(app);
 	unknownFormats: ['phone-number', 'uuid']
 	```
 
-_Response validation is currently a beta feature_
-
 **`coerceTypes:`** change data type of data to match type keyword. See the example in Coercing data types and coercion rules. Option values:
 
 - `true` - (default) coerce scalar data types.
