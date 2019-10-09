@@ -118,17 +118,21 @@ const app = express();
 // 1. Import the express-openapi-validator library
 const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
 
+// 2. Set up body parsers for body types you expect
 app.use(bodyParser.json());
+app.use(bodyParser.text());
+app.use(bodyParser.urlencoded());
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 2. (optionally) Serve the OpenAPI spec
+// 3. (optionally) Serve the OpenAPI spec
 app.use('/spec', express.static(spec));
 
-// 3. Install the OpenApiValidator onto your express app
+// 4. Install the OpenApiValidator onto your express app
 new OpenApiValidator({
   apiSpec: './openapi.yaml',
 }).install(app);
@@ -146,7 +150,7 @@ app.get('/v1/pets/:id', function(req, res, next) {
   res.json({ id: req.params.id, name: 'sparky' });
 });
 
-// 4. Define route(s) to upload file(s)
+// 5. Define route(s) to upload file(s)
 app.post('/v1/pets/:id/photos', function(req, res, next) {
   // files are found in req.files
   // non-file multipart params can be found as such: req.body['my-param']
@@ -162,10 +166,10 @@ app.post('/v1/pets/:id/photos', function(req, res, next) {
   });
 });
 
-// 5. Create an Express error handler
+// 6. Create an Express error handler
 app.use((err, req, res, next) => {
-  // 6. Customize errors
-  res.status(err.status).json({
+  // 7. Customize errors
+  res.status(err.status || 500).json({
     message: err.message,
     errors: err.errors,
   });
