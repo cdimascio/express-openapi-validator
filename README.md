@@ -42,7 +42,7 @@ app.use((err, req, res, next) => {
 });
 ```
 
-_**Note:** Ensure express is configure with all relevant body parsers. See an [example](#example-express-api-server)_
+_**Note:** Ensure express is configured with all relevant body parsers. See an [example](#example-express-api-server)_
 
 ## Advanced Usage
 
