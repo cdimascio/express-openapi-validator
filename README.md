@@ -42,7 +42,7 @@ app.use((err, req, res, next) => {
 });
 ```
 
-Note: Ensure express is configure with all relevant body parsers. See an [example](#example-express-api-server)
+_**Note:** Ensure express is configure with all relevant body parsers. See an [example](#example-express-api-server)_
 
 ## Advanced Usage
 
@@ -122,7 +122,7 @@ const app = express();
 // 1. Import the express-openapi-validator library
 const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
 
-// 2. Set up body parsers for body types you expect
+// 2. Set up body parsers for the request body types you expect
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded());
