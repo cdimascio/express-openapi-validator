@@ -19,6 +19,7 @@ npm i express-openapi-validator
 ```
 
 ## Usage
+See a complete [example](#example-express-api-server)
 
 1. Install the openapi validator
 
