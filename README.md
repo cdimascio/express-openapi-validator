@@ -43,6 +43,8 @@ app.use((err, req, res, next) => {
 });
 ```
 
+## Advanced Usage
+
 For OpenAPI 3.0.x 3rd party and custom formats, see [Options](#Options).
 
 #### Optionally inline the spec...
