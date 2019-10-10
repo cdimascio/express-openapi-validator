@@ -18,8 +18,7 @@ export class ResponseValidator {
   constructor(openApiSpec, options: any = {}) {
     this.spec = openApiSpec;
     this.ajv = createResponseAjv(openApiSpec, options);
-    (<any>mung).onError = function(err, req, res, next) {
-      // monkey patch mung to rethrow exception
+    (<any>mung).onError = (err, req, res, next) => {
       return next(err);
     };
   }
@@ -128,29 +127,5 @@ export class ResponseValidator {
       validators[name] = this.ajv.compile(schema);
     }
     return validators;
-  }
-
-  private validateBody(body) {}
-
-  private toOpenapiValidationError(error: Ajv.ErrorObject) {
-    const validationError = {
-      path: `instance${error.dataPath}`,
-      errorCode: `${error.keyword}.openapi.responseValidation`,
-      message: error.message,
-    };
-
-    validationError.path = validationError.path.replace(
-      /^instance\.(?:response\.)?/,
-      '',
-    );
-
-    validationError.message =
-      validationError.path + ' ' + validationError.message;
-
-    if (validationError.path === 'response') {
-      delete validationError.path;
-    }
-
-    return validationError;
   }
 }

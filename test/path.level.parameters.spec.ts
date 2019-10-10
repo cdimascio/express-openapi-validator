@@ -17,13 +17,13 @@ describe(packageJson.name, () => {
       'resources',
       'path.level.parameters.yaml',
     );
-    app = await createApp({ apiSpec }, 3005);
-    basePath = app.basePath;
-
-    // Define new coercion routes
-    app.use(
-      `${basePath}`,
-      express.Router().get(`/path_level_parameters`, (_req, res) => res.send()),
+    app = await createApp({ apiSpec }, 3005, app =>
+      app.use(
+        `${app.basePath}`,
+        express
+          .Router()
+          .get(`/path_level_parameters`, (_req, res) => res.send()),
+      ),
     );
   });
 
@@ -33,7 +33,7 @@ describe(packageJson.name, () => {
 
   it('should return 400 if pathLevel query parameter is not provided', async () =>
     request(app)
-      .get(`${basePath}/path_level_parameters?operationLevel=123`)
+      .get(`${app.basePath}/path_level_parameters?operationLevel=123`)
       .send()
       .expect(400)
       .then(r => {
@@ -45,7 +45,7 @@ describe(packageJson.name, () => {
 
   it('should return 400 if operationLevel query parameter is not provided', async () =>
     request(app)
-      .get(`${basePath}/path_level_parameters?pathLevel=123`)
+      .get(`${app.basePath}/path_level_parameters?pathLevel=123`)
       .send()
       .expect(400)
       .then(r => {
@@ -59,7 +59,7 @@ describe(packageJson.name, () => {
 
   it('should return 400 if neither operationLevel, nor pathLevel query parameters are provided', async () =>
     request(app)
-      .get(`${basePath}/path_level_parameters`)
+      .get(`${app.basePath}/path_level_parameters`)
       .send()
       .expect(400)
       .then(r => {
@@ -74,7 +74,7 @@ describe(packageJson.name, () => {
 
   it('should return 200 if both pathLevel and operationLevel query parameter are provided', async () =>
     request(app)
-      .get(`${basePath}/path_level_parameters?operationLevel=123&pathLevel=123`)
+      .get(`${app.basePath}/path_level_parameters?operationLevel=123&pathLevel=123`)
       .send()
       .expect(200));
 });

@@ -8,21 +8,18 @@ const packageJson = require('../package.json');
 
 describe(packageJson.name, () => {
   let app = null;
-  let basePath = null;
 
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'coercion.yaml');
-    app = await createApp({ apiSpec }, 3005);
-    basePath = app.basePath;
-
-    // Define new coercion routes
-    app.use(
-      `${basePath}/coercion`,
-      express
-        .Router()
-        .post(`/pets`, (req, res) => res.json(req.body))
-        .post(`/pets_string_boolean`, (req, res) => res.json(req.body)),
+    app = await createApp({ apiSpec }, 3005, app =>
+      app.use(
+        `${app.basePath}/coercion`,
+        express
+          .Router()
+          .post(`/pets`, (req, res) => res.json(req.body))
+          .post(`/pets_string_boolean`, (req, res) => res.json(req.body)),
+      ),
     );
   });
 
@@ -32,7 +29,7 @@ describe(packageJson.name, () => {
 
   it('should coerce is_cat to boolean since it is defined as a boolean in the spec', async () =>
     request(app)
-      .post(`${basePath}/coercion/pets`)
+      .post(`${app.basePath}/coercion/pets`)
       .send({
         name: 'test',
         is_cat: 'true',
@@ -45,7 +42,7 @@ describe(packageJson.name, () => {
 
   it('should keep is_cat as boolean', async () =>
     request(app)
-      .post(`${basePath}/coercion/pets`)
+      .post(`${app.basePath}/coercion/pets`)
       .send({
         name: 'test',
         is_cat: true,
@@ -58,7 +55,7 @@ describe(packageJson.name, () => {
 
   it('should coerce a is_cat from boolean to string since it is defined as such in the spec', async () =>
     request(app)
-      .post(`${basePath}/coercion/pets_string_boolean`)
+      .post(`${app.basePath}/coercion/pets_string_boolean`)
       .send({
         name: 'test',
         is_cat: true,
