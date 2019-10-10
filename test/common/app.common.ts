@@ -1,13 +1,11 @@
 import * as http from 'http';
 import * as express from 'express';
-const BASE_PATH = '/v1';
 
 export function startServer(app, port): Promise<http.Server> {
   return new Promise((resolve, reject) => {
     const http = require('http');
     const server = http.createServer(app);
     app.server = server;
-    app.basePath = BASE_PATH;
     server.listen(port, () => {
       console.log(`Listening on port ${port}`);
       resolve(server);
@@ -16,7 +14,7 @@ export function startServer(app, port): Promise<http.Server> {
 }
 
 export function routes(app) {
-  const basePath = BASE_PATH;
+  const basePath = app.basePath;
   const router1 = express
     .Router()
     .post('/', function(req, res, next) {
