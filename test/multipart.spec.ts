@@ -5,25 +5,21 @@ import { createApp } from './common/app';
 import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
-  let app = null;
-  let basePath = null;
+  describe(`GET .../pets/:id/photos`, () => {
+    let app = null;
 
-  before(() => {
-    const apiSpec = path.join('test', 'resources', 'openapi.yaml');
-    return createApp({ apiSpec }, 3003).then(a => {
-      app = a;
-      basePath = (<any>app).basePath;
+    before(async () => {
+      const apiSpec = path.join('test', 'resources', 'openapi.yaml');
+      app = await createApp({ apiSpec }, 3003);
     });
-  });
 
-  after(() => {
-    (<any>app).server.close();
-  });
+    after(() => {
+      (<any>app).server.close();
+    });
 
-  describe(`GET ${basePath}/pets/:id/photos`, () => {
     it('should throw 400 when required multipart file field', async () =>
       request(app)
-        .post(`${basePath}/pets/10/photos`)
+        .post(`${app.basePath}/pets/10/photos`)
         .set('Content-Type', 'multipart/form-data')
         .set('Accept', 'application/json')
         .expect(400)
@@ -38,7 +34,7 @@ describe(packageJson.name, () => {
 
     it('should throw 400 when required form field is missing during multipart upload', async () =>
       request(app)
-        .post(`${basePath}/pets/10/photos`)
+        .post(`${app.basePath}/pets/10/photos`)
         .set('Content-Type', 'multipart/form-data')
         .set('Accept', 'application/json')
         .attach('file', 'package.json')
@@ -46,7 +42,7 @@ describe(packageJson.name, () => {
 
     it('should validate multipart file and metadata', async () =>
       request(app)
-        .post(`${basePath}/pets/10/photos`)
+        .post(`${app.basePath}/pets/10/photos`)
         .set('Content-Type', 'multipart/form-data')
         .set('Accept', 'application/json')
         .attach('file', 'package.json')
@@ -65,7 +61,7 @@ describe(packageJson.name, () => {
 
     it('should throw 405 get method not allowed', async () =>
       request(app)
-        .get(`${basePath}/pets/10/photos`)
+        .get(`${app.basePath}/pets/10/photos`)
         .set('Content-Type', 'multipart/form-data')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
@@ -75,7 +71,7 @@ describe(packageJson.name, () => {
 
     it('should throw 415 unsupported media type', async () =>
       request(app)
-        .post(`${basePath}/pets/10/photos`)
+        .post(`${app.basePath}/pets/10/photos`)
         .send({ test: 'test' })
         .set('Content-Type', 'application/json')
         .expect('Content-Type', /json/)

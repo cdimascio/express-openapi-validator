@@ -14,10 +14,11 @@ export type SecurityHandlers = {
 };
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
-  coerceTypes?: boolean;
   validateResponses?: boolean;
   validateRequests?: boolean;
   securityHandlers?: SecurityHandlers;
+  coerceTypes?: boolean;
+  unknownFormats?: string[] | string | boolean;
   multerOpts?: {};
 }
 
@@ -26,7 +27,9 @@ export class OpenApiValidator {
   private options: OpenApiValidatorOpts;
 
   constructor(options: OpenApiValidatorOpts) {
-    if (!options.apiSpec) throw ono('apiSpec required.');
+    this.validateOptions(options);
+
+    if (options.unknownFormats == null) options.unknownFormats === true;
     if (options.coerceTypes == null) options.coerceTypes = true;
     if (options.validateRequests == null) options.validateRequests = true;
 
@@ -58,26 +61,33 @@ export class OpenApiValidator {
       });
     }
 
-    const coerceTypes = this.options.coerceTypes;
-    const aoav = new middlewares.RequestValidator(this.context.apiDoc, {
-      nullable: true,
-      coerceTypes,
-      removeAdditional: false,
-      useDefaults: true,
-    });
+    const { coerceTypes, unknownFormats } = this.options;
+    const requestValidator = new middlewares.RequestValidator(
+      this.context.apiDoc,
+      {
+        nullable: true,
+        coerceTypes,
+        removeAdditional: false,
+        useDefaults: true,
+        unknownFormats,
+      },
+    );
 
-    const requestValidator = (req, res, next) => {
-      return aoav.validate(req, res, next);
+    const requestValidatorMw = (req, res, next) => {
+      return requestValidator.validate(req, res, next);
     };
 
     const responseValidator = new middlewares.ResponseValidator(
       this.context.apiDoc,
       {
         coerceTypes,
+        unknownFormats,
       },
     );
 
-    const securityMiddleware = middlewares.security(this.options.securityHandlers);
+    const securityMiddleware = middlewares.security(
+      this.options.securityHandlers,
+    );
 
     const components = this.context.apiDoc.components;
     const use = [
@@ -86,9 +96,28 @@ export class OpenApiValidator {
     ];
     // TODO validate security functions exist for each security key
     if (components && components.securitySchemes) use.push(securityMiddleware);
-    if (this.options.validateRequests) use.push(requestValidator);
+    if (this.options.validateRequests) use.push(requestValidatorMw);
     if (this.options.validateResponses) use.push(responseValidator.validate());
 
     app.use(use);
+  }
+
+  private validateOptions(options: OpenApiValidatorOpts): void {
+    if (!options.apiSpec) throw ono('apiSpec required.');
+    const unknownFormats = options.unknownFormats;
+    if (typeof unknownFormats === 'boolean') {
+      if (!unknownFormats) {
+        throw ono(
+          "unknownFormats must contain an array of unknownFormats, 'ignore' or true",
+        );
+      }
+    } else if (
+      typeof unknownFormats === 'string' &&
+      unknownFormats !== 'ignore' &&
+      !Array.isArray(unknownFormats)
+    )
+      throw ono(
+        "unknownFormats must contain an array of unknownFormats, 'ignore' or true",
+      );
   }
 }

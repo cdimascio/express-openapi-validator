@@ -13,10 +13,11 @@ export function createResponseAjv(openApiSpec, options: any = {}) {
 function createAjv(openApiSpec, options: any = {}, request: boolean = true) {
   const ajv = new Ajv({
     ...options,
-    formats: { ...formats, ...options.formats },
     schemaId: 'auto',
     allErrors: true,
     meta: draftSchema,
+    formats: { ...formats, ...options.formats },
+    unknownFormats: options.unknownFormats,
   });
   ajv.removeKeyword('propertyNames');
   ajv.removeKeyword('contains');

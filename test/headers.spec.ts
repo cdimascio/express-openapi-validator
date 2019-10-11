@@ -6,13 +6,11 @@ import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
   let app = null;
-  let basePath = null;
 
   before(() => {
     const apiSpec = path.join('test', 'resources', 'openapi.yaml');
     return createApp({ apiSpec }, 3004).then(a => {
       app = a;
-      basePath = (<any>app).basePath;
     });
   });
 
@@ -22,7 +20,7 @@ describe(packageJson.name, () => {
 
   it('should throw 400 if required header is missing', async () =>
     request(app)
-      .get(`${basePath}/pets/10/attributes`)
+      .get(`${app.basePath}/pets/10/attributes`)
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(400)
