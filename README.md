@@ -20,7 +20,7 @@ npm i express-openapi-validator
 
 ## Usage
 
-Install the openapi validator
+1. Install the openapi validator
 
 ```javascript
 new OpenApiValidator({
@@ -29,21 +29,26 @@ new OpenApiValidator({
   validateResponses: true, // false by default
 }).install(app);
 ```
-_Note: response validation is currently a beta feature_
 
-Then, register an error handler to customize errors
+2. Register an error handler
 
 ```javascript
 app.use((err, req, res, next) => {
   // format error
-  res.status(err.status).json({
+  res.status(err.status || 500).json({
     message: err.message,
     errors: err.errors,
   });
 });
 ```
 
-#### Alternatively...
+_**Note:** Ensure express is configured with all relevant body parsers. See an [example](#example-express-api-server)_
+
+## Advanced Usage
+
+For OpenAPI 3.0.x 3rd party and custom formats, see [Options](#Options).
+
+#### Optionally inline the spec...
 
 The `apiSpec` option may be specified as the spec object itself, rather than a path e.g.
 
@@ -72,13 +77,25 @@ new OpenApiValidator(options).install(app);
 
 **`validateRequests:`** enable response validation.
 
-- true - (default) validate requests.
-- false - do not validate requests.
+- `true` - (default) validate requests.
+- `false` - do not validate requests.
 
 **`validateResponses:`** enable response validation.
 
-- true - validate responses
-- false - (default) do not validate responses
+- `true` - validate responses
+- `false` - (default) do not validate responses
+
+**`unknownFormats:`** handling of unknown and/or custom formats. Option values:
+
+- `true` (default) - if an unknown format is encountered, validation will report a 400 error.
+- `[string]` - an array of unknown format names that will be ignored by the validator. This option can be used to allow usage of third party schemas with format(s), but still fail if another unknown format is used. (_Recommended if unknown formats are used_)
+- `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
+
+	**example:**
+	
+	```javascript
+	unknownFormats: ['phone-number', 'uuid']
+	```
 
 **`securityHandlers:`** register authentication handlers
 
@@ -125,9 +142,9 @@ new OpenApiValidator(options).install(app);
 	
 **`coerceTypes:`** change data type of data to match type keyword. See the example in Coercing data types and coercion rules. Option values:
 
-- true - (default) coerce scalar data types.
-- false - no type coercion.
-- "array" - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
+- `true` - (default) coerce scalar data types.
+- `false` - no type coercion.
+- `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
 **`multerOpts:`** the [multer opts](https://github.com/expressjs/multer) to passthrough to multer
 
@@ -148,17 +165,21 @@ const app = express();
 // 1. Import the express-openapi-validator library
 const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
 
+// 2. Set up body parsers for the request body types you expect
 app.use(bodyParser.json());
+app.use(bodyParser.text());
+app.use(bodyParser.urlencoded());
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 2. (optionally) Serve the OpenAPI spec
+// 3. (optionally) Serve the OpenAPI spec
 app.use('/spec', express.static(spec));
 
-// 3. Install the OpenApiValidator onto your express app
+// 4. Install the OpenApiValidator onto your express app
 new OpenApiValidator({
   apiSpec: './openapi.yaml',
 }).install(app);
@@ -176,7 +197,7 @@ app.get('/v1/pets/:id', function(req, res, next) {
   res.json({ id: req.params.id, name: 'sparky' });
 });
 
-// 4. Define route(s) to upload file(s)
+// 5. Define route(s) to upload file(s)
 app.post('/v1/pets/:id/photos', function(req, res, next) {
   // files are found in req.files
   // non-file multipart params can be found as such: req.body['my-param']
@@ -192,10 +213,10 @@ app.post('/v1/pets/:id/photos', function(req, res, next) {
   });
 });
 
-// 5. Create an Express error handler
+// 6. Create an Express error handler
 app.use((err, req, res, next) => {
-  // 6. Customize errors
-  res.status(err.status).json({
+  // 7. Customize errors
+  res.status(err.status || 500).json({
     message: err.message,
     errors: err.errors,
   });

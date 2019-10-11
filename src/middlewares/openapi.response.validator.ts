@@ -18,14 +18,13 @@ export class ResponseValidator {
   constructor(openApiSpec, options: any = {}) {
     this.spec = openApiSpec;
     this.ajv = createResponseAjv(openApiSpec, options);
-    (<any>mung).onError = function(err, req, res, next) {
-      // monkey patch mung to rethrow exception
+    (<any>mung).onError = (err, req, res, next) => {
       return next(err);
     };
   }
 
   validate() {
-    return mung.jsonAsync((body, req: any, res) => {
+    return mung.json((body, req: any, res) => {
       if (req.openapi) {
         const responses = req.openapi.schema && req.openapi.schema.responses;
         const validators = this._getOrBuildValidator(req, responses);

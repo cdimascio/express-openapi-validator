@@ -10,11 +10,14 @@ import { startServer, routes } from './app.common';
 export async function createApp(
   opts?: any,
   port: number = 3000,
+  customRoutes: (app) => void = () => {},
   useRoutes: boolean = true,
 ) {
   var app = express();
+  (<any>app).basePath = '/v1';
 
   app.use(bodyParser.json());
+  app.use(bodyParser.text());
   app.use(logger('dev'));
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
@@ -24,10 +27,18 @@ export async function createApp(
   new OpenApiValidator(opts).install(app);
 
   if (useRoutes) {
+    // register common routes
     routes(app);
+  }
+
+  // register custom routes
+  customRoutes(app);
+
+  if (useRoutes) {
     // Register error handler
     app.use((err, req, res, next) => {
       res.status(err.status || 500).json({
+        message: err.message,
         errors: err.errors,
       });
     });

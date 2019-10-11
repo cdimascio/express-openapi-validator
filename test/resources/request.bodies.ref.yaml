@@ -11,24 +11,40 @@ paths:
   /request_bodies_ref:
     post:
       requestBody:
-        $ref: '#components/requestBodies/TestBody'
+        $ref: '#/components/requestBodies/TestBody'
       responses:
         '200':
           description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/Test'
         '400':
           description: Bad Request
 
 components:
+  schemas:
+    Test:
+      type: object
+      additionalProperties: false
+      properties:
+        testProperty:
+          type: string
+          example: +15017122661
+          format: phone-number
+      required:
+        - testProperty      
+
   requestBodies:
     TestBody:
       required: true
       content:
+        text/plain:
+            schema:
+              type: string
         application/json:
           schema:
-            type: object
-            additionalProperties: false
-            properties:
-              testProperty:
-                type: string
-            required:
-              - testProperty
+            $ref: '#/components/schemas/Test'

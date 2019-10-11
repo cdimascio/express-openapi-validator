@@ -13,12 +13,13 @@ describe(packageJson.name, () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'query.params.yaml');
-    app = await createApp({ apiSpec }, 3005);
-    basePath = app.basePath;
-
-    app.use(
-      `${basePath}`,
-      express.Router().post(`/pets/nullable`, (req, res) => res.json(req.body)),
+    app = await createApp({ apiSpec }, 3005, app =>
+      app.use(
+        `${app.basePath}`,
+        express
+          .Router()
+          .post(`/pets/nullable`, (req, res) => res.json(req.body)),
+      ),
     );
   });
 
@@ -28,7 +29,7 @@ describe(packageJson.name, () => {
 
   it('should pass if known query params are specified', async () =>
     request(app)
-      .get(`${basePath}/pets`)
+      .get(`${app.basePath}/pets`)
       .query({
         tags: 'one,two,three',
         limit: 10,
@@ -39,7 +40,7 @@ describe(packageJson.name, () => {
 
   it('should fail if unknown query param is specified', async () =>
     request(app)
-      .get(`${basePath}/pets`)
+      .get(`${app.basePath}/pets`)
       .query({
         tags: 'one,two,three',
         limit: 10,
