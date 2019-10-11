@@ -20,6 +20,26 @@ paths:
         #'401':
         #   description: unauthorized
 
+  /bearer:
+    get:
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+
+  /basic:
+    get:
+      security:
+        - BasicAuth: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+
 components:
   securitySchemes:
     BasicAuth:
