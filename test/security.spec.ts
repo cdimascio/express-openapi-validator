@@ -7,7 +7,7 @@ import { config } from 'chai/lib/chai';
 
 const packageJson = require('../package.json');
 
-describe(packageJson.name, () => {
+describe.only(packageJson.name, () => {
   let app = null;
   let basePath = null;
   const eovConf = {
@@ -39,7 +39,7 @@ describe(packageJson.name, () => {
   it('should return 401 if apikey handler throws exception', async () =>
     request(app)
       .get(`${basePath}/api_key`)
-      .send({})
+      .set('X-API-Key', 'test')
       .expect(401)
       .then(r => {
         const body = r.body;
@@ -55,7 +55,7 @@ describe(packageJson.name, () => {
     };
     return request(app)
       .get(`${basePath}/api_key`)
-      .send({})
+      .set('X-API-Key', 'test')
       .expect(401)
       .then(r => {
         const body = r.body;
@@ -72,7 +72,7 @@ describe(packageJson.name, () => {
     };
     return request(app)
       .get(`${basePath}/api_key`)
-      .send({})
+      .set('X-API-Key', 'test')
       .expect(401)
       .then(r => {
         const body = r.body;
@@ -80,5 +80,32 @@ describe(packageJson.name, () => {
         expect(body.errors).to.have.length(1);
         expect(body.errors[0].message).to.equals('unauthorized');
       });
+  });
+
+  it('should return 401 if apikey header is missing', async () => {
+    eovConf.securityHandlers.ApiKeyAuth = <any>function(req, scopes, schema) {
+      console.log('apikey handler returns promise false');
+      return true;
+    };
+    return request(app)
+      .get(`${basePath}/api_key`)
+      .expect(401)
+      .then(r => {
+        const body = r.body;
+        expect(body.errors).to.be.an('array');
+        expect(body.errors).to.have.length(1);
+        expect(body.errors[0].message).to.include('X-API-Key');
+      });
+  });
+
+  it('should return 200 if apikey header exists and handler returns true', async () => {
+    eovConf.securityHandlers.ApiKeyAuth = <any>function(req, scopes, schema) {
+      return true;
+    };
+    return request(app)
+      .get(`${basePath}/api_key`)
+      .set('X-API-Key', 'test')
+      .send({})
+      .expect(200);
   });
 });
