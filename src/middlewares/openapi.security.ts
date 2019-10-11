@@ -36,6 +36,7 @@ export function security(
     const promises = securitySchema.map(s => {
       try {
         const securityKey = Object.keys(s)[0];
+        const scopes = Array.isArray(s) ? s : []
         const scheme: any = securitySchemes[securityKey];
         const handler = securityHandlers[securityKey];
 
@@ -52,9 +53,9 @@ export function security(
           throw validationError(401, path, message);
         }
 
-        const { scopes } = new AuthValidator(req, scheme).validate();
+        new AuthValidator(req, scheme).validate();
 
-        return Promise.resolve(handler(req, scopes, securitySchema));
+        return Promise.resolve(handler(req, scopes, securitySchemes));
       } catch (e) {
         return Promise.reject(e);
       }
@@ -77,7 +78,6 @@ class AuthValidator {
   private req: OpenApiRequest;
   private scheme;
   private path: string;
-  private scopes: string[] = [];
   constructor(req: OpenApiRequest, scheme) {
     this.req = req;
     this.scheme = scheme;
@@ -89,9 +89,6 @@ class AuthValidator {
     this.validateHttp();
     this.validateOauth2();
     this.validateOpenID();
-    return {
-      scopes: this.scopes,
-    };
   }
 
   private validateOauth2() {
@@ -156,6 +153,7 @@ class AuthValidator {
           );
         }
       }
+      // TODO scheme in cookie
     }
   }
 }

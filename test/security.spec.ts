@@ -51,6 +51,7 @@ describe(packageJson.name, () => {
 
   it('should return 401 if apikey handler returns false', async () => {
     eovConf.securityHandlers.ApiKeyAuth = <any>function(req, scopes, schema) {
+      expect(scopes).to.be.an('array').with.length(0);
       return false;
     };
     return request(app)
@@ -67,6 +68,7 @@ describe(packageJson.name, () => {
 
   it('should return 401 if apikey handler returns Promise with false', async () => {
     eovConf.securityHandlers.ApiKeyAuth = <any>function(req, scopes, schema) {
+      expect(scopes).to.be.an('array').with.length(0);
       return Promise.resolve(false);
     };
     return request(app)
@@ -98,6 +100,7 @@ describe(packageJson.name, () => {
 
   it('should return 200 if apikey header exists and handler returns true', async () => {
     eovConf.securityHandlers.ApiKeyAuth = <any>function(req, scopes, schema) {
+      expect(scopes).to.be.an('array').with.length(0);
       return true;
     };
     return request(app)
@@ -181,6 +184,7 @@ describe(packageJson.name, () => {
   it('should return 200 if bearer auth succeeds', async () => {
     (<any>eovConf.securityHandlers).BearerAuth = <any>(
       function(req, scopes, schema) {
+        expect(scopes).to.be.an('array').with.length(0);
         return true;
       }
     );
