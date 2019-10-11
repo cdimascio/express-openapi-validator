@@ -86,6 +86,7 @@ export class OpenApiValidator {
     );
 
     const securityMiddleware = middlewares.security(
+      this.context,
       this.options.securityHandlers,
     );
 
