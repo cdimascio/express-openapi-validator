@@ -42,7 +42,7 @@ app.use((err, req, res, next) => {
 });
 ```
 
-_**Note:** Ensure express is configured with all relevant body parsers. See an [example](#example-express-api-server)_
+_**Note:** Ensure express is configured with all relevant body parsers. body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_
 
 ## Advanced Usage
 
@@ -123,6 +123,7 @@ const app = express();
 const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
 
 // 2. Set up body parsers for the request body types you expect
+//    Must be specified prior to endpoints in 4.
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded());
