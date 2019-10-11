@@ -108,4 +108,36 @@ describe.only(packageJson.name, () => {
       .send({})
       .expect(200);
   });
+
+  // TODO add these tests
+  // it('should return 401 if auth header is missing for basic auth', async () => {
+  //   eovConf.securityHandlers.BasicAuth = <any>function(req, scopes, schema) {
+  //     return true;
+  //   };
+  //   return request(app)
+  //     .get(`${basePath}/api_key`)
+  //     .send({})
+  //     .expect(401);
+  // });
+
+  // it('should return 401 if auth header is missing for bearer auth', async () => {
+  //   eovConf.securityHandlers.BearerAuth = <any>function(req, scopes, schema) {
+  //     return true;
+  //   };
+  //   return request(app)
+  //     .get(`${basePath}/api_key`)
+  //     .send({})
+  //     .expect(401);
+  // });
+
+  // it('should return 401 if auth header is missing for malformed bearer auth', async () => {
+  //   eovConf.securityHandlers.BearerAuth = <any>function(req, scopes, schema) {
+  //     return true;
+  //   };
+  //   return request(app)
+  //     .get(`${basePath}/api_key`)
+  //     .set('Authorization', 'XXXX')
+  //     .send({})
+  //     .expect(401);
+  // });
 });
