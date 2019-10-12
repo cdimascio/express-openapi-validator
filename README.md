@@ -80,6 +80,8 @@ new OpenApiValidator({ apiSpec }).install(app);
 
 ## Options
 
+The options object takes the following form. 
+
 ```javascript
 new OpenApiValidator(options).install({
   apiSpec: './openapi.yaml',
@@ -95,7 +97,9 @@ new OpenApiValidator(options).install({
 });
 ```
 
-**`apiSpec:`** a string value specifying the path to the OpenAPI 3.0.x spec or a JSON object representing an OpenAPI spec.
+**Option details:**
+
+**`apiSpec:` _required_** a string value specifying the path to the OpenAPI 3.0.x spec or a JSON object representing an OpenAPI spec.
 
 **`validateRequests:`** enable response validation.
 
