@@ -1,14 +1,22 @@
 import ono from 'ono';
 import * as _ from 'lodash';
-import { Application } from 'express';
+import { Application, Request } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
 import { OpenAPIV3, OpenApiRequest } from './framework/types';
 import * as middlewares from './middlewares';
 
+export type SecurityHandlers = {
+  [key: string]: (
+    req: Request,
+    scopes: string[],
+    schema: OpenAPIV3.SecuritySchemeObject,
+  ) => boolean | Promise<boolean>;
+};
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
   validateResponses?: boolean;
   validateRequests?: boolean;
+  securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean;
   unknownFormats?: string[] | string | boolean;
   multerOpts?: {};
@@ -54,27 +62,41 @@ export class OpenApiValidator {
     }
 
     const { coerceTypes, unknownFormats } = this.options;
-    const requestValidator = new middlewares.RequestValidator(this.context.apiDoc, {
-      nullable: true,
-      coerceTypes,
-      removeAdditional: false,
-      useDefaults: true,
-      unknownFormats,
-    });
+    const requestValidator = new middlewares.RequestValidator(
+      this.context.apiDoc,
+      {
+        nullable: true,
+        coerceTypes,
+        removeAdditional: false,
+        useDefaults: true,
+        unknownFormats,
+      },
+    );
 
-    const requestValidatorMw= (req, res, next) => {
+    const requestValidatorMw = (req, res, next) => {
       return requestValidator.validate(req, res, next);
     };
 
-    const responseValidator = new middlewares.ResponseValidator(this.context.apiDoc, {
-      coerceTypes,
-      unknownFormats,
-    });
+    const responseValidator = new middlewares.ResponseValidator(
+      this.context.apiDoc,
+      {
+        coerceTypes,
+        unknownFormats,
+      },
+    );
 
+    const securityMiddleware = middlewares.security(
+      this.context,
+      this.options.securityHandlers,
+    );
+
+    const components = this.context.apiDoc.components;
     const use = [
       middlewares.applyOpenApiMetadata(this.context),
       middlewares.multipart(this.context, this.options.multerOpts),
     ];
+    // TODO validate security functions exist for each security key
+    if (components && components.securitySchemes) use.push(securityMiddleware);
     if (this.options.validateRequests) use.push(requestValidatorMw);
     if (this.options.validateResponses) use.push(responseValidator.validate());
 
