@@ -186,6 +186,7 @@ new OpenApiValidator(options).install(app);
         return true;
       },
       ...
+    }
     ```
 
     Each `securityHandlers` `securityKey` must match a `components/securitySchemes` property
