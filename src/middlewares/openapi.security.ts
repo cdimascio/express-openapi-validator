@@ -38,6 +38,15 @@ export function security(
       return next(validationError(500, path, message));
     }
 
+    if (securities.length > 0 && !securityHandlers) {
+      const names = securities.reduce((a, i) => {
+        const p = Object.keys(i);
+        return a.concat(p);
+      }, []);
+      const message = `attempt to use securities ${names}, but no securityHandlers defined.`;
+      return next(validationError(500, path, message));
+    }
+
     try {
       const results = await new SecuritySchemes(
         securitySchemes,
@@ -75,13 +84,6 @@ class SecuritySchemes {
   }
 
   executeHandlers(req: OpenApiRequest): Promise<SecurityHandlerResult[]> {
-    if (this.securities && !this.securityHandlers) {
-      const names = Object.keys(this.securities).join(', ');
-      throw {
-        status: 500,
-        message: `attempt to use securities ${names}, but no securityHandlers defined.`,
-      };
-    }
     const promises = this.securities.map(async s => {
       try {
         const securityKey = Object.keys(s)[0];
