@@ -81,7 +81,18 @@ new OpenApiValidator({ apiSpec }).install(app);
 ## Options
 
 ```javascript
-new OpenApiValidator(options).install(app);
+new OpenApiValidator(options).install({
+  apiSpec: './openapi.yaml',
+  validateRequests: true,
+  validateResponses: true,
+  unknownFormats: ['phone-number', 'uuid'],
+  securityHandlers: {
+    ApiKeyAuth: (req, scopes, schema) => {
+      throw { status: 401, message: 'sorry' }
+    }
+  },
+  multerOpts: { ... },
+});
 ```
 
 **`apiSpec:`** a string value specifying the path to the OpenAPI 3.0.x spec or a JSON object representing an OpenAPI spec.
