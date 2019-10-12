@@ -2,13 +2,22 @@
 
 [![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) ![](https://img.shields.io/npm/dm/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg)](https://coveralls.io/github/cdimascio/express-openapi-validator) [![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
 
-An OpenApi validator for ExpressJS that automatically validates API requests using an OpenAPI 3 specification.
+An OpenApi validator for ExpressJS that automatically validates API requests and responses using an OpenAPI 3 specification.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/cdimascio/express-openapi-validator/master/assets/express-openapi-validator.png" width="500">
 </p>
 
 [express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) is unopinionated and does not impose any coding convention or project structure. Simply, install the validator onto your express app, point it to your OpenAPI 3 specification, then define and implement routes the way you prefer. See an [example](#example-express-api-server).
+
+**Features:**
+
+- request validation
+- response validation
+- security validation / custom security functions
+- 3rd party / custom formats
+- file upload
+
 
 [![GitHub stars](https://img.shields.io/github/stars/cdimascio/express-openapi-validator.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/cdimascio/express-openapi-validator/stargazers/) [![Twitter URL](https://img.shields.io/twitter/url/https/github.com/cdimascio/express-openapi-validator.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20express-openapi-validator%20by%20%40CarmineDiMascio%20https%3A%2F%2Fgithub.com%2Fcdimascio%2Fexpress-openapi-validator%20%F0%9F%91%8D)
 
@@ -46,6 +55,7 @@ _**Note:** Ensure express is configured with all relevant body parsers. See an [
 
 ## Advanced Usage
 
+To integration authentication see securityHandlers in [Options](#Options).
 For OpenAPI 3.0.x 3rd party and custom formats, see [Options](#Options).
 
 #### Optionally inline the spec...
