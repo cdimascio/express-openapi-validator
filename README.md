@@ -14,9 +14,9 @@ An OpenApi validator for ExpressJS that automatically validates API requests and
 
 - ✔️ request validation
 - ✔️ response validation 
-- 🔐 security validation / custom security functions
-- 🎈 3rd party / custom formats 
-- 🔼 file upload
+- 👮 security validation / custom security functions
+- 👾 3rd party / custom formats 
+- 🎈 file upload
 
 
 [![GitHub stars](https://img.shields.io/github/stars/cdimascio/express-openapi-validator.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/cdimascio/express-openapi-validator/stargazers/) [![Twitter URL](https://img.shields.io/twitter/url/https/github.com/cdimascio/express-openapi-validator.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20express-openapi-validator%20by%20%40CarmineDiMascio%20https%3A%2F%2Fgithub.com%2Fcdimascio%2Fexpress-openapi-validator%20%F0%9F%91%8D)
