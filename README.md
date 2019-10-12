@@ -91,11 +91,11 @@ new OpenApiValidator(options).install(app);
 - `[string]` - an array of unknown format names that will be ignored by the validator. This option can be used to allow usage of third party schemas with format(s), but still fail if another unknown format is used. (_Recommended if unknown formats are used_)
 - `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
 
-      	**example:**
+  	**For example:**
 
-      	```javascript
-      	unknownFormats: ['phone-number', 'uuid']
-      	```
+  	```javascript
+  	unknownFormats: ['phone-number', 'uuid']
+  	```
 
 **`securityHandlers:`** register authentication handlers
 
@@ -126,17 +126,21 @@ new OpenApiValidator(options).install(app);
   }
   ```
   
-  Note that the *express-openapi-validator* performs basic validation pass prior delegating to the security handler. If basic validation passes, the security handler function(s) is invoked.
+  The *express-openapi-validator* performs a basic validation pass prior to delegating to security handlers. If basic validation passes, security handler function(s) are invoked.
   
   
-  In order to signal an authentication failure, the security handler function **must** either:
+  In order to signal an auth failure, the security handler function **must** either:
 
+  1. `throw { status: 403, message: 'forbidden' }`
   - `throw Error('optional message')`
   - `return false`
   - return a promise which resolves to `false` e.g `Promise.resolve(true)`
   - return a promise rejection e.g. 
-	  - `Promise.reject(false);` 
+	  - `Promise.reject({ status: 401, message: 'yikes' });` 
 	  - `Promise.reject(Error('optional 'message')`
+	  - `Promise.reject(false)`
+
+	Note: status is always 401, unless option 1. is used
 
 	**Some examples:**
 	
@@ -146,10 +150,10 @@ new OpenApiValidator(options).install(app);
   			throw Error('my message');
   		},
   		OpenID: async (req, scopes, schema) => {
-  			throw Error('my message);
+  			throw { status: 403, message: 'forbidden' }
   		},
   		BasicAuth: (req, scopes, schema) => {
-  			return false;
+  			return Promise.resolve(false);
   		},
   		...
   	}
@@ -174,12 +178,12 @@ new OpenApiValidator(options).install(app);
 	```
 	
 	
-	  Each `securityHandlers` key must match a `components/securitySchemes` key
+	  Each `securityHandlers` `securityKey` must match a `components/securitySchemes` property
 	
 	  ```yaml
 	  components:
 	  		securitySchemes:
-	      		ApiKeyAuth: # <-- Note this name must match the name in the handler above
+	      		ApiKeyAuth: # <-- Note this name must be used as the name handler function property
 		        	type: apiKey
 		  			in: header
 		  			name: X-API-Key
