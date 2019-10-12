@@ -151,25 +151,24 @@ new OpenApiValidator(options).install(app);
       - `Promise.reject(Error('optional 'message')` 
       - `Promise.reject(false)`
 
-	Note: error status `401` is returned, unless option `i.` above is used
+  Note: error status `401` is returned, unless option `i.` above is used
 
-	**Some examples:**
-	
-	```javascript
-	  securityHandlers: {
-  		ApiKeyAuth: (req, scopes, schema) => {
-  			throw Error('my message');
-  		},
-  		OpenID: async (req, scopes, schema) => {
-  			throw { status: 403, message: 'forbidden' }
-  		},
-  		BasicAuth: (req, scopes, schema) => {
-  			return Promise.resolve(false);
-  		},
-  		...
-  	}
-  	```
+  **Some examples:**
 
+  ```javascript
+  securityHandlers: {
+    ApiKeyAuth: (req, scopes, schema) => {
+      throw Error('my message');
+    },
+    OpenID: async (req, scopes, schema) => {
+      throw { status: 403, message: 'forbidden' }
+    },
+    BasicAuth: (req, scopes, schema) => {
+      return Promise.resolve(false);
+    },
+    ...
+  }
+  ```
 
     In order to grant authz, the handler function **must** either:
     
