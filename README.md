@@ -80,11 +80,26 @@ new OpenApiValidator({ apiSpec }).install(app);
 
 ## Options
 
+The options object takes the following form. 
+
 ```javascript
-new OpenApiValidator(options).install(app);
+new OpenApiValidator(options).install({
+  apiSpec: './openapi.yaml',
+  validateRequests: true,
+  validateResponses: true,
+  unknownFormats: ['phone-number', 'uuid'],
+  securityHandlers: {
+    ApiKeyAuth: (req, scopes, schema) => {
+      throw { status: 401, message: 'sorry' }
+    }
+  },
+  multerOpts: { ... },
+});
 ```
 
-**`apiSpec:`** a string value specifying the path to the OpenAPI 3.0.x spec or a JSON object representing an OpenAPI spec.
+**Option details:**
+
+**`apiSpec:` _required_** a string value specifying the path to the OpenAPI 3.0.x spec or a JSON object representing an OpenAPI spec.
 
 **`validateRequests:`** enable response validation.
 
@@ -151,25 +166,24 @@ new OpenApiValidator(options).install(app);
       - `Promise.reject(Error('optional 'message')` 
       - `Promise.reject(false)`
 
-	Note: error status `401` is returned, unless option `i.` above is used
+  Note: error status `401` is returned, unless option `i.` above is used
 
-	**Some examples:**
-	
-	```javascript
-	  securityHandlers: {
-  		ApiKeyAuth: (req, scopes, schema) => {
-  			throw Error('my message');
-  		},
-  		OpenID: async (req, scopes, schema) => {
-  			throw { status: 403, message: 'forbidden' }
-  		},
-  		BasicAuth: (req, scopes, schema) => {
-  			return Promise.resolve(false);
-  		},
-  		...
-  	}
-  	```
+  **Some examples:**
 
+  ```javascript
+  securityHandlers: {
+    ApiKeyAuth: (req, scopes, schema) => {
+      throw Error('my message');
+    },
+    OpenID: async (req, scopes, schema) => {
+      throw { status: 403, message: 'forbidden' }
+    },
+    BasicAuth: (req, scopes, schema) => {
+      return Promise.resolve(false);
+    },
+    ...
+  }
+  ```
 
     In order to grant authz, the handler function **must** either:
     
@@ -187,6 +201,7 @@ new OpenApiValidator(options).install(app);
         return true;
       },
       ...
+    }
     ```
 
     Each `securityHandlers` `securityKey` must match a `components/securitySchemes` property
