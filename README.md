@@ -91,39 +91,39 @@ new OpenApiValidator(options).install(app);
 - `[string]` - an array of unknown format names that will be ignored by the validator. This option can be used to allow usage of third party schemas with format(s), but still fail if another unknown format is used. (_Recommended if unknown formats are used_)
 - `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
 
-      **For example:**
+  **For example:**
 
-      ```javascript
-      unknownFormats: ['phone-number', 'uuid']
-      ```
+  ```javascript
+  unknownFormats: ['phone-number', 'uuid']
+  ```
 
 **`securityHandlers:`** register authentication handlers
 
 - `securityHandlers` is an object that maps security keys to security handler functions. Each security key must correspond to `securityScheme` name.
   The `securityHandlers` object signature is as follows:
 
-  ```
+  ```typescript
   {
-  {
-  (
-  ,
-  ,
-  t
-  ,
-  }
+    securityHandlers: {
+      [securityKey]: function(
+        req: Express.Request,
+        scopes: string[],
+        schema: SecuritySchemeObject
+      ): void,
+    }
   }
   ```
 
   [SecuritySchemeObject](https://github.com/cdimascio/express-openapi-validator/blob/master/src/framework/types.ts#L269)
 
-      	**For example:**
+  **For example:**
 
   ```javascript
   securityHandlers: {
-  		ApiKeyAuth: function(req, scopes, schema) {
-  	   		console.log('apikey handler throws custom error', scopes, schema);
-  			throw Error('my message');
-  		},
+    ApiKeyAuth: function(req, scopes, schema) {
+      console.log('apikey handler throws custom error', scopes, schema);
+      throw Error('my message');
+    },
   }
   ```
 
@@ -132,33 +132,32 @@ new OpenApiValidator(options).install(app);
   In order to signal an auth failure, the security handler function **must** either:
 
   1. `throw { status: 403, message: 'forbidden' }`
+  2. `throw Error('optional message')`
+  3. `return false`
+  4. return a promise which resolves to `false` e.g `Promise.resolve(false)`
+  5. return a promise rejection e.g. 
+      - `Promise.reject({ status: 401, message: 'yikes' });`
+      - `Promise.reject(Error('optional 'message')` 
+      - `Promise.reject(false)`
 
-  - `throw Error('optional message')`
-  - `return false`
-  - return a promise which resolves to `false` e.g `Promise.resolve(true)`
-  - return a promise rejection e.g. - `Promise.reject({ status: 401, message: 'yikes' });` - `Promise.reject(Error('optional 'message')` - `Promise.reject(false)`
+	Note: status is always 401, unless option i. is used
 
-    ````
-
-    ed
-
-    **
-
-    ```javascript
-    securityHandlers: {
-    ApiKeyAuth: (req, scopes, schema) => {
-    	throw Error('my message');
-    },
-    OpenID: async (req, scopes, schema) => {
-    	throw { status: 403, message: 'forbidden' }
-    },
-    BasicAuth: (req, scopes, schema) => {
-    	return Promise.resolve(false);
-    },
-    ...
-    }
-    ```
-    ````
+	**Some examples:**
+	
+	```javascript
+	  securityHandlers: {
+  		ApiKeyAuth: (req, scopes, schema) => {
+  			throw Error('my message');
+  		},
+  		OpenID: async (req, scopes, schema) => {
+  			throw { status: 403, message: 'forbidden' }
+  		},
+  		BasicAuth: (req, scopes, schema) => {
+  			return Promise.resolve(false);
+  		},
+  		...
+  	}
+  	```
 
 
     In order to grant authz, the handler function **must** either:
@@ -168,27 +167,26 @@ new OpenApiValidator(options).install(app);
     **Some examples**
 
     ```javascript
-    	  securityHandlers: {
-      		ApiKeyAuth: (req, scopes, schema) => {
-      			return true;
-      		},
-      		ApiKeyAuth: async (req, scopes, schema) => {
-      			return true;
-      		},
-      		...
+    securityHandlers: {
+      ApiKeyAuth: (req, scopes, schema) => {
+        return true;
+      },
+      BearerAuth: async (req, scopes, schema) => {
+        return true;
+      },
+      ...
     ```
 
+    Each `securityHandlers` `securityKey` must match a `components/securitySchemes` property
 
-      Each `securityHandlers` `securityKey` must match a `components/securitySchemes` property
-
-      ```yaml
-      components:
-      		securitySchemes:
-          		ApiKeyAuth: # <-- Note this name must be used as the name handler function property
-    	        	type: apiKey
-    	  			in: header
-    	  			name: X-API-Key
-      ```
+    ```yaml
+    components:
+      securitySchemes:
+        ApiKeyAuth: # <-- Note this name must be used as the name handler function property
+          type: apiKey
+          in: header
+          name: X-API-Key
+     ```
 
     See [OpenAPI 3](https://swagger.io/docs/specification/authentication/) authentication for `securityScheme` and `security` documentation
 
