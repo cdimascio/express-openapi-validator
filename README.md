@@ -151,7 +151,7 @@ new OpenApiValidator(options).install(app);
       - `Promise.reject(Error('optional 'message')` 
       - `Promise.reject(false)`
 
-	Note: status is always 401, unless option i. is used
+	Note: error status `401` is returned, unless option `i.` above is used
 
 	**Some examples:**
 	
@@ -172,8 +172,9 @@ new OpenApiValidator(options).install(app);
 
 
     In order to grant authz, the handler function **must** either:
-    	- `return true`
-    	- return a promise which resolves to `true`
+    
+    - `return true`
+    - return a promise which resolves to `true`
 
     **Some examples**
 
