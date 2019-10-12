@@ -55,7 +55,8 @@ _**Note:** Ensure express is configured with all relevant body parsers. body par
 
 ## Advanced Usage
 
-To integration authentication see securityHandlers in [Options](#Options).
+For authentication, see securityHandlers in [Options](#Options).
+
 For OpenAPI 3.0.x 3rd party and custom formats, see [Options](#Options).
 
 #### Optionally inline the spec...
