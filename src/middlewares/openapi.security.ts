@@ -66,20 +66,21 @@ export function security(
 class SecuritySchemes {
   private securitySchemes;
   private securityHandlers: SecurityHandlers;
-  private security;
-  constructor(securitySchemes, securityHandlers: SecurityHandlers, security) {
+  private securities;
+  constructor(securitySchemes, securityHandlers: SecurityHandlers, securities) {
     this.securitySchemes = securitySchemes;
     this.securityHandlers = securityHandlers;
-    this.security = security;
+    this.securities = securities;
   }
 
   executeHandlers(req: OpenApiRequest): Promise<SecurityHandlerResult[]> {
-    const promises = this.security.map(async s => {
+    const promises = this.securities.map(async s => {
       try {
         const securityKey = Object.keys(s)[0];
-        const scopes = Array.isArray(s) ? s : [];
         const scheme: any = this.securitySchemes[securityKey];
         const handler = this.securityHandlers[securityKey];
+        const scopesTmp = s[securityKey];
+        const scopes = Array.isArray(scopesTmp) ? scopesTmp : [];
 
         if (!scheme) {
           const message = `components.securitySchemes.${securityKey} does not exist`;
@@ -89,6 +90,7 @@ class SecuritySchemes {
           const message = `components.securitySchemes.${securityKey} must have property 'type'`;
           throw Error(message);
         }
+        // TODO fail on invalid scheme.type
         if (!handler) {
           const message = `a handler for ${securityKey} does not exist`;
           throw Error(message);
@@ -96,7 +98,7 @@ class SecuritySchemes {
 
         new AuthValidator(req, scheme).validate();
 
-        const success = await handler(req, scopes, this.securitySchemes);
+        const success = await handler(req, scopes, scheme);
         return { success };
       } catch (e) {
         return {
@@ -127,18 +129,16 @@ class AuthValidator {
   }
 
   private validateOauth2() {
-    // TODO get scopes from auth validator
     const { req, scheme, path } = this;
     if (['oauth2'].includes(scheme.type.toLowerCase())) {
-      // TODO handle oauth2
+      // TODO oauth2 validation
     }
   }
 
   private validateOpenID() {
-    // TODO get scopes from auth validator
     const { req, scheme, path } = this;
     if (['openIdConnect'].includes(scheme.type.toLowerCase())) {
-      // TODO handle openidconnect
+      // TODO openidconnect validation
     }
   }
 

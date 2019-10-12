@@ -27,8 +27,8 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          description: Bad Request
+        '401':
+          description: unauthorized
 
   /basic:
     get:
@@ -37,8 +37,32 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          description: Bad Request
+        '401':
+          description: unauthorized
+
+  /oauth2:
+    get:
+      security:
+        - OAuth2:
+            - scope1
+            - scope2
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: unauthorized
+
+  /openid:
+    get:
+      security:
+        - OpenID:
+            - scope1
+            - scope2
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: unauthorized
 
 components:
   securitySchemes:
@@ -52,3 +76,16 @@ components:
       type: apiKey
       in: header
       name: X-API-Key
+    OpenID:
+      type: openIdConnect
+      openIdConnectUrl: https://example.com/.well-known/openid-configuration
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://example.com/oauth/authorize
+          tokenUrl: https://example.com/oauth/token
+          scopes:
+            read: Grants read access
+            write: Grants write access
+            admin: Grants access to admin operations

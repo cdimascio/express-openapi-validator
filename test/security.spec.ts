@@ -29,7 +29,9 @@ describe(packageJson.name, () => {
         .Router()
         .get(`/api_key`, (req, res) => res.json({ logged_in: true }))
         .get(`/bearer`, (req, res) => res.json({ logged_in: true }))
-        .get(`/basic`, (req, res) => res.json({ logged_in: true })),
+        .get(`/basic`, (req, res) => res.json({ logged_in: true }))
+        .get(`/oauth2`, (req, res) => res.json({ logged_in: true }))
+        .get(`/openid`, (req, res) => res.json({ logged_in: true })),
     );
   });
 
@@ -51,7 +53,9 @@ describe(packageJson.name, () => {
 
   it('should return 401 if apikey handler returns false', async () => {
     eovConf.securityHandlers.ApiKeyAuth = <any>function(req, scopes, schema) {
-      expect(scopes).to.be.an('array').with.length(0);
+      expect(scopes)
+        .to.be.an('array')
+        .with.length(0);
       return false;
     };
     return request(app)
@@ -68,7 +72,9 @@ describe(packageJson.name, () => {
 
   it('should return 401 if apikey handler returns Promise with false', async () => {
     eovConf.securityHandlers.ApiKeyAuth = <any>function(req, scopes, schema) {
-      expect(scopes).to.be.an('array').with.length(0);
+      expect(scopes)
+        .to.be.an('array')
+        .with.length(0);
       return Promise.resolve(false);
     };
     return request(app)
@@ -100,7 +106,12 @@ describe(packageJson.name, () => {
 
   it('should return 200 if apikey header exists and handler returns true', async () => {
     eovConf.securityHandlers.ApiKeyAuth = <any>function(req, scopes, schema) {
-      expect(scopes).to.be.an('array').with.length(0);
+      expect(schema.type).to.equal('apiKey');
+      expect(schema.in).to.equal('header');
+      expect(schema.name).to.equal('X-API-Key');
+      expect(scopes)
+        .to.be.an('array')
+        .with.length(0);
       return true;
     };
     return request(app)
@@ -184,7 +195,11 @@ describe(packageJson.name, () => {
   it('should return 200 if bearer auth succeeds', async () => {
     (<any>eovConf.securityHandlers).BearerAuth = <any>(
       function(req, scopes, schema) {
-        expect(scopes).to.be.an('array').with.length(0);
+        expect(schema.type).to.equal('http');
+        expect(schema.scheme).to.equal('bearer');
+        expect(scopes)
+          .to.be.an('array')
+          .with.length(0);
         return true;
       }
     );
@@ -194,5 +209,37 @@ describe(packageJson.name, () => {
       .expect(200);
   });
 
-  // TODO create tests for oauth2 and openid
+  it('should return 200 if oauth2 auth succeeds', async () => {
+    (<any>eovConf.securityHandlers).OAuth2 = <any>(
+      function(req, scopes, schema) {
+        expect(schema.type).to.equal('oauth2');
+        expect(schema).to.have.property('flows');
+        expect(scopes)
+          .to.be.an('array')
+          .with.length(2);
+
+        return true;
+      }
+    );
+    return request(app)
+      .get(`${basePath}/oauth2`)
+      .expect(200);
+  });
+
+  it('should return 200 if openid auth succeeds', async () => {
+    (<any>eovConf.securityHandlers).OpenID = <any>(
+      function(req, scopes, schema) {
+        expect(schema.type).to.equal('openIdConnect');
+        expect(schema).to.have.property('openIdConnectUrl');
+        expect(scopes)
+          .to.be.an('array')
+          .with.length(2);
+
+        return true;
+      }
+    );
+    return request(app)
+      .get(`${basePath}/openid`)
+      .expect(200);
+  });
 });
