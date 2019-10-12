@@ -3,6 +3,10 @@ import { OpenAPIV3, OpenApiRequest } from '../framework/types';
 import { validationError } from './util';
 import { OpenApiContext } from '../framework/openapi.context';
 
+interface SecurityHandlerResult {
+  success: boolean;
+  error: string;
+}
 export function security(
   context: OpenApiContext,
   securityHandlers: SecurityHandlers,
@@ -15,56 +19,41 @@ export function security(
       return next();
     }
 
-    const securitySchema = <OpenAPIV3.SecuritySchemeObject>(
+    const securities = <OpenAPIV3.SecuritySchemeObject>(
       req.openapi.schema.security
     );
 
     const path: string = req.openapi.openApiRoute;
 
-    if (!path || !Array.isArray(securitySchema)) {
+    if (!path || !Array.isArray(securities)) {
       return next();
     }
 
     const securitySchemes =
       context.apiDoc.components && context.apiDoc.components.securitySchemes;
+
     if (!securitySchemes) {
       const message = `security referenced at path ${path}, but not defined in components.securitySchemes`;
       return next(validationError(500, path, message));
     }
 
-    // TODO security could be boolean or promise bool, handle both
-    const promises = securitySchema.map(s => {
-      try {
-        const securityKey = Object.keys(s)[0];
-        const scopes = Array.isArray(s) ? s : []
-        const scheme: any = securitySchemes[securityKey];
-        const handler = securityHandlers[securityKey];
-
-        if (!scheme) {
-          const message = `components.securitySchemes.${securityKey} does not exist`;
-          throw validationError(401, path, message);
-        }
-        if (!scheme.type) {
-          const message = `components.securitySchemes.${securityKey} must have property 'type'`;
-          throw validationError(401, path, message);
-        }
-        if (!handler) {
-          const message = `a handler for ${securityKey} does not exist`;
-          throw validationError(401, path, message);
-        }
-
-        new AuthValidator(req, scheme).validate();
-
-        return Promise.resolve(handler(req, scopes, securitySchemes));
-      } catch (e) {
-        return Promise.reject(e);
-      }
-    });
-
     try {
-      const results = await Promise.all(promises);
-      const authFailed = results.filter(b => !b).length > 0;
-      if (authFailed) throw validationError(401, path, 'unauthorized');
+      const results = await new SecuritySchemes(
+        securitySchemes,
+        securityHandlers,
+        securities,
+      ).executeHandlers(req);
+
+      // TODO handle AND'd and OR'd security
+      // This assumes OR only! i.e. at least one security passed authentication
+      let firstError = null;
+      for (var r of results) {
+        if (!r.success) {
+          firstError = r.error || Error('unauthorized');
+          break;
+        }
+      }
+      if (firstError) throw firstError;
       else next();
     } catch (e) {
       const message = (e && e.message) || 'unauthorized';
@@ -72,6 +61,52 @@ export function security(
       next(err);
     }
   };
+}
+
+class SecuritySchemes {
+  private securitySchemes;
+  private securityHandlers: SecurityHandlers;
+  private security;
+  constructor(securitySchemes, securityHandlers: SecurityHandlers, security) {
+    this.securitySchemes = securitySchemes;
+    this.securityHandlers = securityHandlers;
+    this.security = security;
+  }
+
+  executeHandlers(req: OpenApiRequest): Promise<SecurityHandlerResult[]> {
+    const promises = this.security.map(async s => {
+      try {
+        const securityKey = Object.keys(s)[0];
+        const scopes = Array.isArray(s) ? s : [];
+        const scheme: any = this.securitySchemes[securityKey];
+        const handler = this.securityHandlers[securityKey];
+
+        if (!scheme) {
+          const message = `components.securitySchemes.${securityKey} does not exist`;
+          throw Error(message);
+        }
+        if (!scheme.type) {
+          const message = `components.securitySchemes.${securityKey} must have property 'type'`;
+          throw Error(message);
+        }
+        if (!handler) {
+          const message = `a handler for ${securityKey} does not exist`;
+          throw Error(message);
+        }
+
+        new AuthValidator(req, scheme).validate();
+
+        const success = await handler(req, scopes, this.securitySchemes);
+        return { success };
+      } catch (e) {
+        return {
+          success: false,
+          error: e,
+        };
+      }
+    });
+    return Promise.all(promises);
+  }
 }
 
 class AuthValidator {
@@ -115,24 +150,16 @@ class AuthValidator {
         req.headers['authorization'].toLowerCase();
 
       if (!authHeader) {
-        throw validationError(401, path, `Authorization header required.`);
+        throw Error(`Authorization header required.`);
       }
 
       const type = scheme.scheme && scheme.scheme.toLowerCase();
       if (type === 'bearer' && !authHeader.includes('bearer')) {
-        throw validationError(
-          401,
-          path,
-          `Authorization header with scheme 'Bearer' required.`,
-        );
+        throw Error(`Authorization header with scheme 'Bearer' required.`);
       }
 
       if (type === 'basic' && !authHeader.includes('basic')) {
-        throw validationError(
-          401,
-          path,
-          `Authorization header with scheme 'Basic' required.`,
-        );
+        throw Error(`Authorization header with scheme 'Basic' required.`);
       }
     }
   }
@@ -142,15 +169,11 @@ class AuthValidator {
     if (scheme.type === 'apiKey') {
       if (scheme.in === 'header') {
         if (!req.headers[scheme.name.toLowerCase()]) {
-          throw validationError(401, path, `'${scheme.name}' header required.`);
+          throw Error(`'${scheme.name}' header required.`);
         }
       } else if (scheme.in === 'query') {
         if (!req.headers[scheme.name]) {
-          throw validationError(
-            401,
-            path,
-            `query parameter '${scheme.name}' required.`,
-          );
+          throw Error(`query parameter '${scheme.name}' required.`);
         }
       }
       // TODO scheme in cookie
