@@ -14,8 +14,8 @@ An OpenApi validator for ExpressJS that automatically validates API requests and
 
 - ✔️ request validation
 - ✔️ response validation 
-- 🔐security validation / 🍆custom security functions
-- 🎈3rd party / 🦄custom formats 
+- 🔐security validation / custom security functions
+- 🎈3rd party / custom formats 
 - 🔼file upload
 
 
