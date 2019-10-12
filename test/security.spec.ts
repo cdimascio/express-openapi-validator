@@ -7,6 +7,8 @@ import { config } from 'chai/lib/chai';
 
 const packageJson = require('../package.json');
 
+// NOTE/TODO: These tests modify eovConf.securityHandlers
+// Thus test execution order matters :-(
 describe(packageJson.name, () => {
   let app = null;
   let basePath = null;
@@ -14,7 +16,7 @@ describe(packageJson.name, () => {
     apiSpec: path.join('test', 'resources', 'security.yaml'),
     securityHandlers: {
       ApiKeyAuth: function(req, scopes, schema) {
-        throw { errors: [] };
+        throw Error('custom api key handler failed');
       },
     },
   };
@@ -48,7 +50,9 @@ describe(packageJson.name, () => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
-        expect(body.errors[0].message).to.equals('unauthorized');
+        expect(body.errors[0].message).to.equals(
+          'custom api key handler failed',
+        );
       }));
 
   it('should return 401 if apikey handler returns false', async () => {
@@ -241,5 +245,28 @@ describe(packageJson.name, () => {
     return request(app)
       .get(`${basePath}/openid`)
       .expect(200);
+  });
+
+  it('should return 500 if missing handler', async () => {
+    delete (<any>eovConf.securityHandlers).OpenID;
+    (<any>eovConf.securityHandlers).Test = <any>function(req, scopes, schema) {
+      expect(schema.type).to.equal('openIdConnect');
+      expect(schema).to.have.property('openIdConnectUrl');
+      expect(scopes)
+        .to.be.an('array')
+        .with.length(2);
+
+      return true;
+    };
+    return request(app)
+      .get(`${basePath}/openid`)
+      .expect(500)
+      .then(r => {
+        const body = r.body;
+        const msg = "a handler for 'OpenID' does not exist";
+        expect(body.message).to.equal(msg);
+        expect(body.errors[0].message).to.equal(msg);
+        expect(body.errors[0].path).to.equal(`${basePath}/openid`);
+      });
   });
 });

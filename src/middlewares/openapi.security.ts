@@ -5,6 +5,7 @@ import { OpenApiContext } from '../framework/openapi.context';
 
 interface SecurityHandlerResult {
   success: boolean;
+  status: number;
   error: string;
 }
 export function security(
@@ -46,18 +47,18 @@ export function security(
 
       // TODO handle AND'd and OR'd security
       // This assumes OR only! i.e. at least one security passed authentication
-      let firstError = null;
+      let firstError: SecurityHandlerResult = null;
       for (var r of results) {
         if (!r.success) {
-          firstError = r.error || Error('unauthorized');
+          firstError = r;
           break;
         }
       }
       if (firstError) throw firstError;
       else next();
     } catch (e) {
-      const message = (e && e.message) || 'unauthorized';
-      const err = validationError(401, path, message);
+      const message = (e && e.error && e.error.message) || 'unauthorized';
+      const err = validationError(e.status, path, message);
       next(err);
     }
   };
@@ -84,25 +85,36 @@ class SecuritySchemes {
 
         if (!scheme) {
           const message = `components.securitySchemes.${securityKey} does not exist`;
-          throw Error(message);
+          throw { status: 500, message };
         }
         if (!scheme.type) {
           const message = `components.securitySchemes.${securityKey} must have property 'type'`;
-          throw Error(message);
+          throw { status: 500, message };
         }
-        // TODO fail on invalid scheme.type
         if (!handler) {
-          const message = `a handler for ${securityKey} does not exist`;
-          throw Error(message);
+          const message = `a handler for '${securityKey}' does not exist`;
+          throw { status: 500, message };
         }
 
         new AuthValidator(req, scheme).validate();
 
+        // expected handler results are:
+        // - throw exception, 
+        // - return true, 
+        // - return Promise<true>, 
+        // - return false, 
+        // - return Promise<false>
+        // everything else should be treated as false
         const success = await handler(req, scopes, scheme);
-        return { success };
+        if (success === true) {
+          return { success };
+        } else {
+          throw Error();
+        }
       } catch (e) {
         return {
           success: false,
+          status: e.status || 401,
           error: e,
         };
       }
