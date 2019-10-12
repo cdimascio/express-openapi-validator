@@ -15,7 +15,7 @@ describe(packageJson.name, () => {
   const eovConf = {
     apiSpec: path.join('test', 'resources', 'security.yaml'),
     securityHandlers: {
-      ApiKeyAuth: function(req, scopes, schema) {
+      ApiKeyAuth: (req, scopes, schema) => {
         throw Error('custom api key handler failed');
       },
     },
@@ -93,6 +93,29 @@ describe(packageJson.name, () => {
       });
   });
 
+  it('should return 401 if apikey handler returns Promise reject with custom message', async () => {
+    (<any>eovConf.securityHandlers).ApiKeyAuth = (
+      req,
+      scopes,
+      schema,
+    ) => {
+      expect(scopes)
+        .to.be.an('array')
+        .with.length(0);
+      return Promise.reject(new Error('rejected promise'));
+    };
+    return request(app)
+      .get(`${basePath}/api_key`)
+      .set('X-API-Key', 'test')
+      .expect(401)
+      .then(r => {
+        const body = r.body;
+        expect(body.errors).to.be.an('array');
+        expect(body.errors).to.have.length(1);
+        expect(body.errors[0].message).to.equals('rejected promise');
+      });
+  });
+
   it('should return 401 if apikey header is missing', async () => {
     eovConf.securityHandlers.ApiKeyAuth = <any>function(req, scopes, schema) {
       return true;
@@ -125,7 +148,7 @@ describe(packageJson.name, () => {
   });
 
   it('should return 401 if auth header is missing for basic auth', async () => {
-    (<any>eovConf.securityHandlers).BasicAuth = function(req, scopes, schema) {
+    (<any>eovConf.securityHandlers).BasicAuth = async (req, scopes, schema) => {
       return true;
     };
     return request(app)
