@@ -91,31 +91,32 @@ new OpenApiValidator(options).install(app);
 - `[string]` - an array of unknown format names that will be ignored by the validator. This option can be used to allow usage of third party schemas with format(s), but still fail if another unknown format is used. (_Recommended if unknown formats are used_)
 - `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
 
-  	**For example:**
+      **For example:**
 
-  	```javascript
-  	unknownFormats: ['phone-number', 'uuid']
-  	```
+      ```javascript
+      unknownFormats: ['phone-number', 'uuid']
+      ```
 
 **`securityHandlers:`** register authentication handlers
 
 - `securityHandlers` is an object that maps security keys to security handler functions. Each security key must correspond to `securityScheme` name.
-	
-	The `securityHandlers` object signature is as follows:
+  The `securityHandlers` object signature is as follows:
 
   ```
   {
-	  securityHandlers: {
-	  		[securityKey]: function(
-	  			req: Express.Request,
-	  			scopes: string[],
-	  			schema: Object // The OpenAPI components.securitySchemes.<scheme>
-	  		): void,
-	  }
+  {
+  (
+  ,
+  ,
+  t
+  ,
+  }
   }
   ```
 
-	**For example:**
+  [SecuritySchemeObject](https://github.com/cdimascio/express-openapi-validator/blob/master/src/framework/types.ts#L269)
+
+      	**For example:**
 
   ```javascript
   securityHandlers: {
@@ -125,73 +126,73 @@ new OpenApiValidator(options).install(app);
   		},
   }
   ```
-  
-  The *express-openapi-validator* performs a basic validation pass prior to delegating to security handlers. If basic validation passes, security handler function(s) are invoked.
-  
-  
+
+  The _express-openapi-validator_ performs a basic validation pass prior to delegating to security handlers. If basic validation passes, security handler function(s) are invoked.
+
   In order to signal an auth failure, the security handler function **must** either:
 
   1. `throw { status: 403, message: 'forbidden' }`
+
   - `throw Error('optional message')`
   - `return false`
   - return a promise which resolves to `false` e.g `Promise.resolve(true)`
-  - return a promise rejection e.g. 
-	  - `Promise.reject({ status: 401, message: 'yikes' });` 
-	  - `Promise.reject(Error('optional 'message')`
-	  - `Promise.reject(false)`
+  - return a promise rejection e.g. - `Promise.reject({ status: 401, message: 'yikes' });` - `Promise.reject(Error('optional 'message')` - `Promise.reject(false)`
 
-	Note: status is always 401, unless option 1. is used
+    ````
 
-	**Some examples:**
-	
-	```javascript
-	  securityHandlers: {
-  		ApiKeyAuth: (req, scopes, schema) => {
-  			throw Error('my message');
-  		},
-  		OpenID: async (req, scopes, schema) => {
-  			throw { status: 403, message: 'forbidden' }
-  		},
-  		BasicAuth: (req, scopes, schema) => {
-  			return Promise.resolve(false);
-  		},
-  		...
-  	}
-  	```
-	
+    ed
 
-	In order to grant authz, the handler function **must** either:
-		- `return true`
-		- return a promise which resolves to `true`
-	
-	**Some examples**
-	
-	```javascript
-		  securityHandlers: {
-	  		ApiKeyAuth: (req, scopes, schema) => {
-	  			return true;
-	  		},
-	  		ApiKeyAuth: async (req, scopes, schema) => {
-	  			return true;
-	  		},
-	  		...
-	```
-	
-	
-	  Each `securityHandlers` `securityKey` must match a `components/securitySchemes` property
-	
-	  ```yaml
-	  components:
-	  		securitySchemes:
-	      		ApiKeyAuth: # <-- Note this name must be used as the name handler function property
-		        	type: apiKey
-		  			in: header
-		  			name: X-API-Key
-	  ```
+    **
 
-	See [OpenAPI 3](https://swagger.io/docs/specification/authentication/) authentication for `securityScheme` and `security` documentation
-	
-	See [examples](https://github.com/cdimascio/express-openapi-validator/blob/security/test/security.spec.ts#L17) from unit tests
+    ```javascript
+    securityHandlers: {
+    ApiKeyAuth: (req, scopes, schema) => {
+    	throw Error('my message');
+    },
+    OpenID: async (req, scopes, schema) => {
+    	throw { status: 403, message: 'forbidden' }
+    },
+    BasicAuth: (req, scopes, schema) => {
+    	return Promise.resolve(false);
+    },
+    ...
+    }
+    ```
+    ````
+
+
+    In order to grant authz, the handler function **must** either:
+    	- `return true`
+    	- return a promise which resolves to `true`
+
+    **Some examples**
+
+    ```javascript
+    	  securityHandlers: {
+      		ApiKeyAuth: (req, scopes, schema) => {
+      			return true;
+      		},
+      		ApiKeyAuth: async (req, scopes, schema) => {
+      			return true;
+      		},
+      		...
+    ```
+
+
+      Each `securityHandlers` `securityKey` must match a `components/securitySchemes` property
+
+      ```yaml
+      components:
+      		securitySchemes:
+          		ApiKeyAuth: # <-- Note this name must be used as the name handler function property
+    	        	type: apiKey
+    	  			in: header
+    	  			name: X-API-Key
+      ```
+
+    See [OpenAPI 3](https://swagger.io/docs/specification/authentication/) authentication for `securityScheme` and `security` documentation
+
+    See [examples](https://github.com/cdimascio/express-openapi-validator/blob/security/test/security.spec.ts#L17) from unit tests
 
 **`coerceTypes:`** change data type of data to match type keyword. See the example in Coercing data types and coercion rules. Option values:
 
