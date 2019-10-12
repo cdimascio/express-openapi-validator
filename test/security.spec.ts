@@ -94,11 +94,7 @@ describe(packageJson.name, () => {
   });
 
   it('should return 401 if apikey handler returns Promise reject with custom message', async () => {
-    (<any>eovConf.securityHandlers).ApiKeyAuth = (
-      req,
-      scopes,
-      schema,
-    ) => {
+    (<any>eovConf.securityHandlers).ApiKeyAuth = (req, scopes, schema) => {
       expect(scopes)
         .to.be.an('array')
         .with.length(0);
@@ -251,6 +247,27 @@ describe(packageJson.name, () => {
     return request(app)
       .get(`${basePath}/oauth2`)
       .expect(200);
+  });
+
+  it('should return 403 if oauth2 handler throws 403', async () => {
+    (<any>eovConf.securityHandlers).OAuth2 = <any>(
+      function(req, scopes, schema) {
+        expect(schema.type).to.equal('oauth2');
+        expect(schema).to.have.property('flows');
+        expect(scopes)
+          .to.be.an('array')
+          .with.length(2);
+
+        throw { status: 403, message: 'forbidden' };
+      }
+    );
+    return request(app)
+      .get(`${basePath}/oauth2`)
+      .expect(403)
+      .then(r => {
+        const body = r.body;
+        expect(r.body.message).to.equal('forbidden');
+      });
   });
 
   it('should return 200 if openid auth succeeds', async () => {
