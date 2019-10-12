@@ -91,62 +91,111 @@ new OpenApiValidator(options).install(app);
 - `[string]` - an array of unknown format names that will be ignored by the validator. This option can be used to allow usage of third party schemas with format(s), but still fail if another unknown format is used. (_Recommended if unknown formats are used_)
 - `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
 
-	**example:**
-	
-	```javascript
-	unknownFormats: ['phone-number', 'uuid']
-	```
+      	**example:**
+
+      	```javascript
+      	unknownFormats: ['phone-number', 'uuid']
+      	```
 
 **`securityHandlers:`** register authentication handlers
 
-  - `securityHandlers` is an object of security keys to functions. Each key must corresponsd to the name of a `securityScheme`.  
-  - The object signature is as follows:
+- `securityHandlers` is an object that maps security keys to security handler functions. Each security key must correspond to `securityScheme` name.
 	
-	```
-	{
-  		securityKey: function(
-    		req: Express.Request, 
-			scopes: string[], 
-    		schema: OpenApiV3.SecuritySchemaObject
-  		): void,
+	The `securityHandlers` object signature is as follows:
+
+  ```
+  {
+	  securityHandlers: {
+	  		[securityKey]: function(
+	  			req: Express.Request,
+	  			scopes: string[],
+	  			schema: Object // The OpenAPI components.securitySchemes.<scheme>
+	  		): void,
+	  }
+  }
+  ```
+
+	**For example:**
+
+  ```javascript
+  securityHandlers: {
+  		ApiKeyAuth: function(req, scopes, schema) {
+  	   		console.log('apikey handler throws custom error', scopes, schema);
+  			throw Error('my message');
+  		},
+  }
+  ```
+  
+  Note that the *express-openapi-validator* performs basic validation pass prior delegating to the security handler. If basic validation passes, the security handler function(s) is invoked.
+  
+  
+  In order to signal an authentication failure, the security handler function **must** either:
+
+  - `throw Error('optional message')`
+  - `return false`
+  - return a promise which resolves to `false` e.g `Promise.resolve(true)`
+  - return a promise rejection e.g. 
+	  - `Promise.reject(false);` 
+	  - `Promise.reject(Error('optional 'message')`
+
+	**Some examples:**
+	
+	```javascript
+	  securityHandlers: {
+  		ApiKeyAuth: (req, scopes, schema) => {
+  			throw Error('my message');
+  		},
+  		OpenID: async (req, scopes, schema) => {
+  			throw Error('my message);
+  		},
+  		BasicAuth: (req, scopes, schema) => {
+  			return false;
+  		},
   		...
   	}
-	```
+  	```
 	
-	The function must throw an error to cause authentication to fail
-	
-	- throw an error if authentication fails
-	- If the error thrown contains the property `message`, its value will be used as the error string.
-	
-  - Example `securityHandlers`
 
+	In order to grant authz, the handler function **must** either:
+		- `return true`
+		- return a promise which resolves to `true`
+	
+	**Some examples**
+	
 	```javascript
-	securityHandlers: {
-		apiKeyAuth: function(req, scopes, schema) {
-		   	console.log('apikey handler throws custom error');
-			throw { errors: [] };
-		},
-	}
+		  securityHandlers: {
+	  		ApiKeyAuth: (req, scopes, schema) => {
+	  			return true;
+	  		},
+	  		ApiKeyAuth: async (req, scopes, schema) => {
+	  			return true;
+	  		},
+	  		...
 	```
 	
-	Each `securityHandlers` key must match a `components/securitySchemes` key
-		
-	```yaml
-	components:
-		securitySchemes:
-			apiKeyAuth:   # <-- Note this name must match the name in the handler above
-		      type: apiKey
-		      in: header
-		      name: X-API-Key
-	```
 	
+	  Each `securityHandlers` key must match a `components/securitySchemes` key
+	
+	  ```yaml
+	  components:
+	  		securitySchemes:
+	      		ApiKeyAuth: # <-- Note this name must match the name in the handler above
+		        	type: apiKey
+		  			in: header
+		  			name: X-API-Key
+	  ```
+
+	See [OpenAPI 3](https://swagger.io/docs/specification/authentication/) authentication for `securityScheme` and `security` documentation
+	
+	See [examples](https://github.com/cdimascio/express-openapi-validator/blob/security/test/security.spec.ts#L17) from unit tests
+
 **`coerceTypes:`** change data type of data to match type keyword. See the example in Coercing data types and coercion rules. Option values:
 
 - `true` - (default) coerce scalar data types.
 - `false` - no type coercion.
 - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
-**`multerOpts:`** the [multer opts](https://github.com/expressjs/multer) to passthrough to multer
+**`multerOpts:`** used to customize upload options. [multer opts](https://github.com/expressjs/multer) will passthrough to multer
 
 ## Example Express API Server
 
@@ -182,6 +231,9 @@ app.use('/spec', express.static(spec));
 // 4. Install the OpenApiValidator onto your express app
 new OpenApiValidator({
   apiSpec: './openapi.yaml',
+  // securityHandlers: { ... }, // <-- if using security
+  // validateResponses: true, // <-- to validate responses
+  // unknownFormats: ['my-format'] // <-- to provide custom formats
 }).install(app);
 
 // 4. Define routes using Express
@@ -234,15 +286,15 @@ application. ([More detail about the base URL](https://swagger.io/docs/specifica
 ```yaml
 servers:
   - url: https://api.example.com/v1
-``` 
+```
 
 The validation applies to all paths defined under this base URL. Routes in your app
 that are _not_ under the base URL—such as pages—will not be validated.
 
-| URL                                  | Validated?                  |
-| :----------------------------------- | :-------------------------- |
-| `https://api.example.com/v1/users`   | :white_check_mark:          |
-| `https://api.example.com/index.html` | no; not under the base URL  |
+| URL                                  | Validated?                 |
+| :----------------------------------- | :------------------------- |
+| `https://api.example.com/v1/users`   | :white_check_mark:         |
+| `https://api.example.com/index.html` | no; not under the base URL |
 
 ## [Example Express API Server](https://github.com/cdimascio/express-openapi-validator-example) (clone it)
 
@@ -368,7 +420,5 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 ## License
 
 [MIT](LICENSE)
-
-
 
 <a href="https://www.buymeacoffee.com/m97tA5c" target="_blank"><img src="https://bmc-cdn.nyc3.digitaloceanspaces.com/BMC-button-images/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
