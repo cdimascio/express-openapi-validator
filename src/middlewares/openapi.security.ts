@@ -75,6 +75,13 @@ class SecuritySchemes {
   }
 
   executeHandlers(req: OpenApiRequest): Promise<SecurityHandlerResult[]> {
+    if (this.securities && !this.securityHandlers) {
+      const names = Object.keys(this.securities).join(', ');
+      throw {
+        status: 500,
+        message: `attempt to use securities ${names}, but no securityHandlers defined.`,
+      };
+    }
     const promises = this.securities.map(async s => {
       try {
         const securityKey = Object.keys(s)[0];
@@ -99,10 +106,10 @@ class SecuritySchemes {
         new AuthValidator(req, scheme).validate();
 
         // expected handler results are:
-        // - throw exception, 
-        // - return true, 
-        // - return Promise<true>, 
-        // - return false, 
+        // - throw exception,
+        // - return true,
+        // - return Promise<true>,
+        // - return false,
         // - return Promise<false>
         // everything else should be treated as false
         const success = await handler(req, scopes, scheme);
