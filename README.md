@@ -2,13 +2,22 @@
 
 [![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) ![](https://img.shields.io/npm/dm/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg)](https://coveralls.io/github/cdimascio/express-openapi-validator) [![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
 
-An OpenApi validator for ExpressJS that automatically validates API requests using an OpenAPI 3 specification.
+An OpenApi validator for ExpressJS that automatically validates API requests and responses using an OpenAPI 3 specification.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/cdimascio/express-openapi-validator/master/assets/express-openapi-validator.png" width="500">
 </p>
 
 [express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) is unopinionated and does not impose any coding convention or project structure. Simply, install the validator onto your express app, point it to your OpenAPI 3 specification, then define and implement routes the way you prefer. See an [example](#example-express-api-server).
+
+**Features:**
+
+- request validation
+- response validation
+- security validation / custom security functions
+- 3rd party / custom formats
+- file upload
+
 
 [![GitHub stars](https://img.shields.io/github/stars/cdimascio/express-openapi-validator.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/cdimascio/express-openapi-validator/stargazers/) [![Twitter URL](https://img.shields.io/twitter/url/https/github.com/cdimascio/express-openapi-validator.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20express-openapi-validator%20by%20%40CarmineDiMascio%20https%3A%2F%2Fgithub.com%2Fcdimascio%2Fexpress-openapi-validator%20%F0%9F%91%8D)
 
@@ -46,6 +55,7 @@ _**Note:** Ensure express is configured with all relevant body parsers. body par
 
 ## Advanced Usage
 
+To integration authentication see securityHandlers in [Options](#Options).
 For OpenAPI 3.0.x 3rd party and custom formats, see [Options](#Options).
 
 #### Optionally inline the spec...
@@ -91,11 +101,106 @@ new OpenApiValidator(options).install(app);
 - `[string]` - an array of unknown format names that will be ignored by the validator. This option can be used to allow usage of third party schemas with format(s), but still fail if another unknown format is used. (_Recommended if unknown formats are used_)
 - `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
 
-	**example:**
+  **For example:**
+
+  ```javascript
+  unknownFormats: ['phone-number', 'uuid']
+  ```
+
+**`securityHandlers:`** register authentication handlers
+
+- `securityHandlers` is an object that maps security keys to security handler functions. Each security key must correspond to `securityScheme` name.
+  The `securityHandlers` object signature is as follows:
+
+  ```typescript
+  {
+    securityHandlers: {
+      [securityKey]: function(
+        req: Express.Request,
+        scopes: string[],
+        schema: SecuritySchemeObject
+      ): void,
+    }
+  }
+  ```
+
+  [SecuritySchemeObject](https://github.com/cdimascio/express-openapi-validator/blob/master/src/framework/types.ts#L269)
+
+  **For example:**
+
+  ```javascript
+  securityHandlers: {
+    ApiKeyAuth: function(req, scopes, schema) {
+      console.log('apikey handler throws custom error', scopes, schema);
+      throw Error('my message');
+    },
+  }
+  ```
+
+  The _express-openapi-validator_ performs a basic validation pass prior to delegating to security handlers. If basic validation passes, security handler function(s) are invoked.
+
+  In order to signal an auth failure, the security handler function **must** either:
+
+  1. `throw { status: 403, message: 'forbidden' }`
+  2. `throw Error('optional message')`
+  3. `return false`
+  4. return a promise which resolves to `false` e.g `Promise.resolve(false)`
+  5. return a promise rejection e.g. 
+      - `Promise.reject({ status: 401, message: 'yikes' });`
+      - `Promise.reject(Error('optional 'message')` 
+      - `Promise.reject(false)`
+
+	Note: status is always 401, unless option i. is used
+
+	**Some examples:**
 	
 	```javascript
-	unknownFormats: ['phone-number', 'uuid']
-	```
+	  securityHandlers: {
+  		ApiKeyAuth: (req, scopes, schema) => {
+  			throw Error('my message');
+  		},
+  		OpenID: async (req, scopes, schema) => {
+  			throw { status: 403, message: 'forbidden' }
+  		},
+  		BasicAuth: (req, scopes, schema) => {
+  			return Promise.resolve(false);
+  		},
+  		...
+  	}
+  	```
+
+
+    In order to grant authz, the handler function **must** either:
+    	- `return true`
+    	- return a promise which resolves to `true`
+
+    **Some examples**
+
+    ```javascript
+    securityHandlers: {
+      ApiKeyAuth: (req, scopes, schema) => {
+        return true;
+      },
+      BearerAuth: async (req, scopes, schema) => {
+        return true;
+      },
+      ...
+    ```
+
+    Each `securityHandlers` `securityKey` must match a `components/securitySchemes` property
+
+    ```yaml
+    components:
+      securitySchemes:
+        ApiKeyAuth: # <-- Note this name must be used as the name handler function property
+          type: apiKey
+          in: header
+          name: X-API-Key
+     ```
+
+    See [OpenAPI 3](https://swagger.io/docs/specification/authentication/) authentication for `securityScheme` and `security` documentation
+
+    See [examples](https://github.com/cdimascio/express-openapi-validator/blob/security/test/security.spec.ts#L17) from unit tests
 
 **`coerceTypes:`** change data type of data to match type keyword. See the example in Coercing data types and coercion rules. Option values:
 
@@ -103,7 +208,7 @@ new OpenApiValidator(options).install(app);
 - `false` - no type coercion.
 - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
-**`multerOpts:`** the [multer opts](https://github.com/expressjs/multer) to passthrough to multer
+**`multerOpts:`** used to customize upload options. [multer opts](https://github.com/expressjs/multer) will passthrough to multer
 
 ## Example Express API Server
 
@@ -140,6 +245,9 @@ app.use('/spec', express.static(spec));
 // 4. Install the OpenApiValidator onto your express app
 new OpenApiValidator({
   apiSpec: './openapi.yaml',
+  // securityHandlers: { ... }, // <-- if using security
+  // validateResponses: true, // <-- to validate responses
+  // unknownFormats: ['my-format'] // <-- to provide custom formats
 }).install(app);
 
 // 4. Define routes using Express
@@ -192,15 +300,15 @@ application. ([More detail about the base URL](https://swagger.io/docs/specifica
 ```yaml
 servers:
   - url: https://api.example.com/v1
-``` 
+```
 
 The validation applies to all paths defined under this base URL. Routes in your app
 that are _not_ under the base URL—such as pages—will not be validated.
 
-| URL                                  | Validated?                  |
-| :----------------------------------- | :-------------------------- |
-| `https://api.example.com/v1/users`   | :white_check_mark:          |
-| `https://api.example.com/index.html` | no; not under the base URL  |
+| URL                                  | Validated?                 |
+| :----------------------------------- | :------------------------- |
+| `https://api.example.com/v1/users`   | :white_check_mark:         |
+| `https://api.example.com/index.html` | no; not under the base URL |
 
 ## [Example Express API Server](https://github.com/cdimascio/express-openapi-validator-example) (clone it)
 
@@ -326,7 +434,5 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 ## License
 
 [MIT](LICENSE)
-
-
 
 <a href="https://www.buymeacoffee.com/m97tA5c" target="_blank"><img src="https://bmc-cdn.nyc3.digitaloceanspaces.com/BMC-button-images/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
