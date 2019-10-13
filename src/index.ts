@@ -105,6 +105,16 @@ export class OpenApiValidator {
 
   private validateOptions(options: OpenApiValidatorOpts): void {
     if (!options.apiSpec) throw ono('apiSpec required.');
+    const securityHandlers = options.securityHandlers;
+    if (securityHandlers != null) {
+      if (
+        typeof securityHandlers !== 'object' ||
+        Array.isArray(securityHandlers)
+      ) {
+        throw ono('securityHandlers must be an object or undefined');
+      }
+    }
+
     const unknownFormats = options.unknownFormats;
     if (typeof unknownFormats === 'boolean') {
       if (!unknownFormats) {

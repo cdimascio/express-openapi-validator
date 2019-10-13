@@ -88,42 +88,80 @@ new OpenApiValidator(options).install({
   validateRequests: true,
   validateResponses: true,
   unknownFormats: ['phone-number', 'uuid'],
+   multerOpts: { ... },
   securityHandlers: {
     ApiKeyAuth: (req, scopes, schema) => {
       throw { status: 401, message: 'sorry' }
     }
-  },
-  multerOpts: { ... },
+  }
 });
 ```
 
 **Option details:**
 
-**`apiSpec:` _required_** a string value specifying the path to the OpenAPI 3.0.x spec or a JSON object representing an OpenAPI spec.
+### apiSpec (required)
 
-**`validateRequests:`** enable response validation.
+Specifies the path to an OpenAPI 3 specification or a JSON object representing the OpenAPI 3 specificiation
 
-- `true` - (default) validate requests.
+```javascript
+apiSpec: './path/to/my-openapi-spec.yaml'
+```
+
+or 
+
+```javascript
+apiSpec: {
+	// the openapi specification as JSON
+}
+```
+
+
+### validateRequests (optional)
+
+Determines whether the validator should validate requests.
+
+- `true` (**default**) -  validate requests.
 - `false` - do not validate requests.
 
-**`validateResponses:`** enable response validation.
+### validateResponses (optional)
+
+Determines whether the validator should validate responses.
 
 - `true` - validate responses
-- `false` - (default) do not validate responses
+- `false` (**default**) -  do not validate responses
 
-**`unknownFormats:`** handling of unknown and/or custom formats. Option values:
+### unknownFormats (optional)
 
-- `true` (default) - if an unknown format is encountered, validation will report a 400 error.
-- `[string]` - an array of unknown format names that will be ignored by the validator. This option can be used to allow usage of third party schemas with format(s), but still fail if another unknown format is used. (_Recommended if unknown formats are used_)
-- `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
+Defines how the validator should behave if an unknown or custom format is encountered.
 
-  **For example:**
-
+- `true` **(default)** - When an unknown format is encountered, the validator will report a 400 error.
+- `[string]` **_(recommended for unknown formats)_** - An array of unknown format names that will be ignored by the validator. This option can be used to allow usage of third party schemas with format(s), but still fail if another unknown format is used. 
+	
+	e.g.
+	
   ```javascript
   unknownFormats: ['phone-number', 'uuid']
   ```
 
-**`securityHandlers:`** register authentication handlers
+- `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
+
+### multerOpts (optional)
+
+Specifies the options to passthrough to multer. express-openapi-validator uses multer to handle file uploads. see [multer opts](https://github.com/expressjs/multer)
+
+### coerceTypes (optional)
+
+Determines whether the validator should coerce value types to match the type defined in the OpenAPI spec.  
+
+- `true` (**default**) - coerce scalar data types.
+- `false` - no type coercion.
+- `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
+
+### securityHandlers (optional)
+
+Specifies a set of custom security handlers to be used to validate security scenarios. If security handlers are ***not*** provided, a default handler is always used. The default handler will validate against the OpenAPI spec, then call the next middleware.
+
+If `securityHandlers` are specified, the validator will validate against the OpenAPI spec, then call the security handler providing it the Express request, the security scopes, and the security schema object. 
 
 - `securityHandlers` is an object that maps security keys to security handler functions. Each security key must correspond to `securityScheme` name.
   The `securityHandlers` object signature is as follows:
@@ -219,13 +257,7 @@ new OpenApiValidator(options).install({
 
     See [examples](https://github.com/cdimascio/express-openapi-validator/blob/security/test/security.spec.ts#L17) from unit tests
 
-**`coerceTypes:`** change data type of data to match type keyword. See the example in Coercing data types and coercion rules. Option values:
 
-- `true` - (default) coerce scalar data types.
-- `false` - no type coercion.
-- `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
-
-**`multerOpts:`** used to customize upload options. [multer opts](https://github.com/expressjs/multer) will passthrough to multer
 
 ## Example Express API Server
 
