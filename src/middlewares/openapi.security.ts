@@ -3,6 +3,12 @@ import { OpenAPIV3, OpenApiRequest } from '../framework/types';
 import { validationError } from './util';
 import { OpenApiContext } from '../framework/openapi.context';
 
+const defaultSecurityHandler = (
+  req: Express.Request,
+  scopes: string[],
+  schema: OpenAPIV3.SecuritySchemeObject,
+) => true;
+
 interface SecurityHandlerResult {
   success: boolean;
   status: number;
@@ -34,16 +40,7 @@ export function security(
       context.apiDoc.components && context.apiDoc.components.securitySchemes;
 
     if (!securitySchemes) {
-      const message = `security referenced at path ${path}, but not defined in components.securitySchemes`;
-      return next(validationError(500, path, message));
-    }
-
-    if (securities.length > 0 && !securityHandlers) {
-      const names = securities.reduce((a, i) => {
-        const p = Object.keys(i);
-        return a.concat(p);
-      }, []);
-      const message = `attempt to use securities ${names}, but no securityHandlers defined.`;
+      const message = `security referenced at path ${path}, but not defined in 'components.securitySchemes'`;
       return next(validationError(500, path, message));
     }
 
@@ -84,11 +81,18 @@ class SecuritySchemes {
   }
 
   executeHandlers(req: OpenApiRequest): Promise<SecurityHandlerResult[]> {
+    // use a fallback handler if security handlers is not specified
+    // This means if security handlers is specified, the user must define
+    // all security handlers
+    const fallbackHandler = this.securityHandlers
+      ? defaultSecurityHandler
+      : null;
+
     const promises = this.securities.map(async s => {
       try {
         const securityKey = Object.keys(s)[0];
         const scheme: any = this.securitySchemes[securityKey];
-        const handler = this.securityHandlers[securityKey];
+        const handler = this.securityHandlers[securityKey] || fallbackHandler;
         const scopesTmp = s[securityKey];
         const scopes = Array.isArray(scopesTmp) ? scopesTmp : [];
 

@@ -287,7 +287,7 @@ describe(packageJson.name, () => {
       .expect(200);
   });
 
-  it('should return 500 if missing handler', async () => {
+  it('should return 200 and use default security handler, if security handler is not specified', async () => {
     delete (<any>eovConf.securityHandlers).OpenID;
     (<any>eovConf.securityHandlers).Test = <any>function(req, scopes, schema) {
       expect(schema.type).to.equal('openIdConnect');
@@ -300,13 +300,6 @@ describe(packageJson.name, () => {
     };
     return request(app)
       .get(`${basePath}/openid`)
-      .expect(500)
-      .then(r => {
-        const body = r.body;
-        const msg = "a handler for 'OpenID' does not exist";
-        expect(body.message).to.equal(msg);
-        expect(body.errors[0].message).to.equal(msg);
-        expect(body.errors[0].path).to.equal(`${basePath}/openid`);
-      });
+      .expect(200);
   });
 });
