@@ -105,7 +105,7 @@ class SecuritySchemes {
           throw { status: 500, message };
         }
         if (!handler) {
-          const message = `a handler for '${securityKey}' does not exist`;
+          const message = `a security handler for '${securityKey}' does not exist.`;
           throw { status: 500, message };
         }
 
