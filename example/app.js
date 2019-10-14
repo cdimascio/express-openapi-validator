@@ -45,6 +45,7 @@ app.get('/v1/pets/:id', function(req, res, next) {
   const id = req.params.id;
   const r = pets.filter(p => p.id === id);
   if (id === 99) {
+    // return a response that does not match the spec
     return res.json({ bad_format: 'bad format' });
   }
   return r.length > 0
