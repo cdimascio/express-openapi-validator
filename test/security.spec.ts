@@ -182,7 +182,7 @@ describe(packageJson.name, () => {
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
         expect(body.errors[0].message).to.include(
-          "Authorization header with scheme 'Basic' required.",
+          "Authorization header with scheme 'Basic' required",
         );
       });
   });
@@ -219,7 +219,7 @@ describe(packageJson.name, () => {
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
         expect(body.errors[0].message).to.include(
-          "Authorization header with scheme 'Bearer' required.",
+          "Authorization header with scheme 'Bearer' required",
         );
       });
   });
@@ -312,7 +312,7 @@ describe(packageJson.name, () => {
       .expect(500)
       .then(r => {
         const body = r.body;
-        const msg = "a security handler for 'OpenID' does not exist.";
+        const msg = "a security handler for 'OpenID' does not exist";
         expect(body.message).to.equal(msg);
         expect(body.errors[0].message).to.equal(msg);
         expect(body.errors[0].path).to.equal(`${basePath}/openid`);

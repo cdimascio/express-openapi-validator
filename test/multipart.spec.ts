@@ -29,7 +29,7 @@ describe(packageJson.name, () => {
             .with.length(1);
           expect(e.body.errors[0])
             .has.property('message')
-            .equal('multipart file(s) required.');
+            .equal('multipart file(s) required');
         }));
 
     it('should throw 400 when required form field is missing during multipart upload', async () =>

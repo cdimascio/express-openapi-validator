@@ -67,7 +67,7 @@ function error(req, err) {
       err.message || '',
     );
     if (missingField) {
-      return validationError(400, req.path, 'multipart file(s) required.');
+      return validationError(400, req.path, 'multipart file(s) required');
     } else {
       console.error(err);
       return validationError(500, req.path, err.message);
