@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "sparky",
+    "type": "dog",
+    "tags": []
+  },
+  {
+    "id": 2,
+    "name": "buzz",
+    "type": "cat",
+    "tags": []
+  },
+  {
+    "id": 3,
+    "name": "max",
+    "type": "dog",
+    "tags": []
+  }
+]

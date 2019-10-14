@@ -4,39 +4,55 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const http = require('http');
+const pets = require('./pets.json');
 const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
 const app = express();
 
+// 1. Install bodyParsers for the request types your API will support
 app.use(bodyParser.urlencoded());
-app.use(bodyParser.json());
 app.use(bodyParser.text());
+app.use(bodyParser.json());
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const spec = path.join(__dirname, 'openapi.yaml');
+app.use('/spec', express.static(spec));
 
-// 1. Install the OpenApiValidator on your express app
-const apiSpec = path.join('..', 'test', 'resources', 'openapi.yaml');
+// 2. Install the OpenApiValidator on your express app
 new OpenApiValidator({
-  apiSpec,
+  apiSpec: './example.yaml',
+  validateResponses: true,
+  // securityHandlers: {
+  //   ApiKeyAuth: (req, scopes, schema) => true,
+  // },
 }).install(app);
 
-// 2. Add routes
+let id = 3;
+// 3. Add routes
 app.get('/v1/pets', function(req, res, next) {
-  res.json([{ id: 1, name: 'max' }, { id: 2, name: 'mini' }]);
+  res.json(pets);
 });
 
 app.post('/v1/pets', function(req, res, next) {
-  res.json({ name: 'sparky' });
+  res.json({ id: id++, ...req.body });
 });
 
 app.get('/v1/pets/:id', function(req, res, next) {
-  res.json({ id: req.params.id, name: 'sparky' });
+  const id = req.params.id;
+  const r = pets.filter(p => p.id === id);
+  if (id === 99) {
+    return res.json({ bad_format: 'bad format' });
+  }
+  return r.length > 0
+    ? res.json(r)
+    : res.status(404).json({ message: 'not found', errors: [] });
 });
 
-// 2a. Add a route upload file(s)
+// 3a. Add a route upload file(s)
 app.post('/v1/pets/:id/photos', function(req, res, next) {
   // DO something with the file
   // files are found in req.files
@@ -54,23 +70,13 @@ app.post('/v1/pets/:id/photos', function(req, res, next) {
   });
 });
 
-// 3. Create a custom error handler
+// 4. Create a custom error handler
 app.use((err, req, res, next) => {
-  // format error
-  if (!err.status && !err.errors) {
-    res.status(500).json({
-      errors: [
-        {
-          message: err.message,
-        },
-      ],
-    });
-  } else {
-    res.status(err.status).json({
-      message: err.message,
-      errors: err.errors,
-    });
-  }
+  // format errors
+  res.status(err.status || 500).json({
+    message: err.message,
+    errors: err.errors,
+  });
 });
 
 const server = http.createServer(app);
