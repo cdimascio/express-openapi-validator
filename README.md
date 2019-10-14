@@ -466,6 +466,8 @@ curl -s -XPOST http://localhost:3000/v1/pets/10/photos -F fileZZ=@app.js | jq
 
 ## Contributors ✨
 
+Contributions welcome! Here's how to [contribute](CONTRIBUTING.md).
+
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
