@@ -367,13 +367,12 @@ A fully working example lives [here](https://github.com/cdimascio/express-openap
 
 ## Example validation responses
 
-#### Validate a query parameter with a value constraint
-
-`/pets/:id` should be of type integer, express-openapi-validator returns:
+### Validate a query parameter with a value constraint
 
 ```shell
 curl -s http://localhost:3000/v1/pets/as |jq
 {
+  "message": "request.params.id should be integer",
   "errors": [
     {
       "path": ".params.id",
@@ -384,40 +383,55 @@ curl -s http://localhost:3000/v1/pets/as |jq
 }
 ```
 
-#### Validate a query parameter with a range constraint
-
-`/pets?limit=1` should be of type integer with a value greater than 5. It should also require an additional query paramter, `test`, express-openapi-validator returns:
+### Validate a query parameter with a range constraint
 
 ```shell
-curl -s http://localhost:3000/v1/pets?limit=1 |jq
+ curl -s 'http://localhost:3000/v1/pets?limit=25' |jq
 {
+  "message": "request.query should have required property 'type', request.query.limit should be <= 20",
   "errors": [
     {
-      "path": ".query.limit",
-      "message": "should be >= 5",
-      "errorCode": "minimum.openapi.validation"
+      "path": ".query.type",
+      "message": "should have required property 'type'",
+      "errorCode": "required.openapi.validation"
     },
     {
-      "path": ".query.test",
-      "message": "should have required property 'test'",
-      "errorCode": "required.openapi.validation"
+      "path": ".query.limit",
+      "message": "should be <= 20",
+      "errorCode": "maximum.openapi.validation"
     }
   ]
 }
 ```
 
-#### Validate the query parameter's value type
+### Validate security
 
-`POST /pets` is defined to only accept media type application/json, express-openapi-validator returns:
+```shell
+ curl -s --request POST \
+  --url http://localhost:3000/v1/pets \
+  --data '{}' |jq
+{
+  "message": "'X-API-Key' header required",
+  "errors": [
+    {
+      "path": "/v1/pets",
+      "message": "'X-API-Key' header required"
+    }
+  ]
+}
+```
+
+### Validate content-type
 
 ```shell
 curl -s --request POST \
   --url http://localhost:3000/v1/pets \
   --header 'content-type: application/xml' \
+  --header 'x-api-key: XXXX' \
   --data '{
         "name": "test"
 }' |jq
-{
+  "message": "unsupported media type application/xml",
   "errors": [
     {
       "path": "/v1/pets",
@@ -427,19 +441,19 @@ curl -s --request POST \
 }
 ```
 
-#### Validate a POST body to ensure required parameters are present
-
-`POST /pets` request body is required to contain the `name` properly, express-openapi-validator returns:
+### Validate a POST request body
 
 ```shell
 curl -s --request POST \
   --url http://localhost:3000/v1/pets \
   --header 'content-type: application/json' \
-  --data '{}' |jq
+  --header 'x-api-key: XXXX' \
+  --data '{}'|jq
 {
+  "message": "request.body should have required property 'name'",
   "errors": [
     {
-      "path": ".query.name",
+      "path": ".body.name",
       "message": "should have required property 'name'",
       "errorCode": "required.openapi.validation"
     }
@@ -447,22 +461,61 @@ curl -s --request POST \
 }
 ```
 
-#### Validate a POST multipart/form-data request
+### File upload example
 
 ```shell
-curl -s -XPOST http://localhost:3000/v1/pets/10/photos -F fileZZ=@app.js | jq
+curl -XPOST http://localhost:3000/v1/pets/10/photos -F file=@app.js|jq
 {
+  "files_metadata": [
+    {
+      "originalname": "app.js",
+      "encoding": "7bit",
+      "mimetype": "application/octet-stream"
+    }
+  ]
+}
+```
+
+with the api key and [security handler](https://github.com/cdimascio/express-openapi-validator-example/blob/master/app.js#L24)
+
+```shell
+curl -XPOST http://localhost:3000/v1/pets \
+  --header 'X-Api-Key: XXXXX' \
+  --header 'content-type: application/json' \
+  -d '{"name": "spot"}' | jq
+
+{
+  "id": 4,
+  "name": "spot"
+}
+```
+
+### Response validation (optional)
+
+_Response validation errors return 500s, instead of 400s_
+
+`/v1/pets/99` will return a response that does not match the spec
+
+```
+ curl -s 'http://localhost:3000/v1/pets/99' |jq
+{
+  "message": ".response should have required property 'name', .response should have required property 'id'",
   "errors": [
     {
-      "path": "file",
-      "message": "should have required property 'file'",
+      "path": ".response.name",
+      "message": "should have required property 'name'",
+      "errorCode": "required.openapi.validation"
+    },
+    {
+      "path": ".response.id",
+      "message": "should have required property 'id'",
       "errorCode": "required.openapi.validation"
     }
   ]
 }
 ```
 
-#### ...and much more. Try it out!
+### ...and much more. Try it out!
 
 ## Contributors ✨
 
