@@ -11,8 +11,8 @@ const defaultSecurityHandler = (
 
 interface SecurityHandlerResult {
   success: boolean;
-  status: number;
-  error: string;
+  status?: number;
+  error?: string;
 }
 export function security(
   context: OpenApiContext,
@@ -26,13 +26,16 @@ export function security(
       return next();
     }
 
-    const securities = <OpenAPIV3.SecuritySchemeObject>(
-      req.openapi.schema.security
-    );
+    // const securities: OpenAPIV3.SecurityRequirementObject[] =
+    //   req.openapi.schema.security;
+
+    // use the local security object or fallbac to api doc's security or undefined
+    const securities: OpenAPIV3.SecurityRequirementObject[] =
+      req.openapi.schema.security || context.apiDoc.security;
 
     const path: string = req.openapi.openApiRoute;
 
-    if (!path || !Array.isArray(securities)) {
+    if (!path || !Array.isArray(securities) || securities.length === 0) {
       return next();
     }
 
@@ -54,14 +57,17 @@ export function security(
       // TODO handle AND'd and OR'd security
       // This assumes OR only! i.e. at least one security passed authentication
       let firstError: SecurityHandlerResult = null;
+      let success = false;
       for (var r of results) {
-        if (!r.success) {
-          firstError = r;
+        if (r.success) {
+          success = true;
           break;
+        } else if (!firstError) {
+          firstError = r;
         }
       }
-      if (firstError) throw firstError;
-      else next();
+      if (success) next();
+      else throw firstError;
     } catch (e) {
       const message = (e && e.error && e.error.message) || 'unauthorized';
       const err = validationError(e.status, path, message);
@@ -80,7 +86,7 @@ class SecuritySchemes {
     this.securities = securities;
   }
 
-  executeHandlers(req: OpenApiRequest): Promise<SecurityHandlerResult[]> {
+  async executeHandlers(req: OpenApiRequest): Promise<SecurityHandlerResult[]> {
     // use a fallback handler if security handlers is not specified
     // This means if security handlers is specified, the user must define
     // all security handlers
@@ -90,9 +96,15 @@ class SecuritySchemes {
 
     const promises = this.securities.map(async s => {
       try {
+        if (Util.isEmptyObject(s)) {
+          // anonumous security
+          return { success: true };
+        }
         const securityKey = Object.keys(s)[0];
         const scheme: any = this.securitySchemes[securityKey];
-        const handler = this.securityHandlers[securityKey] || fallbackHandler;
+        const handler =
+          (this.securityHandlers && this.securityHandlers[securityKey]) ||
+          fallbackHandler;
         const scopesTmp = s[securityKey];
         const scopes = Array.isArray(scopesTmp) ? scopesTmp : [];
 
@@ -109,7 +121,7 @@ class SecuritySchemes {
           throw { status: 500, message };
         }
 
-        new AuthValidator(req, scheme).validate();
+        new AuthValidator(req, scheme, scopes).validate();
 
         // expected handler results are:
         // - throw exception,
@@ -140,10 +152,12 @@ class AuthValidator {
   private req: OpenApiRequest;
   private scheme;
   private path: string;
-  constructor(req: OpenApiRequest, scheme) {
+  private scopes: string[];
+  constructor(req: OpenApiRequest, scheme, scopes: string[] = []) {
     this.req = req;
     this.scheme = scheme;
     this.path = req.openapi.openApiRoute;
+    this.scopes = scopes;
   }
 
   validate() {
@@ -186,6 +200,8 @@ class AuthValidator {
       if (type === 'basic' && !authHeader.includes('basic')) {
         throw Error(`Authorization header with scheme 'Basic' required.`);
       }
+
+      this.dissallowScopes();
     }
   }
 
@@ -202,6 +218,28 @@ class AuthValidator {
         }
       }
       // TODO scheme in cookie
+
+      this.dissallowScopes();
     }
+  }
+
+  private dissallowScopes() {
+    if (this.scopes.length > 0) {
+      // https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#security-requirement-object
+      throw {
+        status: 500,
+        message: "scopes array must be empty for security type 'http'",
+      };
+    }
+  }
+}
+
+class Util {
+  static isEmptyObject(o: Object) {
+    return (
+      typeof o === 'object' &&
+      Object.entries(o).length === 0 &&
+      o.constructor === Object
+    );
   }
 }

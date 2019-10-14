@@ -44,7 +44,6 @@ export class OpenApiSpecLoader {
     framework.initialize({
       visitApi(ctx: OpenAPIFrameworkAPIContext) {
         const apiDoc = ctx.getApiDoc();
-        const security = apiDoc.security;
         for (const bpa of basePaths) {
           const bp = bpa.replace(/\/$/, '');
           for (const [path, methods] of Object.entries(apiDoc.paths)) {
@@ -72,23 +71,12 @@ export class OpenApiSpecLoader {
                 .map(toExpressParams)
                 .join('/');
 
-              // add apply any general defined security 
-              const moddedSchema =
-                security || schema.security
-                  ? {
-                      schema,
-                      security: [
-                        ...(security || []),
-                        ...(schema.security || []),
-                      ],
-                    }
-                  : { ...schema };
               routes.push({
                 expressRoute,
                 openApiRoute,
                 method: method.toUpperCase(),
                 pathParams: Array.from(pathParams),
-                schema: moddedSchema,
+                schema,
               });
             }
           }

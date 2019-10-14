@@ -33,13 +33,22 @@ describe(packageJson.name, () => {
         .get(`/bearer`, (req, res) => res.json({ logged_in: true }))
         .get(`/basic`, (req, res) => res.json({ logged_in: true }))
         .get(`/oauth2`, (req, res) => res.json({ logged_in: true }))
-        .get(`/openid`, (req, res) => res.json({ logged_in: true })),
+        .get(`/openid`, (req, res) => res.json({ logged_in: true }))
+        .get(`/api_key_or_anonymous`, (req, res) =>
+          res.json({ logged_in: true }),
+        )
+        .get('/no_security', (req, res) => res.json({ logged_in: true })),
     );
   });
 
   after(() => {
     app.server.close();
   });
+
+  it('should return 200 if no security', async () =>
+    request(app)
+      .get(`${basePath}/no_security`)
+      .expect(200));
 
   it('should return 401 if apikey handler throws exception', async () =>
     request(app)
@@ -308,5 +317,36 @@ describe(packageJson.name, () => {
         expect(body.errors[0].message).to.equal(msg);
         expect(body.errors[0].path).to.equal(`${basePath}/openid`);
       });
+  });
+
+  it('should return 500 if scopes are no allowed', async () =>
+    request(app)
+      .get(`${basePath}/api_key_with_scopes`)
+      .set('X-Api-Key', 'XXX')
+      .expect(500)
+      .then(r => {
+        const body = r.body;
+        expect(body.message).to.equal(
+          "scopes array must be empty for security type 'http'",
+        );
+      }));
+
+  it('should return 200 if api_key or anonymous and no api key is supplied', async () => {
+    (<any>eovConf.securityHandlers).ApiKeyAuth = <any>(
+      ((req, scopes, schema) => true)
+    );
+    return request(app)
+      .get(`${basePath}/api_key_or_anonymous`)
+      .expect(200);
+  });
+
+  it('should return 200 if api_key or anonymous and api key is supplied', async () => {
+    (<any>eovConf.securityHandlers).ApiKeyAuth = <any>(
+      ((req, scopes, schema) => true)
+    );
+    return request(app)
+      .get(`${basePath}/api_key_or_anonymous`)
+      .set('x-api-key', 'XXX')
+      .expect(200);
   });
 });
