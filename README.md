@@ -361,9 +361,9 @@ that are _not_ under the base URL—such as pages—will not be validated.
 | `https://api.example.com/v1/users`   | :white_check_mark:         |
 | `https://api.example.com/index.html` | no; not under the base URL |
 
-## [Example Express API Server](https://github.com/cdimascio/express-openapi-validator-example) (clone it)
+## [Example Express API Server](https://github.com/cdimascio/express-openapi-validator/tree/master/example)
 
-A fully working example lives [here](https://github.com/cdimascio/express-openapi-validator-example)
+A fully working example lives [here](https://github.com/cdimascio/express-openapi-validator/tree/master/example)
 
 ## Example validation responses
 
