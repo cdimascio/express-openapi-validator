@@ -84,7 +84,7 @@ class SecuritySchemes {
     // use a fallback handler if security handlers is not specified
     // This means if security handlers is specified, the user must define
     // all security handlers
-    const fallbackHandler = this.securityHandlers
+    const fallbackHandler = !this.securityHandlers
       ? defaultSecurityHandler
       : null;
 
