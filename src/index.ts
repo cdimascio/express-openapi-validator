@@ -104,7 +104,7 @@ export class OpenApiValidator {
   }
 
   private validateOptions(options: OpenApiValidatorOpts): void {
-    if (!options.apiSpec) throw ono('apiSpec required.');
+    if (!options.apiSpec) throw ono('apiSpec required');
     const securityHandlers = options.securityHandlers;
     if (securityHandlers != null) {
       if (

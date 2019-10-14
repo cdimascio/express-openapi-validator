@@ -47,7 +47,7 @@ describe(packageJson.name, () => {
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
         expect(body.errors[0].message).to.equals(
-          "'X-API-Key' header required.",
+          "'X-API-Key' header required",
         );
       }));
 
@@ -65,7 +65,7 @@ describe(packageJson.name, () => {
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
         expect(body.errors[0].message).to.equals(
-          'Authorization header required.',
+          'Authorization header required',
         );
       }));
 

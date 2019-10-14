@@ -117,7 +117,7 @@ class SecuritySchemes {
           throw { status: 500, message };
         }
         if (!handler) {
-          const message = `a security handler for '${securityKey}' does not exist.`;
+          const message = `a security handler for '${securityKey}' does not exist`;
           throw { status: 500, message };
         }
 
@@ -189,16 +189,16 @@ class AuthValidator {
         req.headers['authorization'].toLowerCase();
 
       if (!authHeader) {
-        throw Error(`Authorization header required.`);
+        throw Error(`Authorization header required`);
       }
 
       const type = scheme.scheme && scheme.scheme.toLowerCase();
       if (type === 'bearer' && !authHeader.includes('bearer')) {
-        throw Error(`Authorization header with scheme 'Bearer' required.`);
+        throw Error(`Authorization header with scheme 'Bearer' required`);
       }
 
       if (type === 'basic' && !authHeader.includes('basic')) {
-        throw Error(`Authorization header with scheme 'Basic' required.`);
+        throw Error(`Authorization header with scheme 'Basic' required`);
       }
 
       this.dissallowScopes();
@@ -210,11 +210,11 @@ class AuthValidator {
     if (scheme.type === 'apiKey') {
       if (scheme.in === 'header') {
         if (!req.headers[scheme.name.toLowerCase()]) {
-          throw Error(`'${scheme.name}' header required.`);
+          throw Error(`'${scheme.name}' header required`);
         }
       } else if (scheme.in === 'query') {
         if (!req.headers[scheme.name]) {
-          throw Error(`query parameter '${scheme.name}' required.`);
+          throw Error(`query parameter '${scheme.name}' required`);
         }
       }
       // TODO scheme in cookie
