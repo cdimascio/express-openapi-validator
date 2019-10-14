@@ -263,7 +263,7 @@ If `securityHandlers` are specified, the validator will validate against the Ope
 
 ## Example Express API Server
 
-Try the complete example below:
+Try the complete example below ([source code](https://github.com/cdimascio/express-openapi-validator/tree/master/example)):
 (_it includes file upload as well!_)
 
 ```javascript
