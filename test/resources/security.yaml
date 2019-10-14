@@ -8,6 +8,12 @@ servers:
   - url: /v1/
 
 paths:
+  /no_security: 
+    get:
+      responses:
+        '200':
+          description: OK
+
   /api_key:
     get:
       security:
@@ -15,8 +21,30 @@ paths:
       responses:
         '200':
           description: OK
-        '400':
-          description: Bad Request
+        '401':
+          description: unauthorized
+
+  /api_key_or_anonymous:
+    get:
+      security:
+        # {} means anonyous or no security - see https://github.com/OAI/OpenAPI-Specification/issues/14
+        - {}
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: unauthorized
+
+  # This api key with scopes should fail validation and return 500
+  # scopes are only allowed for oauth2 and openidconnect
+  /api_key_with_scopes:
+    get:
+      security:
+        - ApiKeyAuth: ['read', 'write']
+      responses:
+        '200':
+          description: OK
         '401':
           description: unauthorized
 
