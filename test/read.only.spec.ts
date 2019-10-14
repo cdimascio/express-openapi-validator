@@ -34,7 +34,8 @@ describe.only(packageJson.name, () => {
 
   it('should not allow read only properties in requests', async () =>
     request(app)
-      .get(`${app.basePath}/products`)
+      .post(`${app.basePath}/products`)
+      .set('content-type', 'application/json')
       .query({
         id: 'id_1',
         name: 'some name',
@@ -44,6 +45,9 @@ describe.only(packageJson.name, () => {
       .expect(400)
       .then(r => {
         const body = r.body;
+        console.log(body);
+        // id is a readonly property and should not be allowed in the request
+        expect(body.message).to.contain('id');
       }));
 
   it('should allow read only properties in responses', async () =>
