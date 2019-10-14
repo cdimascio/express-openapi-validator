@@ -2,29 +2,21 @@
 
 Provides a simple example demonstrating how [express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) can be used to automatically validate api requests.
 
-## Setup the example project
-
-```shell
-# 1. clone this repo
-git clone https://github.com/cdimascio/express-openapi-validator-example
-
-# 2. install dependencies
-npm install
-```
+express-openapi-validator automatically validates each request against an [openapi 3 specification](openapi.yaml). If a request is does not match the spec, the validator automatically returns an appropriate error response.
 
 ## Run it
 
-Start the Api server
+```shell
+cd examples
+```
+
+Start the server
 
 ```shell
 npm start
 ```
 
 ## Try it
-
-Try the out the following requests.
-
-The [express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) automatically validates each request against an [openapi 3 specification](openapi.yaml). If a request is does not match the spec, [express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) automatically returns an appropriate error response.
 
 ### Validate a query parameter with a value constraint
 
@@ -150,6 +142,8 @@ curl -XPOST http://localhost:3000/v1/pets \
 ```
 
 ### Response validation (optional)
+
+_Response validation errors return 500s, instead of 400s_
 
 `/v1/pets/99` will return a response that does not match the spec
 
