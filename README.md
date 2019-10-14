@@ -159,7 +159,7 @@ Determines whether the validator should coerce value types to match the type def
 
 ### securityHandlers (optional)
 
-**Note:** Most use cases, **_do not_** need `securityHandlers`. They are most useful for OpenID and OAuth2 scenarios, but not required.
+**Note:** Many use cases **_do not_** need `securityHandlers`. They are most useful for OpenID and OAuth2 scenarios as the securityHandler callback will provide defined scopes and sheme as a convenience.
 
 Specifies a set of custom security handlers to be used to validate security. If a `securityHandlers` object is specified, a handler must be defined for **_all_** securities. If `securityHandlers are **_not_** specified, a default handler is always used. The default handler will validate against the OpenAPI spec, then call the next middleware.
 
