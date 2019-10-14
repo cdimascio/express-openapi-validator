@@ -92,7 +92,9 @@ class SecuritySchemes {
       try {
         const securityKey = Object.keys(s)[0];
         const scheme: any = this.securitySchemes[securityKey];
-        const handler = this.securityHandlers[securityKey] || fallbackHandler;
+        const handler =
+          (this.securityHandlers && this.securityHandlers[securityKey]) ||
+          fallbackHandler;
         const scopesTmp = s[securityKey];
         const scopes = Array.isArray(scopesTmp) ? scopesTmp : [];
 
