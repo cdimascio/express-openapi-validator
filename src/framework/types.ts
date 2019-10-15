@@ -381,8 +381,11 @@ export interface OpenApiRequest extends Request {
   openapi;
 }
 
-export type OpenApiRequestHandler = (req: OpenApiRequest, res: Response, next: NextFunction) => any;
-
+export type OpenApiRequestHandler = (
+  req: OpenApiRequest,
+  res: Response,
+  next: NextFunction,
+) => any;
 
 export interface IJsonSchema {
   id?: string;
@@ -426,6 +429,17 @@ export interface IJsonSchema {
   not?: IJsonSchema;
 }
 
+export interface ValidationError {
+  message?: string;
+  status: number;
+  errors: ValidationErrorItem[];
+}
+
+export interface ValidationErrorItem {
+  path: string;
+  message: string;
+  error_code?: string;
+}
 /* istanbul ignore next */
 export class ConsoleDebugAdapterLogger implements Logger {
   /**

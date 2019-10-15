@@ -1,8 +1,9 @@
 import ono from 'ono';
+import * as Ajv from 'ajv';
 import { Request } from 'express';
-import { OpenApiRequest } from '../framework/types';
+import { ValidationError } from '../framework/types';
 
-export function extractContentType(req: Request) {
+export function extractContentType(req: Request): string {
   let contentType = req.headers['content-type'] || 'not_provided';
   let end = contentType.indexOf(';');
   end = end === -1 ? contentType.length : end;
@@ -17,7 +18,7 @@ const _validationError = (
   path: string,
   message: string,
   errors?: any, // TODO rename - normalize...something else
-) => ({
+): ValidationError => ({
   status,
   errors: [
     {
@@ -28,23 +29,31 @@ const _validationError = (
   ],
 });
 
-export function validationError(status: number, path: string, message: string) {
+export function validationError(
+  status: number,
+  path: string,
+  message: string,
+): ValidationError {
   const err = _validationError(status, path, message);
   return ono(err, message);
 }
 
-export function ajvErrorsToValidatorError(status: number, errors) {
+export function ajvErrorsToValidatorError(
+  status: number,
+  errors: Ajv.ErrorObject[],
+): ValidationError {
   return {
     status,
     errors: errors.map(e => {
+      const params: any = e.params;
       const required =
-        e.params &&
-        e.params.missingProperty &&
-        e.dataPath + '.' + e.params.missingProperty;
+        params &&
+        params.missingProperty &&
+        e.dataPath + '.' + params.missingProperty;
       const additionalProperty =
         e.params &&
-        e.params.additionalProperty &&
-        e.dataPath + '.' + e.params.additionalProperty;
+        params.additionalProperty &&
+        e.dataPath + '.' + params.additionalProperty;
       const path = required || additionalProperty || e.dataPath || e.schemaPath;
       return {
         path,

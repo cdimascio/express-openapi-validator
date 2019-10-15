@@ -8,22 +8,22 @@ const TYPE_JSON = 'application/json';
 export function createRequestAjv(
   openApiSpec: OpenAPIV3.Document,
   options: any = {},
-) {
+): Ajv.Ajv {
   return createAjv(openApiSpec, options);
 }
 
 export function createResponseAjv(
   openApiSpec: OpenAPIV3.Document,
   options: any = {},
-) {
+): Ajv.Ajv {
   return createAjv(openApiSpec, options, false);
 }
 
 function createAjv(
   openApiSpec: OpenAPIV3.Document,
   options: any = {},
-  request: boolean = true,
-) {
+  request = true,
+): Ajv.Ajv {
   const ajv = new Ajv({
     ...options,
     schemaId: 'auto',

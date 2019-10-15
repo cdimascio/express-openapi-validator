@@ -47,12 +47,12 @@ export function multipart(
   };
 }
 
-function isValidContentType(req: Request) {
+function isValidContentType(req: Request): boolean {
   const contentType = req.headers['content-type'];
   return !contentType || contentType.includes('multipart/form-data');
 }
 
-function isMultipart(req: OpenApiRequest) {
+function isMultipart(req: OpenApiRequest): boolean {
   return (
     req.openapi &&
     req.openapi.schema &&

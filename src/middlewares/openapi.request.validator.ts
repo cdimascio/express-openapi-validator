@@ -7,13 +7,14 @@ import {
 import ono from 'ono';
 import { NextFunction, Response } from 'express';
 import { OpenAPIV3, OpenApiRequest } from '../framework/types';
+import { Ajv } from 'ajv';
 
 const TYPE_JSON = 'application/json';
 
 export class RequestValidator {
   private _middlewareCache;
-  private _apiDocs;
-  private ajv;
+  private _apiDocs: OpenAPIV3.Document;
+  private ajv: Ajv;
 
   constructor(apiDocs: OpenAPIV3.Document, options = {}) {
     this._middlewareCache = {};
@@ -21,7 +22,7 @@ export class RequestValidator {
     this.ajv = createRequestAjv(apiDocs, options);
   }
 
-  validate(req: OpenApiRequest, res: Response, next: NextFunction): void {
+  public validate(req: OpenApiRequest, res: Response, next: NextFunction): void {
     if (!req.openapi) {
       // this path was not found in open api and
       // this path is not defined under an openapi base path
