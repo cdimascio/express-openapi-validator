@@ -1,4 +1,4 @@
-import { Request } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { Logger } from 'ts-log';
 import BasePath from './base.path';
 export {
@@ -380,6 +380,9 @@ export interface OpenAPIFrameworkVisitor {
 export interface OpenApiRequest extends Request {
   openapi;
 }
+
+export type OpenApiRequestHandler = (req: OpenApiRequest, res: Response, next: NextFunction) => any;
+
 
 export interface IJsonSchema {
   id?: string;

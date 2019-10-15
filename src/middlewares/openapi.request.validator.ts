@@ -5,6 +5,8 @@ import {
   ajvErrorsToValidatorError,
 } from './util';
 import ono from 'ono';
+import { NextFunction, Response } from 'express';
+import { OpenAPIV3, OpenApiRequest } from '../framework/types';
 
 const TYPE_JSON = 'application/json';
 
@@ -13,13 +15,13 @@ export class RequestValidator {
   private _apiDocs;
   private ajv;
 
-  constructor(apiDocs, options = {}) {
+  constructor(apiDocs: OpenAPIV3.Document, options = {}) {
     this._middlewareCache = {};
     this._apiDocs = apiDocs;
     this.ajv = createRequestAjv(apiDocs, options);
   }
 
-  validate(req, res, next) {
+  validate(req: OpenApiRequest, res: Response, next: NextFunction): void {
     if (!req.openapi) {
       // this path was not found in open api and
       // this path is not defined under an openapi base path

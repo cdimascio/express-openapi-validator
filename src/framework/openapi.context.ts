@@ -1,12 +1,13 @@
 import { OpenApiSpecLoader } from './openapi.spec.loader';
 import { OpenAPIFrameworkArgs } from './index';
+import { OpenAPIV3 } from './types';
 
 export class OpenApiContext {
   // TODO cleanup structure (group related functionality)
   expressRouteMap = {};
   openApiRouteMap = {};
   routes = [];
-  apiDoc;
+  apiDoc: OpenAPIV3.Document;
   private basePaths: Set<string>;
   constructor(opts: OpenAPIFrameworkArgs) {
     const openApiRouteDiscovery = new OpenApiSpecLoader(opts);

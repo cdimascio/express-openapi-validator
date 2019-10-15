@@ -1,6 +1,8 @@
 import ono from 'ono';
+import { Request } from 'express';
+import { OpenApiRequest } from '../framework/types';
 
-export function extractContentType(req) {
+export function extractContentType(req: Request) {
   let contentType = req.headers['content-type'] || 'not_provided';
   let end = contentType.indexOf(';');
   end = end === -1 ? contentType.length : end;

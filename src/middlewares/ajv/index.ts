@@ -1,16 +1,29 @@
 import * as Ajv from 'ajv';
 import * as draftSchema from 'ajv/lib/refs/json-schema-draft-04.json';
 import { formats } from './formats';
+import { OpenAPIV3 } from '../../framework/types';
 
 const TYPE_JSON = 'application/json';
 
-export function createRequestAjv(openApiSpec, options: any = {}) {
+export function createRequestAjv(
+  openApiSpec: OpenAPIV3.Document,
+  options: any = {},
+) {
   return createAjv(openApiSpec, options);
 }
-export function createResponseAjv(openApiSpec, options: any = {}) {
+
+export function createResponseAjv(
+  openApiSpec: OpenAPIV3.Document,
+  options: any = {},
+) {
   return createAjv(openApiSpec, options, false);
 }
-function createAjv(openApiSpec, options: any = {}, request: boolean = true) {
+
+function createAjv(
+  openApiSpec: OpenAPIV3.Document,
+  options: any = {},
+  request: boolean = true,
+) {
   const ajv = new Ajv({
     ...options,
     schemaId: 'auto',
