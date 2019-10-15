@@ -421,6 +421,20 @@ curl -s http://localhost:3000/v1/pets/as |jq
 }
 ```
 
+with api key header
+
+```shell
+curl -XPOST http://localhost:3000/v1/pets \
+  --header 'X-Api-Key: XXXXX' \
+  --header 'content-type: application/json' \
+  -d '{"name": "spot"}' | jq
+
+{
+  "id": 4,
+  "name": "spot"
+}
+```
+
 ### Validate content-type
 
 ```shell
@@ -473,20 +487,6 @@ curl -XPOST http://localhost:3000/v1/pets/10/photos -F file=@app.js|jq
       "mimetype": "application/octet-stream"
     }
   ]
-}
-```
-
-with the api key and [security handler](https://github.com/cdimascio/express-openapi-validator-example/blob/master/app.js#L24)
-
-```shell
-curl -XPOST http://localhost:3000/v1/pets \
-  --header 'X-Api-Key: XXXXX' \
-  --header 'content-type: application/json' \
-  -d '{"name": "spot"}' | jq
-
-{
-  "id": 4,
-  "name": "spot"
 }
 ```
 
