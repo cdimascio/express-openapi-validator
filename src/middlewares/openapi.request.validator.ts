@@ -63,6 +63,23 @@ export class RequestValidator {
       requestBody = this._apiDocs.components.requestBodies[id];
     }
 
+    if (requestBody) {
+      // check request body for readonly properties
+      const r = this.ajv.getSchema(
+        requestBody.content['application/json'].schema['$ref'],
+      );
+      Object.keys(r.schema.properties).forEach(itemKey => {
+        console.log(itemKey);
+        const readOnly = r.schema.properties[itemKey].hasOwnProperty(
+          'readOnly',
+        );
+        if (readOnly) {
+          const message = `${itemKey} is a readonly property`;
+          throw validationError(400, path, message);
+        }
+      });
+    }
+
     let body = this.requestBodyToSchema(path, contentType, requestBody);
     let requiredAdds = requestBody && requestBody.required ? ['body'] : [];
 
