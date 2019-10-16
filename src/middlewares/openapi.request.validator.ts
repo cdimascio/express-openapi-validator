@@ -73,7 +73,7 @@ export class RequestValidator {
           'readOnly',
         );
         if (readOnly) {
-          const message = `${itemKey} is a readonly property`;
+          const message = `${itemKey} is a read-only property`;
           throw validationError(400, path, message);
         }
       });
