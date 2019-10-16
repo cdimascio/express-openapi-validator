@@ -69,7 +69,6 @@ export class RequestValidator {
         requestBody.content['application/json'].schema['$ref'],
       );
       Object.keys(r.schema.properties).forEach(itemKey => {
-        console.log(itemKey);
         const readOnly = r.schema.properties[itemKey].hasOwnProperty(
           'readOnly',
         );
