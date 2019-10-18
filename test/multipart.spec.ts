@@ -82,7 +82,7 @@ describe(packageJson.name, () => {
             .with.length(1);
           expect(r.body.errors[0])
             .has.property('message')
-            .equal('unsupported media type');
+            .equal('unsupported media type application/json');
         }));
   });
 });
