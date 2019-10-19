@@ -63,25 +63,7 @@ export class RequestValidator {
       requestBody = this._apiDocs.components.requestBodies[id];
     }
 
-    const bodySchema =
-      requestBody &&
-      requestBody.content &&
-      requestBody.content[contentType] &&
-      requestBody.content[contentType].schema['$ref'];
-
-    if (bodySchema) {
-      // check request body for readonly properties
-      const r = this.ajv.getSchema(bodySchema);
-      Object.keys(r.schema.properties || {}).forEach(itemKey => {
-        const readOnly = r.schema.properties[itemKey].hasOwnProperty(
-          'readOnly',
-        );
-        if (readOnly) {
-          const message = `${itemKey} is a read-only property`;
-          throw validationError(400, path, message);
-        }
-      });
-    }
+    this.validateReadOnlyProperties(path, requestBody, contentType);
 
     let body = this.requestBodyToSchema(path, contentType, requestBody);
     let requiredAdds = requestBody && requestBody.required ? ['body'] : [];
@@ -180,6 +162,42 @@ export class RequestValidator {
           `Unknown query parameter ${q}`,
         );
       }
+    }
+  }
+
+  private validateReadOnlyProperties(
+    path: string,
+    requestBody: any = {},
+    contentType: string,
+  ) {
+    const bodySchema =
+      requestBody && requestBody.content && requestBody.content[contentType];
+
+    const isRef = bodySchema && bodySchema.schema['$ref'];
+
+    if (bodySchema) {
+      const message = p => `${p} is a read-only property`;
+      // check request body for readonly properties
+      const schema = (isRef
+        ? this.ajv.getSchema(bodySchema.schema['$ref'])
+        : bodySchema
+      ).schema;
+
+      const type = schema.type;
+      // string, number, integer, boolean, array, object
+      if (type === 'object') {
+        Object.keys(schema.properties || {}).forEach(itemKey => {
+          const readOnly = schema.properties[itemKey].hasOwnProperty(
+            'readOnly',
+          );
+          if (readOnly) {
+            throw validationError(400, path, message(itemKey));
+          }
+        });
+      } else if (schema.type !== 'object' && schema.readOnly) {
+        throw validationError(400, path, message('body'));
+      }
+      // TODO handle inlined arrays
     }
   }
 
