@@ -63,8 +63,6 @@ export class RequestValidator {
       requestBody = this._apiDocs.components.requestBodies[id];
     }
 
-    this.validateReadOnlyProperties(path, requestBody, contentType);
-
     let body = this.requestBodyToSchema(path, contentType, requestBody);
     let requiredAdds = requestBody && requestBody.required ? ['body'] : [];
 
@@ -80,6 +78,7 @@ export class RequestValidator {
     const validator = this.ajv.compile(schema);
     return (req, res, next) => {
       this.rejectUnknownQueryParams(req.query, schema.properties.query);
+      this.validateReadOnlyProperties(req.body, requestBody, contentType);
 
       const shouldUpdatePathParams =
         Object.keys(req.openapi.pathParams).length > 0;
@@ -166,12 +165,14 @@ export class RequestValidator {
   }
 
   private validateReadOnlyProperties(
-    path: string,
-    requestBody: any = {},
+    body: any = {},
+    requestBodySchema: any = {},
     contentType: string,
   ) {
     const bodySchema =
-      requestBody && requestBody.content && requestBody.content[contentType];
+      requestBodySchema &&
+      requestBodySchema.content &&
+      requestBodySchema.content[contentType];
 
     const isRef = bodySchema && bodySchema.schema['$ref'];
 
@@ -186,16 +187,18 @@ export class RequestValidator {
       const type = schema.type;
       // string, number, integer, boolean, array, object
       if (type === 'object') {
-        Object.keys(schema.properties || {}).forEach(itemKey => {
-          const readOnly = schema.properties[itemKey].hasOwnProperty(
-            'readOnly',
-          );
-          if (readOnly) {
-            throw validationError(400, path, message(itemKey));
+        Object.keys(schema.properties || {}).forEach(k => {
+          const readOnly = schema.properties[k].hasOwnProperty('readOnly');
+          if (body[k] && readOnly) {
+            throw validationError(400, `.body.${k}`, message(`${k}`));
           }
         });
       } else if (schema.type !== 'object' && schema.readOnly) {
-        throw validationError(400, path, message('body'));
+        throw validationError(
+          400,
+          '.body',
+          message('body is a read-only property'),
+        );
       }
       // TODO handle inlined arrays
     }
