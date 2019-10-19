@@ -42,6 +42,52 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product'
 
+  /products/inlined:
+    post:
+      description: create products
+      operationId: createProductsInline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  readOnly: true
+                name:
+                  type: string
+                price:
+                  type: number
+                created_at:
+                  type: string
+                  format: date-time
+                  readOnly: true
+      responses:
+         '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  # TODO add nested test              
+  # /products/nested:
+  #   get:
+  #     description: get products defined inline
+  #     operationId: getProductsNested
+  #     responses:
+  #       '200':
+  #         description: pet response
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref: '#/components/schemas/ProductNested'
+
+
 components:
   schemas:
     Product:
@@ -58,3 +104,29 @@ components:
           type: string
           format: date-time
           readOnly: true
+
+          # TODO add nested test
+    # ProductNested:
+    #   type: object
+    #   properties:
+    #     id:
+    #       type: string
+    #       readOnly: true
+    #     name:
+    #       type: string
+    #     price:
+    #       type: number
+    #     created_at:
+    #       type: string
+    #       format: date-time
+    #       readOnly: true
+    #     reviews:
+    #       type: array
+    #       items:
+    #         $ref: '#/components/schemas/Review'
+
+    # Review:
+    #   type: object
+    #   properties:
+    #     rating:
+    #       type: integer

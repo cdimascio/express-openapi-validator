@@ -24,6 +24,9 @@ describe(packageJson.name, () => {
               created_at: new Date().toISOString(),
             },
           ]),
+        )
+        .post(`${app.basePath}/products/inlined`, (req, res) =>
+          res.json(req.body),
         ),
     );
   });
@@ -58,5 +61,23 @@ describe(packageJson.name, () => {
         expect(r.body)
           .to.be.an('array')
           .with.length(1);
+      }));
+
+  it('should not allow read only inlined properties in requests', async () =>
+    request(app)
+      .post(`${app.basePath}/products/inlined`)
+      .set('content-type', 'application/json')
+      .query({
+        id: 'id_1',
+        name: 'some name',
+        price: 10.99,
+        created_at: new Date().toUTCString(),
+      })
+      .expect(400)
+      .then(r => {
+        const body = r.body;
+        console.log(body);
+        // id is a readonly property and should not be allowed in the request
+        expect(body.message).to.contain('id');
       }));
 });
