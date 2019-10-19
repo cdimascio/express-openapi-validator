@@ -78,7 +78,6 @@ export class RequestValidator {
     const validator = this.ajv.compile(schema);
     return (req, res, next) => {
       this.rejectUnknownQueryParams(req.query, schema.properties.query);
-      this.validateReadOnlyProperties(req.body, requestBody, contentType);
 
       const shouldUpdatePathParams =
         Object.keys(req.openapi.pathParams).length > 0;
@@ -164,45 +163,7 @@ export class RequestValidator {
     }
   }
 
-  private validateReadOnlyProperties(
-    body: any = {},
-    requestBodySchema: any = {},
-    contentType: string,
-  ) {
-    const bodySchema =
-      requestBodySchema &&
-      requestBodySchema.content &&
-      requestBodySchema.content[contentType];
-
-    const isRef = bodySchema && bodySchema.schema['$ref'];
-
-    if (bodySchema) {
-      const message = p => `${p} is a read-only property`;
-      // check request body for readonly properties
-      const schema = (isRef
-        ? this.ajv.getSchema(bodySchema.schema['$ref'])
-        : bodySchema
-      ).schema;
-
-      const type = schema.type;
-      // string, number, integer, boolean, array, object
-      if (type === 'object') {
-        Object.keys(schema.properties || {}).forEach(k => {
-          const readOnly = schema.properties[k].hasOwnProperty('readOnly');
-          if (body[k] && readOnly) {
-            throw validationError(400, `.body.${k}`, message(`${k}`));
-          }
-        });
-      } else if (schema.type !== 'object' && schema.readOnly) {
-        throw validationError(
-          400,
-          '.body',
-          message('body is a read-only property'),
-        );
-      }
-      // TODO handle inlined arrays
-    }
-  }
+  
 
   private requestBodyToSchema(path, contentType, requestBody: any = {}) {
     if (requestBody.content) {

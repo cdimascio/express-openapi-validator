@@ -112,7 +112,7 @@ describe(packageJson.name, () => {
         expect(body.message).to.contain('id');
       }));
 
-  it.skip('should not allow read only properties in requests (deep nested schema $refs)', async () =>
+  it('should not allow read only properties in requests (deep nested schema $refs)', async () =>
     request(app)
       .post(`${app.basePath}/products/nested`)
       .set('content-type', 'application/json')
@@ -131,6 +131,6 @@ describe(packageJson.name, () => {
         const body = r.body;
         console.log(body);
         // id is a readonly property and should not be allowed in the request
-        expect(body.message).to.contain('id');
+        expect(body.message).to.contain('request.body.reviews[0].id');
       }));
 });
