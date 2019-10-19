@@ -27,7 +27,17 @@ describe(packageJson.name, () => {
         )
         .post(`${app.basePath}/products/inlined`, (req, res) =>
           res.json(req.body),
-        ),
+        )
+        .post(`${app.basePath}/products/nested`, (req, res) => {
+          const body = req.body;
+          body.id = 'test';
+          body.created_at = new Date().toISOString();
+          body.reviews = body.reviews.map(r => ({
+            id: 99,
+            rating: r.rating || 2,
+          }));
+          res.json(body);
+        }),
     );
   });
 
@@ -39,11 +49,11 @@ describe(packageJson.name, () => {
     request(app)
       .post(`${app.basePath}/products`)
       .set('content-type', 'application/json')
-      .query({
+      .send({
         id: 'id_1',
         name: 'some name',
         price: 10.99,
-        created_at: new Date().toUTCString(),
+        created_at: new Date().toISOString(),
       })
       .expect(400)
       .then(r => {
@@ -67,11 +77,54 @@ describe(packageJson.name, () => {
     request(app)
       .post(`${app.basePath}/products/inlined`)
       .set('content-type', 'application/json')
-      .query({
+      .send({
         id: 'id_1',
         name: 'some name',
         price: 10.99,
         created_at: new Date().toUTCString(),
+      })
+      .expect(400)
+      .then(r => {
+        const body = r.body;
+        // id is a readonly property and should not be allowed in the request
+        expect(body.message).to.contain('id');
+      }));
+
+  it('should not allow read only properties in requests (nested schema $refs)', async () =>
+    request(app)
+      .post(`${app.basePath}/products/nested`)
+      .set('content-type', 'application/json')
+      .send({
+        id: 'id_1',
+        name: 'some name',
+        price: 10.99,
+        created_at: new Date().toISOString(),
+        reviews: {
+          id: 'review_id',
+          rating: 5,
+        },
+      })
+      .expect(400)
+      .then(r => {
+        const body = r.body;
+        console.log(body);
+        // id is a readonly property and should not be allowed in the request
+        expect(body.message).to.contain('id');
+      }));
+
+  it.skip('should not allow read only properties in requests (deep nested schema $refs)', async () =>
+    request(app)
+      .post(`${app.basePath}/products/nested`)
+      .set('content-type', 'application/json')
+      .send({
+        name: 'some name',
+        price: 10.99,
+        reviews: [
+          {
+            id: 10,
+            rating: 5,
+          },
+        ],
       })
       .expect(400)
       .then(r => {

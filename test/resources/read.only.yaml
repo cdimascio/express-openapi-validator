@@ -72,20 +72,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product'
 
-  # TODO add nested test              
-  # /products/nested:
-  #   get:
-  #     description: get products defined inline
-  #     operationId: getProductsNested
-  #     responses:
-  #       '200':
-  #         description: pet response
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: array
-  #               items:
-  #                 $ref: '#/components/schemas/ProductNested'
+  /products/nested:
+    post:
+      description: create products
+      operationId: createProductsNested
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductNested'
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductNested'
 
 
 components:
@@ -105,28 +108,32 @@ components:
           format: date-time
           readOnly: true
 
-          # TODO add nested test
-    # ProductNested:
-    #   type: object
-    #   properties:
-    #     id:
-    #       type: string
-    #       readOnly: true
-    #     name:
-    #       type: string
-    #     price:
-    #       type: number
-    #     created_at:
-    #       type: string
-    #       format: date-time
-    #       readOnly: true
-    #     reviews:
-    #       type: array
-    #       items:
-    #         $ref: '#/components/schemas/Review'
+    # TODO add nested test
+    ProductNested:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        price:
+          type: number
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
 
-    # Review:
-    #   type: object
-    #   properties:
-    #     rating:
-    #       type: integer
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        rating:
+          type: integer
+        
