@@ -63,12 +63,16 @@ export class RequestValidator {
       requestBody = this._apiDocs.components.requestBodies[id];
     }
 
-    if (requestBody) {
+    const bodySchema =
+      requestBody &&
+      requestBody.content &&
+      requestBody.content[contentType] &&
+      requestBody.content[contentType].schema['$ref'];
+
+    if (bodySchema) {
       // check request body for readonly properties
-      const r = this.ajv.getSchema(
-        requestBody.content['application/json'].schema['$ref'],
-      );
-      Object.keys(r.schema.properties).forEach(itemKey => {
+      const r = this.ajv.getSchema(bodySchema);
+      Object.keys(r.schema.properties || {}).forEach(itemKey => {
         const readOnly = r.schema.properties[itemKey].hasOwnProperty(
           'readOnly',
         );
