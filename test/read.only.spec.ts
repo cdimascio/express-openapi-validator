@@ -58,7 +58,6 @@ describe(packageJson.name, () => {
       .expect(400)
       .then(r => {
         const body = r.body;
-        console.log(body);
         // id is a readonly property and should not be allowed in the request
         expect(body.message).to.contain('id');
       }));
@@ -107,7 +106,6 @@ describe(packageJson.name, () => {
       .expect(400)
       .then(r => {
         const body = r.body;
-        console.log(body);
         // id is a readonly property and should not be allowed in the request
         expect(body.message).to.contain('id');
       }));
@@ -129,7 +127,6 @@ describe(packageJson.name, () => {
       .expect(400)
       .then(r => {
         const body = r.body;
-        console.log(body);
         // id is a readonly property and should not be allowed in the request
         expect(body.message).to.contain('request.body.reviews[0].id');
       }));
