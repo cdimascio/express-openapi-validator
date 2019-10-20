@@ -519,6 +519,8 @@ _Response validation errors return 500s, instead of 400s_
 
 ## Contributors ✨
 
+Contributions welcome! Here's how to [contribute](CONTRIBUTING.md).
+
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
