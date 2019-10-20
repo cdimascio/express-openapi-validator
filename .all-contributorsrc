@@ -44,6 +44,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "medolino",
+      "name": "Miran Setinc",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/3725402?v=4",
+      "profile": "https://github.com/medolino",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
