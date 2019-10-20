@@ -51,7 +51,7 @@ app.use((err, req, res, next) => {
 });
 ```
 
-_**Note:** Ensure express is configured with all relevant body parsers. body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_
+_**Note:** Ensure express is configured with all relevant body parsers. body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
 
 ## Advanced Usage
 
