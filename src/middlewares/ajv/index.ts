@@ -47,9 +47,18 @@ function createAjv(
       modifying: true,
       compile: sch => {
         if (sch) {
-          return (data, path, obj, propName) => {
+          return function validate(data, path, obj, propName) {
+            const isValid = !(sch === true && data != null);
             delete obj[propName];
-            return true;
+            (<any>validate).errors = [
+              {
+                keyword: 'readOnly',
+                dataPath: path,
+                message: `is read-only`,
+                params: { readOnly: propName },
+              },
+            ];
+            return isValid;
           };
         }
 

@@ -9,9 +9,6 @@ const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 const apiSpec = jsyaml.safeLoad(fs.readFileSync(apiSpecPath, 'utf8'));
 
 describe(packageJson.name, () => {
-  // TODO
-  it.skip('should always return valid for non-JSON responses', async () => {});
-
   it('should validate the using default (in this case the error object)', async () => {
     const v = new ResponseValidator(apiSpec);
     const responses = petsResponseSchema();
@@ -99,7 +96,7 @@ describe(packageJson.name, () => {
 
   // TODO may not be possible to fix
   // https://github.com/epoberezkin/ajv/issues/837
-  it.skip('should if additional properties are provided when set false', async () => {
+  it.skip('should fail if additional properties are provided when set false', async () => {
     const v = new ResponseValidator(apiSpec);
     const responses = petsResponseSchema();
     const validators = v._getOrBuildValidator(null, responses);

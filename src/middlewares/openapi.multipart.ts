@@ -10,10 +10,7 @@ export function multipart(
 ): OpenApiRequestHandler {
   const mult = multer(multerOpts);
   return (req, res, next) => {
-    if (isMultipart(req)) {
-      if (!isValidContentType(req)) {
-        throw validationError(415, req.path, 'unsupported media type');
-      }
+    if (isMultipart(req) && isValidContentType(req)) {
       mult.any()(req, res, err => {
         if (err) {
           next(error(req, err));
