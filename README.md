@@ -55,28 +55,12 @@ _**Note:** Ensure express is configured with all relevant body parsers. body par
 
 ## Advanced Usage
 
-For authentication, see securityHandlers in [Options](#Options).
-
-For OpenAPI 3.0.x 3rd party and custom formats, see [Options](#Options).
-
-#### Optionally inline the spec...
-
-The `apiSpec` option may be specified as the spec object itself, rather than a path e.g.
-
-```javascript
-const apiSpec = {
-  openapi: "3.0.1",
-  info: {...},
-  servers: [...],
-  paths: {...},
-  components: {
-    responses: {...},
-    schemas: {...}
-  }
-}
-
-new OpenApiValidator({ apiSpec }).install(app);
-```
+See [Options](#Options) below to:
+- inline api specs as JSON.
+- tweak the file upload configuration.
+- customize authentication with `securityHandlers`.
+- use OpenAPI 3.0.x 3rd party and custom formats.
+- and more...
 
 ## Options
 
@@ -111,7 +95,14 @@ or
 
 ```javascript
 apiSpec: {
-	// the openapi specification as JSON
+  openapi: '3.0.1',
+  info: {...},
+  servers: [...],
+  paths: {...},
+  components: {
+    responses: {...},
+    schemas: {...}
+  }
 }
 ```
 
