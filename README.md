@@ -81,8 +81,6 @@ new OpenApiValidator(options).install({
 });
 ```
 
-**Option details:**
-
 ### apiSpec (required)
 
 Specifies the path to an OpenAPI 3 specification or a JSON object representing the OpenAPI 3 specificiation
