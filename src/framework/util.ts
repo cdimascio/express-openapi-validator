@@ -28,12 +28,7 @@ export function loadSpecFile(filePath) {
   if (typeof filePath === 'string') {
     const absolutePath = path.resolve(process.cwd(), filePath);
     if (fs.existsSync(absolutePath)) {
-      try {
-        // json or module
-        return require(absolutePath);
-      } catch (e) {
-        return fs.readFileSync(absolutePath, 'utf8');
-      }
+      return fs.readFileSync(absolutePath, 'utf8');
     }
   }
   return null;
