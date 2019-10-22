@@ -1,0 +1,124 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  description: A sample API
+  termsOfService: http://swagger.io/terms/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: http://petstore.swagger.io/v1
+
+paths:
+  /products/inlined:
+    post:
+      description: create products
+      operationId: createProductsInline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  readOnly: true
+                name:
+                  type: string
+                price:
+                  type: number
+                created_at:
+                  type: string
+                  format: date-time
+                  readOnly: true
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  /products/nested:
+    post:
+      description: create products
+      operationId: createProductsNested
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductNested'
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductNested'
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        price:
+          type: number
+        role:
+          type: string
+          enum:
+            - admin
+            - user
+          writeOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+
+    # TODO add nested test
+    ProductNested:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        price:
+          type: number
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        role:
+          type: string
+          enum:
+            - admin
+            - user
+          writeOnly: true
+        reviews:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        role_x:
+          type: string
+          enum:
+            - admin
+            - user
+          writeOnly: true
+        rating:
+          type: integer
