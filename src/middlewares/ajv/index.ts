@@ -65,6 +65,30 @@ function createAjv(
         return () => true;
       },
     });
+  } else {
+    // response
+    ajv.removeKeyword('writeOnly');
+    ajv.addKeyword('writeOnly', {
+      modifying: true,
+      compile: sch => {
+        if (sch) {
+          return function validate(data, path, obj, propName) {
+            const isValid = !(sch === true && data != null);
+            (<any>validate).errors = [
+              {
+                keyword: 'writeOnly',
+                dataPath: path,
+                message: `is write-only`,
+                params: { writeOnly: propName },
+              },
+            ];
+            return isValid;
+          };
+        }
+
+        return () => true;
+      },
+    });
   }
 
   if (openApiSpec.components.schemas) {
