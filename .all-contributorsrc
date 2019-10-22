@@ -35,6 +35,43 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "richdouglasevans",
+      "name": "richdouglasevans",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1855109?v=4",
+      "profile": "https://github.com/richdouglasevans",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "medolino",
+      "name": "Miran Setinc",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/3725402?v=4",
+      "profile": "https://github.com/medolino",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "frankcalise",
+      "name": "Frank Calise",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/374022?v=4",
+      "profile": "http://frankcalise.com",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "gonenduk",
+      "name": "Gonen Dukas",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1597854?v=4",
+      "profile": "https://il.linkedin.com/in/gonendukas",
+      "contributions": [
+        "ideas",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,

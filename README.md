@@ -1,6 +1,6 @@
 # express-openapi-validator
 
-[![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) ![](https://img.shields.io/npm/dm/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
+[![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) ![](https://img.shields.io/npm/dm/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
 
 An OpenApi validator for ExpressJS that automatically validates API requests and responses using an OpenAPI 3 specification.
 
@@ -51,32 +51,16 @@ app.use((err, req, res, next) => {
 });
 ```
 
-_**Note:** Ensure express is configured with all relevant body parsers. body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_
+_**Note:** Ensure express is configured with all relevant body parsers. body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
 
 ## Advanced Usage
 
-For authentication, see securityHandlers in [Options](#Options).
-
-For OpenAPI 3.0.x 3rd party and custom formats, see [Options](#Options).
-
-#### Optionally inline the spec...
-
-The `apiSpec` option may be specified as the spec object itself, rather than a path e.g.
-
-```javascript
-const apiSpec = {
-  openapi: "3.0.1",
-  info: {...},
-  servers: [...],
-  paths: {...},
-  components: {
-    responses: {...},
-    schemas: {...}
-  }
-}
-
-new OpenApiValidator({ apiSpec }).install(app);
-```
+See [Options](#Options) below to:
+- inline api specs as JSON.
+- tweak the file upload configuration.
+- customize authentication with `securityHandlers`.
+- use OpenAPI 3.0.x 3rd party and custom formats.
+- and more...
 
 ## Options
 
@@ -97,8 +81,6 @@ new OpenApiValidator(options).install({
 });
 ```
 
-**Option details:**
-
 ### apiSpec (required)
 
 Specifies the path to an OpenAPI 3 specification or a JSON object representing the OpenAPI 3 specificiation
@@ -111,7 +93,14 @@ or
 
 ```javascript
 apiSpec: {
-	// the openapi specification as JSON
+  openapi: '3.0.1',
+  info: {...},
+  servers: [...],
+  paths: {...},
+  components: {
+    responses: {...},
+    schemas: {...}
+  }
 }
 ```
 
@@ -530,6 +519,10 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://www.twitter.com/carminedimascio"><img src="https://avatars1.githubusercontent.com/u/4706618?v=4" width="100px;" alt="Carmine DiMascio"/><br /><sub><b>Carmine DiMascio</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=cdimascio" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=cdimascio" title="Tests">⚠️</a> <a href="#infra-cdimascio" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
     <td align="center"><a href="http://litr.cc/"><img src="https://avatars2.githubusercontent.com/u/4166193?v=4" width="100px;" alt="Sheldhur Mornor"/><br /><sub><b>Sheldhur Mornor</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=sheldhur" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=sheldhur" title="Tests">⚠️</a></td>
     <td align="center"><a href="https://github.com/trebler"><img src="https://avatars2.githubusercontent.com/u/5610569?v=4" width="100px;" alt="Andrey Trebler"/><br /><sub><b>Andrey Trebler</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=trebler" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=trebler" title="Tests">⚠️</a></td>
+    <td align="center"><a href="https://github.com/richdouglasevans"><img src="https://avatars1.githubusercontent.com/u/1855109?v=4" width="100px;" alt="richdouglasevans"/><br /><sub><b>richdouglasevans</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=richdouglasevans" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/medolino"><img src="https://avatars2.githubusercontent.com/u/3725402?v=4" width="100px;" alt="Miran Setinc"/><br /><sub><b>Miran Setinc</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=medolino" title="Code">💻</a></td>
+    <td align="center"><a href="http://frankcalise.com"><img src="https://avatars0.githubusercontent.com/u/374022?v=4" width="100px;" alt="Frank Calise"/><br /><sub><b>Frank Calise</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=frankcalise" title="Code">💻</a></td>
+    <td align="center"><a href="https://il.linkedin.com/in/gonendukas"><img src="https://avatars1.githubusercontent.com/u/1597854?v=4" width="100px;" alt="Gonen Dukas"/><br /><sub><b>Gonen Dukas</b></sub></a><br /><a href="#ideas-gonenduk" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=gonenduk" title="Tests">⚠️</a></td>
   </tr>
 </table>
 
