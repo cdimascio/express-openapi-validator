@@ -1,8 +1,18 @@
 import ono from 'ono';
 import * as _ from 'lodash';
-import { Application, Request } from 'express';
+import {
+  Application,
+  Request,
+  Response,
+  NextFunction,
+  RequestHandler,
+} from 'express';
 import { OpenApiContext } from './framework/openapi.context';
-import { OpenAPIV3, OpenApiRequest } from './framework/types';
+import {
+  OpenAPIV3,
+  OpenApiRequest,
+  OpenApiRequestHandler,
+} from './framework/types';
 import * as middlewares from './middlewares';
 
 export type SecurityHandlers = {
@@ -52,13 +62,22 @@ export class OpenApiValidator {
 
     // install param on routes with paths
     for (const p of _.uniq(pathParams)) {
-      app.param(p, (req: OpenApiRequest, res, next, value, name) => {
-        if (req.openapi.pathParams) {
-          // override path params
-          req.params[name] = req.openapi.pathParams[name] || req.params[name];
-        }
-        next();
-      });
+      app.param(
+        p,
+        (
+          req: OpenApiRequest,
+          res: Response,
+          next: NextFunction,
+          value: any,
+          name: string,
+        ) => {
+          if (req.openapi.pathParams) {
+            // override path params
+            req.params[name] = req.openapi.pathParams[name] || req.params[name];
+          }
+          next();
+        },
+      );
     }
 
     const { coerceTypes, unknownFormats } = this.options;
@@ -73,9 +92,8 @@ export class OpenApiValidator {
       },
     );
 
-    const requestValidatorMw = (req, res, next) => {
-      return requestValidator.validate(req, res, next);
-    };
+    const requestValidatorMw: OpenApiRequestHandler = (req, res, next) =>
+      requestValidator.validate(req, res, next);
 
     const responseValidator = new middlewares.ResponseValidator(
       this.context.apiDoc,

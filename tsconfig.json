@@ -1,14 +1,18 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "target": "es2015",
+    "target": "es2017",
     "lib": ["es6", "dom"],
     "module": "commonjs",
     "outDir": "dist",
     "sourceMap": true,
     "resolveJsonModule": true
   },
-  
+
   "exclude": ["node_modules"],
-  "include": ["typings.d.ts", "src/**/*.ts", "src/middlewares/modded.express.mung.ts"]
+  "include": [
+    "typings.d.ts",
+    "src/**/*.ts",
+    "src/middlewares/modded.express.mung.ts"
+  ]
 }

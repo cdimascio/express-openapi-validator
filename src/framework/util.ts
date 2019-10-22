@@ -4,22 +4,18 @@ import * as fs from 'fs';
 import * as jsYaml from 'js-yaml';
 import * as path from 'path';
 
-export function assertRegExpAndSecurity(framework, tuple) {
+export function assertRegExpAndSecurity(framework, tuple): void {
   if (!Array.isArray(tuple)) {
     throw new Error(
       `${framework.name}args.pathSecurity expects an array of tuples`,
     );
   } else if (!(tuple[0] instanceof RegExp)) {
     throw new Error(
-      `${
-        framework.name
-      }args.pathSecurity tuples expect the first argument to be a RegExp`,
+      `${framework.name}args.pathSecurity tuples expect the first argument to be a RegExp`,
     );
   } else if (!Array.isArray(tuple[1])) {
     throw new Error(
-      `${
-        framework.name
-      }args.pathSecurity tuples expect the second argument to be a security Array`,
+      `${framework.name}args.pathSecurity tuples expect the second argument to be a security Array`,
     );
   }
 }

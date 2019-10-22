@@ -1,9 +1,12 @@
 import * as pathToRegexp from 'path-to-regexp';
 import * as _ from 'lodash';
 import { OpenApiContext } from '../framework/openapi.context';
+import { OpenApiRequest, OpenApiRequestHandler } from '../framework/types';
 
-export function applyOpenApiMetadata(openApiContext: OpenApiContext) {
-  return (req, res, next) => {
+export function applyOpenApiMetadata(
+  openApiContext: OpenApiContext,
+): OpenApiRequestHandler {
+  return (req, res, next): any => {
     const matched = lookupRoute(req);
 
     if (matched) {
@@ -20,7 +23,7 @@ export function applyOpenApiMetadata(openApiContext: OpenApiContext) {
     -next();
   };
 
-  function lookupRoute(req) {
+  function lookupRoute(req: OpenApiRequest) {
     const path = req.path;
     const method = req.method;
     const routeEntries = Object.entries(openApiContext.expressRouteMap);
