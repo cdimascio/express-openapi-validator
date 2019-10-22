@@ -7,15 +7,16 @@ import {
   ajvErrorsToValidatorError,
   validationError,
 } from './util';
+import { OpenAPIV3 } from '../framework/types';
 
 const TYPE_JSON = 'application/json';
 
 export class ResponseValidator {
-  private ajv;
-  private spec;
+  private ajv: Ajv.Ajv;
+  private spec: OpenAPIV3.Document;
   private validatorsCache = {};
 
-  constructor(openApiSpec, options: any = {}) {
+  constructor(openApiSpec: OpenAPIV3.Document, options: any = {}) {
     this.spec = openApiSpec;
     this.ajv = createResponseAjv(openApiSpec, options);
     (<any>mung).onError = (err, req, res, next) => {
@@ -23,7 +24,7 @@ export class ResponseValidator {
     };
   }
 
-  validate() {
+  public validate() {
     return mung.json((body, req: any, res) => {
       if (req.openapi) {
         const responses = req.openapi.schema && req.openapi.schema.responses;
@@ -36,7 +37,8 @@ export class ResponseValidator {
     });
   }
 
-  _getOrBuildValidator(req, responses) {
+  // TODO public for test only - fix me
+  public _getOrBuildValidator(req, responses) {
     if (!req) {
       // use !req is only possible in unit tests
       return this.buildValidators(responses);
@@ -53,6 +55,7 @@ export class ResponseValidator {
     return validators;
   }
 
+  // TODO public for test only - fix me
   _validate({ validators, body, statusCode, path }) {
     // find the validator for the 'status code' e.g 200, 2XX or 'default'
     let validator;
@@ -124,7 +127,7 @@ export class ResponseValidator {
 
     const validators = {};
     for (const [name, schema] of Object.entries(schemas)) {
-      validators[name] = this.ajv.compile(schema);
+      validators[name] = this.ajv.compile(<object>schema);
     }
     return validators;
   }
