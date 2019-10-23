@@ -268,7 +268,7 @@ const app = express();
 const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
 
 // 2. Set up body parsers for the request body types you expect
-//    Must be specified prior to endpoints in 4.
+//    Must be specified prior to endpoints in 5.
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded());
@@ -290,7 +290,7 @@ new OpenApiValidator({
   // unknownFormats: ['my-format'] // <-- to provide custom formats
 }).install(app);
 
-// 4. Define routes using Express
+// 5. Define routes using Express
 app.get('/v1/pets', function(req, res, next) {
   res.json([{ id: 1, name: 'max' }, { id: 2, name: 'mini' }]);
 });
@@ -303,7 +303,7 @@ app.get('/v1/pets/:id', function(req, res, next) {
   res.json({ id: req.params.id, name: 'sparky' });
 });
 
-// 5. Define route(s) to upload file(s)
+// 5a. Define route(s) to upload file(s)
 app.post('/v1/pets/:id/photos', function(req, res, next) {
   // files are found in req.files
   // non-file multipart params can be found as such: req.body['my-param']
