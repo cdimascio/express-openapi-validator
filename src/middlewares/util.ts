@@ -38,6 +38,23 @@ export function validationError(
   return ono(err, message);
 }
 
+/**
+ * (side-effecting) modifies the errors object
+ * TODO - do this some other way
+ * @param errors
+ */
+export function augmentAjvErrors(errors: Ajv.ErrorObject[] = []): Ajv.ErrorObject[] {
+  errors.forEach(e => {
+    if (e.keyword === 'enum') {
+      const params: any = e.params;
+      const allowedEnumValues = params && params.allowedValues;
+      e.message = !!allowedEnumValues
+        ? `${e.message}: ${allowedEnumValues.join(', ')}`
+        : e.message;
+    }
+  });
+  return errors;
+}
 export function ajvErrorsToValidatorError(
   status: number,
   errors: Ajv.ErrorObject[],
@@ -51,7 +68,7 @@ export function ajvErrorsToValidatorError(
         params.missingProperty &&
         e.dataPath + '.' + params.missingProperty;
       const additionalProperty =
-        e.params &&
+        params &&
         params.additionalProperty &&
         e.dataPath + '.' + params.additionalProperty;
       const path = required || additionalProperty || e.dataPath || e.schemaPath;
