@@ -3,6 +3,7 @@ import * as Ajv from 'ajv';
 import mung from './modded.express.mung';
 import { createResponseAjv } from './ajv';
 import {
+  augmentAjvErrors,
   extractContentType,
   ajvErrorsToValidatorError,
   validationError,
@@ -84,7 +85,7 @@ export class ResponseValidator {
     });
 
     if (!valid) {
-      const errors = validator.errors;
+      const errors = augmentAjvErrors(validator.errors);
       const message = this.ajv.errorsText(errors, {
         dataVar: '', // responses
       });

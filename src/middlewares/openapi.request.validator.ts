@@ -3,6 +3,7 @@ import {
   extractContentType,
   validationError,
   ajvErrorsToValidatorError,
+  augmentAjvErrors,
 } from './util';
 import ono from 'ono';
 import { NextFunction, Response } from 'express';
@@ -22,7 +23,11 @@ export class RequestValidator {
     this.ajv = createRequestAjv(apiDocs, options);
   }
 
-  public validate(req: OpenApiRequest, res: Response, next: NextFunction): void {
+  public validate(
+    req: OpenApiRequest,
+    res: Response,
+    next: NextFunction,
+  ): void {
     if (!req.openapi) {
       // this path was not found in open api and
       // this path is not defined under an openapi base path
@@ -138,12 +143,11 @@ export class RequestValidator {
           : undefined,
       };
       const valid = validator(reqToValidate);
-      // save errors, Ajv overwrites errors on each validation call (race condition?)
-      // TODO look into Ajv async errors plugins
-      const errors = [...(validator.errors || [])];
       if (valid) {
         next();
       } else {
+        // TODO look into Ajv async errors plugins
+        const errors = augmentAjvErrors([...(validator.errors || [])]);
         const err = ajvErrorsToValidatorError(400, errors);
         const message = this.ajv.errorsText(errors, { dataVar: 'request' });
         throw ono(err, message);
@@ -165,8 +169,6 @@ export class RequestValidator {
       }
     }
   }
-
-  
 
   private requestBodyToSchema(path, contentType, requestBody: any = {}) {
     if (requestBody.content) {

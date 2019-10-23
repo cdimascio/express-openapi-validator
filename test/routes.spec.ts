@@ -102,7 +102,7 @@ describe(packageJson.name, () => {
             expect(e).to.have.length(1);
             expect(e[0].path).to.contain('testJson');
             expect(e[0].message).to.equal(
-              'should be equal to one of the allowed values',
+              'should be equal to one of the allowed values: bar, baz',
             );
           }));
 
@@ -126,7 +126,7 @@ describe(packageJson.name, () => {
             expect(e).to.have.length(1);
             expect(e[0].path).to.contain('testArray');
             expect(e[0].message).to.equal(
-              'should be equal to one of the allowed values',
+              'should be equal to one of the allowed values: foo, bar, baz',
             );
           }));
 
@@ -152,7 +152,7 @@ describe(packageJson.name, () => {
             expect(e).to.have.length(1);
             expect(e[0].path).to.contain('testArrayExplode');
             expect(e[0].message).to.equal(
-              'should be equal to one of the allowed values',
+              'should be equal to one of the allowed values: foo, bar, baz',
             );
           }));
     });
@@ -313,6 +313,23 @@ describe(packageJson.name, () => {
             const e = r.body.errors;
             expect(e[0].path).contains('id');
             expect(e[0].message).equals('should be integer');
+          });
+      });
+
+      it('should return 400 an invalid enum value is given', async () => {
+        return request(apps[i])
+          .get(`${basePath}/pets`)
+          .query({
+            limit: 10,
+            test: 'one',
+            testArray: ['unknown_value'],
+          })
+          .expect(400)
+          .then(r => {
+            const e = r.body.errors;
+            expect(e[0].message).equals(
+              'should be equal to one of the allowed values: foo, bar, baz',
+            );
           });
       });
 
