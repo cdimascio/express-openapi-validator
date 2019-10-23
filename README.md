@@ -8,7 +8,7 @@ An OpenApi validator for ExpressJS that automatically validates API requests and
 <img src="https://raw.githubusercontent.com/cdimascio/express-openapi-validator/master/assets/express-openapi-validator.png" width="500">
 </p>
 
-[express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) is unopinionated and does not impose any coding convention or project structure. Simply, install the validator onto your express app, point it to your OpenAPI 3 specification, then define and implement routes the way you prefer. See an [example](#example-express-api-server).
+[express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) is unopinionated library that easily integrates with new and existing API applications. express-openapi-validator let you to write code the way you want and does not impose any coding convention or project layout. Simply, install the validator onto your express app, point it to your OpenAPI 3 specification, then define and implement routes the way you prefer. See an [example](#example-express-api-server).
 
 **Features:**
 
