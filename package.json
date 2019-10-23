@@ -1,7 +1,7 @@
 {
   "name": "express-openapi-validator",
   "version": "2.9.0",
-  "description": "Automatically validate API requests using an OpenAPI 3 and Express.",
+  "description": "Automatically validate API requests and responses using an OpenAPI 3 and Express.",
   "main": "dist/index.js",
   "scripts": {
     "compile": "rm -rf dist/ && tsc",
