@@ -53,18 +53,258 @@ app.use((err, req, res, next) => {
 
 _**Note:** Ensure express is configured with all relevant body parsers. body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
 
-## Advanced Usage
+## Usage (options)
 
 See [Options](#Options) below to:
+
 - inline api specs as JSON.
 - tweak the file upload configuration.
 - customize authentication with `securityHandlers`.
 - use OpenAPI 3.0.x 3rd party and custom formats.
 - and more...
 
-## Options
 
-The options object takes the following form. 
+## [Example Express API Server](https://github.com/cdimascio/express-openapi-validator/tree/master/example)
+
+The following demonstrates how to use express-openapi-validator to auto validate requests and responses. It also includes file upload!
+
+See the complete [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/example) for the example below:
+
+
+```javascript
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const logger = require('morgan');
+const http = require('http');
+const app = express();
+
+// 1. Import the express-openapi-validator library
+const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
+
+// 2. Set up body parsers for the request body types you expect
+//    Must be specified prior to endpoints in 5.
+app.use(bodyParser.json());
+app.use(bodyParser.text());
+app.use(bodyParser.urlencoded());
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// 3. (optionally) Serve the OpenAPI spec
+app.use('/spec', express.static(spec));
+
+// 4. Install the OpenApiValidator onto your express app
+new OpenApiValidator({
+  apiSpec: './openapi.yaml',
+  // securityHandlers: { ... }, // <-- if using security
+  // validateResponses: true, // <-- to validate responses
+  // unknownFormats: ['my-format'] // <-- to provide custom formats
+}).install(app);
+
+// 5. Define routes using Express
+app.get('/v1/pets', function(req, res, next) {
+  res.json([{ id: 1, name: 'max' }, { id: 2, name: 'mini' }]);
+});
+
+app.post('/v1/pets', function(req, res, next) {
+  res.json({ name: 'sparky' });
+});
+
+app.get('/v1/pets/:id', function(req, res, next) {
+  res.json({ id: req.params.id, name: 'sparky' });
+});
+
+// 5a. Define route(s) to upload file(s)
+app.post('/v1/pets/:id/photos', function(req, res, next) {
+  // files are found in req.files
+  // non-file multipart params can be found as such: req.body['my-param']
+
+  res.json({
+    files_metadata: req.files.map(f => ({
+      originalname: f.originalname,
+      encoding: f.encoding,
+      mimetype: f.mimetype,
+      // Buffer of file conents
+      buffer: f.buffer,
+    })),
+  });
+});
+
+// 6. Create an Express error handler
+app.use((err, req, res, next) => {
+  // 7. Customize errors
+  res.status(err.status || 500).json({
+    message: err.message,
+    errors: err.errors,
+  });
+});
+```
+
+## API Validation Response Examples
+
+#### Validates a query parameter with a value constraint
+
+```shell
+curl -s http://localhost:3000/v1/pets/as |jq
+{
+  "message": "request.params.id should be integer",
+  "errors": [
+    {
+      "path": ".params.id",
+      "message": "should be integer",
+      "errorCode": "type.openapi.validation"
+    }
+  ]
+}
+```
+
+#### Validates a query parameter with a range constraint
+
+```shell
+ curl -s 'http://localhost:3000/v1/pets?limit=25' |jq
+{
+  "message": "request.query should have required property 'type', request.query.limit should be <= 20",
+  "errors": [
+    {
+      "path": ".query.type",
+      "message": "should have required property 'type'",
+      "errorCode": "required.openapi.validation"
+    },
+    {
+      "path": ".query.limit",
+      "message": "should be <= 20",
+      "errorCode": "maximum.openapi.validation"
+    }
+  ]
+}
+```
+
+#### Validates securities e.g. API Key
+
+```shell
+ curl -s --request POST \
+  --url http://localhost:3000/v1/pets \
+  --data '{}' |jq
+{
+  "message": "'X-API-Key' header required",
+  "errors": [
+    {
+      "path": "/v1/pets",
+      "message": "'X-API-Key' header required"
+    }
+  ]
+}
+```
+
+Providing the header passes OpenAPI validation. 
+
+**Note:** that your Express middleware or endpoint logic can then provide additional checks.
+
+```shell
+curl -XPOST http://localhost:3000/v1/pets \
+  --header 'X-Api-Key: XXXXX' \
+  --header 'content-type: application/json' \
+  -d '{"name": "spot"}' | jq
+
+{
+  "id": 4,
+  "name": "spot"
+}
+```
+
+#### Validates content-type
+
+```shell
+curl -s --request POST \
+  --url http://localhost:3000/v1/pets \
+  --header 'content-type: application/xml' \
+  --header 'x-api-key: XXXX' \
+  --data '{
+        "name": "test"
+}' |jq
+  "message": "unsupported media type application/xml",
+  "errors": [
+    {
+      "path": "/v1/pets",
+      "message": "unsupported media type application/xml"
+    }
+  ]
+}
+```
+
+#### Validates a POST request body
+
+```shell
+curl -s --request POST \
+  --url http://localhost:3000/v1/pets \
+  --header 'content-type: application/json' \
+  --header 'x-api-key: XXXX' \
+  --data '{}'|jq
+{
+  "message": "request.body should have required property 'name'",
+  "errors": [
+    {
+      "path": ".body.name",
+      "message": "should have required property 'name'",
+      "errorCode": "required.openapi.validation"
+    }
+  ]
+}
+```
+
+#### File Upload (out of the box)
+
+```shell
+curl -XPOST http://localhost:3000/v1/pets/10/photos -F file=@app.js|jq
+{
+  "files_metadata": [
+    {
+      "originalname": "app.js",
+      "encoding": "7bit",
+      "mimetype": "application/octet-stream"
+    }
+  ]
+}
+```
+
+#### Validates responses (optional)
+
+Errors in response validation return `500`, not of `400`
+
+`/v1/pets/99` will return a response that does not match the spec
+
+```
+ curl -s 'http://localhost:3000/v1/pets/99' |jq
+{
+  "message": ".response should have required property 'name', .response should have required property 'id'",
+  "errors": [
+    {
+      "path": ".response.name",
+      "message": "should have required property 'name'",
+      "errorCode": "required.openapi.validation"
+    },
+    {
+      "path": ".response.id",
+      "message": "should have required property 'id'",
+      "errorCode": "required.openapi.validation"
+    }
+  ]
+}
+```
+
+### _...and much more. Try it out!_
+
+## Advanced Usage
+### OpenApiValidator Options
+
+express-openapi validator provides a good deal of flexibility via its options.
+
+Options are provided via the options object. Options take the following form:
 
 ```javascript
 new OpenApiValidator(options).install({
@@ -80,6 +320,7 @@ new OpenApiValidator(options).install({
   }
 });
 ```
+
 
 ### apiSpec (required)
 
@@ -249,86 +490,6 @@ If `securityHandlers` are specified, the validator will validate against the Ope
     See [examples](https://github.com/cdimascio/express-openapi-validator/blob/security/test/security.spec.ts#L17) from unit tests
 
 
-
-## Example Express API Server
-
-Try the complete example below ([source code](https://github.com/cdimascio/express-openapi-validator/tree/master/example)):
-(_it includes file upload as well!_)
-
-```javascript
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const logger = require('morgan');
-const http = require('http');
-const app = express();
-
-// 1. Import the express-openapi-validator library
-const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
-
-// 2. Set up body parsers for the request body types you expect
-//    Must be specified prior to endpoints in 5.
-app.use(bodyParser.json());
-app.use(bodyParser.text());
-app.use(bodyParser.urlencoded());
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-// 3. (optionally) Serve the OpenAPI spec
-app.use('/spec', express.static(spec));
-
-// 4. Install the OpenApiValidator onto your express app
-new OpenApiValidator({
-  apiSpec: './openapi.yaml',
-  // securityHandlers: { ... }, // <-- if using security
-  // validateResponses: true, // <-- to validate responses
-  // unknownFormats: ['my-format'] // <-- to provide custom formats
-}).install(app);
-
-// 5. Define routes using Express
-app.get('/v1/pets', function(req, res, next) {
-  res.json([{ id: 1, name: 'max' }, { id: 2, name: 'mini' }]);
-});
-
-app.post('/v1/pets', function(req, res, next) {
-  res.json({ name: 'sparky' });
-});
-
-app.get('/v1/pets/:id', function(req, res, next) {
-  res.json({ id: req.params.id, name: 'sparky' });
-});
-
-// 5a. Define route(s) to upload file(s)
-app.post('/v1/pets/:id/photos', function(req, res, next) {
-  // files are found in req.files
-  // non-file multipart params can be found as such: req.body['my-param']
-
-  res.json({
-    files_metadata: req.files.map(f => ({
-      originalname: f.originalname,
-      encoding: f.encoding,
-      mimetype: f.mimetype,
-      // Buffer of file conents
-      buffer: f.buffer,
-    })),
-  });
-});
-
-// 6. Create an Express error handler
-app.use((err, req, res, next) => {
-  // 7. Customize errors
-  res.status(err.status || 500).json({
-    message: err.message,
-    errors: err.errors,
-  });
-});
-```
-
 ## The Base URL
 
 The validator will only validate requests — and (optionally) responses — that are under
@@ -350,161 +511,6 @@ that are _not_ under the base URL—such as pages—will not be validated.
 | `https://api.example.com/v1/users`   | :white_check_mark:         |
 | `https://api.example.com/index.html` | no; not under the base URL |
 
-## [Example Express API Server](https://github.com/cdimascio/express-openapi-validator/tree/master/example)
-
-A fully working example lives [here](https://github.com/cdimascio/express-openapi-validator/tree/master/example)
-
-## Example validation responses
-
-### Validate a query parameter with a value constraint
-
-```shell
-curl -s http://localhost:3000/v1/pets/as |jq
-{
-  "message": "request.params.id should be integer",
-  "errors": [
-    {
-      "path": ".params.id",
-      "message": "should be integer",
-      "errorCode": "type.openapi.validation"
-    }
-  ]
-}
-```
-
-### Validate a query parameter with a range constraint
-
-```shell
- curl -s 'http://localhost:3000/v1/pets?limit=25' |jq
-{
-  "message": "request.query should have required property 'type', request.query.limit should be <= 20",
-  "errors": [
-    {
-      "path": ".query.type",
-      "message": "should have required property 'type'",
-      "errorCode": "required.openapi.validation"
-    },
-    {
-      "path": ".query.limit",
-      "message": "should be <= 20",
-      "errorCode": "maximum.openapi.validation"
-    }
-  ]
-}
-```
-
-### Validate security
-
-```shell
- curl -s --request POST \
-  --url http://localhost:3000/v1/pets \
-  --data '{}' |jq
-{
-  "message": "'X-API-Key' header required",
-  "errors": [
-    {
-      "path": "/v1/pets",
-      "message": "'X-API-Key' header required"
-    }
-  ]
-}
-```
-
-with api key header
-
-```shell
-curl -XPOST http://localhost:3000/v1/pets \
-  --header 'X-Api-Key: XXXXX' \
-  --header 'content-type: application/json' \
-  -d '{"name": "spot"}' | jq
-
-{
-  "id": 4,
-  "name": "spot"
-}
-```
-
-### Validate content-type
-
-```shell
-curl -s --request POST \
-  --url http://localhost:3000/v1/pets \
-  --header 'content-type: application/xml' \
-  --header 'x-api-key: XXXX' \
-  --data '{
-        "name": "test"
-}' |jq
-  "message": "unsupported media type application/xml",
-  "errors": [
-    {
-      "path": "/v1/pets",
-      "message": "unsupported media type application/xml"
-    }
-  ]
-}
-```
-
-### Validate a POST request body
-
-```shell
-curl -s --request POST \
-  --url http://localhost:3000/v1/pets \
-  --header 'content-type: application/json' \
-  --header 'x-api-key: XXXX' \
-  --data '{}'|jq
-{
-  "message": "request.body should have required property 'name'",
-  "errors": [
-    {
-      "path": ".body.name",
-      "message": "should have required property 'name'",
-      "errorCode": "required.openapi.validation"
-    }
-  ]
-}
-```
-
-### File upload example
-
-```shell
-curl -XPOST http://localhost:3000/v1/pets/10/photos -F file=@app.js|jq
-{
-  "files_metadata": [
-    {
-      "originalname": "app.js",
-      "encoding": "7bit",
-      "mimetype": "application/octet-stream"
-    }
-  ]
-}
-```
-
-### Response validation (optional)
-
-_Response validation errors return 500s, instead of 400s_
-
-`/v1/pets/99` will return a response that does not match the spec
-
-```
- curl -s 'http://localhost:3000/v1/pets/99' |jq
-{
-  "message": ".response should have required property 'name', .response should have required property 'id'",
-  "errors": [
-    {
-      "path": ".response.name",
-      "message": "should have required property 'name'",
-      "errorCode": "required.openapi.validation"
-    },
-    {
-      "path": ".response.id",
-      "message": "should have required property 'id'",
-      "errorCode": "required.openapi.validation"
-    }
-  ]
-}
-```
-
-### ...and much more. Try it out!
 
 ## Contributors ✨
 
