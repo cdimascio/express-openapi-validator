@@ -529,12 +529,8 @@ that are _not_ under the base URL—such as pages—will not be validated.
   app.use('/', swaggerUi.serve, swaggerUi.setup(documentation))
 
   new OpenApiValidator({
-    apiSpec: documentation,
-    validateResponses: true,
-    securityHandlers: {
-      bearerAuth: (req, scopes, schema) => {
-        console.log(req, scopes, schema)
-      }
+    apiSpec, // api spec JSON object
+    //... other options
     }
   }).install(app)
   ```
