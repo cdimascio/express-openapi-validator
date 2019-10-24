@@ -26,8 +26,12 @@ export function security(
       return next();
     }
 
-    // const securities: OpenAPIV3.SecurityRequirementObject[] =
-    //   req.openapi.schema.security;
+    const pathSchema = req.openapi.schema;
+    if (!pathSchema) {
+      // path has no schema, let it pass security validation
+      // request middleware is in the chain and will validate downstream
+      return next();
+    }
 
     // use the local security object or fallbac to api doc's security or undefined
     const securities: OpenAPIV3.SecurityRequirementObject[] =
