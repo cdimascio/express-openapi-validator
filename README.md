@@ -299,7 +299,7 @@ Errors in response validation return `500`, not of `400`
 
 ### _...and much more. Try it out!_
 
-## Advanced Usage
+## Advanced Usage 📃
 ### OpenApiValidator Options
 
 express-openapi validator provides a good deal of flexibility via its options.
@@ -322,7 +322,7 @@ new OpenApiValidator(options).install({
 ```
 
 
-### apiSpec (required)
+### ▪️ apiSpec (required)
 
 Specifies the path to an OpenAPI 3 specification or a JSON object representing the OpenAPI 3 specificiation
 
@@ -346,21 +346,21 @@ apiSpec: {
 ```
 
 
-### validateRequests (optional)
+### ▪️ validateRequests (optional)
 
 Determines whether the validator should validate requests.
 
 - `true` (**default**) -  validate requests.
 - `false` - do not validate requests.
 
-### validateResponses (optional)
+### ▪️ validateResponses (optional)
 
 Determines whether the validator should validate responses.
 
 - `true` - validate responses
 - `false` (**default**) -  do not validate responses
 
-### unknownFormats (optional)
+### ▪️ unknownFormats (optional)
 
 Defines how the validator should behave if an unknown or custom format is encountered.
 
@@ -375,11 +375,11 @@ Defines how the validator should behave if an unknown or custom format is encoun
 
 - `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
 
-### multerOpts (optional)
+### ▪️ multerOpts (optional)
 
 Specifies the options to passthrough to multer. express-openapi-validator uses multer to handle file uploads. see [multer opts](https://github.com/expressjs/multer)
 
-### coerceTypes (optional)
+### ▪️ coerceTypes (optional)
 
 Determines whether the validator should coerce value types to match the type defined in the OpenAPI spec.  
 
@@ -387,11 +387,14 @@ Determines whether the validator should coerce value types to match the type def
 - `false` - no type coercion.
 - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
-### securityHandlers (optional)
+### ▪️ securityHandlers (optional)
 
-**Note:** Many use cases **_do not_** need `securityHandlers`. They are most useful for OpenID and OAuth2 scenarios as the securityHandler callback will provide defined scopes and sheme as a convenience.
+>**Note:** `securityHandlers` are an optional component. `securityHandlers` provide a convenience, whereby the request, declared scopes, and the security schema itself are provided as parameters to each `securityHandlers` callback that you define. The code you write in each callback can then perform authentication and authorization checks. _**Note** that the same can be achieved using standard Express middleware_. _**The difference** is that `securityHandlers` provide you the OpenAPI schema data described in your specification_. Ulimately, this means, you don't have to duplicate that information in your code. 
 
-Specifies a set of custom security handlers to be used to validate security. If a `securityHandlers` object is specified, a handler must be defined for **_all_** securities. If `securityHandlers are **_not_** specified, a default handler is always used. The default handler will validate against the OpenAPI spec, then call the next middleware.
+>All in all, `securityHandlers` are purely optional and are provided as a convenience.
+
+
+Security handlers specify a set of custom security handlers to be used to validate security i.e. authentication and authorization. If a `securityHandlers` object is specified, a handler must be defined for **_all_** securities. If `securityHandlers are **_not_** specified, a default handler is always used. The default handler will validate against the OpenAPI spec, then call the next middleware.
 
 If `securityHandlers` are specified, the validator will validate against the OpenAPI spec, then call the security handler providing it the Express request, the security scopes, and the security schema object. 
 
