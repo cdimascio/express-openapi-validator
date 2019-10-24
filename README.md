@@ -55,7 +55,7 @@ _**Note:** Ensure express is configured with all relevant body parsers. body par
 
 ## Usage (options)
 
-See [Options](#Options) below to:
+See [Advanced Usage](#Advanced_Usage) options to:
 
 - inline api specs as JSON.
 - tweak the file upload configuration.
@@ -299,7 +299,7 @@ Errors in response validation return `500`, not of `400`
 
 ### _...and much more. Try it out!_
 
-## Advanced Usage 📃
+## Advanced Usage
 ### OpenApiValidator Options
 
 express-openapi validator provides a good deal of flexibility via its options.
