@@ -514,7 +514,25 @@ that are _not_ under the base URL—such as pages—will not be validated.
 | `https://api.example.com/v1/users`   | :white_check_mark:         |
 | `https://api.example.com/index.html` | no; not under the base URL |
 
+## FAQ
 
+**Q:** Can i use 1express-openapi-validator1 with `swagger-ui-express`?
+
+**A:** Yes. Be sure to add the swagger serve middleware prior to installing the OpenApiValidator. This will ensure that `swagger-ui-express` is able to fully prepare the spec before before OpenApiValidator attempts to use it.
+
+	```javascript
+	app.use('/', swaggerUi.serve, swaggerUi.setup(documentation))
+
+	new OpenApiValidator({
+	  apiSpec: documentation,
+	  validateResponses: true,
+	  securityHandlers: {
+	    bearerAuth: (req, scopes, schema) => {
+	      console.log(req, scopes, schema)
+	    }
+	  }
+	}).install(app)
+	```
 ## Contributors ✨
 
 Contributions welcome! Here's how to [contribute](CONTRIBUTING.md).
