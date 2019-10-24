@@ -55,7 +55,7 @@ _**Note:** Ensure express is configured with all relevant body parsers. body par
 
 ## Usage (options)
 
-See [Advanced Usage](#Advanced_Usage) options to:
+See [Advanced Usage](#Advanced-Usage) options to:
 
 - inline api specs as JSON.
 - tweak the file upload configuration.
