@@ -516,7 +516,7 @@ that are _not_ under the base URL—such as pages—will not be validated.
 
 ## FAQ
 
-**Q:** Can i use 1express-openapi-validator1 with `swagger-ui-express`?
+**Q:** Can I use `express-openapi-validator` with `swagger-ui-express`?
 
 **A:** Yes. Be sure to `use` the `swagger-ui-express` serve middleware prior to installing `OpenApiValidator`. This will ensure that `swagger-ui-express` is able to fully prepare the spec before before OpenApiValidator attempts to use it. For example: 
 
@@ -534,6 +534,7 @@ that are _not_ under the base URL—such as pages—will not be validated.
     }
   }).install(app)
   ```
+
 ## Contributors ✨
 
 Contributions welcome! Here's how to [contribute](CONTRIBUTING.md).
