@@ -2,7 +2,7 @@
 
 [![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) ![](https://img.shields.io/npm/dm/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors) [![Greenkeeper badge](https://badges.greenkeeper.io/cdimascio/express-openapi-validator.svg)](https://greenkeeper.io/) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
 
-An OpenApi validator for ExpressJS that automatically validates API requests and responses using an OpenAPI 3 specification.
+**An OpenApi validator for ExpressJS** that automatically validates **API** _**requests**_ and _**responses**_ using an **OpenAPI 3** specification.
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/cdimascio/express-openapi-validator/master/assets/express-openapi-validator.png" width="500">
@@ -55,7 +55,7 @@ _**Note:** Ensure express is configured with all relevant body parsers. body par
 
 ## Usage (options)
 
-See [Options](#Options) below to:
+See [Advanced Usage](#Advanced-Usage) options to:
 
 - inline api specs as JSON.
 - tweak the file upload configuration.
@@ -299,7 +299,7 @@ Errors in response validation return `500`, not of `400`
 
 ### _...and much more. Try it out!_
 
-## Advanced Usage 📃
+## Advanced Usage
 ### OpenApiValidator Options
 
 express-openapi validator provides a good deal of flexibility via its options.
@@ -389,7 +389,7 @@ Determines whether the validator should coerce value types to match the type def
 
 ### ▪️ securityHandlers (optional)
 
->**Note:** `securityHandlers` are an optional component. `securityHandlers` provide a convenience, whereby the request, declared scopes, and the security schema itself are provided as parameters to each `securityHandlers` callback that you define. The code you write in each callback can then perform authentication and authorization checks. _**Note** that the same can be achieved using standard Express middleware_. _**The difference** is that `securityHandlers` provide you the OpenAPI schema data described in your specification_. Ulimately, this means, you don't have to duplicate that information in your code. 
+>**Note:** `securityHandlers` are an optional component. `securityHandlers` provide a convenience, whereby the request, declared scopes, and the security schema itself are provided as parameters to each `securityHandlers` callback that you define. The code you write in each callback can then perform authentication and authorization checks. **_Note that the same can be achieved using standard Express middleware_. The difference** is that `securityHandlers` provide you the OpenAPI schema data described in your specification_. Ulimately, this means, you don't have to duplicate that information in your code. 
 
 >All in all, `securityHandlers` are purely optional and are provided as a convenience.
 
@@ -514,6 +514,26 @@ that are _not_ under the base URL—such as pages—will not be validated.
 | `https://api.example.com/v1/users`   | :white_check_mark:         |
 | `https://api.example.com/index.html` | no; not under the base URL |
 
+## FAQ
+
+**Q:** Can I use `express-openapi-validator` with `swagger-ui-express`?
+
+**A:** Yes. Be sure to `use` the `swagger-ui-express` serve middleware prior to installing `OpenApiValidator`. This will ensure that `swagger-ui-express` is able to fully prepare the spec before before OpenApiValidator attempts to use it. For example: 
+
+  ```javascript
+  const swaggerUi = require('swagger-ui-express')
+  const OpenApiValidator = require('express-openapi-validator').OpenApiValidator
+  
+  ...
+  
+  app.use('/', swaggerUi.serve, swaggerUi.setup(documentation))
+
+  new OpenApiValidator({
+    apiSpec, // api spec JSON object
+    //... other options
+    }
+  }).install(app)
+  ```
 
 ## Contributors ✨
 
