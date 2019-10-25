@@ -389,7 +389,7 @@ Determines whether the validator should coerce value types to match the type def
 
 ### ▪️ securityHandlers (optional)
 
->**Note:** `securityHandlers` are an optional component. `securityHandlers` provide a convenience, whereby the request, declared scopes, and the security schema itself are provided as parameters to each `securityHandlers` callback that you define. The code you write in each callback can then perform authentication and authorization checks. _**Note** that the same can be achieved using standard Express middleware_. _**The difference** is that `securityHandlers` provide you the OpenAPI schema data described in your specification_. Ulimately, this means, you don't have to duplicate that information in your code. 
+>**Note:** `securityHandlers` are an optional component. `securityHandlers` provide a convenience, whereby the request, declared scopes, and the security schema itself are provided as parameters to each `securityHandlers` callback that you define. The code you write in each callback can then perform authentication and authorization checks. **_Note that the same can be achieved using standard Express middleware_. The difference** is that `securityHandlers` provide you the OpenAPI schema data described in your specification_. Ulimately, this means, you don't have to duplicate that information in your code. 
 
 >All in all, `securityHandlers` are purely optional and are provided as a convenience.
 
