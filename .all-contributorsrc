@@ -72,6 +72,16 @@
         "ideas",
         "test"
       ]
+    },
+    {
+      "login": "comino",
+      "name": "Sven Eliasson",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/4029642?v=4",
+      "profile": "https://rysta.io",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
