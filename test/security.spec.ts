@@ -152,6 +152,22 @@ describe(packageJson.name, () => {
       .expect(200);
   });
 
+  it('should return 404 if apikey header exists and handler returns true but path doesnt exist', async () => {
+    eovConf.securityHandlers.ApiKeyAuth = <any>function(req, scopes, schema) {
+      expect(schema.type).to.equal('apiKey');
+      expect(schema.in).to.equal('header');
+      expect(schema.name).to.equal('X-API-Key');
+      expect(scopes)
+        .to.be.an('array')
+        .with.length(0);
+      return true;
+    };
+    return request(app)
+      .get(`${basePath}/api_key_but_invalid_path`)
+      .set('X-API-Key', 'test')
+      .expect(404);
+  });
+
   it('should return 401 if auth header is missing for basic auth', async () => {
     (<any>eovConf.securityHandlers).BasicAuth = async (req, scopes, schema) => {
       return true;
