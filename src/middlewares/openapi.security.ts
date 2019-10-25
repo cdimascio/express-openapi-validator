@@ -19,7 +19,7 @@ export function security(
   securityHandlers: SecurityHandlers,
 ) {
   return async (req, res, next) => {
-    if (!req.openapi) {
+    if (!req.openapi || !req.openapi.schema) {
       // this path was not found in open api and
       // this path is not defined under an openapi base path
       // skip it
