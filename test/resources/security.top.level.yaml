@@ -6,7 +6,6 @@ info:
 
 servers:
   - url: /v1/
-
 security:
   - ApiKeyAuth: []
 
@@ -24,6 +23,16 @@ paths:
       security:
         - ApiKeyAuth: []
         - {}
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: unauthorized
+
+  /api_query_key:
+    get:
+      security:
+        - ApiKeyQueryAuth: []
       responses:
         '200':
           description: OK
@@ -64,6 +73,10 @@ components:
       type: apiKey
       in: header
       name: X-API-Key
+    ApiKeyQueryAuth:
+      type: apiKey
+      in: query
+      name: APIKey
     BearerAuth:
       type: http
       scheme: bearer
