@@ -213,7 +213,7 @@ class AuthValidator {
           throw Error(`'${scheme.name}' header required`);
         }
       } else if (scheme.in === 'query') {
-        if (!req.headers[scheme.name]) {
+        if (!req.query[scheme.name]) {
           throw Error(`query parameter '${scheme.name}' required`);
         }
       }

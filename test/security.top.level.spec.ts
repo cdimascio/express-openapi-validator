@@ -25,6 +25,7 @@ describe(packageJson.name, () => {
       express
         .Router()
         .get(`/api_key`, (req, res) => res.json({ logged_in: true }))
+        .get(`/api_query_key`, (req, res) => res.json({ logged_in: true }))
         .get(`/api_key_or_anonymous`, (req, res) =>
           res.json({ logged_in: true }),
         )
@@ -50,6 +51,13 @@ describe(packageJson.name, () => {
           "'X-API-Key' header required",
         );
       }));
+
+  it('should return 200 if apikey exist as queray param', async () =>
+    request(app)
+      .get(`${basePath}/api_query_key`)
+      .query({ "APIKey": 'test' })
+      .expect(200)
+  );
 
   it('should return 200 if apikey or anonymous', async () =>
     request(app)
