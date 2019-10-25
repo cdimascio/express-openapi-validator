@@ -73,6 +73,21 @@ describe(packageJson.name, () => {
         );
       }));
 
+  it('should return 405 if apikey exist, but invalid method used', async () =>
+    request(app)
+      .post(`${basePath}/api_key`)
+      .set('X-API-Key', 'test')
+      .expect(405)
+      .then(r => {
+        const body = r.body;
+        console.log(body)
+        expect(body.errors).to.be.an('array');
+        expect(body.errors).to.have.length(1);
+        expect(body.errors[0].message).to.equals(
+          'POST method not allowed',
+        );
+      }));
+
   it('should return 200 if apikey or anonymous', async () =>
     request(app)
       .get(`${basePath}/api_key_or_anonymous`)
