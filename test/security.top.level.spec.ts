@@ -52,7 +52,43 @@ describe(packageJson.name, () => {
         );
       }));
 
-  it('should return 200 if apikey exist as queray param', async () =>
+
+  it('should return 200 if apikey exists', async () =>
+    request(app)
+      .get(`${basePath}/api_key`)
+      .set('X-API-Key', 'test')
+      .expect(200)
+      );
+
+  it('should return 404 if apikey exist, but path doesnt exist', async () =>
+    request(app)
+      .get(`${basePath}/api_key_undefined_path`)
+      .set('X-API-Key', 'test')
+      .expect(404)
+      .then(r => {
+        const body = r.body;
+        expect(body.errors).to.be.an('array');
+        expect(body.errors).to.have.length(1);
+        expect(body.errors[0].message).to.equals(
+          'not found',
+        );
+      }));
+
+  it('should return 405 if apikey exist, but invalid method used', async () =>
+    request(app)
+      .post(`${basePath}/api_key`)
+      .set('X-API-Key', 'test')
+      .expect(405)
+      .then(r => {
+        const body = r.body;
+        expect(body.errors).to.be.an('array');
+        expect(body.errors).to.have.length(1);
+        expect(body.errors[0].message).to.equals(
+          'POST method not allowed',
+        );
+      }));
+
+  it('should return 200 if apikey exist as query param', async () =>
     request(app)
       .get(`${basePath}/api_query_key`)
       .query({ "APIKey": 'test' })

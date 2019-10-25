@@ -19,6 +19,7 @@ export function security(
   securityHandlers: SecurityHandlers,
 ) {
   return async (req, res, next) => {
+    // TODO move the folllowing 3 check conditions to a dedicated upstream middleware
     if (!req.openapi) {
       // this path was not found in open api and
       // this path is not defined under an openapi base path
@@ -26,8 +27,17 @@ export function security(
       return next();
     }
 
-    // const securities: OpenAPIV3.SecurityRequirementObject[] =
-    //   req.openapi.schema.security;
+    const expressRoute = req.openapi.expressRoute;
+    if (!expressRoute) {
+      return next(validationError(404, req.path, 'not found'));
+    }
+
+    const pathSchema = req.openapi.schema;
+    if (!pathSchema) {
+      // add openapi metadata to make this case more clear
+      // its not obvious that missig schema means methodNotAllowed
+      return next(validationError(405, req.path, `${req.method} method not allowed`));
+    }
 
     // use the local security object or fallbac to api doc's security or undefined
     const securities: OpenAPIV3.SecurityRequirementObject[] =
