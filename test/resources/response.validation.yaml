@@ -64,6 +64,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get users
+      operationId: getUsers
+      parameters: []
+      responses:
+        '200':
+          description: the users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
 
 components:
   schemas:
@@ -86,6 +100,12 @@ components:
             id:
               type: integer
               format: int64
+
+    Users:
+      description: 'Generic list of values from database schema'
+      type: array
+      items: 
+        type: string
 
     Human:
       required:
