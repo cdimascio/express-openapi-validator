@@ -16,6 +16,10 @@ describe(packageJson.name, () => {
       { apiSpec: apiSpecPath, validateResponses: true },
       3005,
       app => {
+        app.get(`${app.basePath}/users`, (req, res) => {
+          const json = ['user1', 'user2', 'user3'];
+          return res.json(json);
+        });
         app.get(`${app.basePath}/pets`, (req, res) => {
           let json = {};
           if ((req.query.mode = 'bad_type')) {
@@ -47,5 +51,15 @@ describe(packageJson.name, () => {
         expect(r.body)
           .to.have.property('code')
           .that.equals(500);
+      }));
+
+  it('should pass if response is a list', async () =>
+    request(app)
+      .get(`${app.basePath}/users`)
+      .expect(200)
+      .then((r: any) => {
+        expect(r.body)
+          .is.an('array')
+          .with.length(3);
       }));
 });
