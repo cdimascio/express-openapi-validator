@@ -27,7 +27,11 @@ describe(packageJson.name, () => {
           }
           return res.json(json);
         });
+        app.post(`${app.basePath}/no_additional_props`, (req, res) => {
+          res.json(req.body);
+        });
         app.use((err, req, res, next) => {
+          console.log('-------', err);
           res.status(err.status || 500).json({
             message: err.message,
             code: err.status || 500,
@@ -51,6 +55,46 @@ describe(packageJson.name, () => {
         expect(r.body)
           .to.have.property('code')
           .that.equals(500);
+      }));
+
+  it('should fail if additional properties are provided when set false', async () =>
+    request(app)
+      .post(`${app.basePath}/no_additional_props`)
+      .send({
+        token_type: 'token',
+        expires_in: 1000,
+        access_token: 'token',
+        refresh_token: 'refresh_token',
+        user: {
+          id: 10,
+        },
+        some_invalid_prop: 'test',
+      })
+      .expect(500)
+      .then((r: any) => {
+        const e = r.body;
+        expect(e.message).to.contain('should NOT have additional properties');
+        expect(e.code).to.equal(500);
+      }));
+
+  it('should fail if additional properties are provided when set false', async () =>
+    request(app)
+      .post(`${app.basePath}/no_additional_props`)
+      .send({
+        token_type: 'token',
+        expires_in: 1000,
+        access_token: 'token',
+        refresh_token: 'refresh_token',
+        user: {
+          id: 10,
+          extra_prop: true,
+        },
+      })
+      .expect(500)
+      .then((r: any) => {
+        const e = r.body;
+        expect(e.message).to.contain('should NOT have additional properties');
+        expect(e.code).to.equal(500);
       }));
 
   it('should pass if response is a list', async () =>
