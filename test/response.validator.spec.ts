@@ -93,38 +93,7 @@ describe(packageJson.name, () => {
       expect(e.message).to.contain('should be string');
     }
   });
-
-  // TODO may not be possible to fix
-  // https://github.com/epoberezkin/ajv/issues/837
-  it.skip('should fail if additional properties are provided when set false', async () => {
-    const v = new ResponseValidator(apiSpec);
-    const responses = petsResponseSchema();
-    const validators = v._getOrBuildValidator(null, responses);
-    const statusCode = 200;
-    const path = '/some-path';
-    const body = [
-      {
-        id: 10,
-        name: 'test',
-        tag: 'tag',
-        additionalProp: 'test',
-      },
-    ];
-    try {
-      expect(v._validate({ validators, body, statusCode, path })).to.not.exist;
-      expect('here').to.be.null;
-    } catch (e) {
-      // TODO include params.additionalProperty: value in error message
-      // TODO maybe params should be in the response
-      expect(e.message).to.contain('should NOT have additional properties');
-      expect(e.status).to.equal(500);
-      expect(e.errors[0].message).to.contain(
-        'should NOT have additional properties',
-      );
-    }
-  });
 });
-
 function petsResponseSchema() {
   return {
     '200': {

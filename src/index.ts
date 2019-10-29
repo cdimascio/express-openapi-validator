@@ -99,6 +99,7 @@ export class OpenApiValidator {
       this.context.apiDoc,
       {
         coerceTypes,
+        removeAdditional: false,
         unknownFormats,
       },
     );

@@ -35,12 +35,7 @@ function createAjv(
   ajv.removeKeyword('propertyNames');
   ajv.removeKeyword('contains');
   ajv.removeKeyword('const');
-
-  /**
-   * Remove readOnly property in requestBody when validate.
-   * If you want validate response, then need secondary Ajv without modifying this keyword
-   * You can probably change this rule so that can't delete readOnly property in response
-   */
+  
   if (request) {
     ajv.removeKeyword('readOnly');
     ajv.addKeyword('readOnly', {

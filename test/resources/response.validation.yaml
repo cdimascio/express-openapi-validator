@@ -79,6 +79,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/Users'
 
+  /no_additional_props:
+    post:
+      description: Get todos
+      operationId: getTodos
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: no additional props
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoAdditionalProps'
+
+
+
 components:
   schemas:
     NewPet:
@@ -121,6 +137,26 @@ components:
           items:
             $ref: '#/components/schemas/Human'
 
+    NoAdditionalProps:
+        type: object
+        additionalProperties: false
+        properties:
+          token_type:
+            type: string
+          expires_in: 
+            type: integer
+          access_token: 
+            type: string
+          refresh_token:
+            type: string
+          user:
+            additionalProperties: false
+            type: object
+            required: 
+              - id
+            properties:
+              id:
+                type: integer
     Error:
       required:
         - code
