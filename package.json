@@ -54,7 +54,7 @@
     "nodemon": "^1.19.1",
     "nyc": "^14.1.1",
     "prettier": "^1.18.2",
-    "source-map-support": "0.5.13",
+    "source-map-support": "0.5.14",
     "supertest": "^4.0.2",
     "ts-node": "^8.3.0",
     "tsc": "^1.20150623.0",
