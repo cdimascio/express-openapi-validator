@@ -1,5 +1,6 @@
 import ono from 'ono';
 import * as _ from 'lodash';
+import * as middlewares from './middlewares';
 import { Application, Response, NextFunction } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
 import {
@@ -8,7 +9,6 @@ import {
   OpenApiRequest,
   OpenApiRequestHandler,
 } from './framework/types';
-import * as middlewares from './middlewares';
 
 export class OpenApiValidator {
   private app: Application;
@@ -35,7 +35,7 @@ export class OpenApiValidator {
     });
   }
 
-  install(app: Application) {
+  install(app: Application): void {
     this.app = app;
     this.installPathParams();
     this.installMetadataMiddleware();
@@ -55,7 +55,7 @@ export class OpenApiValidator {
     }
   }
 
-  private installPathParams() {
+  private installPathParams(): void {
     const pathParams = [];
     for (const route of this.context.routes) {
       if (route.pathParams.length > 0) {
@@ -84,15 +84,15 @@ export class OpenApiValidator {
     }
   }
 
-  private installMetadataMiddleware() {
+  private installMetadataMiddleware(): void {
     this.app.use(middlewares.applyOpenApiMetadata(this.context));
   }
 
-  private installMultipartMiddleware() {
+  private installMultipartMiddleware(): void {
     this.app.use(middlewares.multipart(this.context, this.options.multerOpts));
   }
 
-  private installSecurityMiddleware() {
+  private installSecurityMiddleware(): void {
     const securityMiddleware = middlewares.security(
       this.context,
       this.options.securityHandlers,
@@ -100,7 +100,7 @@ export class OpenApiValidator {
     this.app.use(securityMiddleware);
   }
 
-  private installRequestValidationMiddleware() {
+  private installRequestValidationMiddleware(): void {
     const { coerceTypes, unknownFormats } = this.options;
     const requestValidator = new middlewares.RequestValidator(
       this.context.apiDoc,
@@ -118,7 +118,7 @@ export class OpenApiValidator {
     this.app.use(requestValidationHandler);
   }
 
-  private installResponseValidationMiddleware() {
+  private installResponseValidationMiddleware(): void {
     const { coerceTypes, unknownFormats, validateResponses } = this.options;
     const { removeAdditional } = <ValidateResponseOpts>validateResponses;
 
