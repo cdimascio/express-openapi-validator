@@ -22,9 +22,12 @@ export type SecurityHandlers = {
     schema: OpenAPIV3.SecuritySchemeObject,
   ) => boolean | Promise<boolean>;
 };
+export type ValidateResponseOpts = {
+  removeAdditional?: string | boolean;
+};
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
-  validateResponses?: boolean;
+  validateResponses?: boolean | ValidateResponseOpts;
   validateRequests?: boolean;
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean;
@@ -42,6 +45,18 @@ export class OpenApiValidator {
     if (options.unknownFormats == null) options.unknownFormats === true;
     if (options.coerceTypes == null) options.coerceTypes = true;
     if (options.validateRequests == null) options.validateRequests = true;
+    if (options.validateResponses == null) options.validateResponses = false;
+    if (!options.validateRequests) throw Error('validateRequests must be true');
+
+    if (!options.validateResponses) {
+    } else if (
+      options.validateResponses === true ||
+      options.validateResponses === 'strict'
+    ) {
+      options.validateResponses = {
+        removeAdditional: false,
+      };
+    }
 
     this.options = options;
 
@@ -95,11 +110,15 @@ export class OpenApiValidator {
     const requestValidatorMw: OpenApiRequestHandler = (req, res, next) =>
       requestValidator.validate(req, res, next);
 
+    const removeAdditional =
+      this.options.validateResponses &&
+      (<ValidateResponseOpts>this.options.validateResponses).removeAdditional;
+
     const responseValidator = new middlewares.ResponseValidator(
       this.context.apiDoc,
       {
         coerceTypes,
-        removeAdditional: false,
+        removeAdditional,
         unknownFormats,
       },
     );
@@ -124,6 +143,7 @@ export class OpenApiValidator {
 
   private validateOptions(options: OpenApiValidatorOpts): void {
     if (!options.apiSpec) throw ono('apiSpec required');
+
     const securityHandlers = options.securityHandlers;
     if (securityHandlers != null) {
       if (
