@@ -367,7 +367,7 @@ Determines whether the validator should validate responses. Also accepts respons
 	
 	For example:
 	
-	```json
+	```javascript
 	validateResponses: {
 	  removeAdditional: 'failing'
 	}
