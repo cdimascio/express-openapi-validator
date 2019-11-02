@@ -35,7 +35,7 @@ export class OpenApiValidator {
     });
   }
 
-  install(app: Application): void {
+  public install(app: Application): void {
     this.app = app;
     this.installPathParams();
     this.installMetadataMiddleware();
