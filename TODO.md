@@ -8,6 +8,6 @@
 - (done) only throw not found on routes with a openapi base path
 - test with merge middleware
 - test with case insensitive and case sensitive routing
-- (validated) test empty base path
+- (done) test empty base path
 - (done) test base path with trailing slash
 - add support for discriminators
