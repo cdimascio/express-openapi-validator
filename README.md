@@ -351,7 +351,7 @@ or
 Determines whether the validator should validate requests.
 
 - `true` (**default**) -  validate requests.
-- `false` (deprecated, to be removed in v3) - do not validate requests.
+- `false` - do not validate requests.
 
 ### ▪️ validateResponses (optional)
 
