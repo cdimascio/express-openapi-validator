@@ -1,5 +1,8 @@
-import { SecurityHandlers } from '../index';
-import { OpenAPIV3, OpenApiRequest } from '../framework/types';
+import {
+  OpenAPIV3,
+  OpenApiRequest,
+  SecurityHandlers,
+} from '../framework/types';
 import { validationError } from './util';
 import { OpenApiContext } from '../framework/openapi.context';
 
@@ -36,7 +39,9 @@ export function security(
     if (!pathSchema) {
       // add openapi metadata to make this case more clear
       // its not obvious that missig schema means methodNotAllowed
-      return next(validationError(405, req.path, `${req.method} method not allowed`));
+      return next(
+        validationError(405, req.path, `${req.method} method not allowed`),
+      );
     }
 
     // use the local security object or fallbac to api doc's security or undefined
