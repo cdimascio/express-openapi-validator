@@ -312,7 +312,7 @@ new OpenApiValidator(options).install({
   validateRequests: true,
   validateResponses: true,
   unknownFormats: ['phone-number', 'uuid'],
-   multerOpts: { ... },
+  multerOpts: { ... },
   securityHandlers: {
     ApiKeyAuth: (req, scopes, schema) => {
       throw { status: 401, message: 'sorry' }
@@ -333,7 +333,7 @@ apiSpec: './path/to/my-openapi-spec.yaml'
 or 
 
 ```javascript
-apiSpec: {
+  apiSpec: {
   openapi: '3.0.1',
   info: {...},
   servers: [...],
@@ -355,10 +355,24 @@ Determines whether the validator should validate requests.
 
 ### ▪️ validateResponses (optional)
 
-Determines whether the validator should validate responses.
+Determines whether the validator should validate responses. Also accepts response validation options.
 
-- `true` - validate responses
+- `true` - validate responses in 'strict' mode i.e. responses MUST match the schema. 
 - `false` (**default**) -  do not validate responses
+- `{ ... }` - validate responses with options
+
+	**removeAdditional**
+	
+	- `"failing"` - additional properties that fail schema validation are automatically removed from the response.
+	
+	For example:
+	
+	```javascript
+	validateResponses: {
+	  removeAdditional: 'failing'
+	}
+	```
+
 
 ### ▪️ unknownFormats (optional)
 

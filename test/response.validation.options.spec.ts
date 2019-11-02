@@ -15,7 +15,9 @@ describe(packageJson.name, () => {
     app = await createApp(
       {
         apiSpec: apiSpecPath,
-        validateResponses: true,
+        validateResponses: {
+          removeAdditional: 'failing',
+        },
       },
       3005,
       app => {
@@ -59,7 +61,7 @@ describe(packageJson.name, () => {
           .that.equals(500);
       }));
 
-  it('should fail if additional properties are provided when set false', async () =>
+  it('should remove additional properties when set false', async () =>
     request(app)
       .post(`${app.basePath}/no_additional_props`)
       .send({
@@ -72,14 +74,14 @@ describe(packageJson.name, () => {
         },
         some_invalid_prop: 'test',
       })
-      .expect(500)
+      .expect(200)
       .then((r: any) => {
-        const e = r.body;
-        expect(e.message).to.contain('should NOT have additional properties');
-        expect(e.code).to.equal(500);
+        const body = r.body;
+        expect(body).to.have.property('token_type');
+        expect(body).to.not.have.property('some_invalid_prop');
       }));
 
-  it('should fail if additional properties are provided when set false', async () =>
+  it('should remove nested additional prop if additionalProperties is false', async () =>
     request(app)
       .post(`${app.basePath}/no_additional_props`)
       .send({
@@ -92,11 +94,11 @@ describe(packageJson.name, () => {
           extra_prop: true,
         },
       })
-      .expect(500)
+      .expect(200)
       .then((r: any) => {
-        const e = r.body;
-        expect(e.message).to.contain('should NOT have additional properties');
-        expect(e.code).to.equal(500);
+        const body = r.body;
+        expect(body.user).to.have.property('id');
+        expect(body.user).to.not.have.property('extra_prop');
       }));
 
   it('should pass if response is a list', async () =>
