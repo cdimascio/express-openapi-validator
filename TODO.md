@@ -10,3 +10,4 @@
 - test with case insensitive and case sensitive routing
 - (validated) test empty base path
 - (done) test base path with trailing slash
+- add support for discriminators
