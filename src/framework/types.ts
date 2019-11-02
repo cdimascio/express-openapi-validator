@@ -11,6 +11,28 @@ type OpenAPIErrorTransformer = ({}, {}) => object;
 
 type PathSecurityTuple = [RegExp, SecurityRequirement[]];
 
+export type SecurityHandlers = {
+  [key: string]: (
+    req: Request,
+    scopes: string[],
+    schema: OpenAPIV3.SecuritySchemeObject,
+  ) => boolean | Promise<boolean>;
+};
+
+export type ValidateResponseOpts = {
+  removeAdditional?: string | boolean;
+};
+
+export interface OpenApiValidatorOpts {
+  apiSpec: OpenAPIV3.Document | string;
+  validateResponses?: boolean | ValidateResponseOpts;
+  validateRequests?: boolean;
+  securityHandlers?: SecurityHandlers;
+  coerceTypes?: boolean;
+  unknownFormats?: string[] | string | boolean;
+  multerOpts?: {};
+}
+
 interface SecurityRequirement {
   [name: string]: SecurityScope[];
 }
