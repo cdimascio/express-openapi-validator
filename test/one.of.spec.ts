@@ -18,6 +18,9 @@ describe(packageJson.name, () => {
         app.post(`${app.basePath}/one_of`, (req, res) => {
           res.json(req.body);
         });
+        app.post(`${app.basePath}/one_of_b`, (req, res) => {
+          res.json(req.body);
+        });
         app.use((err, req, res, next) => {
           res.status(err.status || 500).json({
             message: err.message,
@@ -68,6 +71,60 @@ describe(packageJson.name, () => {
   it('should return 400 for invalid oneOf option', async () => {
     return request(app)
       .post(`${app.basePath}/one_of`)
+      .set('content-type', 'application/json')
+      .send({
+        id: 'some_id',
+        array_of_oneofs: [
+          {
+            type: 'type_2',
+            unique_three: 'unique_three',
+          },
+        ],
+      })
+      .expect(400)
+      .then(r => {
+        const e = r.body;
+        expect(e.message).to.contain(
+          'should match exactly one schema in oneOf',
+        );
+      });
+  });
+
+  it('should return 200 on first oneOf (b) option', async () => {
+    return request(app)
+      .post(`${app.basePath}/one_of_b`)
+      .set('content-type', 'application/json')
+      .send({
+        id: 'some_id',
+        array_of_oneofs: [
+          {
+            type: 'type_1',
+            unique_one: 'unique_one',
+          },
+        ],
+      })
+      .expect(200);
+  });
+
+  it('should return 200 on second oneOf (b) option', async () => {
+    return request(app)
+      .post(`${app.basePath}/one_of_b`)
+      .set('content-type', 'application/json')
+      .send({
+        id: 'some_id',
+        array_of_oneofs: [
+          {
+            type: 'type_2',
+            unique_two: 'unique_two',
+          },
+        ],
+      })
+      .expect(200);
+  });
+
+  it('should return 400 for invalid oneOf (b) option', async () => {
+    return request(app)
+      .post(`${app.basePath}/one_of_b`)
       .set('content-type', 'application/json')
       .send({
         id: 'some_id',
