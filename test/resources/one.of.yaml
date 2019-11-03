@@ -1,0 +1,161 @@
+openapi: "3.0.2"
+info:
+  version: 1.0.0
+  title: requestBodies $ref
+  description: requestBodies $ref Test
+
+servers:
+  - url: /v1
+
+paths:
+  /one_of:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OneOfType"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OneOfType'
+        "400":
+          description: Bad Request
+          
+  /one_of_b:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OneOfTypeB"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OneOfType'
+        "400":
+          description: Bad Request
+
+components:
+  schemas:
+    SimilarTypeOne:
+      allOf:
+        - $ref: "#/components/schemas/SimilarSuperType"
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - type_1
+            unique_one:
+              type: string
+          required:
+            - type
+            - unique_one
+
+    SimilarTypeTwo:
+      allOf:
+        - $ref: "#/components/schemas/SimilarSuperType"
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - type_2
+            unique_two:
+              type: string
+          required:
+            - type
+            - unique_two
+
+    OneOfType:
+      type: object
+      properties:
+        array_of_oneofs:
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/SimilarTypeOne"
+              - $ref: "#/components/schemas/SimilarTypeTwo"
+            discriminator:
+              propertyName: type
+
+    SimilarTypeOneB:
+      allOf:
+        - $ref: "#/components/schemas/SimilarSuperTypeB"
+      properties:
+        type:
+          type: string
+          enum:
+            - type_1
+        unique_one:
+          type: string
+        value:
+          type: number
+          format: int32
+          enum: [ 1 ]
+          default: 1
+      required:
+        - type
+        - unique_one
+        - value
+
+    SimilarTypeTwoB:
+      allOf:
+        - $ref: "#/components/schemas/SimilarSuperTypeB"
+      properties:
+        type:
+          type: string
+          enum:
+            - type_2
+        unique_two:
+          type: string
+        value:
+          type: number
+          format: int32
+          enum: [ 2 ]
+          default: 2
+      required:
+        - type
+        - unique_two
+        - value
+
+    OneOfTypeB:
+      type: object
+      properties:
+        array_of_oneofs:
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/SimilarTypeOneB"
+              - $ref: "#/components/schemas/SimilarTypeTwoB"
+            discriminator:
+              propertyName: type
+
+    SimilarSuperType:
+      type: object
+      properties:
+        id:
+          type: string
+          
+    SimilarSuperTypeB:
+      type: object
+      properties:
+        id:
+          type: string
+        value:
+          type: number
+          format: int32
+      discriminator:
+        propertyName: type
+      required:
+        - value
+
