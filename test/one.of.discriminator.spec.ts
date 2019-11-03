@@ -61,7 +61,7 @@ describe.only(packageJson.name, () => {
   });
 
   // TODO make this work - needs to utilize a discriminator
-  it.skip('should POST TypeTwo', async () => {
+  it('should POST TypeTwo', async () => {
     return request(app)
       .post(`${app.basePath}/typethrees`)
       .send({
