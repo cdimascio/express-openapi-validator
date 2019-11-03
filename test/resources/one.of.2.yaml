@@ -1,5 +1,4 @@
-
-openapi: '3.0.0'
+openapi: "3.0.0"
 
 info:
   description: express-openapi-validator-test
@@ -10,7 +9,7 @@ info:
     url: https://opensource.org/licenses/MIT
 
 servers:
-  - url: http://localhost:3010/v0
+  - url: /v1
 
 paths:
   /typethrees:
@@ -21,20 +20,20 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: '#/components/schemas/TypeThree'
+                - $ref: "#/components/schemas/TypeThree"
       responses:
-        '201':
+        "201":
           description: Application response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TypeThree'
+                $ref: "#/components/schemas/TypeThree"
         default:
           description: unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
 
 components:
   schemas:
@@ -64,8 +63,8 @@ components:
         - type
 
     TypeOne:
-      allOf:   
-        - $ref: '#/components/schemas/SuperTypeOne'
+      allOf:
+        - $ref: "#/components/schemas/SuperTypeOne"
       type: object
       properties:
         type:
@@ -74,7 +73,7 @@ components:
         value:
           type: number
           format: int32
-          enum: [ 1 ]
+          enum: [1]
           default: 1
         uniqueOne:
           type: string
@@ -84,8 +83,8 @@ components:
         - uniqueOne
 
     TypeTwo:
-      allOf:   
-        - $ref: '#/components/schemas/SuperTypeOne'
+      allOf:
+        - $ref: "#/components/schemas/SuperTypeOne"
       type: object
       properties:
         type:
@@ -94,7 +93,7 @@ components:
         value:
           type: number
           format: int32
-          enum: [ 2 ]
+          enum: [2]
           default: 2
         uniqueTwo:
           type: string
@@ -117,8 +116,8 @@ components:
             type: string
 
     TypeThree:
-      allOf:   
-        - $ref: '#/components/schemas/SuperTypeTwo'
+      allOf:
+        - $ref: "#/components/schemas/SuperTypeTwo"
       type: object
       properties:
         type:
