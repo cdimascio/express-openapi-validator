@@ -1,0 +1,89 @@
+openapi: "3.0.2"
+info:
+  version: 1.0.0
+  title: requestBodies $ref
+  description: requestBodies $ref Test
+
+servers:
+  - url: /v1
+
+paths:
+  /one_of:
+    post:
+      requestBody:
+        # $ref: "#/components/requestBodies/OneOfBody"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OneOfType"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OneOfType'
+        "400":
+          description: Bad Request
+
+components:
+  schemas:
+    SimilarTypeOne:
+      allOf:
+        - $ref: "#/components/schemas/SimilarSuperType"
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - type_1
+            unique_one:
+              type: string
+          required:
+            - type
+            - unique_one
+
+    SimilarTypeTwo:
+      allOf:
+        - $ref: "#/components/schemas/SimilarSuperType"
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - type_2
+            unique_two:
+              type: string
+          required:
+            - type
+            - unique_two
+
+    OneOfType:
+      type: object
+      properties:
+        array_of_oneofs:
+          type: array
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/SimilarTypeOne"
+              - $ref: "#/components/schemas/SimilarTypeTwo"
+            discriminator:
+              propertyName: type
+
+    SimilarSuperType:
+      type: object
+      properties:
+        id:
+          type: string
+
+  # requestBodies:
+  #   OneOfBody:
+  #     required: true
+  #     content:
+  #       text/plain:
+  #         schema:
+  #           type: string
+  #       application/json:
+  #         schema:
+  #           $ref: "#/components/schemas/OneOfType"
