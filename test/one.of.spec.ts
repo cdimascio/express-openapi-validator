@@ -100,6 +100,7 @@ describe(packageJson.name, () => {
           {
             type: 'type_1',
             unique_one: 'unique_one',
+            value: 1
           },
         ],
       })
@@ -116,6 +117,7 @@ describe(packageJson.name, () => {
           {
             type: 'type_2',
             unique_two: 'unique_two',
+            value: 2
           },
         ],
       })

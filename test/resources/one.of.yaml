@@ -11,7 +11,6 @@ paths:
   /one_of:
     post:
       requestBody:
-        # $ref: "#/components/requestBodies/OneOfBody"
         required: true
         content:
           application/json:
@@ -30,7 +29,6 @@ paths:
   /one_of_b:
     post:
       requestBody:
-        # $ref: "#/components/requestBodies/OneOfBody"
         required: true
         content:
           application/json:
@@ -92,7 +90,7 @@ components:
 
     SimilarTypeOneB:
       allOf:
-        - $ref: "#/components/schemas/SimilarSuperType"
+        - $ref: "#/components/schemas/SimilarSuperTypeB"
       properties:
         type:
           type: string
@@ -100,13 +98,19 @@ components:
             - type_1
         unique_one:
           type: string
+        value:
+          type: number
+          format: int32
+          enum: [ 1 ]
+          default: 1
       required:
         - type
         - unique_one
+        - value
 
     SimilarTypeTwoB:
       allOf:
-        - $ref: "#/components/schemas/SimilarSuperType"
+        - $ref: "#/components/schemas/SimilarSuperTypeB"
       properties:
         type:
           type: string
@@ -114,9 +118,15 @@ components:
             - type_2
         unique_two:
           type: string
+        value:
+          type: number
+          format: int32
+          enum: [ 2 ]
+          default: 2
       required:
         - type
         - unique_two
+        - value
 
     OneOfTypeB:
       type: object
@@ -135,4 +145,17 @@ components:
       properties:
         id:
           type: string
+          
+    SimilarSuperTypeB:
+      type: object
+      properties:
+        id:
+          type: string
+        value:
+          type: number
+          format: int32
+      discriminator:
+        propertyName: type
+      required:
+        - value
 
