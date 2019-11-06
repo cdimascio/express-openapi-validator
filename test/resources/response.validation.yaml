@@ -101,6 +101,10 @@ components:
       required:
         - name
       properties:
+        bought_at:
+          type: string
+          format: date-time
+          nullable: true
         name:
           type: string
           nullable: true
