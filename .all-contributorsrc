@@ -82,6 +82,16 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "SpencerLawrenceBrown",
+      "name": "Spencer Brown",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/7729907?v=4",
+      "profile": "https://github.com/SpencerLawrenceBrown",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
