@@ -125,6 +125,7 @@ export class OpenApiValidator {
     const responseValidator = new middlewares.ResponseValidator(
       this.context.apiDoc,
       {
+        nullable: true,
         coerceTypes,
         removeAdditional,
         unknownFormats,
