@@ -1,6 +1,6 @@
 # express-openapi-validator
 
-[![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) ![](https://img.shields.io/npm/dm/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors) [![Greenkeeper badge](https://badges.greenkeeper.io/cdimascio/express-openapi-validator.svg)](https://greenkeeper.io/) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
+[![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) ![](https://img.shields.io/npm/dm/express-openapi-validator.svg) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors) [![Greenkeeper badge](https://badges.greenkeeper.io/cdimascio/express-openapi-validator.svg)](https://greenkeeper.io/) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
 
 **An OpenApi validator for ExpressJS** that automatically validates **API** _**requests**_ and _**responses**_ using an **OpenAPI 3** specification.
 
@@ -569,6 +569,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://rysta.io"><img src="https://avatars0.githubusercontent.com/u/4029642?v=4" width="100px;" alt="Sven Eliasson"/><br /><sub><b>Sven Eliasson</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=comino" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=comino" title="Tests">⚠️</a></td>
+    <td align="center"><a href="https://github.com/SpencerLawrenceBrown"><img src="https://avatars3.githubusercontent.com/u/7729907?v=4" width="100px;" alt="Spencer Brown"/><br /><sub><b>Spencer Brown</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=SpencerLawrenceBrown" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=SpencerLawrenceBrown" title="Tests">⚠️</a></td>
   </tr>
 </table>
 
