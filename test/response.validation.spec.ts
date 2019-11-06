@@ -26,7 +26,7 @@ describe(packageJson.name, () => {
         });
         app.get(`${app.basePath}/pets`, (req, res) => {
           let json = {};
-          if ((req.query.mode == 'bad_type')) {
+          if (req.query.mode === 'bad_type') {
             json = [{ id: 'bad_id', name: 'name', tag: 'tag' }];
           } else if (req.query.mode == 'check_null') {
             json = [
