@@ -39,6 +39,21 @@ paths:
         '401':
           description: unauthorized
 
+  /api_query_keys:
+    get:
+      security:
+        - ApiKeyQueryAuth: []
+      parameters: 
+        - name: param1
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: unauthorized
+
   /bearer:
     get:
       security:
