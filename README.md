@@ -317,7 +317,8 @@ new OpenApiValidator(options).install({
     ApiKeyAuth: (req, scopes, schema) => {
       throw { status: 401, message: 'sorry' }
     }
-  }
+  },
+  basePath: '/my/path'
 });
 ```
 
@@ -506,6 +507,15 @@ If `securityHandlers` are specified, the validator will validate against the Ope
 
     See [examples](https://github.com/cdimascio/express-openapi-validator/blob/security/test/security.spec.ts#L17) from unit tests
 
+
+### ▪️ basePath (optional)
+
+Specifies an optional custom base path to use for all routes. If not set, the base path(s) will be read from the `servers` property of the specification (see below).
+
+This is useful if the path of the public server URL in the API specification document differs from the path used by the backend server implementing the API.
+For example, even if the specification has a server URL of `http://my-app.com/api/admin`, an API gateway or proxy in front of the backend server might be forwarding requests without this path prefix, so that the backend server implements the routes directly on `/`.
+
+This can also be useful if one backend server implements multiple OpenAPI specifications for different paths using different Express sub-apps.
 
 ## The Base URL
 
