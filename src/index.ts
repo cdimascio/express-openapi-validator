@@ -32,6 +32,7 @@ export class OpenApiValidator {
     this.options = options;
     this.context = new OpenApiContext({
       apiDoc: options.apiSpec,
+      basePath: options.basePath
     });
   }
 
