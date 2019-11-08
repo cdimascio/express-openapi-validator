@@ -104,7 +104,7 @@ describe(packageJson.name, () => {
       .expect(200)
   );
 
-  it('should return 200 if apikey exist as query param with another query parmeter in the request', async () =>
+  it('should return 200 if apikey exist as query param with no query parmeter in the request but in the spec', async () =>
     request(app)
       .get(`${basePath}/api_query_keys`)
       .query({ "APIKey": 'test' })
