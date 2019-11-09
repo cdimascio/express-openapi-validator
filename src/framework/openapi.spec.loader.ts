@@ -13,8 +13,8 @@ export class OpenApiSpecLoader {
 
   load() {
     const framework = this.createFramework(this.opts);
-    const apiDoc = framework.apiDoc || {};
-    const bps = framework.basePaths || [];
+    const apiDoc = framework.apiDoc ?? {};
+    const bps = framework.basePaths ?? [];
     const basePaths = bps.reduce((acc, bp) => {
       bp.all().forEach(path => acc.add(path));
       return acc;
@@ -52,10 +52,10 @@ export class OpenApiSpecLoader {
                 continue;
               }
               const schemaParameters = new Set();
-              (schema.parameters || []).forEach(parameter =>
+              (schema.parameters ?? []).forEach(parameter =>
                 schemaParameters.add(parameter),
               );
-              ((methods as any).parameters || []).forEach(parameter =>
+              ((methods as any).parameters ?? []).forEach(parameter =>
                 schemaParameters.add(parameter),
               );
               schema.parameters = Array.from(schemaParameters);

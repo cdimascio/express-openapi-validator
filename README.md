@@ -44,7 +44,7 @@ new OpenApiValidator({
 ```javascript
 app.use((err, req, res, next) => {
   // format error
-  res.status(err.status || 500).json({
+  res.status(err.status ?? 500).json({
     message: err.message,
     errors: err.errors,
   });
@@ -138,7 +138,7 @@ app.post('/v1/pets/:id/photos', function(req, res, next) {
 // 6. Create an Express error handler
 app.use((err, req, res, next) => {
   // 7. Customize errors
-  res.status(err.status || 500).json({
+  res.status(err.status ?? 500).json({
     message: err.message,
     errors: err.errors,
   });

@@ -42,7 +42,7 @@ export class OpenApiValidator {
     this.installMultipartMiddleware();
 
     const components = this.context.apiDoc.components;
-    if (components && components.securitySchemes) {
+    if (components?.securitySchemes) {
       this.installSecurityMiddleware();
     }
 
@@ -76,7 +76,7 @@ export class OpenApiValidator {
         ) => {
           if (req.openapi.pathParams) {
             // override path params
-            req.params[name] = req.openapi.pathParams[name] || req.params[name];
+            req.params[name] = req.openapi.pathParams[name] ?? req.params[name];
           }
           next();
         },

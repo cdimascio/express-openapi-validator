@@ -22,9 +22,9 @@ describe(packageJson.name, () => {
           res.json(req.body);
         });
         app.use((err, req, res, next) => {
-          res.status(err.status || 500).json({
+          res.status(err.status ?? 500).json({
             message: err.message,
-            code: err.status || 500,
+            code: err.status ?? 500,
           });
         });
       },

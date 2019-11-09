@@ -50,13 +50,7 @@ function isValidContentType(req: Request): boolean {
 }
 
 function isMultipart(req: OpenApiRequest): boolean {
-  return (
-    req.openapi &&
-    req.openapi.schema &&
-    req.openapi.schema.requestBody &&
-    req.openapi.schema.requestBody.content &&
-    req.openapi.schema.requestBody.content['multipart/form-data']
-  );
+  return req?.openapi?.schema?.requestBody?.content?.['multipart/form-data'];
 }
 
 function error(req: OpenApiRequest, err: Error) {
@@ -67,7 +61,7 @@ function error(req: OpenApiRequest, err: Error) {
     // HACK
     // TODO improve multer error handling
     const missingField = /Multipart: Boundary not found/i.test(
-      err.message || '',
+      err.message ?? '',
     );
     if (missingField) {
       return validationError(400, req.path, 'multipart file(s) required');
