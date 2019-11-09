@@ -60,7 +60,7 @@ export default class OpenAPIFramework implements IOpenAPIFramework {
       ? getBasePathsFromServers(this.apiDoc.servers)
       : [
           new BasePath({
-            url: (this.apiDoc.basePath || '').replace(/\/$/, ''),
+            url: (this.apiDoc.basePath ?? '').replace(/\/$/, ''),
           }),
         ];
 

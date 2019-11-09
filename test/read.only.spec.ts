@@ -34,7 +34,7 @@ describe(packageJson.name, () => {
           body.created_at = new Date().toISOString();
           body.reviews = body.reviews.map(r => ({
             id: 99,
-            rating: r.rating || 2,
+            rating: r.rating ?? 2,
           }));
           res.json(body);
         }),
