@@ -48,18 +48,14 @@ describe(packageJson.name, () => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
-        expect(body.errors[0].message).to.equals(
-          "'X-API-Key' header required",
-        );
+        expect(body.errors[0].message).to.equals("'X-API-Key' header required");
       }));
-
 
   it('should return 200 if apikey exists', async () =>
     request(app)
       .get(`${basePath}/api_key`)
       .set('X-API-Key', 'test')
-      .expect(200)
-      );
+      .expect(200));
 
   it('should return 404 if apikey exist, but path doesnt exist', async () =>
     request(app)
@@ -70,9 +66,7 @@ describe(packageJson.name, () => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
-        expect(body.errors[0].message).to.equals(
-          'not found',
-        );
+        expect(body.errors[0].message).to.equals('not found');
       }));
 
   it('should return 405 if apikey exist, but invalid method used', async () =>
@@ -84,32 +78,27 @@ describe(packageJson.name, () => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
-        expect(body.errors[0].message).to.equals(
-          'POST method not allowed',
-        );
+        expect(body.errors[0].message).to.equals('POST method not allowed');
       }));
 
   it('should return 200 if apikey exist as query param', async () =>
     request(app)
       .get(`${basePath}/api_query_key`)
-      .query({ "APIKey": 'test' })
-      .expect(200)
-  );
+      .query({ APIKey: 'test' })
+      .expect(200));
 
   it('should return 200 if apikey exist as query param with another query parmeter in the request', async () =>
     request(app)
       .get(`${basePath}/api_query_keys`)
-      .query({ "APIKey": 'test' })
-      .query({ "param1": 'anotherTest' })
-      .expect(200)
-  );
+      .query({ APIKey: 'test' })
+      .query({ param1: 'anotherTest' })
+      .expect(200));
 
   it('should return 200 if apikey exist as query param with no query parmeter in the request but in the spec', async () =>
     request(app)
       .get(`${basePath}/api_query_keys`)
-      .query({ "APIKey": 'test' })
-      .expect(200)
-  );
+      .query({ APIKey: 'test' })
+      .expect(200));
   it('should return 200 if apikey or anonymous', async () =>
     request(app)
       .get(`${basePath}/api_key_or_anonymous`)
