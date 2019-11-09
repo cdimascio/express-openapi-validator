@@ -49,7 +49,7 @@ export class RequestValidator {
 
     // cache middleware by combining method, path, and contentType
     // TODO contentType could have value not_provided
-    const contentType = extractContentType(req);
+    const contentType = extractContentType(req) || 'not_provided';
     const key = `${req.method}-${req.path}-${contentType}`;
 
     if (!this._middlewareCache[key]) {
@@ -184,11 +184,11 @@ export class RequestValidator {
     if (requestBody.content) {
       const content = requestBody.content[contentType];
       if (!content) {
-        throw validationError(
-          415,
-          path,
-          `unsupported media type ${contentType}`,
-        );
+        const msg =
+          contentType === 'not_provided'
+            ? 'media type not specified'
+            : `unsupported media type ${contentType}`;
+        throw validationError(415, path, msg);
       }
       return content.schema || {};
     }
