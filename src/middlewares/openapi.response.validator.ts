@@ -45,7 +45,7 @@ export class ResponseValidator {
       return this.buildValidators(responses);
     }
 
-    const contentType = extractContentType(req);
+    const contentType = extractContentType(req) || 'not_provided';
     const key = `${req.method}-${req.path}-${contentType}`;
 
     let validators = this.validatorsCache[key];
