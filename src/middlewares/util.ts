@@ -3,7 +3,7 @@ import * as Ajv from 'ajv';
 import { Request } from 'express';
 import { ValidationError } from '../framework/types';
 
-export function extractContentType(req: Request): string {
+export function extractContentType(req: Request): string | null {
   let contentType = req.headers['content-type'];
   if (!contentType) {
     return null;
