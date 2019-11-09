@@ -64,7 +64,10 @@ export class RequestValidator {
 
   private buildMiddleware(path, pathSchema, contentType) {
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
-    const securityQueryParameter = this.getSecurityQueryParams(pathSchema, this._apiDocs.components.securitySchemes);
+    const securityQueryParameter = this.getSecurityQueryParams(
+      pathSchema,
+      this._apiDocs.components.securitySchemes,
+    );
 
     let requestBody = pathSchema.requestBody;
 
@@ -87,7 +90,11 @@ export class RequestValidator {
 
     const validator = this.ajv.compile(schema);
     return (req, res, next) => {
-      this.rejectUnknownQueryParams(req.query, schema.properties.query, securityQueryParameter);
+      this.rejectUnknownQueryParams(
+        req.query,
+        schema.properties.query,
+        securityQueryParameter,
+      );
 
       const shouldUpdatePathParams =
         Object.keys(req.openapi.pathParams).length > 0;
@@ -160,7 +167,7 @@ export class RequestValidator {
   private rejectUnknownQueryParams(query, schema, whiteList = []) {
     if (!schema.properties) return;
     const knownQueryParams = new Set(Object.keys(schema.properties));
-    whiteList.forEach ( item => knownQueryParams.add(item));
+    whiteList.forEach(item => knownQueryParams.add(item));
     const queryParams = Object.keys(query);
     for (const q of queryParams) {
       if (!knownQueryParams.has(q)) {
@@ -189,14 +196,16 @@ export class RequestValidator {
   }
 
   private getSecurityQueryParams(pathSchema, securitySchema) {
-    return (pathSchema.security && securitySchema) ? pathSchema.security
-        .filter( obj => Object.entries(obj).length !== 0  )
-        .map( sec => {
-          const securityKey = Object.keys(sec)[0];
-          return securitySchema[securityKey];
-        })
-        .filter(sec => sec && sec.in && sec.in === 'query')
-        .map(sec => sec.name) : [];
+    return pathSchema.security && securitySchema
+      ? pathSchema.security
+          .filter(obj => Object.entries(obj).length !== 0)
+          .map(sec => {
+            const securityKey = Object.keys(sec)[0];
+            return securitySchema[securityKey];
+          })
+          .filter(sec => sec && sec.in && sec.in === 'query')
+          .map(sec => sec.name)
+      : [];
   }
 
   private parametersToSchema(path, parameters = []) {
