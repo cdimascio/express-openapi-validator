@@ -31,7 +31,7 @@ export class ResponseValidator {
         const responses = req.openapi.schema && req.openapi.schema.responses;
         const validators = this._getOrBuildValidator(req, responses);
         const statusCode = res.statusCode;
-        const path = req.path;
+        const path = req.originalUrl;
         return this._validate({ validators, body, statusCode, path });
       }
       return body;
@@ -46,7 +46,7 @@ export class ResponseValidator {
     }
 
     const contentType = extractContentType(req) || 'not_provided';
-    const key = `${req.method}-${req.path}-${contentType}`;
+    const key = `${req.method}-${req.originalUrl}-${contentType}`;
 
     let validators = this.validatorsCache[key];
     if (!validators) {
