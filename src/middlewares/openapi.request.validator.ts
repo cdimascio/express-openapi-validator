@@ -64,8 +64,19 @@ export class RequestValidator {
 
   private buildMiddleware(path, pathSchema, contentType) {
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
+
+    let usedSecuritySchema = [];
+    if (pathSchema.hasOwnProperty('security')
+      && pathSchema.security.length > 0) {
+      usedSecuritySchema = pathSchema.security;
+    } else if (this._apiDocs.hasOwnProperty('security')
+      && this._apiDocs.security.length > 0) {
+      // if no security schema for the path, use top-level security schema
+      usedSecuritySchema = this._apiDocs.security;
+    }
+
     const securityQueryParameter = this.getSecurityQueryParams(
-      pathSchema,
+      usedSecuritySchema,
       this._apiDocs.components.securitySchemes,
     );
 
@@ -195,9 +206,9 @@ export class RequestValidator {
     return {};
   }
 
-  private getSecurityQueryParams(pathSchema, securitySchema) {
-    return pathSchema.security && securitySchema
-      ? pathSchema.security
+  private getSecurityQueryParams(usedSecuritySchema, securitySchema) {
+    return usedSecuritySchema && securitySchema
+      ? usedSecuritySchema
           .filter(obj => Object.entries(obj).length !== 0)
           .map(sec => {
             const securityKey = Object.keys(sec)[0];
