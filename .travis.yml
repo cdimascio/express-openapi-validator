@@ -11,8 +11,8 @@ install:
 script:
 - npm run compile
 - npm run test:coverage
-- npm run coveralls
-- npm run codacy
+- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run coveralls; fi'
+- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run codacy; fi'
 env:
   global:
   - secure: x+Nxbq8RrOVJyQ7JWNRpXdBmp61rXPKulYPxUwGeIe/ZJwX1QHsy2HAAB2m7aRvAMBAqr2urBaIKgPBmBklyY0elRTD/chUdT5cJiPhMIxBghqkQ1NYqx/WzcCBUrZbRzoQcpAES7sJnUs0PMujKv3wMsujoFJ9b9Z+trHMqD0IztBlg45azAh4A6ApVcDB8j4L+g42kps6d4r5jUt2d4uW537PKXpsnWJMaaj2Pw7pxU2H5kBaeNGnvlK+w9k3porToop7OUG+HBTN2BjofdF1PSHm8fizzFL6/h2x39cLYMxFvHb7oVUKBiWQe8PBXD5+k/X0RgPJMZO9AggMHln5MIihTowGvuSLK/3d95ta/qXTmzG0Csv4J8xWD+koCJm0xpSzsrBSUOPt5ZKN71o0VmLmc7U4Z0aEplZyVcMdTbwA1XeoeXD4UU1fD7BlzYl4oOTB8HlucJILwAZFg0upPB33lQchAUIgoUCDxze3OoG3V1Odcw4u64bXlPrdqgCg8AQZgnrYP+EzKczjGd7pBQZRVxKyq+44JV8JOUAXEka3qQRPvmw5wcAaXgsqU7uv1C6FcQb+j/ZKQ6GlWu8qDzouRR+OqbKeLk2lOvtU08Y32tn6u14+vVNbmsG3iXxGf2+esGcETFP/0EYluPGpo257h/9qC1yMN8ZExey0=
