@@ -50,7 +50,7 @@ export class RequestValidator {
     // cache middleware by combining method, path, and contentType
     // TODO contentType could have value not_provided
     const contentType = extractContentType(req) || 'not_provided';
-    const key = `${req.method}-${req.path}-${contentType}`;
+    const key = `${req.method}-${req.originalUrl}-${contentType}`;
 
     if (!this._middlewareCache[key]) {
       this._middlewareCache[key] = this.buildMiddleware(
