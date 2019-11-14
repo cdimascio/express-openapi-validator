@@ -3,8 +3,11 @@ import * as Ajv from 'ajv';
 import { Request } from 'express';
 import { ValidationError } from '../framework/types';
 
-export function extractContentType(req: Request): string {
-  let contentType = req.headers['content-type'] || 'not_provided';
+export function extractContentType(req: Request): string | null {
+  let contentType = req.headers['content-type'];
+  if (!contentType) {
+    return null;
+  }
   let end = contentType.indexOf(';');
   end = end === -1 ? contentType.length : end;
   if (contentType) {
@@ -43,7 +46,9 @@ export function validationError(
  * TODO - do this some other way
  * @param errors
  */
-export function augmentAjvErrors(errors: Ajv.ErrorObject[] = []): Ajv.ErrorObject[] {
+export function augmentAjvErrors(
+  errors: Ajv.ErrorObject[] = [],
+): Ajv.ErrorObject[] {
   errors.forEach(e => {
     if (e.keyword === 'enum') {
       const params: any = e.params;

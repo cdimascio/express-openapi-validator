@@ -49,8 +49,8 @@ export class RequestValidator {
 
     // cache middleware by combining method, path, and contentType
     // TODO contentType could have value not_provided
-    const contentType = extractContentType(req);
-    const key = `${req.method}-${req.path}-${contentType}`;
+    const contentType = extractContentType(req) || 'not_provided';
+    const key = `${req.method}-${req.originalUrl}-${contentType}`;
 
     if (!this._middlewareCache[key]) {
       this._middlewareCache[key] = this.buildMiddleware(
@@ -64,6 +64,22 @@ export class RequestValidator {
 
   private buildMiddleware(path, pathSchema, contentType) {
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
+
+    let usedSecuritySchema = [];
+    if (pathSchema.hasOwnProperty('security')
+      && pathSchema.security.length > 0) {
+      usedSecuritySchema = pathSchema.security;
+    } else if (this._apiDocs.hasOwnProperty('security')
+      && this._apiDocs.security.length > 0) {
+      // if no security schema for the path, use top-level security schema
+      usedSecuritySchema = this._apiDocs.security;
+    }
+
+    const securityQueryParameter = this.getSecurityQueryParams(
+      usedSecuritySchema,
+      this._apiDocs.components.securitySchemes,
+    );
+
     let requestBody = pathSchema.requestBody;
 
     if (requestBody && requestBody.hasOwnProperty('$ref')) {
@@ -85,7 +101,11 @@ export class RequestValidator {
 
     const validator = this.ajv.compile(schema);
     return (req, res, next) => {
-      this.rejectUnknownQueryParams(req.query, schema.properties.query);
+      this.rejectUnknownQueryParams(
+        req.query,
+        schema.properties.query,
+        securityQueryParameter,
+      );
 
       const shouldUpdatePathParams =
         Object.keys(req.openapi.pathParams).length > 0;
@@ -155,9 +175,10 @@ export class RequestValidator {
     };
   }
 
-  private rejectUnknownQueryParams(query, schema) {
+  private rejectUnknownQueryParams(query, schema, whiteList = []) {
     if (!schema.properties) return;
     const knownQueryParams = new Set(Object.keys(schema.properties));
+    whiteList.forEach(item => knownQueryParams.add(item));
     const queryParams = Object.keys(query);
     for (const q of queryParams) {
       if (!knownQueryParams.has(q)) {
@@ -174,15 +195,28 @@ export class RequestValidator {
     if (requestBody.content) {
       const content = requestBody.content[contentType];
       if (!content) {
-        throw validationError(
-          415,
-          path,
-          `unsupported media type ${contentType}`,
-        );
+        const msg =
+          contentType === 'not_provided'
+            ? 'media type not specified'
+            : `unsupported media type ${contentType}`;
+        throw validationError(415, path, msg);
       }
       return content.schema || {};
     }
     return {};
+  }
+
+  private getSecurityQueryParams(usedSecuritySchema, securitySchema) {
+    return usedSecuritySchema && securitySchema
+      ? usedSecuritySchema
+          .filter(obj => Object.entries(obj).length !== 0)
+          .map(sec => {
+            const securityKey = Object.keys(sec)[0];
+            return securitySchema[securityKey];
+          })
+          .filter(sec => sec && sec.in && sec.in === 'query')
+          .map(sec => sec.name)
+      : [];
   }
 
   private parametersToSchema(path, parameters = []) {
