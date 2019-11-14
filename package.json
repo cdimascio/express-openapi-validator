@@ -32,7 +32,7 @@
     "lodash.merge": "^4.6.2",
     "multer": "^1.4.2",
     "ono": "^5.0.1",
-    "path-to-regexp": "^3.0.0",
+    "path-to-regexp": "^5.0.0",
     "ts-log": "^2.1.4"
   },
   "devDependencies": {

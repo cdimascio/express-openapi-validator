@@ -1,4 +1,4 @@
-import * as pathToRegexp from 'path-to-regexp';
+import { pathToRegexp } from 'path-to-regexp';
 import * as _ from 'lodash';
 import { OpenApiContext } from '../framework/openapi.context';
 import { OpenApiRequest, OpenApiRequestHandler } from '../framework/types';
