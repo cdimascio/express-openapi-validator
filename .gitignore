@@ -8,3 +8,4 @@ dist
 .coveralls.yml
 .nyc_output
 secrets.zip
+jest
