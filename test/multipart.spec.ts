@@ -90,7 +90,7 @@ describe(packageJson.name, () => {
         .set('Accept', 'application/json; charset=utf-8')
         .send({
           name: "myPet",
-          tag: "cat"
+          tag: "cat",
         })
         .expect(200));
     })

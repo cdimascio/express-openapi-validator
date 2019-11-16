@@ -102,7 +102,7 @@ export function routes(app) {
       metadata: req.body.metadata,
     });
   });
-  app.post('/v1/pets_charset', function (req, res, next) {
+  app.post('/v1/pets_charset', function (req, res) {
     // req.file is the `avatar` file
     // req.body will hold the text fields, if there were any
     res.json({
