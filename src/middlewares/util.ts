@@ -8,12 +8,27 @@ export function extractContentType(req: Request): string | null {
   if (!contentType) {
     return null;
   }
+  if (contentType.match(/charset/)) {
+    // if contentType has charset such as 'application.json; charset=utf-8',
+    // will use raw value of contentType
+    return contentType;
+  } else {
+    // if doesn't, will use media-type only in contentType by dropping any characters after semicolon.
+    return extractMediaType(contentType)
+  }
+}
+
+function extractMediaType(contentType: string | null): string | null {
+  if (!contentType) {
+    return null;
+  }
   let end = contentType.indexOf(';');
   end = end === -1 ? contentType.length : end;
   if (contentType) {
     return contentType.substring(0, end);
+  } else {
+    return contentType
   }
-  return contentType;
 }
 
 const _validationError = (
