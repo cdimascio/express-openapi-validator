@@ -324,9 +324,6 @@ paths:
           application/json; charset=utf-8:
             schema:
               $ref: '#/components/schemas/NewPet'
-          application/xml; charset=utf-8:
-            schema:
-              $ref: '#/components/schemas/NewPet'
       responses:
         '200':
           description: pet response
