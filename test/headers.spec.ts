@@ -7,14 +7,21 @@ import * as packageJson from '../package.json';
 describe(packageJson.name, () => {
   let app = null;
 
-  before(() => {
+  /** 
+   * Required to create app for each step, since 'buildMiddleware' is cached by media-type in contentType.
+   * So without Each, if 'buildMiddleware' is cached at the previous request with 'application/json',
+   * following request with 'application/json; charset = utf-8' won't be evaluated.
+   * To avoid any potential error, use beforeEach and afterEach.
+   * 
+   * */
+  beforeEach(() => {
     const apiSpec = path.join('test', 'resources', 'openapi.yaml');
     return createApp({ apiSpec }, 3004).then(a => {
       app = a;
     });
   });
 
-  after(() => {
+  afterEach(() => {
     (<any>app).server.close();
   });
 
