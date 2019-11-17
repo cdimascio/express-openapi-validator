@@ -7,11 +7,16 @@ export class ContentType {
   private withoutBoundary: string = null;
   public contentType = null;
   public mediaType: string = null;
+  public charSet: string = null;
   private constructor(contentType: string | null) {
     this.contentType = contentType;
     if (contentType) {
       this.withoutBoundary = contentType.replace(/;\s{0,}boundary.*/, '');
       this.mediaType = this.withoutBoundary.split(';')[0].trim();
+      this.charSet = this.withoutBoundary.split(';')[1];
+      if (this.charSet) {
+        this.charSet = this.charSet.trim();
+      }
     }
   }
   static from(req: Request): ContentType {
@@ -20,10 +25,10 @@ export class ContentType {
 
   equivalents(): string[] {
     if (!this.withoutBoundary) return [];
-    if (this.mediaType === 'application/json') {
-      return ['application/json', 'application/json; charset=utf-8'];
+    if (this.charSet) {
+      return [this.mediaType, `${this.mediaType}; ${this.charSet}`];
     }
-    return [this.withoutBoundary];
+    return [this.withoutBoundary, `${this.mediaType}; charset=utf-8`];
   }
 }
 
