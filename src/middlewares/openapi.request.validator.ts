@@ -1,6 +1,6 @@
 import { createRequestAjv } from './ajv';
 import {
-  extractContentType,
+  ContentType,
   validationError,
   ajvErrorsToValidatorError,
   augmentAjvErrors,
@@ -49,8 +49,9 @@ export class RequestValidator {
 
     // cache middleware by combining method, path, and contentType
     // TODO contentType could have value not_provided
-    const contentType = extractContentType(req) || 'not_provided';
-    const key = `${req.method}-${req.originalUrl}-${contentType}`;
+    const contentType = ContentType.from(req);
+    const contentTypeKey = contentType.equivalents()[0] || 'not_provided';
+    const key = `${req.method}-${req.originalUrl}-${contentTypeKey}`;
 
     if (!this._middlewareCache[key]) {
       this._middlewareCache[key] = this.buildMiddleware(
@@ -62,15 +63,19 @@ export class RequestValidator {
     return this._middlewareCache[key](req, res, next);
   }
 
-  private buildMiddleware(path, pathSchema, contentType) {
+  private buildMiddleware(path: string, pathSchema, contentType: ContentType) {
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
 
     let usedSecuritySchema = [];
-    if (pathSchema.hasOwnProperty('security')
-      && pathSchema.security.length > 0) {
+    if (
+      pathSchema.hasOwnProperty('security') &&
+      pathSchema.security.length > 0
+    ) {
       usedSecuritySchema = pathSchema.security;
-    } else if (this._apiDocs.hasOwnProperty('security')
-      && this._apiDocs.security.length > 0) {
+    } else if (
+      this._apiDocs.hasOwnProperty('security') &&
+      this._apiDocs.security.length > 0
+    ) {
       // if no security schema for the path, use top-level security schema
       usedSecuritySchema = this._apiDocs.security;
     }
@@ -191,14 +196,22 @@ export class RequestValidator {
     }
   }
 
-  private requestBodyToSchema(path, contentType, requestBody: any = {}) {
+  private requestBodyToSchema(
+    path: string,
+    contentType: ContentType,
+    requestBody: any = {},
+  ) {
     if (requestBody.content) {
-      const content = requestBody.content[contentType];
+      let content = null;
+      for (const type of contentType.equivalents()) {
+        content = requestBody.content[type];
+        if (content) break;
+      }
       if (!content) {
         const msg =
-          contentType === 'not_provided'
+          contentType.contentType === 'not_provided'
             ? 'media type not specified'
-            : `unsupported media type ${contentType}`;
+            : `unsupported media type ${contentType.contentType}`;
         throw validationError(415, path, msg);
       }
       return content.schema || {};
