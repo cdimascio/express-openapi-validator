@@ -30,16 +30,28 @@ describe(packageJson.name, () => {
         expect(e[0].path).to.equal('.headers.x-attribute-id');
       }));
 
-      describe(`POST .../pets`, () => {
-        it('should find appropriate request body in spec by contentType with charset', async () =>
-          request(app)
-            .post(`${app.basePath}/pets_charset`)
-            .set('Content-Type', 'application/json; charset=utf-8')
-            .set('Accept', 'application/json; charset=utf-8')
-            .send({
-              name: "myPet",
-              tag: "cat",
-            })
-            .expect(200));
+  describe(`POST .../pets`, () => {
+    it('should find appropriate request body in spec by contentType with charset (compatibility)', async () =>
+      request(app)
+        .post(`${app.basePath}/pets_charset`)
+        .set('Content-Type', 'application/json')
+        .set('Accept', 'application/json')
+        .send({
+          name: "myPet",
+          tag: "cat",
         })
+        .expect(200));
+    
+    it('should find appropriate request body in spec by contentType with charset', async () =>
+      request(app)
+        .post(`${app.basePath}/pets_charset`)
+        .set('Content-Type', 'application/json; charset=utf-8')
+        .set('Accept', 'application/json; charset=utf-8')
+        .send({
+          name: "myPet",
+          tag: "cat",
+        })
+        .expect(200));
+  })
+
 });
