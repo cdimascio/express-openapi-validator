@@ -3,31 +3,27 @@ import * as Ajv from 'ajv';
 import { Request } from 'express';
 import { ValidationError } from '../framework/types';
 
-export function extractContentType(req: Request): string | null {
-  let contentType = req.headers['content-type'];
-  if (!contentType) {
-    return null;
+export class ContentType {
+  private withoutBoundary: string = null;
+  public contentType = null;
+  public mediaType: string = null;
+  private constructor(contentType: string | null) {
+    this.contentType = contentType;
+    if (contentType) {
+      this.withoutBoundary = contentType.replace(/;\s{0,}boundary.*/, '');
+      this.mediaType = this.withoutBoundary.split(';')[0].trim();
+    }
   }
-  if (contentType.match(/charset/)) {
-    // if contentType has charset such as 'application.json; charset=utf-8',
-    // will use raw value of contentType
-    return contentType;
-  } else {
-    // if doesn't, will use media-type only in contentType by dropping any characters after semicolon.
-    return extractMediaType(contentType)
+  static from(req: Request): ContentType {
+    return new ContentType(req.headers['content-type']);
   }
-}
 
-function extractMediaType(contentType: string | null): string | null {
-  if (!contentType) {
-    return null;
-  }
-  let end = contentType.indexOf(';');
-  end = end === -1 ? contentType.length : end;
-  if (contentType) {
-    return contentType.substring(0, end);
-  } else {
-    return contentType
+  equivalents(): string[] {
+    if (!this.withoutBoundary) return [];
+    if (this.mediaType === 'application/json') {
+      return ['application/json', 'application/json; charset=utf-8'];
+    }
+    return [this.withoutBoundary];
   }
 }
 
