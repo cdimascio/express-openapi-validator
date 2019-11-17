@@ -82,17 +82,4 @@ describe(packageJson.name, () => {
             .equal('unsupported media type application/json');
         }));
   });
-  describe(`POST .../pets`, () => {
-    it('should find appropriate request body in spec by contentType with charset', async () =>
-      request(app)
-        .post(`${app.basePath}/pets_charset`)
-        .set('Content-Type', 'application/json; charset=utf-8')
-        .set('Accept', 'application/json; charset=utf-8')
-        .send({
-          name: "myPet",
-          tag: "cat",
-        })
-        .expect(200));
-    })
-
 });
