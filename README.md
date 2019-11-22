@@ -58,6 +58,7 @@ _**Note:** Ensure express is configured with all relevant body parsers. body par
 See [Advanced Usage](#Advanced-Usage) options to:
 
 - inline api specs as JSON.
+- configure request/response validation options
 - tweak the file upload configuration.
 - customize authentication with `securityHandlers`.
 - use OpenAPI 3.0.x 3rd party and custom formats.
