@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Logger } from 'ts-log';
 import BasePath from './base.path';
+import ajv = require('ajv');
 export {
   OpenAPIFrameworkArgs,
   OpenAPIFrameworkConstructorArgs,
@@ -19,6 +20,14 @@ export type SecurityHandlers = {
   ) => boolean | Promise<boolean>;
 };
 
+export interface RequestValidatorOptions
+  extends ajv.Options,
+    ValidateRequestOpts {}
+
+export type ValidateRequestOpts = {
+  allowUnknownQueryParameters?: boolean;
+};
+
 export type ValidateResponseOpts = {
   removeAdditional?: string | boolean;
 };
@@ -26,10 +35,10 @@ export type ValidateResponseOpts = {
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
   validateResponses?: boolean | ValidateResponseOpts;
-  validateRequests?: boolean;
+  validateRequests?: boolean | ValidateRequestOpts;
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean;
-  unknownFormats?: string[] | string | boolean;
+  unknownFormats?: true | string[] | 'ignore';
   multerOpts?: {};
 }
 

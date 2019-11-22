@@ -5,6 +5,7 @@ import { Application, Response, NextFunction } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
 import {
   OpenApiValidatorOpts,
+  ValidateRequestOpts,
   ValidateResponseOpts,
   OpenApiRequest,
   OpenApiRequestHandler,
@@ -26,6 +27,12 @@ export class OpenApiValidator {
     if (options.validateResponses === true) {
       options.validateResponses = {
         removeAdditional: false,
+      };
+    }
+
+    if (options.validateRequests === true) {
+      options.validateRequests = {
+        allowUnknownQueryParameters: false,
       };
     }
 
@@ -101,7 +108,10 @@ export class OpenApiValidator {
   }
 
   private installRequestValidationMiddleware(): void {
-    const { coerceTypes, unknownFormats } = this.options;
+    const { coerceTypes, unknownFormats, validateRequests } = this.options;
+    const { allowUnknownQueryParameters } = <ValidateRequestOpts>(
+      validateRequests
+    );
     const requestValidator = new middlewares.RequestValidator(
       this.context.apiDoc,
       {
@@ -110,6 +120,7 @@ export class OpenApiValidator {
         removeAdditional: false,
         useDefaults: true,
         unknownFormats,
+        allowUnknownQueryParameters,
       },
     );
     const requestValidationHandler: OpenApiRequestHandler = (req, res, next) =>
