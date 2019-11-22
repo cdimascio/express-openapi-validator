@@ -1,3 +1,4 @@
+import * as ajv from 'ajv';
 import { createRequestAjv } from './ajv';
 import {
   ContentType,
@@ -7,7 +8,12 @@ import {
 } from './util';
 import ono from 'ono';
 import { NextFunction, Response } from 'express';
-import { OpenAPIV3, OpenApiRequest } from '../framework/types';
+import {
+  OpenAPIV3,
+  OpenApiRequest,
+  RequestValidatorOptions,
+  ValidateRequestOpts,
+} from '../framework/types';
 import { Ajv } from 'ajv';
 
 const TYPE_JSON = 'application/json';
@@ -16,10 +22,16 @@ export class RequestValidator {
   private _middlewareCache;
   private _apiDocs: OpenAPIV3.Document;
   private ajv: Ajv;
+  private _requestOpts: ValidateRequestOpts = {};
 
-  constructor(apiDocs: OpenAPIV3.Document, options = {}) {
+  constructor(
+    apiDocs: OpenAPIV3.Document,
+    options: RequestValidatorOptions = {},
+  ) {
     this._middlewareCache = {};
     this._apiDocs = apiDocs;
+    this._requestOpts.allowUnknownQueryParameters =
+      options.allowUnknownQueryParameters;
     this.ajv = createRequestAjv(apiDocs, options);
   }
 
@@ -106,11 +118,13 @@ export class RequestValidator {
 
     const validator = this.ajv.compile(schema);
     return (req, res, next) => {
-      this.rejectUnknownQueryParams(
-        req.query,
-        schema.properties.query,
-        securityQueryParameter,
-      );
+      if (!this._requestOpts.allowUnknownQueryParameters) {
+        this.rejectUnknownQueryParams(
+          req.query,
+          schema.properties.query,
+          securityQueryParameter,
+        );
+      }
 
       const shouldUpdatePathParams =
         Object.keys(req.openapi.pathParams).length > 0;

@@ -36,6 +36,7 @@
     "ts-log": "^2.1.4"
   },
   "devDependencies": {
+    "@types/ajv": "^1.0.0",
     "@types/cookie-parser": "^1.4.1",
     "@types/express": "^4.17.0",
     "@types/mocha": "^5.2.7",
