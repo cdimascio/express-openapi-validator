@@ -352,6 +352,20 @@ Determines whether the validator should validate requests.
 
 - `true` (**default**) -  validate requests.
 - `false` - do not validate requests.
+- `{ ... }` - validate requests with options
+
+	**allowUnknownQueryParameters:**
+	
+	- `true` - enables unknown/undeclared query parameters to pass validation
+	- `false` - (**default**) fail validation if an unknown query parameter is present
+	
+	For example:
+	
+	```javascript
+	validateRequests: {
+	  allowUnknownQueryParameters: true
+	}
+	```
 
 ### ▪️ validateResponses (optional)
 
@@ -361,7 +375,7 @@ Determines whether the validator should validate responses. Also accepts respons
 - `false` (**default**) -  do not validate responses
 - `{ ... }` - validate responses with options
 
-	**removeAdditional**
+	**removeAdditional:**
 	
 	- `"failing"` - additional properties that fail schema validation are automatically removed from the response.
 	
