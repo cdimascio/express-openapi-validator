@@ -4,9 +4,7 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 
-const packageJson = require('../package.json');
-
-describe(packageJson.name, () => {
+describe('express-openapi-validator', () => {
   let app = null;
 
   before(async () => {
@@ -31,7 +29,7 @@ describe(packageJson.name, () => {
       .get(`/pets`)
       .expect(400)
       .then(r => {
-        expect(r.body.message).to.be.a('string');
-        expect(r.body.message).to.be.eq("request.query should have required property 'type', request.query should have required property 'limit'");
+        expect(r.body.errors).to.be.an('array');
+        expect(r.body.errors).to.have.length(2);
       }));
 });
