@@ -40,6 +40,7 @@ export interface OpenApiValidatorOpts {
   coerceTypes?: boolean;
   unknownFormats?: true | string[] | 'ignore';
   multerOpts?: {};
+  basePath?: string;
 }
 
 interface SecurityRequirement {
@@ -388,6 +389,7 @@ interface OpenAPIFrameworkArgs {
   routesIndexFileRegExp?: RegExp;
   validateApiDoc?: boolean;
   logger?: Logger;
+  basePath?: string;
 }
 
 export interface OpenAPIFrameworkAPIContext {
