@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as express from 'express';
+import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 
@@ -30,6 +31,7 @@ describe(packageJson.name, () => {
       .get(`/pets`)
       .expect(400)
       .then(r => {
-        console.log(r)
+        expect(r.body.message).to.be.a('string');
+        expect(r.body.message).to.be.eq("request.query should have required property 'type', request.query should have required property 'limit'");
       }));
 });
