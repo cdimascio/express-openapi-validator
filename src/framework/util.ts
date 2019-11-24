@@ -51,7 +51,7 @@ export function sortApiDocTags(apiDoc) {
 export function getBasePathsFromServers(
   servers: OpenAPIV3.ServerObject[],
 ): BasePath[] {
-  if (!servers) {
+  if (!servers || servers.length == 0) {
     return [new BasePath({ url: '' })];
   }
   const basePathsMap: { [key: string]: BasePath } = {};
