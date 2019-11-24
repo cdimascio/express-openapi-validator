@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as express from 'express';
-import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 
@@ -17,7 +16,7 @@ describe(packageJson.name, () => {
         ``,
         express
           .Router()
-          .get(`/pets`, (req, res) => res.json(req.body))
+          .get(`/pets`, (req, res) => res.json(req.body)),
       ),
     );
   });
