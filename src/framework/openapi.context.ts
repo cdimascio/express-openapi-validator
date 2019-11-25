@@ -10,16 +10,17 @@ export class OpenApiContext {
   public readonly expressRouteMap = {};
   public readonly openApiRouteMap = {};
   public readonly routes: RouteMetadata[] = [];
-  private basePaths: string[];
+  private readonly basePaths: string[];
 
   constructor(spec: Spec) {
     this.apiDoc = spec.apiDoc;
     this.basePaths = spec.basePaths;
-    this.routes = this.initializeRoutes(spec.routes);
+    this.routes = spec.routes;
+    this.buildRouteMaps(spec.routes);
   }
 
   // side-effecting builds express/openapi route maps
-  private initializeRoutes(routes: RouteMetadata[]): RouteMetadata[] {
+  private buildRouteMaps(routes: RouteMetadata[]): void {
     for (const route of routes) {
       const routeMethods = this.expressRouteMap[route.expressRoute];
       if (routeMethods) {
@@ -36,7 +37,6 @@ export class OpenApiContext {
         this.openApiRouteMap[route.openApiRoute] = routeDetails;
       }
     }
-    return routes;
   }
 
   public isManagedRoute(path: string): boolean {
