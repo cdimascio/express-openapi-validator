@@ -24,7 +24,7 @@ describe('express-openapi-validator', () => {
     app.server.close();
   });
 
-  it('should throw 400', async () =>
+  it('should throw 400 if servers are empty and request is malformed', async () =>
     request(app)
       .get(`/pets`)
       .expect(400)
