@@ -9,7 +9,7 @@ export class OpenApiContext {
   public readonly apiDoc: OpenAPIV3.Document;
   public readonly expressRouteMap = {};
   public readonly openApiRouteMap = {};
-  public readonly routes = [];
+  public readonly routes: RouteMetadata[] = [];
   private basePaths: string[];
 
   constructor(spec: Spec) {

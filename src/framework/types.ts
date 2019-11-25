@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import BasePath from './base.path';
 import ajv = require('ajv');
+import { Request, Response, NextFunction } from 'express';
+import { BasePath } from './base.path';
 export { OpenAPIFrameworkArgs };
 
 export type SecurityHandlers = {
@@ -361,8 +361,15 @@ export interface OpenAPIFrameworkVisitor {
   visitApi?(context: OpenAPIFrameworkAPIContext): void;
 }
 
+export interface OpenApiRequestMetadata {
+  expressRoute: string;
+  openApiRoute: string;
+  pathParams: string[];
+  schema: OpenAPIV3.OperationObject;
+}
+
 export interface OpenApiRequest extends Request {
-  openapi;
+  openapi?: OpenApiRequestMetadata | {};
 }
 
 export type OpenApiRequestHandler = (

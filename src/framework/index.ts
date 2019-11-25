@@ -1,25 +1,16 @@
 import * as fs from 'fs';
 import * as jsYaml from 'js-yaml';
 import * as path from 'path';
-import $RefParser from './json.ref.schema';
+import { $RefParser } from './json.ref.schema';
 import { OpenAPISchemaValidator } from './openapi.schema.validator';
-import BasePath from './base.path';
+import { BasePath } from './base.path';
 import {
-  OpenAPIFrameworkAPIContext,
   OpenAPIFrameworkArgs,
-  OpenAPIFrameworkPathObject,
   OpenAPIFrameworkVisitor,
   OpenAPIV3,
 } from './types';
 
-export {
-  BasePath,
-  OpenAPIFrameworkArgs,
-  OpenAPIFrameworkPathObject,
-  OpenAPIFrameworkAPIContext,
-};
-
-export default class OpenAPIFramework {
+export class OpenAPIFramework {
   public readonly apiDoc: OpenAPIV3.Document;
   public readonly basePaths: string[];
 
