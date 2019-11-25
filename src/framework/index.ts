@@ -17,7 +17,7 @@ export class OpenAPIFramework {
   private readonly validateApiDoc: boolean;
   private readonly validator: OpenAPISchemaValidator;
   private readonly basePathObs: BasePath[];
-  private readonly loggingPrefix = 'openapi.validator: ';
+  private readonly loggingPrefix: string = 'openapi.validator: ';
 
   constructor(args: OpenAPIFrameworkArgs) {
     this.apiDoc = this.copy(this.loadSpec(args.apiDoc));

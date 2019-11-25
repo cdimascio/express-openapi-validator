@@ -1,5 +1,6 @@
-import { pathToRegexp } from 'path-to-regexp';
 import * as _ from 'lodash';
+import { pathToRegexp } from 'path-to-regexp';
+import { Response, NextFunction } from 'express';
 import { OpenApiContext } from '../framework/openapi.context';
 import {
   OpenApiRequest,
@@ -10,7 +11,7 @@ import {
 export function applyOpenApiMetadata(
   openApiContext: OpenApiContext,
 ): OpenApiRequestHandler {
-  return (req: OpenApiRequest, res, next): any => {
+  return (req: OpenApiRequest, res: Response, next: NextFunction): any => {
     const matched = lookupRoute(req);
     if (matched) {
       const { expressRoute, openApiRoute, pathParams, schema } = matched;
