@@ -1,6 +1,10 @@
 import { OpenAPIV3 } from './types';
-import { Spec } from './openapi.spec.loader';
+import { Spec, RouteMetadata } from './openapi.spec.loader';
 
+export interface RoutePair {
+  expressRoute: string;
+  openApiRoute: string;
+}
 export class OpenApiContext {
   public readonly apiDoc: OpenAPIV3.Document;
   public readonly expressRouteMap = {};
@@ -14,7 +18,8 @@ export class OpenApiContext {
     this.routes = this.initializeRoutes(spec.routes);
   }
 
-  private initializeRoutes(routes) {
+  // side-effecting builds express/openapi route maps
+  private initializeRoutes(routes: RouteMetadata[]): RouteMetadata[] {
     for (const route of routes) {
       const routeMethods = this.expressRouteMap[route.expressRoute];
       if (routeMethods) {
@@ -34,14 +39,14 @@ export class OpenApiContext {
     return routes;
   }
 
-  isManagedRoute(path) {
+  public isManagedRoute(path: string): boolean {
     for (const bp of this.basePaths) {
       if (path.startsWith(bp)) return true;
     }
     return false;
   }
 
-  routePair(route) {
+  public routePair(route: string): RoutePair | null {
     const methods = this.methods(route);
     if (methods) {
       return {
@@ -52,19 +57,19 @@ export class OpenApiContext {
     return null;
   }
 
-  methods(route) {
+  private methods(route: string) {
     const expressRouteMethods = this.expressRouteMap[route];
     if (expressRouteMethods) return expressRouteMethods;
     const openApiRouteMethods = this.openApiRouteMap[route];
     return openApiRouteMethods;
   }
 
-  schema(route, method) {
-    const methods = this.methods(route);
-    if (methods) {
-      const schema = methods[method];
-      return schema;
-    }
-    return null;
-  }
+  // private schema(route: string, method: string) {
+  //   const methods = this.methods(route);
+  //   if (methods) {
+  //     const schema = methods[method];
+  //     return schema;
+  //   }
+  //   return null;
+  // }
 }

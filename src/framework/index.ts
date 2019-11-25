@@ -7,7 +7,6 @@ import BasePath from './base.path';
 import {
   OpenAPIFrameworkAPIContext,
   OpenAPIFrameworkArgs,
-  OpenAPIFrameworkConstructorArgs,
   OpenAPIFrameworkPathObject,
   OpenAPIFrameworkVisitor,
   OpenAPIV3,
@@ -16,7 +15,6 @@ import {
 export {
   BasePath,
   OpenAPIFrameworkArgs,
-  OpenAPIFrameworkConstructorArgs,
   OpenAPIFrameworkPathObject,
   OpenAPIFrameworkAPIContext,
 };
@@ -30,7 +28,7 @@ export default class OpenAPIFramework {
   private readonly basePathObs: BasePath[];
   private readonly loggingPrefix = 'openapi.validator: ';
 
-  constructor(args = {} as OpenAPIFrameworkConstructorArgs) {
+  constructor(args: OpenAPIFrameworkArgs) {
     this.apiDoc = this.copy(this.loadSpec(args.apiDoc));
     this.basePathObs = this.getBasePathsFromServers(this.apiDoc.servers);
     this.basePaths = Array.from(
@@ -62,7 +60,7 @@ export default class OpenAPIFramework {
     }
   }
 
-  public initialize(visitor: OpenAPIFrameworkVisitor) {
+  public initialize(visitor: OpenAPIFrameworkVisitor): void {
     const getApiDoc = () => {
       return this.copy(this.apiDoc);
     };
@@ -104,14 +102,14 @@ export default class OpenAPIFramework {
     return $RefParser.bundle(filePath);
   }
 
-  private copy(obj) {
+  private copy<T>(obj: T): T {
     return JSON.parse(JSON.stringify(obj));
   }
 
-  private sortApiDocTags(apiDoc) {
+  private sortApiDocTags(apiDoc: OpenAPIV3.Document): void {
     if (apiDoc && Array.isArray(apiDoc.tags)) {
-      apiDoc.tags.sort((a, b) => {
-        return a.name > b.name;
+      apiDoc.tags.sort((a, b): number => {
+        return a.name < b.name ? -1 : 1;
       });
     }
   }
