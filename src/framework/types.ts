@@ -1,10 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import BasePath from './base.path';
 import ajv = require('ajv');
-export {
-  OpenAPIFrameworkArgs,
-  OpenAPIFrameworkConstructorArgs,
-};
+export { OpenAPIFrameworkArgs };
 
 export type SecurityHandlers = {
   [key: string]: (
@@ -348,11 +345,6 @@ export namespace OpenAPIV3 {
 export interface OpenAPIFrameworkPathObject {
   path?: string;
   module?: any;
-}
-
-interface OpenAPIFrameworkConstructorArgs extends OpenAPIFrameworkArgs {
-  featureType: string;
-  name: string;
 }
 
 interface OpenAPIFrameworkArgs {
