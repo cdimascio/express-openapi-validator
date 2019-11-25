@@ -6,7 +6,7 @@ import * as openapi3Schema from './openapi.v3.schema.json';
 
 export class OpenAPISchemaValidator {
   private validator: Ajv.ValidateFunction;
-  constructor({ version, extensions }) {
+  constructor({ version, extensions }: { version: string; extensions?: object }) {
     const v = new Ajv({ schemaId: 'auto', allErrors: true });
     v.addMetaSchema(draftSchema);
 

@@ -111,6 +111,16 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "HugoMario",
+      "name": "HugoMario",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/3266608?v=4",
+      "profile": "https://github.com/HugoMario",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -150,8 +150,7 @@ paths:
       description: Returns a user based on a single ID, if the user does not have access to the pet
       operationId: find pet by id
       parameters:
-        - $ref: '#/components/parameters/id'
-
+        - $ref: 'xt.openapi.parameters.yaml#/parameters/id'
         # - name: id
         #   in: path
         #   description: ID of pet to fetch
@@ -228,7 +227,7 @@ paths:
   /pets/{id}/attributes:
     get:
       description: Returns attributes for this pet
-      operationId: find attributes
+      operationId: findAttributes
       parameters:
         - name: id
           in: path
@@ -340,31 +339,14 @@ paths:
 
 components:
   parameters:
-    id:
-      name: id
-      in: path
-      description: ID of pet to fetch
-      required: true
-      schema:
-        type: integer
-        format: int64
+    $ref: 'xt.openapi.parameters.yaml#/parameters'
 
   schemas:
-    NewPet:
-      additionalProperties: false
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          nullable: true
-        tag:
-          type: string
-
+    $ref: 'xt.newpet.yaml'
 
     Pet:
       allOf:
-        - $ref: '#/components/schemas/NewPet'
+        - $ref: 'xt.newpet.yaml#/NewPet'
         - required:
             - id
           properties:
