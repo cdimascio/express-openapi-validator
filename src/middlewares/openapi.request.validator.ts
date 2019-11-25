@@ -118,9 +118,27 @@ export class RequestValidator {
 
     const validator = this.ajv.compile(schema);
     return (req, res, next) => {
+      const queryIndex = req.originalUrl.indexOf('?');
+      const queryString = (queryIndex >= 0) ? req.originalUrl.slice(queryIndex + 1) : '';
+      const searchParams = new URLSearchParams(queryString);
+
+      const queryParamsToValidate = {}
+
+      searchParams.forEach((value, key) => {
+        if (queryParamsToValidate[key]) {
+          if (queryParamsToValidate[key] instanceof Array) {
+            queryParamsToValidate[key].push(value)
+          } else {
+            queryParamsToValidate[key] = [queryParamsToValidate[key], value]
+          }
+        } else {
+          queryParamsToValidate[key] = value
+        }
+      });
+
       if (!this._requestOpts.allowUnknownQueryParameters) {
         this.rejectUnknownQueryParams(
-          req.query,
+          queryParamsToValidate,
           schema.properties.query,
           securityQueryParameter,
         );
@@ -141,6 +159,11 @@ export class RequestValidator {
        * https://swagger.io/docs/specification/describing-parameters/#schema-vs-content
        */
       parameters.parseJson.forEach(item => {
+        if (item.reqField === 'query' && queryParamsToValidate[item.name]) {
+          queryParamsToValidate[item.name] = JSON.parse(
+            queryParamsToValidate[item.name],
+          );
+        }
         if (req[item.reqField] && req[item.reqField][item.name]) {
           req[item.reqField][item.name] = JSON.parse(
             req[item.reqField][item.name],
@@ -155,6 +178,11 @@ export class RequestValidator {
        * filter=foo%20bar%20baz
        */
       parameters.parseArray.forEach(item => {
+        if (item.reqField === 'query' && queryParamsToValidate[item.name]) {
+          queryParamsToValidate[item.name] = queryParamsToValidate[item.name].split(
+            item.delimiter,
+          );
+        }
         if (req[item.reqField] && req[item.reqField][item.name]) {
           req[item.reqField][item.name] = req[item.reqField][item.name].split(
             item.delimiter,
@@ -167,6 +195,13 @@ export class RequestValidator {
        */
       parameters.parseArrayExplode.forEach(item => {
         if (
+          item.reqField === 'query' &&
+          queryParamsToValidate[item.name] &&
+          !(queryParamsToValidate[item.name] instanceof Array)
+        ) {
+          queryParamsToValidate[item.name] = [queryParamsToValidate[item.name]];
+        }
+        if (
           req[item.reqField] &&
           req[item.reqField][item.name] &&
           !(req[item.reqField][item.name] instanceof Array)
@@ -177,6 +212,7 @@ export class RequestValidator {
 
       const reqToValidate = {
         ...req,
+        query: queryParamsToValidate,
         cookies: req.cookies
           ? { ...req.cookies, ...req.signedCookies }
           : undefined,

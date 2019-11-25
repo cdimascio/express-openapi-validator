@@ -54,6 +54,13 @@ export function routes(app) {
     });
   });
 
+  app.get(`${basePath}/pets/with-required-date-filter`, function(req, res, next) {
+    res.json({
+      test: 'hi',
+      ...req.body,
+    });
+  });
+
   app.get(`${basePath}/pets/:id`, function(req, res, next) {
     res.json({
       id: req.params.id,
