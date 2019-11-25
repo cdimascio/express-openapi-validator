@@ -19,26 +19,6 @@ export class OpenApiContext {
     this.buildRouteMaps(spec.routes);
   }
 
-  // side-effecting builds express/openapi route maps
-  private buildRouteMaps(routes: RouteMetadata[]): void {
-    for (const route of routes) {
-      const routeMethods = this.expressRouteMap[route.expressRoute];
-      if (routeMethods) {
-        routeMethods[route.method] = route.schema;
-      } else {
-        const { schema, openApiRoute, expressRoute } = route;
-        const routeMethod = { [route.method]: schema };
-        const routeDetails = {
-          _openApiRoute: openApiRoute,
-          _expressRoute: expressRoute,
-          ...routeMethod,
-        };
-        this.expressRouteMap[route.expressRoute] = routeDetails;
-        this.openApiRouteMap[route.openApiRoute] = routeDetails;
-      }
-    }
-  }
-
   public isManagedRoute(path: string): boolean {
     for (const bp of this.basePaths) {
       if (path.startsWith(bp)) return true;
@@ -46,7 +26,7 @@ export class OpenApiContext {
     return false;
   }
 
-  public routePair(route: string): RoutePair | null {
+  public routePair(route: string): RoutePair {
     const methods = this.methods(route);
     if (methods) {
       return {
@@ -72,4 +52,24 @@ export class OpenApiContext {
   //   }
   //   return null;
   // }
+
+  // side-effecting builds express/openapi route maps
+  private buildRouteMaps(routes: RouteMetadata[]): void {
+    for (const route of routes) {
+      const routeMethods = this.expressRouteMap[route.expressRoute];
+      if (routeMethods) {
+        routeMethods[route.method] = route.schema;
+      } else {
+        const { schema, openApiRoute, expressRoute } = route;
+        const routeMethod = { [route.method]: schema };
+        const routeDetails = {
+          _openApiRoute: openApiRoute,
+          _expressRoute: expressRoute,
+          ...routeMethod,
+        };
+        this.expressRouteMap[route.expressRoute] = routeDetails;
+        this.openApiRouteMap[route.openApiRoute] = routeDetails;
+      }
+    }
+  }
 }
