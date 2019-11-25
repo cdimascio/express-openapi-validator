@@ -1,4 +1,4 @@
-import * as ajv from 'ajv';
+import { Ajv } from 'ajv';
 import { createRequestAjv } from './ajv';
 import {
   ContentType,
@@ -13,8 +13,9 @@ import {
   OpenApiRequest,
   RequestValidatorOptions,
   ValidateRequestOpts,
+  OpenApiRequestMetadata,
 } from '../framework/types';
-import { Ajv } from 'ajv';
+import { HandleFunction } from 'connect';
 
 const TYPE_JSON = 'application/json';
 
@@ -47,12 +48,13 @@ export class RequestValidator {
       return next();
     }
 
-    const path = req.openapi.expressRoute;
+    const openapi = <OpenApiRequestMetadata>req.openapi;
+    const path = openapi.expressRoute;
     if (!path) {
       throw validationError(404, req.path, 'not found');
     }
 
-    const pathSchema = req.openapi.schema;
+    const pathSchema = openapi.schema;
     if (!pathSchema) {
       // add openapi metadata to make this case more clear
       // its not obvious that missig schema means methodNotAllowed
@@ -75,7 +77,11 @@ export class RequestValidator {
     return this._middlewareCache[key](req, res, next);
   }
 
-  private buildMiddleware(path: string, pathSchema, contentType: ContentType) {
+  private buildMiddleware(
+    path: string,
+    pathSchema: OpenAPIV3.OperationObject,
+    contentType: ContentType,
+  ): HandleFunction {
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
 
     let usedSecuritySchema = [];
@@ -98,14 +104,19 @@ export class RequestValidator {
     );
 
     let requestBody = pathSchema.requestBody;
-
     if (requestBody && requestBody.hasOwnProperty('$ref')) {
-      const id = requestBody.$ref.replace(/^.+\//i, '');
+      const ref = (<OpenAPIV3.ReferenceObject>requestBody).$ref;
+      const id = ref.replace(/^.+\//i, '');
       requestBody = this._apiDocs.components.requestBodies[id];
     }
 
-    let body = this.requestBodyToSchema(path, contentType, requestBody);
-    let requiredAdds = requestBody && requestBody.required ? ['body'] : [];
+    let body = {};
+    const requiredAdds = [];
+    if (requestBody && requestBody.hasOwnProperty('content')) {
+      const reqBodyObject = <OpenAPIV3.RequestBodyObject>requestBody;
+      body = this.requestBodyToSchema(path, contentType, reqBodyObject);
+      if (reqBodyObject.required) requiredAdds.push('body');
+    }
 
     const schema = {
       // $schema: "http://json-schema.org/draft-04/schema#",
@@ -117,7 +128,7 @@ export class RequestValidator {
     };
 
     const validator = this.ajv.compile(schema);
-    return (req, res, next) => {
+    return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
       if (!this._requestOpts.allowUnknownQueryParameters) {
         this.rejectUnknownQueryParams(
           req.query,
@@ -126,14 +137,15 @@ export class RequestValidator {
         );
       }
 
-      const shouldUpdatePathParams =
-        Object.keys(req.openapi.pathParams).length > 0;
+      const openapi = <OpenApiRequestMetadata>req.openapi;
+      const shouldUpdatePathParams = Object.keys(openapi.pathParams).length > 0;
 
       if (shouldUpdatePathParams) {
-        req.params = req.openapi.pathParams || req.params;
+        req.params = openapi.pathParams || req.params;
       }
 
-      req.schema = schema;
+      // (<any>req).schema = schema;
+
       /**
        * support json in request params, query, headers and cookies
        * like this filter={"type":"t-shirt","color":"blue"}
@@ -213,7 +225,7 @@ export class RequestValidator {
   private requestBodyToSchema(
     path: string,
     contentType: ContentType,
-    requestBody: any = {},
+    requestBody: OpenAPIV3.RequestBodyObject,
   ) {
     if (requestBody.content) {
       let content = null;
