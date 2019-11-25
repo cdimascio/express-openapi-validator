@@ -11,7 +11,7 @@ import {
 export function applyOpenApiMetadata(
   openApiContext: OpenApiContext,
 ): OpenApiRequestHandler {
-  return (req: OpenApiRequest, res: Response, next: NextFunction): any => {
+  return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
     const matched = lookupRoute(req);
     if (matched) {
       const { expressRoute, openApiRoute, pathParams, schema } = matched;

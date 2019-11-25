@@ -15,6 +15,7 @@ import {
   ValidateRequestOpts,
   OpenApiRequestMetadata,
 } from '../framework/types';
+import { HandleFunction } from 'connect';
 
 const TYPE_JSON = 'application/json';
 
@@ -80,7 +81,7 @@ export class RequestValidator {
     path: string,
     pathSchema: OpenAPIV3.OperationObject,
     contentType: ContentType,
-  ) {
+  ): HandleFunction {
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
 
     let usedSecuritySchema = [];
@@ -110,7 +111,7 @@ export class RequestValidator {
     }
 
     let body = {};
-    let requiredAdds = [];
+    const requiredAdds = [];
     if (requestBody && requestBody.hasOwnProperty('content')) {
       const reqBodyObject = <OpenAPIV3.RequestBodyObject>requestBody;
       body = this.requestBodyToSchema(path, contentType, reqBodyObject);
@@ -127,7 +128,7 @@ export class RequestValidator {
     };
 
     const validator = this.ajv.compile(schema);
-    return (req: OpenApiRequest, res: Response, next: NextFunction) => {
+    return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
       if (!this._requestOpts.allowUnknownQueryParameters) {
         this.rejectUnknownQueryParams(
           req.query,
@@ -143,7 +144,7 @@ export class RequestValidator {
         req.params = openapi.pathParams || req.params;
       }
 
-      (<any>req).schema = schema;
+      // (<any>req).schema = schema;
 
       /**
        * support json in request params, query, headers and cookies
