@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as middlewares from './middlewares';
 import { Application, Response, NextFunction } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
+import { OpenApiSpecLoader } from './framework/openapi.spec.loader';
 import {
   OpenApiValidatorOpts,
   ValidateRequestOpts,
@@ -12,9 +13,8 @@ import {
 } from './framework/types';
 
 export class OpenApiValidator {
-  private app: Application;
-  private context: OpenApiContext;
-  private options: OpenApiValidatorOpts;
+  private readonly options: OpenApiValidatorOpts;
+  private readonly context: OpenApiContext;
 
   constructor(options: OpenApiValidatorOpts) {
     this.validateOptions(options);
@@ -37,32 +37,38 @@ export class OpenApiValidator {
     }
 
     this.options = options;
+
+    const { apiDoc, basePaths, routes } = new OpenApiSpecLoader({
+      apiDoc: this.options.apiSpec,
+    }).load();
+
     this.context = new OpenApiContext({
-      apiDoc: options.apiSpec,
+      apiDoc,
+      basePaths,
+      routes,
     });
   }
 
   public install(app: Application): void {
-    this.app = app;
-    this.installPathParams();
-    this.installMetadataMiddleware();
-    this.installMultipartMiddleware();
+    this.installPathParams(app);
+    this.installMetadataMiddleware(app);
+    this.installMultipartMiddleware(app);
 
     const components = this.context.apiDoc.components;
     if (components && components.securitySchemes) {
-      this.installSecurityMiddleware();
+      this.installSecurityMiddleware(app);
     }
 
     if (this.options.validateRequests) {
-      this.installRequestValidationMiddleware();
+      this.installRequestValidationMiddleware(app);
     }
 
     if (this.options.validateResponses) {
-      this.installResponseValidationMiddleware();
+      this.installResponseValidationMiddleware(app);
     }
   }
 
-  private installPathParams(): void {
+  private installPathParams(app: Application): void {
     const pathParams = [];
     for (const route of this.context.routes) {
       if (route.pathParams.length > 0) {
@@ -72,7 +78,7 @@ export class OpenApiValidator {
 
     // install param on routes with paths
     for (const p of _.uniq(pathParams)) {
-      this.app.param(
+      app.param(
         p,
         (
           req: OpenApiRequest,
@@ -91,45 +97,42 @@ export class OpenApiValidator {
     }
   }
 
-  private installMetadataMiddleware(): void {
-    this.app.use(middlewares.applyOpenApiMetadata(this.context));
+  private installMetadataMiddleware(app: Application): void {
+    app.use(middlewares.applyOpenApiMetadata(this.context));
   }
 
-  private installMultipartMiddleware(): void {
-    this.app.use(middlewares.multipart(this.context, this.options.multerOpts));
+  private installMultipartMiddleware(app: Application): void {
+    app.use(middlewares.multipart(this.context, this.options.multerOpts));
   }
 
-  private installSecurityMiddleware(): void {
+  private installSecurityMiddleware(app: Application): void {
     const securityMiddleware = middlewares.security(
       this.context,
       this.options.securityHandlers,
     );
-    this.app.use(securityMiddleware);
+    app.use(securityMiddleware);
   }
 
-  private installRequestValidationMiddleware(): void {
+  private installRequestValidationMiddleware(app: Application): void {
     const { coerceTypes, unknownFormats, validateRequests } = this.options;
     const { allowUnknownQueryParameters } = <ValidateRequestOpts>(
       validateRequests
     );
-    const requestValidator = new middlewares.RequestValidator(
-      this.context.apiDoc,
-      {
-        nullable: true,
-        coerceTypes,
-        removeAdditional: false,
-        useDefaults: true,
-        unknownFormats,
-        allowUnknownQueryParameters,
-      },
-    );
+    const requestValidator = new middlewares.RequestValidator(this.context.apiDoc, {
+      nullable: true,
+      coerceTypes,
+      removeAdditional: false,
+      useDefaults: true,
+      unknownFormats,
+      allowUnknownQueryParameters,
+    });
     const requestValidationHandler: OpenApiRequestHandler = (req, res, next) =>
       requestValidator.validate(req, res, next);
 
-    this.app.use(requestValidationHandler);
+    app.use(requestValidationHandler);
   }
 
-  private installResponseValidationMiddleware(): void {
+  private installResponseValidationMiddleware(app: Application): void {
     const { coerceTypes, unknownFormats, validateResponses } = this.options;
     const { removeAdditional } = <ValidateResponseOpts>validateResponses;
 
@@ -143,7 +146,7 @@ export class OpenApiValidator {
       },
     );
 
-    this.app.use(responseValidator.validate());
+    app.use(responseValidator.validate());
   }
 
   private validateOptions(options: OpenApiValidatorOpts): void {

@@ -3,26 +3,25 @@ import OpenAPIFramework, {
   OpenAPIFrameworkArgs,
   OpenAPIFrameworkConstructorArgs,
 } from './index';
-import { OpenAPIFrameworkAPIContext } from './types';
+import { OpenAPIFrameworkAPIContext, OpenAPIV3 } from './types';
 
+export interface Spec {
+  apiDoc: OpenAPIV3.Document;
+  basePaths: string[];
+  routes: any[]; // TODO create tye
+}
 export class OpenApiSpecLoader {
   private opts: OpenAPIFrameworkArgs;
   constructor(opts: OpenAPIFrameworkArgs) {
     this.opts = opts;
   }
 
-  load() {
+  public load(): Spec {
     const framework = this.createFramework(this.opts);
-    const apiDoc = framework.apiDoc || {};
-    const bps = framework.basePaths || [];
-    const basePaths = bps.reduce((acc, bp) => {
-      bp.all().forEach(path => acc.add(path));
-      return acc;
-    }, new Set<string>());
-    const routes = this.discoverRoutes(framework, basePaths);
+    const routes = this.discoverRoutes(framework, framework.basePaths);
     return {
-      apiDoc,
-      basePaths,
+      apiDoc: framework.apiDoc,
+      basePaths: framework.basePaths,
       routes,
     };
   }
@@ -38,7 +37,10 @@ export class OpenApiSpecLoader {
     return framework;
   }
 
-  private discoverRoutes(framework: OpenAPIFramework, basePaths: Set<string>) {
+  private discoverRoutes(
+    framework: OpenAPIFramework,
+    basePaths: string[],
+  ): any[] { // TODO create type
     const routes = [];
     const toExpressParams = this.toExpressParams;
     framework.initialize({
