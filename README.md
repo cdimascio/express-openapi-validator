@@ -16,6 +16,7 @@
 - ✔️ response validation 
 - 👮 security validation / custom security functions
 - 👽 3rd party / custom formats 
+- ✂️  $ref support; split specs over multiple files
 - 🎈 file upload
 
 
