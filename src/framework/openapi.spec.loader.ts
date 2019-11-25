@@ -1,11 +1,15 @@
 import * as _ from 'lodash';
-import OpenAPIFramework, { OpenAPIFrameworkArgs } from './index';
-import { OpenAPIFrameworkAPIContext, OpenAPIV3 } from './types';
+import { OpenAPIFramework } from './index';
+import {
+  OpenAPIFrameworkAPIContext,
+  OpenAPIV3,
+  OpenAPIFrameworkArgs,
+} from './types';
 
 export interface Spec {
   apiDoc: OpenAPIV3.Document;
   basePaths: string[];
-  routes: RouteMetadata[]; 
+  routes: RouteMetadata[];
 }
 
 export interface RouteMetadata {

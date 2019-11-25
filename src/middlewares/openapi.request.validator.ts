@@ -13,6 +13,7 @@ import {
   OpenApiRequest,
   RequestValidatorOptions,
   ValidateRequestOpts,
+  OpenApiRequestMetadata,
 } from '../framework/types';
 import { Ajv } from 'ajv';
 
@@ -47,12 +48,13 @@ export class RequestValidator {
       return next();
     }
 
-    const path = req.openapi.expressRoute;
+    const openapi = <OpenApiRequestMetadata>req.openapi;
+    const path = openapi.expressRoute;
     if (!path) {
       throw validationError(404, req.path, 'not found');
     }
 
-    const pathSchema = req.openapi.schema;
+    const pathSchema = openapi.schema;
     if (!pathSchema) {
       // add openapi metadata to make this case more clear
       // its not obvious that missig schema means methodNotAllowed

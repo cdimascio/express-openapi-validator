@@ -10,6 +10,7 @@ import {
   ValidateResponseOpts,
   OpenApiRequest,
   OpenApiRequestHandler,
+  OpenApiRequestMetadata,
 } from './framework/types';
 
 export class OpenApiValidator {
@@ -69,7 +70,7 @@ export class OpenApiValidator {
   }
 
   private installPathParams(app: Application): void {
-    const pathParams = [];
+    const pathParams: string[] = [];
     for (const route of this.context.routes) {
       if (route.pathParams.length > 0) {
         pathParams.push(...route.pathParams);
@@ -87,9 +88,10 @@ export class OpenApiValidator {
           value: any,
           name: string,
         ) => {
-          if (req.openapi.pathParams) {
+          const { pathParams } = <OpenApiRequestMetadata>req.openapi;
+          if (pathParams) {
             // override path params
-            req.params[name] = req.openapi.pathParams[name] || req.params[name];
+            req.params[name] = pathParams[name] || req.params[name];
           }
           next();
         },
@@ -118,14 +120,17 @@ export class OpenApiValidator {
     const { allowUnknownQueryParameters } = <ValidateRequestOpts>(
       validateRequests
     );
-    const requestValidator = new middlewares.RequestValidator(this.context.apiDoc, {
-      nullable: true,
-      coerceTypes,
-      removeAdditional: false,
-      useDefaults: true,
-      unknownFormats,
-      allowUnknownQueryParameters,
-    });
+    const requestValidator = new middlewares.RequestValidator(
+      this.context.apiDoc,
+      {
+        nullable: true,
+        coerceTypes,
+        removeAdditional: false,
+        useDefaults: true,
+        unknownFormats,
+        allowUnknownQueryParameters,
+      },
+    );
     const requestValidationHandler: OpenApiRequestHandler = (req, res, next) =>
       requestValidator.validate(req, res, next);
 
