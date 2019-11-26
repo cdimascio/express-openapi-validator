@@ -31,11 +31,11 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets`)
       .query({
-        'filter[date]': '2000-02-29',
-        tags: 'one,two,three',
-        limit: 10,
         breed: 'german_shepherd',
+        'filter[date]': '2000-02-29',
+        limit: 10,
         owner_name: 'carmine',
+        tags: 'one,two,three',
       })
       .expect(200));
 
@@ -43,9 +43,9 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets`)
       .query({
+        breed: 'german_shepherd',
         'filter[date]': '2000-02-29',
         limit: 10,
-        breed: 'german_shepherd',
         owner_name: 'carmine',
       })
       .expect(200));
@@ -54,9 +54,9 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets`)
       .query({
+        breed: 'german_shepherd',
         'filter[date]': 'not-a-date',
         limit: 10,
-        breed: 'german_shepherd',
         owner_name: 'carmine',
       })
       .expect(400)
@@ -68,7 +68,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets/with-required-date-filter`)
       .query({
-        'filter[date]': '2000-02-29'
+        'filter[date]': '2000-02-29',
       })
       .expect(200));
 
@@ -76,10 +76,10 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets`)
       .query({
-        tags: 'one,two,three',
-        limit: 10,
         breed: 'german_shepherd',
+        limit: 10,
         owner_name: 'carmine',
+        tags: 'one,two,three',
         unknown_prop: 'test',
       })
       .expect(400)
