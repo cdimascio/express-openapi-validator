@@ -1,21 +1,26 @@
-import { pathToRegexp } from 'path-to-regexp';
 import * as _ from 'lodash';
+import { pathToRegexp } from 'path-to-regexp';
+import { Response, NextFunction } from 'express';
 import { OpenApiContext } from '../framework/openapi.context';
-import { OpenApiRequest, OpenApiRequestHandler } from '../framework/types';
+import {
+  OpenApiRequest,
+  OpenApiRequestHandler,
+  OpenApiRequestMetadata,
+} from '../framework/types';
 
 export function applyOpenApiMetadata(
   openApiContext: OpenApiContext,
 ): OpenApiRequestHandler {
-  return (req, res, next): any => {
+  return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
     const matched = lookupRoute(req);
-
     if (matched) {
-      req.openapi = {};
       const { expressRoute, openApiRoute, pathParams, schema } = matched;
-      req.openapi.expressRoute = expressRoute;
-      req.openapi.openApiRoute = openApiRoute;
-      req.openapi.pathParams = pathParams;
-      req.openapi.schema = schema;
+      req.openapi = {
+        expressRoute: expressRoute,
+        openApiRoute: openApiRoute,
+        pathParams: pathParams,
+        schema: schema,
+      };
       req.params = pathParams;
     } else if (openApiContext.isManagedRoute(req.path)) {
       req.openapi = {};
@@ -23,7 +28,7 @@ export function applyOpenApiMetadata(
     -next();
   };
 
-  function lookupRoute(req: OpenApiRequest) {
+  function lookupRoute(req: OpenApiRequest): OpenApiRequestMetadata {
     const path = req.path;
     const method = req.method;
     const routeEntries = Object.entries(openApiContext.expressRouteMap);

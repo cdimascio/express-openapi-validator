@@ -3,17 +3,33 @@ import * as Ajv from 'ajv';
 import { Request } from 'express';
 import { ValidationError } from '../framework/types';
 
-export function extractContentType(req: Request): string | null {
-  let contentType = req.headers['content-type'];
-  if (!contentType) {
-    return null;
+export class ContentType {
+  private withoutBoundary: string = null;
+  public contentType = null;
+  public mediaType: string = null;
+  public charSet: string = null;
+  private constructor(contentType: string | null) {
+    this.contentType = contentType;
+    if (contentType) {
+      this.withoutBoundary = contentType.replace(/;\s{0,}boundary.*/, '');
+      this.mediaType = this.withoutBoundary.split(';')[0].trim();
+      this.charSet = this.withoutBoundary.split(';')[1];
+      if (this.charSet) {
+        this.charSet = this.charSet.trim();
+      }
+    }
   }
-  let end = contentType.indexOf(';');
-  end = end === -1 ? contentType.length : end;
-  if (contentType) {
-    return contentType.substring(0, end);
+  static from(req: Request): ContentType {
+    return new ContentType(req.headers['content-type']);
   }
-  return contentType;
+
+  equivalents(): string[] {
+    if (!this.withoutBoundary) return [];
+    if (this.charSet) {
+      return [this.mediaType, `${this.mediaType}; ${this.charSet}`];
+    }
+    return [this.withoutBoundary, `${this.mediaType}; charset=utf-8`];
+  }
 }
 
 const _validationError = (

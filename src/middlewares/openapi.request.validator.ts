@@ -1,14 +1,21 @@
+import { Ajv } from 'ajv';
 import { createRequestAjv } from './ajv';
 import {
-  extractContentType,
+  ContentType,
   validationError,
   ajvErrorsToValidatorError,
   augmentAjvErrors,
 } from './util';
 import ono from 'ono';
 import { NextFunction, Response } from 'express';
-import { OpenAPIV3, OpenApiRequest } from '../framework/types';
-import { Ajv } from 'ajv';
+import {
+  OpenAPIV3,
+  OpenApiRequest,
+  RequestValidatorOptions,
+  ValidateRequestOpts,
+  OpenApiRequestMetadata,
+} from '../framework/types';
+import { HandleFunction } from 'connect';
 
 const TYPE_JSON = 'application/json';
 
@@ -16,10 +23,16 @@ export class RequestValidator {
   private _middlewareCache;
   private _apiDocs: OpenAPIV3.Document;
   private ajv: Ajv;
+  private _requestOpts: ValidateRequestOpts = {};
 
-  constructor(apiDocs: OpenAPIV3.Document, options = {}) {
+  constructor(
+    apiDocs: OpenAPIV3.Document,
+    options: RequestValidatorOptions = {},
+  ) {
     this._middlewareCache = {};
     this._apiDocs = apiDocs;
+    this._requestOpts.allowUnknownQueryParameters =
+      options.allowUnknownQueryParameters;
     this.ajv = createRequestAjv(apiDocs, options);
   }
 
@@ -35,12 +48,13 @@ export class RequestValidator {
       return next();
     }
 
-    const path = req.openapi.expressRoute;
+    const openapi = <OpenApiRequestMetadata>req.openapi;
+    const path = openapi.expressRoute;
     if (!path) {
       throw validationError(404, req.path, 'not found');
     }
 
-    const pathSchema = req.openapi.schema;
+    const pathSchema = openapi.schema;
     if (!pathSchema) {
       // add openapi metadata to make this case more clear
       // its not obvious that missig schema means methodNotAllowed
@@ -49,8 +63,9 @@ export class RequestValidator {
 
     // cache middleware by combining method, path, and contentType
     // TODO contentType could have value not_provided
-    const contentType = extractContentType(req) || 'not_provided';
-    const key = `${req.method}-${req.originalUrl}-${contentType}`;
+    const contentType = ContentType.from(req);
+    const contentTypeKey = contentType.equivalents()[0] || 'not_provided';
+    const key = `${req.method}-${req.originalUrl}-${contentTypeKey}`;
 
     if (!this._middlewareCache[key]) {
       this._middlewareCache[key] = this.buildMiddleware(
@@ -62,15 +77,23 @@ export class RequestValidator {
     return this._middlewareCache[key](req, res, next);
   }
 
-  private buildMiddleware(path, pathSchema, contentType) {
+  private buildMiddleware(
+    path: string,
+    pathSchema: OpenAPIV3.OperationObject,
+    contentType: ContentType,
+  ): HandleFunction {
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
 
     let usedSecuritySchema = [];
-    if (pathSchema.hasOwnProperty('security')
-      && pathSchema.security.length > 0) {
+    if (
+      pathSchema.hasOwnProperty('security') &&
+      pathSchema.security.length > 0
+    ) {
       usedSecuritySchema = pathSchema.security;
-    } else if (this._apiDocs.hasOwnProperty('security')
-      && this._apiDocs.security.length > 0) {
+    } else if (
+      this._apiDocs.hasOwnProperty('security') &&
+      this._apiDocs.security.length > 0
+    ) {
       // if no security schema for the path, use top-level security schema
       usedSecuritySchema = this._apiDocs.security;
     }
@@ -81,14 +104,19 @@ export class RequestValidator {
     );
 
     let requestBody = pathSchema.requestBody;
-
     if (requestBody && requestBody.hasOwnProperty('$ref')) {
-      const id = requestBody.$ref.replace(/^.+\//i, '');
+      const ref = (<OpenAPIV3.ReferenceObject>requestBody).$ref;
+      const id = ref.replace(/^.+\//i, '');
       requestBody = this._apiDocs.components.requestBodies[id];
     }
 
-    let body = this.requestBodyToSchema(path, contentType, requestBody);
-    let requiredAdds = requestBody && requestBody.required ? ['body'] : [];
+    let body = {};
+    const requiredAdds = [];
+    if (requestBody && requestBody.hasOwnProperty('content')) {
+      const reqBodyObject = <OpenAPIV3.RequestBodyObject>requestBody;
+      body = this.requestBodyToSchema(path, contentType, reqBodyObject);
+      if (reqBodyObject.required) requiredAdds.push('body');
+    }
 
     const schema = {
       // $schema: "http://json-schema.org/draft-04/schema#",
@@ -100,21 +128,24 @@ export class RequestValidator {
     };
 
     const validator = this.ajv.compile(schema);
-    return (req, res, next) => {
-      this.rejectUnknownQueryParams(
-        req.query,
-        schema.properties.query,
-        securityQueryParameter,
-      );
-
-      const shouldUpdatePathParams =
-        Object.keys(req.openapi.pathParams).length > 0;
-
-      if (shouldUpdatePathParams) {
-        req.params = req.openapi.pathParams || req.params;
+    return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
+      if (!this._requestOpts.allowUnknownQueryParameters) {
+        this.rejectUnknownQueryParams(
+          req.query,
+          schema.properties.query,
+          securityQueryParameter,
+        );
       }
 
-      req.schema = schema;
+      const openapi = <OpenApiRequestMetadata>req.openapi;
+      const shouldUpdatePathParams = Object.keys(openapi.pathParams).length > 0;
+
+      if (shouldUpdatePathParams) {
+        req.params = openapi.pathParams || req.params;
+      }
+
+      // (<any>req).schema = schema;
+
       /**
        * support json in request params, query, headers and cookies
        * like this filter={"type":"t-shirt","color":"blue"}
@@ -191,14 +222,22 @@ export class RequestValidator {
     }
   }
 
-  private requestBodyToSchema(path, contentType, requestBody: any = {}) {
+  private requestBodyToSchema(
+    path: string,
+    contentType: ContentType,
+    requestBody: OpenAPIV3.RequestBodyObject,
+  ) {
     if (requestBody.content) {
-      const content = requestBody.content[contentType];
+      let content = null;
+      for (const type of contentType.equivalents()) {
+        content = requestBody.content[type];
+        if (content) break;
+      }
       if (!content) {
         const msg =
-          contentType === 'not_provided'
+          contentType.contentType === 'not_provided'
             ? 'media type not specified'
-            : `unsupported media type ${contentType}`;
+            : `unsupported media type ${contentType.contentType}`;
         throw validationError(415, path, msg);
       }
       return content.schema || {};
