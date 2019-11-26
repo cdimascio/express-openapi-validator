@@ -2,12 +2,13 @@ import * as Ajv from 'ajv';
 import * as draftSchema from 'ajv/lib/refs/json-schema-draft-04.json';
 import { formats } from './formats';
 import { OpenAPIV3 } from '../../framework/types';
+import ajv = require('ajv');
 
 const TYPE_JSON = 'application/json';
 
 export function createRequestAjv(
   openApiSpec: OpenAPIV3.Document,
-  options: any = {},
+  options: ajv.Options = {},
 ): Ajv.Ajv {
   return createAjv(openApiSpec, options);
 }

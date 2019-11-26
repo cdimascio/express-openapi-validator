@@ -1,0 +1,10 @@
+NewPet:
+  additionalProperties: false
+  required:
+    - name
+  properties:
+    name:
+      type: string
+      nullable: true
+    tag:
+      type: string
