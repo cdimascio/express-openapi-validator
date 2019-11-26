@@ -104,6 +104,7 @@ export class RequestValidator {
     );
 
     let requestBody = pathSchema.requestBody;
+
     if (requestBody && requestBody.hasOwnProperty('$ref')) {
       const ref = (<OpenAPIV3.ReferenceObject>requestBody).$ref;
       const id = ref.replace(/^.+\//i, '');
@@ -129,23 +130,8 @@ export class RequestValidator {
 
     const validator = this.ajv.compile(schema);
     return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
-      const queryIndex = req.originalUrl.indexOf('?');
-      const queryString = (queryIndex >= 0) ? req.originalUrl.slice(queryIndex + 1) : '';
-      const searchParams = new URLSearchParams(queryString);
 
-      const queryParamsToValidate = {}
-
-      searchParams.forEach((value, key) => {
-        if (queryParamsToValidate[key]) {
-          if (queryParamsToValidate[key] instanceof Array) {
-            queryParamsToValidate[key].push(value)
-          } else {
-            queryParamsToValidate[key] = [queryParamsToValidate[key], value]
-          }
-        } else {
-          queryParamsToValidate[key] = value
-        }
-      });
+      const queryParamsToValidate = this.parseQueryParamsFromURL(req.originalUrl);
 
       if (!this._requestOpts.allowUnknownQueryParameters) {
         this.rejectUnknownQueryParams(
@@ -376,5 +362,26 @@ export class RequestValidator {
     });
 
     return { schema, parseJson, parseArray, parseArrayExplode };
+  }
+
+  private parseQueryParamsFromURL(url: string) {
+    const queryIndex = url.indexOf('?');
+    const queryString = (queryIndex >= 0) ? url.slice(queryIndex + 1) : '';
+    const searchParams = new URLSearchParams(queryString);
+    const queryParamsToValidate = {};
+
+    searchParams.forEach((value, key) => {
+      if (queryParamsToValidate[key]) {
+        if (queryParamsToValidate[key] instanceof Array) {
+          queryParamsToValidate[key].push(value)
+        } else {
+          queryParamsToValidate[key] = [queryParamsToValidate[key], value]
+        }
+      } else {
+        queryParamsToValidate[key] = value
+      }
+    });
+
+    return queryParamsToValidate;
   }
 }
