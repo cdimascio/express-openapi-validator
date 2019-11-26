@@ -364,11 +364,11 @@ export class RequestValidator {
     return { schema, parseJson, parseArray, parseArrayExplode };
   }
 
-  private parseQueryParamsFromURL(url: string) {
+  private parseQueryParamsFromURL(url: string): object {
     const queryIndex = url.indexOf('?');
     const queryString = (queryIndex >= 0) ? url.slice(queryIndex + 1) : '';
     const searchParams = new URLSearchParams(queryString);
-    const queryParamsToValidate = {};
+    const queryParamsToValidate: object = {};
 
     searchParams.forEach((value, key) => {
       if (queryParamsToValidate[key]) {
