@@ -3,9 +3,9 @@ language: node_js
 node_js:
 - '12'
 before_install:
-- openssl aes-256-cbc -K $encrypted_deba340dfe89_key -iv $encrypted_deba340dfe89_iv
-  -in secrets.zip.enc -out secrets.zip -d
-- unzip secrets.zip
+- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then openssl aes-256-cbc -K $encrypted_deba340dfe89_key -iv $encrypted_deba340dfe89_iv
+  -in secrets.zip.enc -out secrets.zip -d; fi'
+- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then unzip secrets.zip; fi'
 install:
 - npm install
 script:

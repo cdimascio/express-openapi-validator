@@ -9,7 +9,7 @@ interface ServerUrlValues {
   default?: string;
 }
 
-export default class BasePath {
+export class BasePath {
   public readonly variables: ServerUrlVariables = {};
   public readonly path: string = '';
   private allPaths: string[] = null;
