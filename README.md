@@ -219,6 +219,9 @@ curl -XPOST http://localhost:3000/v1/pets \
 }
 ```
 
+In the api schema you can add `additionalProperties: false` when [describing](https://swagger.io/docs/specification/data-models/keywords/) the `requestBody` to ensure additional body properties are not let through when `validateRequests` is set to `true`.
+
+
 #### Validates content-type
 
 ```shell
