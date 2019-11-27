@@ -555,6 +555,8 @@ that are _not_ under the base URL—such as pages—will not be validated.
 | `https://api.example.com/v1/users`   | :white_check_mark:         |
 | `https://api.example.com/index.html` | no; not under the base URL |
 
+_**Note** that in some cases, it may be necessary to skip validation for paths under the base url. To do this, use the `ignorePaths` option._
+
 ## FAQ
 
 
