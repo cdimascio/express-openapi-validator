@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const http = require('http');
-const pets = require('./pets.json');
+const MongoClient = require('mongodb').MongoClient;
 const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
 const app = express();
 
@@ -22,58 +22,47 @@ app.use(express.static(path.join(__dirname, 'public')));
 const spec = path.join(__dirname, 'openapi.yaml');
 app.use('/spec', express.static(spec));
 
-// 2. Install the OpenApiValidator on your express app
+// Connect to MongoDB before installing OpenApiValidator
+const client = MongoClient.connect('mongodb://localhost:27017/example', {
+  useUnifiedTopology: true,
+})
+  .then(client => client.db())
+  .catch(e => {
+    console.error(e);
+    process.exit(1);
+  });
+
+// Load some dummy data
+client
+  .then(db =>
+    db
+      .collection('example')
+      .insertMany([{ id: 2, name: 'sparky' }, { id: 3, name: 'spot' }]),
+  )
+  .catch(e => {
+    console.error(e);
+    process.exit(1);
+  });
+
+//  Install the OpenApiValidator on your express app
 new OpenApiValidator({
   apiSpec: './example.yaml',
-  validateResponses: true,
-  // securityHandlers: {
-  //   ApiKeyAuth: (req, scopes, schema) => true,
-  // },
 }).install(app);
 
-let id = 3;
-// 3. Add routes
 app.get('/v1/pets', function(req, res, next) {
-  res.json(pets);
+  client
+    .then(db =>
+      db
+        .collection('example')
+        .find()
+        .toArray(),
+    )
+    .then(pets => res.json(pets))
+    .catch(next);
 });
 
-app.post('/v1/pets', function(req, res, next) {
-  res.json({ id: id++, ...req.body });
-});
-
-app.get('/v1/pets/:id', function(req, res, next) {
-  const id = req.params.id;
-  const r = pets.filter(p => p.id === id);
-  if (id === 99) {
-    // return a response that does not match the spec
-    return res.json({ bad_format: 'bad format' });
-  }
-  return r.length > 0
-    ? res.json(r)
-    : res.status(404).json({ message: 'not found', errors: [] });
-});
-
-// 3a. Add a route upload file(s)
-app.post('/v1/pets/:id/photos', function(req, res, next) {
-  // DO something with the file
-  // files are found in req.files
-  // non file multipar params are in req.body['my-param']
-  console.log(req.files);
-
-  res.json({
-    files_metadata: req.files.map(f => ({
-      originalname: f.originalname,
-      encoding: f.encoding,
-      mimetype: f.mimetype,
-      // Buffer of file conents
-      // buffer: f.buffer,
-    })),
-  });
-});
-
-// 4. Create a custom error handler
 app.use((err, req, res, next) => {
-  // format errors
+  console.error(err);
   res.status(err.status || 500).json({
     message: err.message,
     errors: err.errors,

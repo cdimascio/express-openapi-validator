@@ -1,15 +1,7 @@
+import ajv = require('ajv');
 import { Request, Response, NextFunction } from 'express';
-import { Logger } from 'ts-log';
-import BasePath from './base.path';
-export {
-  OpenAPIFrameworkArgs,
-  OpenAPIFrameworkConstructorArgs,
-  OpenAPIErrorTransformer,
-};
-
-type OpenAPIErrorTransformer = ({}, {}) => object;
-
-type PathSecurityTuple = [RegExp, SecurityRequirement[]];
+import { BasePath } from './base.path';
+export { OpenAPIFrameworkArgs };
 
 export type SecurityHandlers = {
   [key: string]: (
@@ -19,6 +11,14 @@ export type SecurityHandlers = {
   ) => boolean | Promise<boolean>;
 };
 
+export interface RequestValidatorOptions
+  extends ajv.Options,
+    ValidateRequestOpts {}
+
+export type ValidateRequestOpts = {
+  allowUnknownQueryParameters?: boolean;
+};
+
 export type ValidateResponseOpts = {
   removeAdditional?: string | boolean;
 };
@@ -26,18 +26,12 @@ export type ValidateResponseOpts = {
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
   validateResponses?: boolean | ValidateResponseOpts;
-  validateRequests?: boolean;
+  validateRequests?: boolean | ValidateRequestOpts;
   securityHandlers?: SecurityHandlers;
-  coerceTypes?: boolean;
-  unknownFormats?: string[] | string | boolean;
+  coerceTypes?: boolean | 'array';
+  unknownFormats?: true | string[] | 'ignore';
   multerOpts?: {};
 }
-
-interface SecurityRequirement {
-  [name: string]: SecurityScope[];
-}
-
-type SecurityScope = string;
 
 export namespace OpenAPIV3 {
   export interface Document {
@@ -353,54 +347,29 @@ export interface OpenAPIFrameworkPathObject {
   module?: any;
 }
 
-export interface IOpenAPIFramework {
-  featureType: string;
-  loggingPrefix: string;
-  name: string;
-}
-
-interface OpenAPIFrameworkConstructorArgs extends OpenAPIFrameworkArgs {
-  featureType: string;
-  name: string;
-}
-
 interface OpenAPIFrameworkArgs {
   apiDoc: OpenAPIV3.Document | string;
-  customFormats?: { string: (arg: any) => boolean };
-  dependencies?: { [service: string]: any };
-  enableObjectCoercion?: boolean;
-  errorTransformer?: OpenAPIErrorTransformer;
-  externalSchemas?: { string: IJsonSchema };
-  pathSecurity?: PathSecurityTuple[];
-  operations?: { [operationId: string]: (...arg: any[]) => any };
-  paths?: string | OpenAPIFrameworkPathObject[];
-  pathsIgnore?: RegExp;
-  routesGlob?: string;
-  routesIndexFileRegExp?: RegExp;
   validateApiDoc?: boolean;
-  logger?: Logger;
 }
 
 export interface OpenAPIFrameworkAPIContext {
   basePaths: BasePath[];
-  // TODO fill this out
-  getApiDoc(): any;
-}
-
-export interface OpenAPIFrameworkPathContext {
-  basePaths: BasePath[];
-  // TODO fill this out
-  getApiDoc(): any;
-  getPathDoc(): any;
+  getApiDoc(): OpenAPIV3.Document;
 }
 
 export interface OpenAPIFrameworkVisitor {
   visitApi?(context: OpenAPIFrameworkAPIContext): void;
-  visitPath?(context: OpenAPIFrameworkPathContext): void;
+}
+
+export interface OpenApiRequestMetadata {
+  expressRoute: string;
+  openApiRoute: string;
+  pathParams: string[];
+  schema: OpenAPIV3.OperationObject;
 }
 
 export interface OpenApiRequest extends Request {
-  openapi;
+  openapi?: OpenApiRequestMetadata | {};
 }
 
 export type OpenApiRequestHandler = (
@@ -461,30 +430,4 @@ export interface ValidationErrorItem {
   path: string;
   message: string;
   error_code?: string;
-}
-/* istanbul ignore next */
-export class ConsoleDebugAdapterLogger implements Logger {
-  /**
-   * `console.debug` is just an alias for `.log()`, and we want debug logging to be optional.
-   * This class delegates to `console` and overrides `.debug()` to be a no-op.
-   */
-  public debug(message?: any, ...optionalParams: any[]): void {
-    // no-op
-  }
-
-  public error(message?: any, ...optionalParams: any[]): void {
-    console.error(message, ...optionalParams);
-  }
-
-  public info(message?: any, ...optionalParams: any[]): void {
-    console.info(message, ...optionalParams);
-  }
-
-  public trace(message?: any, ...optionalParams: any[]): void {
-    console.trace(message, ...optionalParams);
-  }
-
-  public warn(message?: any, ...optionalParams: any[]): void {
-    console.warn(message, ...optionalParams);
-  }
 }

@@ -1,4 +1,4 @@
-import * as pathToRegexp from 'path-to-regexp';
+import { compile } from 'path-to-regexp';
 import { OpenAPIV3 } from './types';
 
 interface ServerUrlVariables {
@@ -9,7 +9,7 @@ interface ServerUrlValues {
   default?: string;
 }
 
-export default class BasePath {
+export class BasePath {
   public readonly variables: ServerUrlVariables = {};
   public readonly path: string = '';
   private allPaths: string[] = null;
@@ -56,7 +56,7 @@ export default class BasePath {
     }, []);
 
     const allParamCombos = cartesian(...allParams);
-    const toPath = pathToRegexp.compile(this.path);
+    const toPath = compile(this.path);
     const paths = new Set<string>();
     for (const combo of allParamCombos) {
       paths.add(toPath(combo));
