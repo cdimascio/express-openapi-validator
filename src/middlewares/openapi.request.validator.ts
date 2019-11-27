@@ -242,7 +242,7 @@ export class RequestValidator {
         throw validationError(415, path, msg);
       }
 
-      let bodyContentSchema =
+      const bodyContentSchema =
         requestBody.content[contentType.contentType] &&
         requestBody.content[contentType.contentType].schema;
       if (bodyContentSchema && '$ref' in bodyContentSchema) {
