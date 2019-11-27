@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
@@ -22,8 +21,10 @@ describe(packageJson.name, () => {
       app => {
         // Define new coercion routes
         app.post(`${app.basePath}/request_bodies_ref`, (req, res) => {
-          if (req.headers['content-type'].indexOf('text/plain') > -1) {
+          if (req.header('accept') && req.header('accept').indexOf('text/plain') > -1) {
             res.type('text').send(req.body);
+          } else if (req.header('accept') && req.header('accept').indexOf('application/hal+json') > -1) {
+            res.type('application/hal+json').send(req.body);
           } else if (req.query.bad_body) {
             const r = req.body;
             r.unexpected_prop = 'bad';
@@ -46,6 +47,7 @@ describe(packageJson.name, () => {
     return request(app)
       .post(`${app.basePath}/request_bodies_ref`)
       .set('content-type', 'text/plain')
+      .set('accept', 'text/plain')
       .send(stringData)
       .expect(200)
       .then(r => {
@@ -76,6 +78,21 @@ describe(packageJson.name, () => {
       .expect(200)
       .then(r => {
         const { body } = r;
+        expect(body).to.have.property('testProperty');
+      }));
+
+  it('should return 200 if a json suffex is used for content-type', async () =>
+    request(app)
+      .post(`${app.basePath}/request_bodies_ref`)
+      .set('accept', 'application/hal+json')
+      .set('content-type', 'application/hal+json')
+      .send({
+        testProperty: 'abc',
+      })
+      .expect(200)
+      .then(r => {
+        const { body } = r;
+        expect(r.get('content-type')).to.contain('application/hal+json')
         expect(body).to.have.property('testProperty');
       }));
 
