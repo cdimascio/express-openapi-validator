@@ -313,6 +313,7 @@ new OpenApiValidator(options).install({
   apiSpec: './openapi.yaml',
   validateRequests: true,
   validateResponses: true,
+  ignorePaths: /.*\/pets$/
   unknownFormats: ['phone-number', 'uuid'],
   multerOpts: { ... },
   securityHandlers: {
@@ -388,6 +389,16 @@ Determines whether the validator should validate responses. Also accepts respons
 	  removeAdditional: 'failing'
 	}
 	```
+
+### ▪️ ignorePaths (optional)
+
+Defines a regular expression that determines whether a path(s) should be ignored. Any path which matches the regular expression will not be validated.
+
+The following ignores any path that ends in `/pets`
+
+```
+ignorePaths: /.*\/pets$/
+```
 
 
 ### ▪️ unknownFormats (optional)
