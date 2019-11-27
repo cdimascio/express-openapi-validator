@@ -546,6 +546,22 @@ that are _not_ under the base URL—such as pages—will not be validated.
 
 ## FAQ
 
+**Q:** How can I ensure that additional properties are not allowed in request/response schemas.
+
+**A:** Add `additionalProperties: false` when [describing](https://swagger.io/docs/specification/data-models/keywords/) e.g a `requestBody` to ensure that additional properties are not allowed. For example:
+
+	```yaml
+	Pet:
+	  additionalProperties: false
+	  required:
+	    - name
+	  properties:
+	    name:
+	      type: string
+	    type:
+	      type: string
+	```
+
 **Q:** Can I use `express-openapi-validator` with `swagger-ui-express`?
 
 **A:** Yes. Be sure to `use` the `swagger-ui-express` serve middleware prior to installing `OpenApiValidator`. This will ensure that `swagger-ui-express` is able to fully prepare the spec before before OpenApiValidator attempts to use it. For example: 
