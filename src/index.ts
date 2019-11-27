@@ -39,15 +39,11 @@ export class OpenApiValidator {
 
     this.options = options;
 
-    const { apiDoc, basePaths, routes } = new OpenApiSpecLoader({
+    const spec = new OpenApiSpecLoader({
       apiDoc: this.options.apiSpec,
     }).load();
 
-    this.context = new OpenApiContext({
-      apiDoc,
-      basePaths,
-      routes,
-    });
+    this.context = new OpenApiContext(spec, options.ignorePaths);
   }
 
   public install(app: Application): void {
