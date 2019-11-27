@@ -28,7 +28,7 @@ export interface OpenApiValidatorOpts {
   validateResponses?: boolean | ValidateResponseOpts;
   validateRequests?: boolean | ValidateRequestOpts;
   securityHandlers?: SecurityHandlers;
-  coerceTypes?: boolean;
+  coerceTypes?: boolean | 'array';
   unknownFormats?: true | string[] | 'ignore';
   multerOpts?: {};
 }
