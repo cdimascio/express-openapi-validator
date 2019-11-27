@@ -546,12 +546,13 @@ that are _not_ under the base URL—such as pages—will not be validated.
 
 ## FAQ
 
-**Q:** How can I ensure that additional properties are not allowed in request/response schemas.
+
+**Q:** I can disallow unknown query parameters with `allowUnknownQueryParameters: false`. How can disallow unknown body parameters?
 
 **A:** Add `additionalProperties: false` when [describing](https://swagger.io/docs/specification/data-models/keywords/) e.g a `requestBody` to ensure that additional properties are not allowed. For example:
 
-```yaml
-Pet:
+  ```yaml
+  Pet:
   additionalProperties: false
   required:
     - name
@@ -560,7 +561,7 @@ Pet:
       type: string
     type:
       type: string
-```
+  ```
 
 **Q:** Can I use `express-openapi-validator` with `swagger-ui-express`?
 
