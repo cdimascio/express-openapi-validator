@@ -11,6 +11,35 @@ servers:
   - url: /v1
 
 paths:
+  /user_inlined:
+    post:
+      description: get user
+      operationId: getUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - username
+              properties:
+                id:
+                  type: string
+                  readOnly: true
+                username:
+                  type: string
+                name:
+                  type: string
+      responses:
+        '200':
+          description: user response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
   /user:
     post:
       description: get user
