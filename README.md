@@ -219,9 +219,6 @@ curl -XPOST http://localhost:3000/v1/pets \
 }
 ```
 
-In the api schema you can add `additionalProperties: false` when [describing](https://swagger.io/docs/specification/data-models/keywords/) the `requestBody` to ensure additional body properties are not let through when `validateRequests` is set to `true`.
-
-
 #### Validates content-type
 
 ```shell
@@ -548,6 +545,22 @@ that are _not_ under the base URL—such as pages—will not be validated.
 | `https://api.example.com/index.html` | no; not under the base URL |
 
 ## FAQ
+
+**Q:** How can I ensure that additional properties are not allowed in request/response schemas.
+
+**A:** Add `additionalProperties: false` when [describing](https://swagger.io/docs/specification/data-models/keywords/) e.g a `requestBody` to ensure that additional properties are not allowed. For example:
+
+	```yaml
+	Pet:
+	  additionalProperties: false
+	  required:
+	    - name
+	  properties:
+	    name:
+	      type: string
+	    type:
+	      type: string
+	```
 
 **Q:** Can I use `express-openapi-validator` with `swagger-ui-express`?
 
