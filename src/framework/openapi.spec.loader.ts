@@ -1,25 +1,33 @@
 import * as _ from 'lodash';
-import OpenAPIFramework, {
+import { OpenAPIFramework } from './index';
+import {
+  OpenAPIFrameworkAPIContext,
+  OpenAPIV3,
   OpenAPIFrameworkArgs,
-  OpenAPIFrameworkConstructorArgs,
-} from './index';
-import { OpenAPIFrameworkAPIContext } from './types';
+} from './types';
 
+export interface Spec {
+  apiDoc: OpenAPIV3.Document;
+  basePaths: string[];
+  routes: RouteMetadata[];
+}
+
+export interface RouteMetadata {
+  expressRoute: string;
+  openApiRoute: string;
+  method: string;
+  pathParams: string[];
+  schema: OpenAPIV3.OperationObject;
+}
 export class OpenApiSpecLoader {
-  private opts: OpenAPIFrameworkArgs;
+  private readonly framework: OpenAPIFramework;
   constructor(opts: OpenAPIFrameworkArgs) {
-    this.opts = opts;
+    this.framework = new OpenAPIFramework(opts);
   }
 
-  load() {
-    const framework = this.createFramework(this.opts);
-    const apiDoc = framework.apiDoc || {};
-    const bps = framework.basePaths || [];
-    const basePaths = bps.reduce((acc, bp) => {
-      bp.all().forEach(path => acc.add(path));
-      return acc;
-    }, new Set<string>());
-    const routes = this.discoverRoutes(framework, basePaths);
+  public load(): Spec {
+    const { apiDoc, basePaths } = this.framework;
+    const routes = this.discoverRoutes();
     return {
       apiDoc,
       basePaths,
@@ -27,21 +35,11 @@ export class OpenApiSpecLoader {
     };
   }
 
-  private createFramework(args: OpenAPIFrameworkArgs): OpenAPIFramework {
-    const frameworkArgs: OpenAPIFrameworkConstructorArgs = {
-      featureType: 'middleware',
-      name: 'express-openapi-validator',
-      ...(args as OpenAPIFrameworkArgs),
-    };
-
-    const framework = new OpenAPIFramework(frameworkArgs);
-    return framework;
-  }
-
-  private discoverRoutes(framework: OpenAPIFramework, basePaths: Set<string>) {
-    const routes = [];
+  private discoverRoutes(): RouteMetadata[] {
+    const routes: RouteMetadata[] = [];
     const toExpressParams = this.toExpressParams;
-    framework.initialize({
+    const basePaths = this.framework.basePaths;
+    this.framework.initialize({
       visitApi(ctx: OpenAPIFrameworkAPIContext) {
         const apiDoc = ctx.getApiDoc();
         for (const bpa of basePaths) {
@@ -55,11 +53,11 @@ export class OpenApiSpecLoader {
               (schema.parameters || []).forEach(parameter =>
                 schemaParameters.add(parameter),
               );
-              ((methods as any).parameters || []).forEach(parameter =>
+              (methods.parameters || []).forEach(parameter =>
                 schemaParameters.add(parameter),
               );
               schema.parameters = Array.from(schemaParameters);
-              const pathParams = new Set();
+              const pathParams = new Set<string>();
               for (const param of schema.parameters) {
                 if (param.in === 'path') {
                   pathParams.add(param.name);
@@ -86,7 +84,7 @@ export class OpenApiSpecLoader {
     return routes;
   }
 
-  private toExpressParams(part) {
+  private toExpressParams(part: string): string {
     return part.replace(/\{([^}]+)}/g, ':$1');
   }
 }

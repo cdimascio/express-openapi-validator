@@ -28,6 +28,18 @@ describe(packageJson.name, () => {
         .post(`${app.basePath}/products/inlined`, (req, res) =>
           res.json(req.body),
         )
+        .post(`${app.basePath}/user`, (req, res) =>
+          res.json({
+            ...req.body,
+            ...(req.query.include_id ? { id: 'test_id' } : {}),
+          }),
+        )
+        .post(`${app.basePath}/user_inlined`, (req, res) =>
+          res.json({
+            ...req.body,
+            ...(req.query.include_id ? { id: 'test_id' } : {}),
+          }),
+        )
         .post(`${app.basePath}/products/nested`, (req, res) => {
           const body = req.body;
           body.id = 'test';
@@ -129,5 +141,55 @@ describe(packageJson.name, () => {
         const body = r.body;
         // id is a readonly property and should not be allowed in the request
         expect(body.message).to.contain('request.body.reviews[0].id');
+      }));
+
+  it('should pass validation if required read only properties to be missing from request ($ref)', async () =>
+    request(app)
+      .post(`${app.basePath}/user`)
+      .set('content-type', 'application/json')
+      .query({
+        include_id: true,
+      })
+      .send({
+        username: 'test',
+      })
+      .expect(200)
+      .then(r => {
+        expect(r.body)
+          .to.be.an('object')
+          .with.property('id');
+        expect(r.body).to.have.property('username');
+      }));
+
+  it('should pass validation if required read only properties to be missing from request (inlined)', async () =>
+    request(app)
+      .post(`${app.basePath}/user_inlined`)
+      .set('content-type', 'application/json')
+      .query({
+        include_id: true,
+      })
+      .send({
+        username: 'test',
+      })
+      .expect(200)
+      .then(r => {
+        expect(r.body)
+          .to.be.an('object')
+          .with.property('id');
+        expect(r.body).to.have.property('username');
+      }));
+
+  it('should fail validation if required read only properties is missing from the response', async () =>
+    request(app)
+      .post(`${app.basePath}/user`)
+      .set('content-type', 'application/json')
+      .send({
+        username: 'test',
+      })
+      .expect(500)
+      .then(r => {
+        expect(r.body.errors[0])
+          .to.have.property('message')
+          .equals("should have required property 'id'");
       }));
 });
