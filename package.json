@@ -1,6 +1,6 @@
 {
   "name": "express-openapi-validator",
-  "version": "2.17.0",
+  "version": "2.17.1",
   "description": "Automatically validate API requests and responses with OpenAPI 3 and Express.",
   "main": "dist/index.js",
   "scripts": {
@@ -60,6 +60,6 @@
     "supertest": "^4.0.2",
     "ts-node": "^8.3.0",
     "tsc": "^1.20150623.0",
-    "typescript": "^3.6.4"
+    "typescript": "^3.7.2"
   }
 }
