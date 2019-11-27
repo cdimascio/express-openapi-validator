@@ -233,6 +233,7 @@ export class RequestValidator {
         content = requestBody.content[type];
         if (content) break;
       }
+
       if (!content) {
         const msg =
           contentType.contentType === 'not_provided'
@@ -240,6 +241,38 @@ export class RequestValidator {
             : `unsupported media type ${contentType.contentType}`;
         throw validationError(415, path, msg);
       }
+
+      let bodyContentSchema =
+        requestBody.content[contentType.contentType] &&
+        requestBody.content[contentType.contentType].schema;
+      if (bodyContentSchema && '$ref' in bodyContentSchema) {
+        const objectSchema = this.ajv.getSchema(bodyContentSchema.$ref);
+        if (
+          objectSchema &&
+          objectSchema.schema &&
+          (<any>objectSchema.schema).properties
+        ) {
+          // handle readonly / required request body refs
+          // don't need to copy schema if validator gets its own copy of the api spec
+          // currently all middlware i.e. req and res validators share the spec
+          const schema = { ...(<any>objectSchema).schema };
+          Object.keys(schema.properties).forEach(prop => {
+            const propertyValue = schema.properties[prop];
+
+            const required = schema.required;
+            if (propertyValue.readOnly && required) {
+              const index = required.indexOf(prop);
+              if (index > -1) {
+                schema.required = required
+                  .slice(0, index)
+                  .concat(required.slice(index + 1));
+              }
+            }
+          });
+          return schema;
+        }
+      }
+
       return content.schema || {};
     }
     return {};
