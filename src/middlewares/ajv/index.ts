@@ -4,8 +4,6 @@ import { formats } from './formats';
 import { OpenAPIV3 } from '../../framework/types';
 import ajv = require('ajv');
 
-const TYPE_JSON = 'application/json';
-
 export function createRequestAjv(
   openApiSpec: OpenAPIV3.Document,
   options: ajv.Options = {},
@@ -91,18 +89,6 @@ function createAjv(
     Object.entries(openApiSpec.components.schemas).forEach(
       ([id, schema]: any[]) => {
         ajv.addSchema(schema, `#/components/schemas/${id}`);
-      },
-    );
-  }
-
-  if (openApiSpec.components.requestBodies) {
-    Object.entries(openApiSpec.components.requestBodies).forEach(
-      ([id, schema]: any[]) => {
-        // TODO add support for content all content types
-        ajv.addSchema(
-          schema.content[TYPE_JSON].schema,
-          `#/components/requestBodies/${id}`,
-        );
       },
     );
   }
