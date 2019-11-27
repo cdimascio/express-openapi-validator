@@ -1,7 +1,10 @@
 import { OpenApiContext } from '../framework/openapi.context';
 import { validationError } from './util';
 import { Request } from 'express';
-import { OpenApiRequest, OpenApiRequestHandler } from '../framework/types';
+import {
+  OpenApiRequest,
+  OpenApiRequestHandler,
+} from '../framework/types';
 const multer = require('multer');
 
 export function multipart(
@@ -50,7 +53,7 @@ function isValidContentType(req: Request): boolean {
 }
 
 function isMultipart(req: OpenApiRequest): boolean {
-  return req?.openapi?.schema?.requestBody?.content?.['multipart/form-data'];
+  return (<any>req?.openapi)?.schema?.requestBody?.content?.['multipart/form-data'];
 }
 
 function error(req: OpenApiRequest, err: Error) {

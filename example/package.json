@@ -11,10 +11,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.4",
-    "morgan": "^1.9.1",
-    "express-openapi-validator": "file:../"
+    "express": "^4.16.4",
+    "express-openapi-validator": "file:../",
+    "mongodb": "^3.3.5",
+    "morgan": "^1.9.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.1"
   }
 }

@@ -5,18 +5,15 @@ import { createApp } from './common/app';
 import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
+  let app = null;
+  before(async () => {
+    const apiSpec = path.join('test', 'resources', 'openapi.yaml');
+    app = await createApp({ apiSpec }, 3003);
+  });
+  after(() => {
+    (<any>app).server.close();
+  });
   describe(`GET .../pets/:id/photos`, () => {
-    let app = null;
-
-    before(async () => {
-      const apiSpec = path.join('test', 'resources', 'openapi.yaml');
-      app = await createApp({ apiSpec }, 3003);
-    });
-
-    after(() => {
-      (<any>app).server.close();
-    });
-
     it('should throw 400 when required multipart file field', async () =>
       request(app)
         .post(`${app.basePath}/pets/10/photos`)

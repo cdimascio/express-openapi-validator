@@ -4,7 +4,7 @@ import mung from './modded.express.mung';
 import { createResponseAjv } from './ajv';
 import {
   augmentAjvErrors,
-  extractContentType,
+  ContentType,
   ajvErrorsToValidatorError,
   validationError,
 } from './util';
@@ -31,7 +31,7 @@ export class ResponseValidator {
         const responses = req.openapi.schema?.responses;
         const validators = this._getOrBuildValidator(req, responses);
         const statusCode = res.statusCode;
-        const path = req.path;
+        const path = req.originalUrl;
         return this._validate({ validators, body, statusCode, path });
       }
       return body;
@@ -45,8 +45,8 @@ export class ResponseValidator {
       return this.buildValidators(responses);
     }
 
-    const contentType = extractContentType(req) ?? 'not_provided';
-    const key = `${req.method}-${req.path}-${contentType}`;
+    const contentTypeKey = ContentType.from(req).equivalents()[0] || 'not_provided';
+    const key = `${req.method}-${req.originalUrl}-${contentTypeKey}`;
 
     let validators = this.validatorsCache[key];
     if (!validators) {

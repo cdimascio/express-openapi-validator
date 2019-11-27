@@ -8,9 +8,55 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 servers:
-  - url: http://petstore.swagger.io/v1
+  - url: /v1
 
 paths:
+  /user_inlined:
+    post:
+      description: get user
+      operationId: getUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - username
+              properties:
+                id:
+                  type: string
+                  readOnly: true
+                username:
+                  type: string
+                name:
+                  type: string
+      responses:
+        '200':
+          description: user response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /user:
+    post:
+      description: get user
+      operationId: getUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: user response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
   /products:
     get:
       description: get products
@@ -65,7 +111,7 @@ paths:
                   format: date-time
                   readOnly: true
       responses:
-         '200':
+        '200':
           description: pet response
           content:
             application/json:
@@ -89,7 +135,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductNested'
-
 
 components:
   schemas:
@@ -136,4 +181,18 @@ components:
           readOnly: true
         rating:
           type: integer
-        
+
+    User:
+      description: default
+      type: object
+      required:
+        - id
+        - username
+      properties:
+        id:
+          type: string
+          readOnly: true
+        username:
+          type: string
+        name:
+          type: string

@@ -2,6 +2,7 @@ import {
   OpenAPIV3,
   OpenApiRequest,
   SecurityHandlers,
+  OpenApiRequestMetadata,
 } from '../framework/types';
 import { validationError } from './util';
 import { OpenApiContext } from '../framework/openapi.context';
@@ -167,9 +168,10 @@ class AuthValidator {
   private path: string;
   private scopes: string[];
   constructor(req: OpenApiRequest, scheme, scopes: string[] = []) {
+    const openapi = <OpenApiRequestMetadata>req.openapi;
     this.req = req;
     this.scheme = scheme;
-    this.path = req.openapi.openApiRoute;
+    this.path = openapi.openApiRoute;
     this.scopes = scopes;
   }
 
