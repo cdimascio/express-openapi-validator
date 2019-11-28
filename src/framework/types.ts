@@ -27,6 +27,7 @@ export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
   validateResponses?: boolean | ValidateResponseOpts;
   validateRequests?: boolean | ValidateRequestOpts;
+  ignorePaths?: RegExp;
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
   unknownFormats?: true | string[] | 'ignore';
