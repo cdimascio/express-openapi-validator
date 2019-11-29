@@ -27,7 +27,6 @@
   "license": "MIT",
   "dependencies": {
     "ajv": "^6.10.2",
-    "deasync": "^0.1.16",
     "js-yaml": "^3.13.1",
     "json-schema-ref-parser": "^7.1.2",
     "lodash": "^4.17.15",
