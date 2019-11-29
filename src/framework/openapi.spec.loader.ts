@@ -32,15 +32,7 @@ export class OpenApiSpecLoader {
   }
 
   public async load(): Promise<Spec> {
-    const routes = await this.discoverRoutes();
-    return routes;
-    // const { apiDoc, basePaths } = this.framework;
-    // const routes = this.discoverRoutes();
-    // return {
-    //   apiDoc,
-    //   basePaths,
-    //   routes,
-    // };
+    return this.discoverRoutes();
   }
 
   private async discoverRoutes(): Promise<DiscoveredRoutes> {

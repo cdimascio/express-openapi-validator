@@ -40,12 +40,6 @@ export class OpenApiValidator {
     this.options = options;
   }
 
-  // public async load(): Promise<Spec> {
-  //   return new OpenApiSpecLoader({
-  //     apiDoc: this.options.apiSpec,
-  //   }).load();
-  // }
-
   public async install(app: Application): Promise<void> {
     const spec = await new OpenApiSpecLoader({
       apiDoc: this.options.apiSpec,
