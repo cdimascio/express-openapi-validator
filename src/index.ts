@@ -40,7 +40,7 @@ export class OpenApiValidator {
     this.options = options;
   }
 
-  public async install(app: Application): Promise<void> {
+  public async install(app: Application): Promise<Application> {
     const spec = await new OpenApiSpecLoader({
       apiDoc: this.options.apiSpec,
     }).load();
@@ -62,6 +62,7 @@ export class OpenApiValidator {
     if (this.options.validateResponses) {
       this.installResponseValidationMiddleware(app, context);
     }
+    return app;
   }
 
   private installPathParams(app: Application, context: OpenApiContext): void {

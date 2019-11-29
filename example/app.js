@@ -31,7 +31,7 @@ new OpenApiValidator({
   // },
 })
   .install(app)
-  .then(() => {
+  .then(app => {
     let id = 3;
     // 3. Add routes
     app.get('/v1/pets', function(req, res, next) {
