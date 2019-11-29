@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as jsYaml from 'js-yaml';
 import * as path from 'path';
-import { $RefParser } from './json.ref.schema';
+import * as $RefParser from 'json-schema-ref-parser';
 import { OpenAPISchemaValidator } from './openapi.schema.validator';
 import { BasePath } from './base.path';
 import {
