@@ -6,37 +6,40 @@ import { OpenAPISchemaValidator } from './openapi.schema.validator';
 import { BasePath } from './base.path';
 import {
   OpenAPIFrameworkArgs,
+  OpenAPIFrameworkInit,
   OpenAPIFrameworkVisitor,
   OpenAPIV3,
 } from './types';
 
 export class OpenAPIFramework {
-  public readonly apiDoc: OpenAPIV3.Document;
-  public readonly basePaths: string[];
-
-  private readonly validateApiDoc: boolean;
-  private readonly validator: OpenAPISchemaValidator;
-  private readonly basePathObs: BasePath[];
+  private readonly args: OpenAPIFrameworkArgs;
   private readonly loggingPrefix: string = 'openapi.validator: ';
 
   constructor(args: OpenAPIFrameworkArgs) {
-    this.apiDoc = this.copy(this.loadSpec(args.apiDoc));
-    this.basePathObs = this.getBasePathsFromServers(this.apiDoc.servers);
-    this.basePaths = Array.from(
-      this.basePathObs.reduce((acc, bp) => {
+    this.args = args;
+  }
+
+  public async initialize(
+    visitor: OpenAPIFrameworkVisitor,
+  ): Promise<OpenAPIFrameworkInit> {
+    const args = this.args;
+    const apiDoc = await this.copy(await this.loadSpec(args.apiDoc));
+    const basePathObs = this.getBasePathsFromServers(apiDoc.servers);
+    const basePaths = Array.from(
+      basePathObs.reduce((acc, bp) => {
         bp.all().forEach(path => acc.add(path));
         return acc;
       }, new Set<string>()),
     );
-    this.validateApiDoc =
+    const validateApiDoc =
       'validateApiDoc' in args ? !!args.validateApiDoc : true;
-    this.validator = new OpenAPISchemaValidator({
-      version: this.apiDoc.openapi,
+    const validator = new OpenAPISchemaValidator({
+      version: apiDoc.openapi,
       // extensions: this.apiDoc[`x-${args.name}-schema-extension`],
     });
 
-    if (this.validateApiDoc) {
-      const apiDocValidation = this.validator.validate(this.apiDoc);
+    if (validateApiDoc) {
+      const apiDocValidation = validator.validate(apiDoc);
 
       if (apiDocValidation.errors.length) {
         console.error(`${this.loggingPrefix}Validating schema`);
@@ -49,25 +52,26 @@ export class OpenAPIFramework {
         );
       }
     }
-  }
-
-  public initialize(visitor: OpenAPIFrameworkVisitor): void {
     const getApiDoc = () => {
-      return this.copy(this.apiDoc);
+      return this.copy(apiDoc);
     };
 
-    this.sortApiDocTags(this.apiDoc);
+    this.sortApiDocTags(apiDoc);
 
     if (visitor.visitApi) {
-      const basePaths = this.basePathObs;
+      // const basePaths = basePathObs;
       visitor.visitApi({
         basePaths,
         getApiDoc,
       });
     }
+    return {
+      apiDoc,
+      basePaths,
+    };
   }
 
-  private loadSpec(filePath: string | object): OpenAPIV3.Document {
+  private loadSpec(filePath: string | object): Promise<OpenAPIV3.Document> {
     if (typeof filePath === 'string') {
       const origCwd = process.cwd();
       const specDir = path.resolve(origCwd, path.dirname(filePath));
