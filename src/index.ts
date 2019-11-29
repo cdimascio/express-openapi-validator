@@ -40,29 +40,51 @@ export class OpenApiValidator {
     this.options = options;
   }
 
-  public async install(app: Application): Promise<Application> {
-    const spec = await new OpenApiSpecLoader({
+  public install(
+    app: Application,
+    callback: (error: Error, app: Application) => void,
+  ): void;
+  public install(app: Application): Promise<Application>;
+  public install(
+    app: Application,
+    callback?: (error: Error, app: Application) => void,
+  ): Promise<Application> | void {
+    const useCallback = callback && typeof callback === 'function';
+    const p = new OpenApiSpecLoader({
       apiDoc: this.options.apiSpec,
-    }).load();
-    const context = new OpenApiContext(spec, this.options.ignorePaths);
+    })
+      .load()
+      .then(spec => {
+        const context = new OpenApiContext(spec, this.options.ignorePaths);
 
-    this.installPathParams(app, context);
-    this.installMetadataMiddleware(app, context);
-    this.installMultipartMiddleware(app, context);
+        this.installPathParams(app, context);
+        this.installMetadataMiddleware(app, context);
+        this.installMultipartMiddleware(app, context);
 
-    const components = context.apiDoc.components;
-    if (components && components.securitySchemes) {
-      this.installSecurityMiddleware(app, context);
+        const components = context.apiDoc.components;
+        if (components && components.securitySchemes) {
+          this.installSecurityMiddleware(app, context);
+        }
+
+        if (this.options.validateRequests) {
+          this.installRequestValidationMiddleware(app, context);
+        }
+
+        if (this.options.validateResponses) {
+          this.installResponseValidationMiddleware(app, context);
+        }
+        if (useCallback) {
+          callback(undefined, app);
+        }
+        return app;
+      });
+    if (useCallback) {
+      p.catch(e => {
+        callback(e, undefined);
+      });
+      return;
     }
-
-    if (this.options.validateRequests) {
-      this.installRequestValidationMiddleware(app, context);
-    }
-
-    if (this.options.validateResponses) {
-      this.installResponseValidationMiddleware(app, context);
-    }
-    return app;
+    return p;
   }
 
   private installPathParams(app: Application, context: OpenApiContext): void {
