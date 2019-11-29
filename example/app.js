@@ -9,18 +9,18 @@ const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
 const app = express();
 
 // 1. Install bodyParsers for the request types your API will support
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.text());
 app.use(bodyParser.json());
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const spec = path.join(__dirname, 'openapi.yaml');
+const spec = path.join(__dirname, 'example.yaml');
 app.use('/spec', express.static(spec));
+
+let id = 3;
 
 // 2. Install the OpenApiValidator on your express app
 new OpenApiValidator({
@@ -38,7 +38,6 @@ new OpenApiValidator({
   // Use Promise
   .install(app)
   .then(app => {
-    let id = 3;
     // 3. Add routes
     app.get('/v1/pets', function(req, res, next) {
       res.json(pets);
@@ -81,7 +80,6 @@ new OpenApiValidator({
     // 4. Create a custom error handler
     app.use((err, req, res, next) => {
       // format errors
-      console.error(err);
       res.status(err.status || 500).json({
         message: err.message,
         errors: err.errors,
