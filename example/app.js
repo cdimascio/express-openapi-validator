@@ -30,12 +30,6 @@ new OpenApiValidator({
   //   ApiKeyAuth: (req, scopes, schema) => true,
   // },
 })
-  // Use Callback
-  // .install(app, (err, app) => {
-  //   if (err) {
-  //     return console.error(err);
-  // }
-  // Use Promise
   .install(app)
   .then(app => {
     // 3. Add routes
