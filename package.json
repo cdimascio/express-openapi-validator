@@ -35,7 +35,7 @@
     "ono": "^5.0.1",
     "path-to-regexp": "^6.0.0"
   },
-  "optionalDependencies": {
+  "peerDependencies": {
     "deasync": "^0.1.16"
   },
   "devDependencies": {
@@ -52,6 +52,7 @@
     "codacy-coverage": "^3.4.0",
     "cookie-parser": "^1.4.4",
     "coveralls": "^3.0.5",
+    "deasync": "^0.1.16",
     "express": "^4.17.1",
     "mocha": "^6.2.0",
     "morgan": "^1.9.1",
