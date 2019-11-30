@@ -8,7 +8,7 @@
 <img src="https://raw.githubusercontent.com/cdimascio/express-openapi-validator/master/assets/express-openapi-validator.png" width="500">
 </p>
 
-[express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) is an unopinionated library that integrates with new and existing API applications. express-openapi-validator lets you write code the way you want; it does not impose any coding convention or project layout. Simply, install the validator onto your express app, point it to your OpenAPI 3 specification, then define and implement routes the way you prefer. See an [example](#example-express-api-server).
+[🦋express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) is an unopinionated library that integrates with new and existing API applications. express-openapi-validator lets you write code the way you want; it does not impose any coding convention or project layout. Simply, install the validator onto your express app, point it to your OpenAPI 3 specification, then define and implement routes the way you prefer. See an [example](#example-express-api-server).
 
 **Features:**
 
@@ -27,13 +27,9 @@
 npm i express-openapi-validator
 ```
 
-To use [synchronous mode](#Synchronous_/_Blocking):
-
-```shell
-npm i express-openapi-validator deasync
-```
-
 ## Usage
+
+🦋express-openapi-validator supports promises, async/await, and callbacks. See the [example](#example-express-api-server) below:
 
 #### Async/Await
 
@@ -59,77 +55,8 @@ app.use((err, req, res, next) => {
 });
 ```
 
-#### Promise
+_**Note:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
 
-```javascript
-new OpenApiValidator({
-  apiSpec: './test/resources/openapi.yaml',
-  validateRequests: true, // (default)
-  validateResponses: true, // false by default
-})
-  .install(app)
-  .then(app => {
-    // define your routes
-
-    // register an error handler
-    app.use((err, req, res, next) => {
-      // format error
-      res.status(err.status || 500).json({
-        message: err.message,
-        errors: err.errors,
-      });
-    });
-  });
-```
-
-#### Callback
-
-```javascript
-new OpenApiValidator({
-  apiSpec: './test/resources/openapi.yaml',
-  validateRequests: true, // (default)
-  validateResponses: true, // false by default
-}).install(app, (err, app) => {
-  // define your routes
-
-  // register an error handler
-  app.use((err, req, res, next) => {
-    // format error
-    res.status(err.status || 500).json({
-      message: err.message,
-      errors: err.errors,
-    });
-  });
-});
-```
-
-#### Synchronous / Blocking
-
-_Note you must install `deasync` to use this mode_
-
-1. Install the openapi validator
-
-```javascript
-new OpenApiValidator({
-  apiSpec: './test/resources/openapi.yaml',
-  validateRequests: true, // (default)
-  validateResponses: true, // false by default
-}).install(app);
-```
-
-2. Register an error handler
-
-```javascript
-app.use((err, req, res, next) => {
-  // format error
-  res.status(err.status || 500).json({
-    message: err.message,
-    errors: err.errors,
-  });
-});
-```
-
-_**Note:** Ensure express is configured with all relevant body parsers. body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
 
 ## Usage (options)
 
@@ -378,6 +305,92 @@ Errors in response validation return `500`, not of `400`
 ```
 
 ### _...and much more. Try it out!_
+
+## Other Usage Options
+
+In addition to async/await, express-openapi-validator may be used with promises, callbacks, or synchronously.
+
+
+#### Promise
+
+```javascript
+new OpenApiValidator({
+  apiSpec: './test/resources/openapi.yaml',
+  validateRequests: true, // (default)
+  validateResponses: true, // false by default
+})
+  .install(app)
+  .then(app => {
+    // define your routes
+
+    // register an error handler
+    app.use((err, req, res, next) => {
+      res.status(err.status || 500).json({
+        message: err.message,
+        errors: err.errors,
+      });
+    });
+  });
+```
+
+#### Callback
+
+```javascript
+new OpenApiValidator({
+  apiSpec: './test/resources/openapi.yaml',
+  validateRequests: true, // (default)
+  validateResponses: true, // false by default
+}).install(app, (err, app) => {
+  // define your routes
+
+  // register an error handler
+  app.use((err, req, res, next) => {
+    res.status(err.status || 500).json({
+      message: err.message,
+      errors: err.errors,
+    });
+  });
+});
+```
+
+#### Synchronous
+
+_Note syncrhonous mode requires the `deasync` module._
+
+**Q:** What does it mean to use the validator 'synchronously'? 
+
+**A:** The validator's initial parse and `$ref` resolution of the OpenAPI 3 spec executed synchronously. Effectively, this means that the `install` method is blocking.
+
+
+**Install**
+
+```shell
+npm i express-openapi-validator deasync
+```
+
+
+1. Install the openapi validator
+
+```javascript
+new OpenApiValidator({
+  apiSpec: './test/resources/openapi.yaml',
+  validateRequests: true, // (default)
+  validateResponses: true, // false by default
+}).installSync(app);
+```
+
+2. Register an error handler
+
+```javascript
+app.use((err, req, res, next) => {
+  // format error
+  res.status(err.status || 500).json({
+    message: err.message,
+    errors: err.errors,
+  });
+});
+```
+
 
 ## Advanced Usage
 
@@ -629,6 +642,7 @@ that are _not_ under the base URL—such as pages—will not be validated.
 | `https://api.example.com/index.html` | no; not under the base URL |
 
 _**Note** that in some cases, it may be necessary to skip validation for paths under the base url. To do this, use the `ignorePaths` option._
+
 
 ## FAQ
 
