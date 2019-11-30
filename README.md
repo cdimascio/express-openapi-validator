@@ -29,7 +29,7 @@ npm i express-openapi-validator
 
 ## Usage
 
-🦋express-openapi-validator supports promises, async/await, and callbacks. See the [example](#example-express-api-server) below:
+🦋express-openapi-validator supports [promises](#promise), [async/await](#asyncawait), and [callbacks](#callback). It can also be used [synchronously](#synchronous)
 
 #### Async/Await
 
@@ -56,7 +56,6 @@ app.use((err, req, res, next) => {
 ```
 
 _**Note:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
-
 
 ## Usage (options)
 
@@ -310,7 +309,6 @@ Errors in response validation return `500`, not of `400`
 
 In addition to async/await, express-openapi-validator may be used with promises, callbacks, or synchronously.
 
-
 #### Promise
 
 ```javascript
@@ -357,17 +355,15 @@ new OpenApiValidator({
 
 _Note syncrhonous mode requires the `deasync` module._
 
-**Q:** What does it mean to use the validator 'synchronously'? 
+**Q:** What does it mean to use the validator 'synchronously'?
 
 **A:** The validator's initial parse and `$ref` resolution of the OpenAPI 3 spec executed synchronously. Effectively, this means that the `install` method is blocking.
-
 
 **Install**
 
 ```shell
 npm i express-openapi-validator deasync
 ```
-
 
 1. Install the openapi validator
 
@@ -390,7 +386,6 @@ app.use((err, req, res, next) => {
   });
 });
 ```
-
 
 ## Advanced Usage
 
@@ -642,7 +637,6 @@ that are _not_ under the base URL—such as pages—will not be validated.
 | `https://api.example.com/index.html` | no; not under the base URL |
 
 _**Note** that in some cases, it may be necessary to skip validation for paths under the base url. To do this, use the `ignorePaths` option._
-
 
 ## FAQ
 
