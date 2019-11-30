@@ -15,7 +15,6 @@ import {
 
 export class OpenApiValidator {
   private readonly options: OpenApiValidatorOpts;
-  // private readonly context: OpenApiContext;
 
   constructor(options: OpenApiValidatorOpts) {
     this.validateOptions(options);
@@ -40,51 +39,57 @@ export class OpenApiValidator {
     this.options = options;
   }
 
+  public installSync(app: Application): void {
+    const spec = new OpenApiSpecLoader({
+      apiDoc: this.options.apiSpec,
+    }).loadSync();
+    this.installMiddleware(app, spec);
+  }
+
+  public async install(app: Application): Promise<void>;
   public install(
     app: Application,
     callback: (error: Error, app: Application) => void,
   ): void;
-  public install(app: Application): Promise<Application>;
   public install(
     app: Application,
     callback?: (error: Error, app: Application) => void,
-  ): Promise<Application> | void {
-    const useCallback = callback && typeof callback === 'function';
+  ): Promise<void> | void {
     const p = new OpenApiSpecLoader({
       apiDoc: this.options.apiSpec,
     })
       .load()
-      .then(spec => {
-        const context = new OpenApiContext(spec, this.options.ignorePaths);
+      .then(spec => this.installMiddleware(app, spec));
 
-        this.installPathParams(app, context);
-        this.installMetadataMiddleware(app, context);
-        this.installMultipartMiddleware(app, context);
-
-        const components = context.apiDoc.components;
-        if (components && components.securitySchemes) {
-          this.installSecurityMiddleware(app, context);
-        }
-
-        if (this.options.validateRequests) {
-          this.installRequestValidationMiddleware(app, context);
-        }
-
-        if (this.options.validateResponses) {
-          this.installResponseValidationMiddleware(app, context);
-        }
-        if (useCallback) {
-          callback(undefined, app);
-        }
-        return app;
-      });
+    const useCallback = callback && typeof callback === 'function';
     if (useCallback) {
       p.catch(e => {
         callback(e, undefined);
       });
-      return;
+    } else {
+      return p;
     }
-    return p;
+  }
+
+  private installMiddleware(app: Application, spec: Spec): void {
+    const context = new OpenApiContext(spec, this.options.ignorePaths);
+
+    this.installPathParams(app, context);
+    this.installMetadataMiddleware(app, context);
+    this.installMultipartMiddleware(app, context);
+
+    const components = context.apiDoc.components;
+    if (components && components.securitySchemes) {
+      this.installSecurityMiddleware(app, context);
+    }
+
+    if (this.options.validateRequests) {
+      this.installRequestValidationMiddleware(app, context);
+    }
+
+    if (this.options.validateResponses) {
+      this.installResponseValidationMiddleware(app, context);
+    }
   }
 
   private installPathParams(app: Application, context: OpenApiContext): void {
