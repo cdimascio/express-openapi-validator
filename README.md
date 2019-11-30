@@ -340,7 +340,7 @@ new OpenApiValidator({
   apiSpec: './test/resources/openapi.yaml',
   validateRequests: true, // (default)
   validateResponses: true, // false by default
-}).install(app, (err, app) => {
+}).install(app, (err, _) => {
   // define your routes
 
   // register an error handler
