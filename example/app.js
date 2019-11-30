@@ -31,7 +31,7 @@ new OpenApiValidator({
   // },
 })
   .install(app)
-  .then(app => {
+  .then(() => {
     // 3. Add routes
     app.get('/v1/pets', function(req, res, next) {
       res.json(pets);
