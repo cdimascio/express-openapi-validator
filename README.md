@@ -108,7 +108,7 @@ new OpenApiValidator({
   // unknownFormats: ['my-format'] // <-- to provide custom formats
 })
   .install(app)
-  .then(app => {
+  .then(() => {
     // 5. Define routes using Express
     app.get('/v1/pets', function(req, res, next) {
       res.json([{ id: 1, name: 'max' }, { id: 2, name: 'mini' }]);
