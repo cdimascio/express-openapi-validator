@@ -16,5 +16,8 @@
     "cookie-parser": "^1.4.4",
     "morgan": "^1.9.1",
     "express-openapi-validator": "file:../"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.1"
   }
 }

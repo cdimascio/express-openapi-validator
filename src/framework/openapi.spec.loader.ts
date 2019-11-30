@@ -19,29 +19,59 @@ export interface RouteMetadata {
   pathParams: string[];
   schema: OpenAPIV3.OperationObject;
 }
+
+interface DiscoveredRoutes {
+  apiDoc: OpenAPIV3.Document;
+  basePaths: string[];
+  routes: RouteMetadata[];
+}
 export class OpenApiSpecLoader {
   private readonly framework: OpenAPIFramework;
   constructor(opts: OpenAPIFrameworkArgs) {
     this.framework = new OpenAPIFramework(opts);
   }
 
-  public load(): Spec {
-    const { apiDoc, basePaths } = this.framework;
-    const routes = this.discoverRoutes();
-    return {
-      apiDoc,
-      basePaths,
-      routes,
-    };
+  public async load(): Promise<Spec> {
+    return this.discoverRoutes();
   }
 
-  private discoverRoutes(): RouteMetadata[] {
+  public loadSync(): Spec {
+    const discoverRoutesSync = () => {
+      let savedError,
+        savedResult: Spec,
+        done = false;
+      const discoverRoutes = require('util').callbackify(
+        this.discoverRoutes.bind(this),
+      );
+      // const discoverRoutes: any = this.discoverRoutes.bind(this);
+      discoverRoutes((error, result) => {
+        savedError = error;
+        savedResult = result;
+        done = true;
+      });
+
+      // Deasync should be used here any nowhere else!
+      // it is an optional peer dep
+      // Only necessary for those looking to use a blocking 
+      // intial openapi parse to resolve json-schema-refs
+      require('deasync').loopWhile(() => !done);
+
+      if (savedError) throw savedError;
+      return savedResult;
+    };
+    return discoverRoutesSync();
+  }
+
+  private async discoverRoutes(): Promise<DiscoveredRoutes> {
     const routes: RouteMetadata[] = [];
     const toExpressParams = this.toExpressParams;
-    const basePaths = this.framework.basePaths;
-    this.framework.initialize({
+    // const basePaths = this.framework.basePaths;
+    // let apiDoc: OpenAPIV3.Document = null;
+    // let basePaths: string[] = null;
+    const { apiDoc, basePaths } = await this.framework.initialize({
       visitApi(ctx: OpenAPIFrameworkAPIContext) {
         const apiDoc = ctx.getApiDoc();
+        const basePaths = ctx.basePaths;
         for (const bpa of basePaths) {
           const bp = bpa.replace(/\/$/, '');
           for (const [path, methods] of Object.entries(apiDoc.paths)) {
@@ -81,7 +111,11 @@ export class OpenApiSpecLoader {
         }
       },
     });
-    return routes;
+    return {
+      apiDoc,
+      basePaths,
+      routes,
+    };
   }
 
   private toExpressParams(part: string): string {

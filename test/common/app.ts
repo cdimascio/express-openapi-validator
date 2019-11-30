@@ -25,7 +25,7 @@ export async function createApp(
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
 
-  new OpenApiValidator(opts).install(app);
+  await new OpenApiValidator(opts).install(app)
 
   if (useRoutes) {
     // register common routes
