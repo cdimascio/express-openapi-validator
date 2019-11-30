@@ -1,6 +1,7 @@
 import { OpenAPIV3 } from './types';
 import { Spec, RouteMetadata } from './openapi.spec.loader';
 
+
 export interface RoutePair {
   expressRoute: string;
   openApiRoute: string;
