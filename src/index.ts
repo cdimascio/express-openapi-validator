@@ -47,13 +47,10 @@ export class OpenApiValidator {
   }
 
   public async install(app: Application): Promise<void>;
+  public install(app: Application, callback: (error: Error) => void): void;
   public install(
     app: Application,
-    callback: (error: Error, app: Application) => void,
-  ): void;
-  public install(
-    app: Application,
-    callback?: (error: Error, app: Application) => void,
+    callback?: (error: Error) => void,
   ): Promise<void> | void {
     const p = new OpenApiSpecLoader({
       apiDoc: this.options.apiSpec,
@@ -64,7 +61,7 @@ export class OpenApiValidator {
     const useCallback = callback && typeof callback === 'function';
     if (useCallback) {
       p.catch(e => {
-        callback(e, undefined);
+        callback(e);
       });
     } else {
       return p;
