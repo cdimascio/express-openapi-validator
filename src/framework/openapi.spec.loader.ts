@@ -50,6 +50,10 @@ export class OpenApiSpecLoader {
         done = true;
       });
 
+      // Deasync should be used here any nowhere else!
+      // it is an optional peer dep
+      // Only necessary for those looking to use a blocking 
+      // intial openapi parse to resolve json-schema-refs
       require('deasync').loopWhile(() => !done);
 
       if (savedError) throw savedError;
