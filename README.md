@@ -309,6 +309,8 @@ Errors in response validation return `500`, not of `400`
 
 In addition to async/await, express-openapi-validator may be used with promises, callbacks, or synchronously.
 
+_**Note:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
+
 #### Promise
 
 ```javascript
@@ -353,11 +355,11 @@ new OpenApiValidator({
 
 #### Synchronous
 
-_Note syncrhonous mode requires the [`deasync`](https://github.com/abbr/deasync) module._
+_Note syncrhonous mode requires the installation of the [`deasync`](https://github.com/abbr/deasync) module. Some folks have experience issues with deasync and some versions of node_
 
 **Q:** What does it mean to use the validator 'synchronously'?
 
-**A:** The validator's initial parse and `$ref` resolution of the OpenAPI 3 spec executed synchronously. Effectively, this means that the `install` method is blocking.
+**A:** The validator's initial parse and `$ref` resolution of the OpenAPI 3 spec executed synchronously. Effectively, this means that the `install` method is blocking. 
 
 **Install**
 
