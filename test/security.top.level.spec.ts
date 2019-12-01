@@ -5,7 +5,8 @@ import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
 
-// NOTE/TODO: These tests modify eovConf.securityHandlers
+// TODO:
+// NOTE: These tests modify eovConf.securityHandlers
 // Thus test execution order matters :-(
 describe(packageJson.name, () => {
   let app = null;
