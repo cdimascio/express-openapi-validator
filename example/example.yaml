@@ -60,7 +60,7 @@ paths:
                 $ref: '#/components/schemas/Error'
 
     post:
-      description: Creates a new pet in the store.  Duplicates are allowed
+      description: Creates a new pet in the store.
       operationId: addPet
       security:
         - ApiKeyAuth: []
@@ -70,7 +70,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewPet'
+              $ref: '#/components/schemas/Pet'
       responses:
         '200':
           description: pet response
@@ -170,26 +170,21 @@ paths:
 
 components:
   schemas:
-    NewPet:
+    Pet:
       required:
+        - id
         - name
+        - type
       properties:
+        id:
+          readOnly: true
+          type: number
         name:
           type: string
         tag:
           type: string
         type:
           $ref: '#/components/schemas/PetType'
-
-    Pet:
-      allOf:
-        - $ref: '#/components/schemas/NewPet'
-        - required:
-            - id
-          properties:
-            id:
-              type: integer
-              format: int64
 
     PetType:
       type: string
