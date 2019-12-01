@@ -108,7 +108,7 @@ new OpenApiValidator({
   // unknownFormats: ['my-format'] // <-- to provide custom formats
 })
   .install(app)
-  .then(app => {
+  .then(() => {
     // 5. Define routes using Express
     app.get('/v1/pets', function(req, res, next) {
       res.json([{ id: 1, name: 'max' }, { id: 2, name: 'mini' }]);
@@ -309,6 +309,8 @@ Errors in response validation return `500`, not of `400`
 
 In addition to async/await, express-openapi-validator may be used with promises, callbacks, or synchronously.
 
+_**Note:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
+
 #### Promise
 
 ```javascript
@@ -338,7 +340,7 @@ new OpenApiValidator({
   apiSpec: './test/resources/openapi.yaml',
   validateRequests: true, // (default)
   validateResponses: true, // false by default
-}).install(app, (err, app) => {
+}).install(app, (err, _) => {
   // define your routes
 
   // register an error handler
@@ -353,7 +355,7 @@ new OpenApiValidator({
 
 #### Synchronous
 
-_Note syncrhonous mode requires the [`deasync`](https://github.com/abbr/deasync) module._
+_Note syncrhonous mode requires the installation of the [`deasync`](https://github.com/abbr/deasync) module. Some folks have experienced issues using deasync with some versions of node_
 
 **Q:** What does it mean to use the validator 'synchronously'?
 
