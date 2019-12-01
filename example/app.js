@@ -4,8 +4,8 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const http = require('http');
-const pets = require('./pets.json');
-const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
+const { pets } = require('./pets');
+const { OpenApiValidator } = require('express-openapi-validator');
 const app = express();
 
 // 1. Install bodyParsers for the request types your API will support
@@ -20,8 +20,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 const spec = path.join(__dirname, 'example.yaml');
 app.use('/spec', express.static(spec));
 
-let id = 3;
-
 // 2. Install the OpenApiValidator on your express app
 new OpenApiValidator({
   apiSpec: './example.yaml',
@@ -34,22 +32,17 @@ new OpenApiValidator({
   .then(() => {
     // 3. Add routes
     app.get('/v1/pets', function(req, res, next) {
-      res.json(pets);
+      res.json(pets.findAll(req.query));
     });
 
     app.post('/v1/pets', function(req, res, next) {
-      res.json({ id: id++, ...req.body });
+      res.json(pets.add({ ...req.body }));
     });
 
     app.get('/v1/pets/:id', function(req, res, next) {
-      const id = req.params.id;
-      const r = pets.filter(p => p.id === id);
-      if (id === 99) {
-        // return a response that does not match the spec
-        return res.json({ bad_format: 'bad format' });
-      }
-      return r.length > 0
-        ? res.json(r)
+      const pet = pets.findById(req.params.id);
+      return pet
+        ? res.json(pet)
         : res.status(404).json({ message: 'not found', errors: [] });
     });
 
