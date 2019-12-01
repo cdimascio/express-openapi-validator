@@ -20,7 +20,7 @@ import { HandleFunction } from 'connect';
 const TYPE_JSON = 'application/json';
 
 export class RequestValidator {
-  private _middlewareCache;
+  private _middlewareCache: { string?: (string) => HandleFunction } = {};
   private _apiDocs: OpenAPIV3.Document;
   private ajv: Ajv;
   private _requestOpts: ValidateRequestOpts = {};
@@ -84,7 +84,7 @@ export class RequestValidator {
   ): HandleFunction {
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
 
-    let usedSecuritySchema = [];
+    let usedSecuritySchema: OpenAPIV3.SecurityRequirementObject[] = [];
     if (
       pathSchema.hasOwnProperty('security') &&
       pathSchema.security.length > 0
@@ -206,7 +206,11 @@ export class RequestValidator {
     };
   }
 
-  private rejectUnknownQueryParams(query, schema, whiteList = []) {
+  private rejectUnknownQueryParams(
+    query,
+    schema,
+    whiteList: string[] = [],
+  ): void {
     if (!schema.properties) return;
     const knownQueryParams = new Set(Object.keys(schema.properties));
     whiteList.forEach(item => knownQueryParams.add(item));
@@ -226,7 +230,7 @@ export class RequestValidator {
     path: string,
     contentType: ContentType,
     requestBody: OpenAPIV3.RequestBodyObject,
-  ) {
+  ): object {
     if (requestBody.content) {
       let content = null;
       for (const type of contentType.equivalents()) {
@@ -287,7 +291,10 @@ export class RequestValidator {
     }
   }
 
-  private getSecurityQueryParams(usedSecuritySchema, securitySchema) {
+  private getSecurityQueryParams(
+    usedSecuritySchema: OpenAPIV3.SecurityRequirementObject[],
+    securitySchema,
+  ): string[] {
     return usedSecuritySchema && securitySchema
       ? usedSecuritySchema
           .filter(obj => Object.entries(obj).length !== 0)
@@ -300,7 +307,7 @@ export class RequestValidator {
       : [];
   }
 
-  private parametersToSchema(path, parameters = []) {
+  private parametersToSchema(path: string, parameters = []) {
     const schema = { query: {}, headers: {}, params: {}, cookies: {} };
     const reqFields = {
       query: 'query',
