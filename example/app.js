@@ -6,7 +6,10 @@ const logger = require('morgan');
 const http = require('http');
 const { pets } = require('./pets');
 const { OpenApiValidator } = require('express-openapi-validator');
+
+const port = 3000;
 const app = express();
+const apiSpec = path.join(__dirname, 'api.yaml');
 
 // 1. Install bodyParsers for the request types your API will support
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -17,15 +20,14 @@ app.use(logger('dev'));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const spec = path.join(__dirname, 'example.yaml');
-app.use('/spec', express.static(spec));
+app.use('/spec', express.static(apiSpec));
 
 // 2. Install the OpenApiValidator on your express app
 new OpenApiValidator({
-  apiSpec: './example.yaml',
+  apiSpec,
   validateResponses: true,
   // securityHandlers: {
-  //   ApiKeyAuth: (req, scopes, schema) => true,
+  //   ApiKeyAuth: (req, scopes, schema) => { ... },
   // },
 })
   .install(app)
@@ -43,7 +45,7 @@ new OpenApiValidator({
       const pet = pets.findById(req.params.id);
       return pet
         ? res.json(pet)
-        : res.status(404).json({ message: 'not found', errors: [] });
+        : res.status(404).json({ message: 'not found' });
     });
 
     // 3a. Add a route upload file(s)
@@ -73,8 +75,8 @@ new OpenApiValidator({
       });
     });
 
-    const server = http.createServer(app);
-    server.listen(3000);
-    console.log('Listening on port 3000');
+    http.createServer(app).listen(port);
+    console.log(`Listening on port ${port}`);
   });
+
 module.exports = app;
