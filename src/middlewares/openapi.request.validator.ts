@@ -7,7 +7,7 @@ import {
   augmentAjvErrors,
 } from './util';
 import ono from 'ono';
-import { NextFunction, Response } from 'express';
+import { NextFunction, RequestHandler, Response } from 'express';
 import {
   OpenAPIV3,
   OpenApiRequest,
@@ -15,12 +15,11 @@ import {
   ValidateRequestOpts,
   OpenApiRequestMetadata,
 } from '../framework/types';
-import { HandleFunction } from 'connect';
 
 const TYPE_JSON = 'application/json';
 
 export class RequestValidator {
-  private _middlewareCache: { string?: (string) => HandleFunction } = {};
+  private _middlewareCache: { [key: string]: RequestHandler } = {};
   private _apiDocs: OpenAPIV3.Document;
   private ajv: Ajv;
   private _requestOpts: ValidateRequestOpts = {};
@@ -81,7 +80,7 @@ export class RequestValidator {
     path: string,
     pathSchema: OpenAPIV3.OperationObject,
     contentType: ContentType,
-  ): HandleFunction {
+  ): RequestHandler {
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
 
     let usedSecuritySchema: OpenAPIV3.SecurityRequirementObject[] = [];
