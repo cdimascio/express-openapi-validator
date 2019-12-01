@@ -93,11 +93,15 @@ describe(packageJson.name, () => {
       .query({ param1: 'anotherTest' })
       .expect(200));
 
-  it('should return 200 if apikey exist as query param with no query parmeter in the request but in the spec', async () =>
-    request(app)
-      .get(`${basePath}/api_query_keys`)
-      .query({ APIKey: 'test' })
-      .expect(200));
+  it(
+    'should return 200 if apikey exist as query param with no query parmeter ' +
+      'in the request but in the spec',
+    async () =>
+      request(app)
+        .get(`${basePath}/api_query_keys`)
+        .query({ APIKey: 'test' })
+        .expect(200),
+  );
   it('should return 200 if apikey or anonymous', async () =>
     request(app)
       .get(`${basePath}/api_key_or_anonymous`)

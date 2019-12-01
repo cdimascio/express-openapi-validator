@@ -202,16 +202,20 @@ describe(packageJson.name, () => {
             expect(r.body.id).to.equal('/not_under_an_openapi_basepath');
           }));
 
-      it('should return 400 if route is defined in openapi but not express and is called with invalid parameters', async () =>
-        request(apps[i])
-          .get(`${basePath}/route_not_defined_within_express`)
-          .expect(400)
-          .then(r => {
-            const e = r.body.errors;
-            expect(e[0].message).to.equal(
-              "should have required property 'name'",
-            );
-          }));
+      it(
+        'should return 400 if route is defined in openapi but not express and is ' +
+          'called with invalid parameters',
+        async () =>
+          request(apps[i])
+            .get(`${basePath}/route_not_defined_within_express`)
+            .expect(400)
+            .then(r => {
+              const e = r.body.errors;
+              expect(e[0].message).to.equal(
+                "should have required property 'name'",
+              );
+            }),
+      );
 
       it('should return 404 if route is defined in swagger but not express', async () =>
         request(apps[i])
@@ -354,6 +358,5 @@ describe(packageJson.name, () => {
           });
       });
     });
-
   });
 });
