@@ -29,7 +29,7 @@ npm i express-openapi-validator
 
 ## Usage
 
-🦋express-openapi-validator supports [promises](#promise), [async/await](#asyncawait), and [callbacks](#callback). It can also be used [synchronously](#synchronous)
+Used asynchronously ([promises](#promise), [async/await](#asyncawait), [callbacks](#callback)) or [synchronously](#synchronous). See a complete [example](#example-express-api-server)
 
 #### Async/Await
 
@@ -56,6 +56,11 @@ app.use((err, req, res, next) => {
 ```
 
 _**Note:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
+
+### Upgrading from v2.x.x
+
+In version 2.x.x, use the `install` method executed synchronously. To get similar behavior in v3, use `installSync` method instead. See the [synchronous](#synchronous) setion for details
+
 
 ## Usage (options)
 
@@ -355,7 +360,7 @@ new OpenApiValidator({
 
 #### Synchronous
 
-_Note syncrhonous mode requires the installation of the [`deasync`](https://github.com/abbr/deasync) module. Some folks have experienced issues using deasync with some versions of node_
+_Note syncrhonous mode requires the installation of the [`deasync`](https://github.com/abbr/deasync) module. Some users have experienced issues using deasync with some versions of node_
 
 **Q:** What does it mean to use the validator 'synchronously'?
 
