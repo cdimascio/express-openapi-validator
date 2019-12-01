@@ -4,8 +4,7 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import * as http from 'http';
 import { OpenApiValidator } from '../dist';
-
-const packageJson = require('../package.json');
+import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
   let app = null;

@@ -25,7 +25,7 @@ export type ValidateRequestOpts = {
 };
 
 export type ValidateResponseOpts = {
-  removeAdditional?: string | boolean;
+  removeAdditional?: 'failing' | boolean;
 };
 
 export interface OpenApiValidatorOpts {

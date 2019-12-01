@@ -1,5 +1,5 @@
 import ono from 'ono';
-import * as Ajv from 'ajv';
+import * as ajv from 'ajv';
 import mung from './modded.express.mung';
 import { createResponseAjv } from './ajv';
 import {
@@ -13,11 +13,11 @@ import { OpenAPIV3 } from '../framework/types';
 const TYPE_JSON = 'application/json';
 
 export class ResponseValidator {
-  private ajv: Ajv.Ajv;
+  private ajv: ajv.Ajv;
   private spec: OpenAPIV3.Document;
   private validatorsCache = {};
 
-  constructor(openApiSpec: OpenAPIV3.Document, options: any = {}) {
+  constructor(openApiSpec: OpenAPIV3.Document, options: ajv.Options = {}) {
     this.spec = openApiSpec;
     this.ajv = createResponseAjv(openApiSpec, options);
     (<any>mung).onError = (err, req, res, next) => {
@@ -45,7 +45,8 @@ export class ResponseValidator {
       return this.buildValidators(responses);
     }
 
-    const contentTypeKey = ContentType.from(req).equivalents()[0] || 'not_provided';
+    const contentTypeKey =
+      ContentType.from(req).equivalents()[0] || 'not_provided';
     const key = `${req.method}-${req.originalUrl}-${contentTypeKey}`;
 
     let validators = this.validatorsCache[key];
