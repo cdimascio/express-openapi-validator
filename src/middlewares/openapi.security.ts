@@ -252,7 +252,7 @@ class AuthValidator {
 }
 
 class Util {
-  static isEmptyObject(o: {}) {
+  static isEmptyObject(o: {}): boolean {
     return (
       typeof o === 'object' &&
       Object.entries(o).length === 0 &&
