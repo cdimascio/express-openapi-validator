@@ -360,17 +360,13 @@ new OpenApiValidator({
 
 #### Synchronous
 
-_Note syncrhonous mode requires the installation of the [`deasync`](https://github.com/abbr/deasync) module. Some users have experienced issues using deasync with some versions of node_
+_Note syncrhonous mode makes use of the [`deasync`](https://github.com/abbr/deasync) module. Some users have experienced issues using deasync with some versions of node_
 
 **Q:** What does it mean to use the validator 'synchronously'?
 
 **A:** The validator's initial parse and `$ref` resolution of the OpenAPI 3 spec are executed synchronously. Use `installSync(app)` instead of `install(app)` to setup the validator in a blocking manner.
 
 **Install**
-
-```shell
-npm i express-openapi-validator deasync
-```
 
 1. Install the openapi validator
 
