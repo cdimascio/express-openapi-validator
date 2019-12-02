@@ -74,8 +74,9 @@ function error(req: OpenApiRequest, err: Error): ValidationError {
     // - 413 ( Request Entity Too Large ) : Too many parts / File too large / Too many files
     // - 400 ( Bad Request ) : Field * too long / Too many fields
     // - 500 ( Internal Server Error ) : Unexpected field
-    const payload_too_big = /LIMIT_(FILE|PART)_(SIZE|COUNT)/.test(err.code);
-    const unexpected = /LIMIT_UNEXPECTED_FILE/.test(err.code);
+    const multerError: multer.MulterError = err;
+    const payload_too_big = /LIMIT_(FILE|PART)_(SIZE|COUNT)/.test(multerError.code);
+    const unexpected = /LIMIT_UNEXPECTED_FILE/.test(multerError.code);
     const status = (payload_too_big) 
           ? 413 
           : (!unexpected)
