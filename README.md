@@ -29,8 +29,7 @@ npm i express-openapi-validator
 
 ## Usage
 
-[🦋express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) is an unopinionated library that integrates with new and existing API applications. express-openapi-validator lets you write code the way you want; it does not impose any coding convention or project layout. Simply, install the validator onto your express app, point it to your OpenAPI 3 specification, then define and implement routes the way you prefer. See an [example](#example-express-api-server).
- may be used asynchronously ([promises](#promise), [async/await](#asyncawait), [callbacks](#callback)) or [synchronously](#synchronous). See a complete [example](#example-express-api-server)
+[🦋express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) may be used asynchronously ([promises](#promise), [async/await](#asyncawait), [callbacks](#callback)) or [synchronously](#synchronous). See a complete [example](#example-express-api-server)
 
 #### Async/Await
 
