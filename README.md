@@ -682,6 +682,10 @@ new OpenApiValidator({
 }).install(app)
 ```
 
+**Q:** I see `deasync` is installed as a dependency. How is deasync used?
+
+**A:** Although `deasync` is installed, it is dynamically loaded if and only if you explicitly call `validator.installSync(app)`. If you don't, it will not be loaded or used.
+
 ## Contributors ✨
 
 Contributions welcome! Here's how to [contribute](CONTRIBUTING.md).
