@@ -4,9 +4,12 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const http = require('http');
-const pets = require('./pets.json');
-const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
+const { pets } = require('./pets');
+const { OpenApiValidator } = require('express-openapi-validator');
+
+const port = 3000;
 const app = express();
+const apiSpec = path.join(__dirname, 'api.yaml');
 
 // 1. Install bodyParsers for the request types your API will support
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -17,40 +20,32 @@ app.use(logger('dev'));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const spec = path.join(__dirname, 'example.yaml');
-app.use('/spec', express.static(spec));
-
-let id = 3;
+app.use('/spec', express.static(apiSpec));
 
 // 2. Install the OpenApiValidator on your express app
 new OpenApiValidator({
-  apiSpec: './example.yaml',
+  apiSpec,
   validateResponses: true,
   // securityHandlers: {
-  //   ApiKeyAuth: (req, scopes, schema) => true,
+  //   ApiKeyAuth: (req, scopes, schema) => { ... },
   // },
 })
   .install(app)
   .then(() => {
     // 3. Add routes
     app.get('/v1/pets', function(req, res, next) {
-      res.json(pets);
+      res.json(pets.findAll(req.query));
     });
 
     app.post('/v1/pets', function(req, res, next) {
-      res.json({ id: id++, ...req.body });
+      res.json(pets.add({ ...req.body }));
     });
 
     app.get('/v1/pets/:id', function(req, res, next) {
-      const id = req.params.id;
-      const r = pets.filter(p => p.id === id);
-      if (id === 99) {
-        // return a response that does not match the spec
-        return res.json({ bad_format: 'bad format' });
-      }
-      return r.length > 0
-        ? res.json(r)
-        : res.status(404).json({ message: 'not found', errors: [] });
+      const pet = pets.findById(req.params.id);
+      return pet
+        ? res.json(pet)
+        : res.status(404).json({ message: 'not found' });
     });
 
     // 3a. Add a route upload file(s)
@@ -80,8 +75,8 @@ new OpenApiValidator({
       });
     });
 
-    const server = http.createServer(app);
-    server.listen(3000);
-    console.log('Listening on port 3000');
+    http.createServer(app).listen(port);
+    console.log(`Listening on port ${port}`);
   });
+
 module.exports = app;

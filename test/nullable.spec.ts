@@ -3,12 +3,10 @@ import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
-
-const packageJson = require('../package.json');
+import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
   let app = null;
-  let basePath = null;
 
   before(async () => {
     // Set up the express app

@@ -4,8 +4,7 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import * as http from 'http';
 import { OpenApiValidator } from '../dist';
-
-const packageJson = require('../package.json');
+import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
   let app = null;
@@ -37,7 +36,7 @@ describe(packageJson.name, () => {
   });
 
   after(() => {
-    process.exit();
+    setTimeout(() => process.exit(), 100);
   });
 
   it('should validate /v1/pets and return 400', async () =>
