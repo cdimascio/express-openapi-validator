@@ -27,7 +27,7 @@
 npm i express-openapi-validator
 ```
 
-### Upgrading from v2.x.x
+#### Upgrading from v2.x.x
 
 In version 2.x.x, use the `install` method executed synchronously. To get similar behavior in v3, use the `installSync` method instead. See the [synchronous](#synchronous) setion for details.
 
