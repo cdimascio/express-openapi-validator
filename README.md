@@ -27,6 +27,11 @@
 npm i express-openapi-validator
 ```
 
+### Upgrading from v2.x.x
+
+In version 2.x.x, use the `install` method executed synchronously. To get similar behavior in v3, use `installSync` method instead. See the [synchronous](#synchronous) setion for details
+
+
 ## Usage
 
 [🦋express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) may be used asynchronously ([promises](#promise), [async/await](#asyncawait), [callbacks](#callback)) or [synchronously](#synchronous). See a complete [example](#example-express-api-server)
@@ -56,11 +61,6 @@ app.use((err, req, res, next) => {
 ```
 
 _**Note:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
-
-### Upgrading from v2.x.x
-
-In version 2.x.x, use the `install` method executed synchronously. To get similar behavior in v3, use `installSync` method instead. See the [synchronous](#synchronous) setion for details
-
 
 ## Usage (options)
 
