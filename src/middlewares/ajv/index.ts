@@ -15,14 +15,14 @@ export function createRequestAjv(
 
 export function createResponseAjv(
   openApiSpec: OpenAPIV3.Document,
-  options: any = {},
+  options: ajv.Options = {},
 ): Ajv.Ajv {
   return createAjv(openApiSpec, options, false);
 }
 
 function createAjv(
   openApiSpec: OpenAPIV3.Document,
-  options: any = {},
+  options: ajv.Options = {},
   request = true,
 ): Ajv.Ajv {
   const ajv = new Ajv({
@@ -36,7 +36,7 @@ function createAjv(
   ajv.removeKeyword('propertyNames');
   ajv.removeKeyword('contains');
   ajv.removeKeyword('const');
-  
+
   if (request) {
     ajv.removeKeyword('readOnly');
     ajv.addKeyword('readOnly', {
