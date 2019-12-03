@@ -343,6 +343,16 @@ export class RequestValidator {
       if (parameter.content && parameter.content[TYPE_JSON]) {
         parameterSchema = parameter.content[TYPE_JSON].schema;
         parseJson.push({ name, reqField });
+      } else if (
+        // handle complex json types in schema
+        $in === 'query' &&
+        (parameterSchema.allOf ||
+          parameterSchema.oneOf ||
+          parameterSchema.anyOf ||
+          (parameterSchema.type === 'object' &&
+            parameterSchema.type !== 'array'))
+      ) {
+        parseJson.push({ name, reqField });
       }
 
       if (!parameterSchema) {

@@ -1,0 +1,52 @@
+
+openapi: '3.0.2'
+info:
+  version: 1.0.0
+  title: requestBodies $ref
+  description: requestBodies $ref Test
+
+servers:
+  - url: /v1/
+  
+paths:
+  /serialisable:
+    get:
+      summary: "Retrieve something"
+      parameters:
+        - in: query
+          style: form
+          name: settings
+          explode: true
+          schema:
+            allOf:
+              - type: object
+                properties:
+                  onlyValidated:
+                    type: boolean
+                    default: true
+                  onlySelected:
+                    type: array
+                    default: []
+                    uniqueItems: true
+                    items:
+                      type: integer
+                      minimum: 0
+                      example: 42
+      responses:
+        '200':
+          description: "An array of items"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/someItem"
+                uniqueItems: true
+                
+components:
+  schemas:
+    someItem:
+      type: object
+      properties:
+        id:
+          type: string
