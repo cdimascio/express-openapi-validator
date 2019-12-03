@@ -22,28 +22,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/spec', express.static(apiSpec));
 
-// Connect to MongoDB before installing OpenApiValidator
-const client = MongoClient.connect('mongodb://localhost:27017/example', {
-  useUnifiedTopology: true,
-})
-  .then(client => client.db())
-  .catch(e => {
-    console.error(e);
-    process.exit(1);
-  });
-
-// Load some dummy data
-client
-  .then(db =>
-    db
-      .collection('example')
-      .insertMany([{ id: 2, name: 'sparky' }, { id: 3, name: 'spot' }]),
-  )
-  .catch(e => {
-    console.error(e);
-    process.exit(1);
-  });
-
 //  Install the OpenApiValidator on your express app
 new OpenApiValidator({
   apiSpec,
