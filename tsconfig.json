@@ -6,12 +6,12 @@
     "module": "commonjs",
     "outDir": "dist",
     "sourceMap": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "typeRoots": ["./node_modules/@types", "./typings"]
   },
-
   "exclude": ["node_modules"],
   "include": [
-    "typings.d.ts",
+    "typings/**/*.d.ts",
     "src/**/*.ts",
     "src/middlewares/modded.express.mung.ts"
   ]
