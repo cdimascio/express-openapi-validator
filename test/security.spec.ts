@@ -3,9 +3,7 @@ import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
-import { config } from 'chai/lib/chai';
-
-const packageJson = require('../package.json');
+import * as packageJson from '../package.json';
 
 // NOTE/TODO: These tests modify eovConf.securityHandlers
 // Thus test execution order matters :-(

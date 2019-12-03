@@ -3,8 +3,8 @@ import * as fs from 'fs';
 import * as jsyaml from 'js-yaml';
 import { expect } from 'chai';
 import { ResponseValidator } from '../src/middlewares/openapi.response.validator';
+import * as packageJson from '../package.json';
 
-const packageJson = require('../package.json');
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 const apiSpec = jsyaml.safeLoad(fs.readFileSync(apiSpecPath, 'utf8'));
 
