@@ -6,6 +6,7 @@ import {
   OpenApiRequestHandler,
   OpenApiRequestMetadata,
   OpenAPIV3,
+  ValidationError,
 } from '../framework/types';
 const multer = require('multer');
 
@@ -67,7 +68,7 @@ function isMultipart(req: OpenApiRequest): boolean {
   );
 }
 
-function error(req: OpenApiRequest, err: Error) {
+function error(req: OpenApiRequest, err: Error): ValidationError {
   if (err instanceof multer.MulterError) {
     // TODO is special handling for MulterErrors needed
     return validationError(500, req.path, err.message);

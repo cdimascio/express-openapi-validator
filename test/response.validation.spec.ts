@@ -1,10 +1,9 @@
 import * as path from 'path';
-import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
+import * as packageJson from '../package.json';
 
-const packageJson = require('../package.json');
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 const today = new Date();
 
@@ -31,8 +30,14 @@ describe(packageJson.name, () => {
           } else if (req.query.mode == 'check_null') {
             json = [
               { id: 1, name: 'name', tag: 'tag', bought_at: null },
-              { id: 2, name: 'name', tag: 'tag', bought_at: today.toISOString() },
-              { id: 3, name: 'name', tag: 'tag'}];
+              {
+                id: 2,
+                name: 'name',
+                tag: 'tag',
+                bought_at: today.toISOString(),
+              },
+              { id: 3, name: 'name', tag: 'tag' },
+            ];
           }
           return res.json(json);
         });
@@ -113,12 +118,9 @@ describe(packageJson.name, () => {
         expect(r.body)
           .is.an('array')
           .with.length(3);
-        expect(r.body[0].bought_at)
-          .equal(null);
-        expect(r.body[1].bought_at)
-          .equal(today.toISOString());
-        expect(r.body[2].bought_at)
-          .to.be.undefined;
+        expect(r.body[0].bought_at).equal(null);
+        expect(r.body[1].bought_at).equal(today.toISOString());
+        expect(r.body[2].bought_at).to.be.undefined;
       }));
 
   it('should pass if response is a list', async () =>

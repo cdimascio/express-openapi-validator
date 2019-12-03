@@ -20,8 +20,8 @@ describe(packageJson.name, () => {
         apiSpec: './not-found.yaml',
       }).install(express());
 
-    expect(createMiddleware).to.throw(
-      'spec could not be read at ./not-found.yaml',
+    createMiddleware().catch(e =>
+      expect(e.message).to.equal('spec could not be read at ./not-found.yaml'),
     );
   });
 });

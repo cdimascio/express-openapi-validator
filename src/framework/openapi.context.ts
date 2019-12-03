@@ -1,6 +1,7 @@
 import { OpenAPIV3 } from './types';
 import { Spec, RouteMetadata } from './openapi.spec.loader';
 
+
 export interface RoutePair {
   expressRoute: string;
   openApiRoute: string;
@@ -11,17 +12,21 @@ export class OpenApiContext {
   public readonly openApiRouteMap = {};
   public readonly routes: RouteMetadata[] = [];
   private readonly basePaths: string[];
+  private readonly ignorePaths: RegExp;
 
-  constructor(spec: Spec) {
+  constructor(spec: Spec, ignorePaths: RegExp) {
     this.apiDoc = spec.apiDoc;
     this.basePaths = spec.basePaths;
     this.routes = spec.routes;
+    this.ignorePaths = ignorePaths;
     this.buildRouteMaps(spec.routes);
   }
 
   public isManagedRoute(path: string): boolean {
     for (const bp of this.basePaths) {
-      if (path.startsWith(bp)) return true;
+      if (path.startsWith(bp) && !this.ignorePaths?.test(path)) {
+        return true;
+      }
     }
     return false;
   }
