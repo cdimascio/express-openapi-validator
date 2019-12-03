@@ -1,5 +1,5 @@
 import { Ajv } from 'ajv';
-import { createRequestAjv } from './ajv';
+import { createRequestAjv } from '../framework/ajv';
 import {
   ContentType,
   validationError,
