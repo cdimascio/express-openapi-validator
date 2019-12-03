@@ -175,7 +175,7 @@ class AuthValidator {
     this.scopes = scopes;
   }
 
-  validate() {
+  public validate(): void {
     this.validateApiKey();
     this.validateHttp();
     this.validateOauth2();
@@ -250,7 +250,7 @@ class AuthValidator {
 }
 
 class Util {
-  static isEmptyObject(o: Object) {
+  static isEmptyObject(o: {}): boolean {
     return (
       typeof o === 'object' &&
       Object.entries(o).length === 0 &&

@@ -19,11 +19,11 @@ export class ContentType {
       }
     }
   }
-  static from(req: Request): ContentType {
+  public static from(req: Request): ContentType {
     return new ContentType(req.headers['content-type']);
   }
 
-  equivalents(): string[] {
+  public equivalents(): string[] {
     if (!this.withoutBoundary) return [];
     if (this.charSet) {
       return [this.mediaType, `${this.mediaType}; ${this.charSet}`];
