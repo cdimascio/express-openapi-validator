@@ -8,6 +8,7 @@ import {
   OpenAPIV3,
   ValidationError,
 } from '../framework/types';
+import { MulterError } from 'multer';
 const multer = require('multer');
 
 export function multipart(
@@ -74,14 +75,12 @@ function error(req: OpenApiRequest, err: Error): ValidationError {
     // - 413 ( Request Entity Too Large ) : Too many parts / File too large / Too many files
     // - 400 ( Bad Request ) : Field * too long / Too many fields
     // - 500 ( Internal Server Error ) : Unexpected field
-    const multerError: Express.Multer.MulterError = err;
-    const payload_too_big = /LIMIT_(FILE|PART)_(SIZE|COUNT)/.test(multerError.code);
+    const multerError = <MulterError>err;
+    const payload_too_big = /LIMIT_(FILE|PART)_(SIZE|COUNT)/.test(
+      multerError.code,
+    );
     const unexpected = /LIMIT_UNEXPECTED_FILE/.test(multerError.code);
-    const status = (payload_too_big) 
-          ? 413 
-          : (!unexpected)
-              ? 400
-              : 500;
+    const status = payload_too_big ? 413 : !unexpected ? 400 : 500;
     return validationError(status, req.path, err.message);
   } else {
     // HACK
