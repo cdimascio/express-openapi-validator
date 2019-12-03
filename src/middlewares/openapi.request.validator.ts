@@ -7,7 +7,7 @@ import {
   augmentAjvErrors,
 } from './util';
 import ono from 'ono';
-import { NextFunction, Response } from 'express';
+import { NextFunction, RequestHandler, Response } from 'express';
 import {
   OpenAPIV3,
   OpenApiRequest,
@@ -16,10 +16,9 @@ import {
   OpenApiRequestMetadata,
 } from '../framework/types';
 import * as mediaTypeParser from 'media-type';
-import { HandleFunction } from 'connect';
 
 export class RequestValidator {
-  private _middlewareCache;
+  private _middlewareCache: { [key: string]: RequestHandler } = {};
   private _apiDocs: OpenAPIV3.Document;
   private ajv: Ajv;
   private _requestOpts: ValidateRequestOpts = {};
@@ -80,10 +79,10 @@ export class RequestValidator {
     path: string,
     pathSchema: OpenAPIV3.OperationObject,
     contentType: ContentType,
-  ): HandleFunction {
+  ): RequestHandler {
     const parameters = this.parametersToSchema(path, pathSchema.parameters);
 
-    let usedSecuritySchema = [];
+    let usedSecuritySchema: OpenAPIV3.SecurityRequirementObject[] = [];
     if (
       pathSchema.hasOwnProperty('security') &&
       pathSchema.security.length > 0
@@ -205,7 +204,11 @@ export class RequestValidator {
     };
   }
 
-  private rejectUnknownQueryParams(query, schema, whiteList = []) {
+  private rejectUnknownQueryParams(
+    query,
+    schema,
+    whiteList: string[] = [],
+  ): void {
     if (!schema.properties) return;
     const knownQueryParams = new Set(Object.keys(schema.properties));
     whiteList.forEach(item => knownQueryParams.add(item));
@@ -225,13 +228,14 @@ export class RequestValidator {
     path: string,
     contentType: ContentType,
     requestBody: OpenAPIV3.RequestBodyObject,
-  ) {
+  ): object {
     if (requestBody.content) {
       let content = null;
       for (const type of contentType.equivalents()) {
         content = requestBody.content[type];
         if (content) break;
       }
+
       if (!content) {
         const msg =
           contentType.contentType === 'not_provided'
@@ -239,12 +243,56 @@ export class RequestValidator {
             : `unsupported media type ${contentType.contentType}`;
         throw validationError(415, path, msg);
       }
-      return content.schema || {};
+
+      const schema = this.cleanseContentSchema(contentType, requestBody);
+      return schema || content.schema || {};
     }
     return {};
   }
 
-  private getSecurityQueryParams(usedSecuritySchema, securitySchema) {
+  private cleanseContentSchema(
+    contentType: ContentType,
+    requestBody: OpenAPIV3.RequestBodyObject,
+  ): object {
+    const bodyContentSchema =
+      requestBody.content[contentType.contentType] &&
+      requestBody.content[contentType.contentType].schema;
+
+    let bodyContentRefSchema = null;
+    if (bodyContentSchema && '$ref' in bodyContentSchema) {
+      const objectSchema = this.ajv.getSchema(bodyContentSchema.$ref);
+      bodyContentRefSchema =
+        objectSchema &&
+        objectSchema.schema &&
+        (<any>objectSchema.schema).properties
+          ? { ...(<any>objectSchema).schema }
+          : null;
+    }
+    // handle readonly / required request body refs
+    // don't need to copy schema if validator gets its own copy of the api spec
+    // currently all middlware i.e. req and res validators share the spec
+    const schema = bodyContentRefSchema || bodyContentSchema;
+    if (schema && schema.properties) {
+      Object.keys(schema.properties).forEach(prop => {
+        const propertyValue = schema.properties[prop];
+        const required = schema.required;
+        if (propertyValue.readOnly && required) {
+          const index = required.indexOf(prop);
+          if (index > -1) {
+            schema.required = required
+              .slice(0, index)
+              .concat(required.slice(index + 1));
+          }
+        }
+      });
+      return schema;
+    }
+  }
+
+  private getSecurityQueryParams(
+    usedSecuritySchema: OpenAPIV3.SecurityRequirementObject[],
+    securitySchema,
+  ): string[] {
     return usedSecuritySchema && securitySchema
       ? usedSecuritySchema
           .filter(obj => Object.entries(obj).length !== 0)
