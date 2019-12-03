@@ -1,10 +1,8 @@
 import * as path from 'path';
 import * as express from 'express';
-import { expect } from 'chai';
 import * as request from 'supertest';
+import * as packageJson from '../package.json';
 import { createApp } from './common/app';
-
-const packageJson = require('../package.json');
 
 describe(packageJson.name, () => {
   let app = null;
@@ -32,8 +30,5 @@ describe(packageJson.name, () => {
       .query({
         settings: '{"onlyValidated":true}',
       })
-      .expect(200)
-      .then(r => {
-        console.log(r.body);
-      }));
+      .expect(200));
 });
