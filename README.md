@@ -693,7 +693,8 @@ Contributions welcome! Here's how to [contribute](CONTRIBUTING.md).
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
 <table>
   <tr>
     <td align="center"><a href="http://www.twitter.com/carminedimascio"><img src="https://avatars1.githubusercontent.com/u/4706618?v=4" width="100px;" alt="Carmine DiMascio"/><br /><sub><b>Carmine DiMascio</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=cdimascio" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=cdimascio" title="Tests">⚠️</a> <a href="#infra-cdimascio" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
@@ -711,9 +712,12 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/mk811"><img src="https://avatars1.githubusercontent.com/u/32785388?v=4" width="100px;" alt="mk811"/><br /><sub><b>mk811</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=mk811" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=mk811" title="Tests">⚠️</a></td>
     <td align="center"><a href="https://github.com/HugoMario"><img src="https://avatars1.githubusercontent.com/u/3266608?v=4" width="100px;" alt="HugoMario"/><br /><sub><b>HugoMario</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=HugoMario" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=HugoMario" title="Tests">⚠️</a></td>
     <td align="center"><a href="http://row1.ca"><img src="https://avatars3.githubusercontent.com/u/913249?v=4" width="100px;" alt="Rowan Cockett"/><br /><sub><b>Rowan Cockett</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=rowanc1" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/jy95"><img src="https://avatars0.githubusercontent.com/u/9306961?v=4" width="100px;" alt="Jacques Yakoub"/><br /><sub><b>Jacques Yakoub</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=jy95" title="Code">💻</a></td>
   </tr>
 </table>
 
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
