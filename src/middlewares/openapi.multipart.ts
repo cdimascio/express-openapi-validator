@@ -8,12 +8,12 @@ import {
   OpenAPIV3,
   ValidationError,
 } from '../framework/types';
-import { MulterError } from 'multer';
+import { Options as MulterOptions, MulterError } from 'multer';
 const multer = require('multer');
 
 export function multipart(
   OpenApiContext: OpenApiContext,
-  multerOpts: {} = {},
+  multerOpts: MulterOptions = {},
 ): OpenApiRequestHandler {
   const mult = multer(multerOpts);
   return (req, res, next) => {

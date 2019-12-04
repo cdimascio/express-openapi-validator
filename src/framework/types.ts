@@ -1,5 +1,6 @@
 import ajv = require('ajv');
 import { Request, Response, NextFunction } from 'express';
+import { Options as MulterOptions } from 'multer';
 import { BasePath } from './base.path';
 import { OpenAPIFramework } from '.';
 export { OpenAPIFrameworkArgs };
@@ -36,7 +37,7 @@ export interface OpenApiValidatorOpts {
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
   unknownFormats?: true | string[] | 'ignore';
-  multerOpts?: {};
+  multerOpts?: MulterOptions;
 }
 
 export namespace OpenAPIV3 {
