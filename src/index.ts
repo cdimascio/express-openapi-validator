@@ -73,7 +73,9 @@ export class OpenApiValidator {
 
     this.installPathParams(app, context);
     this.installMetadataMiddleware(app, context);
-    this.installMultipartMiddleware(app, context);
+    if (this.options.multerOpts) {
+      this.installMultipartMiddleware(app, context);
+    }
 
     const components = context.apiDoc.components;
     if (components && components.securitySchemes) {
