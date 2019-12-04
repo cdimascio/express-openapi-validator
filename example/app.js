@@ -25,10 +25,7 @@ app.use('/spec', express.static(apiSpec));
 // 2. Install the OpenApiValidator on your express app
 new OpenApiValidator({
   apiSpec,
-  validateResponses: true,
-  // securityHandlers: {
-  //   ApiKeyAuth: (req, scopes, schema) => { ... },
-  // },
+  validateResponses: true, // default false
 })
   .install(app)
   .then(() => {
