@@ -409,7 +409,7 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
 
 -  `true` (**default**) - validate security
 -  `false` - do not validate security
--  `{ ... }` - validate security with options. [Full security option details](#security_handlers)
+-  `{ ... }` - validate security with options. [Full security option details](#security-handlers)
 
   **handlers:**
 
