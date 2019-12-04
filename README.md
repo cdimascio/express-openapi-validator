@@ -64,13 +64,16 @@ _**Note:** Ensure express is configured with all relevant body parsers. Body par
 
 ## Usage (options)
 
+See examples using [promises](#promise) and [callbacks](#callback). Or use it [synchronously](#synchronous)
+
 See [Advanced Usage](#Advanced-Usage) options to:
 
 - inline api specs as JSON.
 - configure request/response validation options
-- tweak the file upload configuration.
-- customize authentication with security `handlers`.
+- customize authentication with security validation `handlers`.
 - use OpenAPI 3.0.x 3rd party and custom formats.
+- tweak the file upload configuration.
+- ignore routes
 - and more...
 
 ## [Example Express API Server](https://github.com/cdimascio/express-openapi-validator/tree/master/example)
@@ -109,7 +112,6 @@ app.use('/spec', express.static(spec));
 new OpenApiValidator({
   apiSpec: './example.yaml',
   validateResponses: true, // <-- to validate responses
-  // validateSecurity: { handlers: { ... }} // <-- to use custom security handlers
   // unknownFormats: ['my-format'] // <-- to provide custom formats
 })
   .install(app)
@@ -310,6 +312,286 @@ Errors in response validation return `500`, not of `400`
 
 ### _...and much more. Try it out!_
 
+
+## Advanced Usage
+
+### OpenApiValidator Options
+
+express-openapi validator provides a good deal of flexibility via its options.
+
+Options are provided via the options object. Options take the following form:
+
+```javascript
+new OpenApiValidator(options).install({
+  apiSpec: './openapi.yaml',
+  validateRequests: true,
+  validateResponses: true,
+  validateSecurity: {
+    handlers: {
+      ApiKeyAuth: (req, scopes, schema) => {
+        throw { status: 401, message: 'sorry' }
+      }
+    }
+  }
+  ignorePaths: /.*\/pets$/
+  unknownFormats: ['phone-number', 'uuid'],
+  multerOpts: { ... },
+});
+```
+
+### ▪️ apiSpec (required)
+
+Specifies the path to an OpenAPI 3 specification or a JSON object representing the OpenAPI 3 specificiation
+
+```javascript
+apiSpec: './path/to/my-openapi-spec.yaml';
+```
+
+or
+
+```javascript
+  apiSpec: {
+  openapi: '3.0.1',
+  info: {...},
+  servers: [...],
+  paths: {...},
+  components: {
+    responses: {...},
+    schemas: {...}
+  }
+}
+```
+
+### ▪️ validateRequests (optional)
+
+Determines whether the validator should validate requests.
+
+- `true` (**default**) - validate requests.
+- `false` - do not validate requests.
+- `{ ... }` - validate requests with options
+
+   **allowUnknownQueryParameters:**
+
+   - `true` - enables unknown/undeclared query parameters to pass validation
+   - `false` - (**default**) fail validation if an unknown query parameter is present
+
+   For example:
+
+   ```javascript
+   validateRequests: {
+     allowUnknownQueryParameters: true
+   }
+   ```
+
+### ▪️ validateResponses (optional)
+
+Determines whether the validator should validate responses. Also accepts response validation options.
+
+- `true` - validate responses in 'strict' mode i.e. responses MUST match the schema.
+- `false` (**default**) - do not validate responses
+- `{ ... }` - validate responses with options
+
+  	**removeAdditional:**
+
+  	- `"failing"` - additional properties that fail schema validation are automatically removed from the response.
+
+  	For example:
+
+  	```javascript
+  	validateResponses: {
+  	  removeAdditional: 'failing'
+  	}
+      	```
+
+### ▪️ validateSecurity (optional)
+
+Determines whether the validator should validate securities e.g. apikey, basic, oauth2, openid, etc
+
+-  `true` (**default**) - validate security
+-  `false` - do not validate security
+-  `{ ... }` - validate security with options. [Full security option details](#security_handlers)
+
+  **handlers:**
+
+  Method signature:
+  
+  ```typescript
+  {
+    validateSecurity: {
+      handlers: {
+        [securityKey]: function(
+          req: Express.Request,
+          scopes: string[],
+          schema: SecuritySchemeObject
+        ): void,
+      }
+    }
+  }
+  ```
+
+  [SecuritySchemeObject](https://github.com/cdimascio/express-openapi-validator/blob/master/src/framework/types.ts#L269)
+
+  For example:
+
+  ```javascript
+  validateSecurity: {
+    handlers: {
+      ApiKeyAuth: function(req, scopes, schema) {
+        console.log('apikey handler throws custom error', scopes, schema);
+        throw Error('my message');
+      },
+    }
+  }
+```
+
+### ▪️ ignorePaths (optional)
+
+Defines a regular expression that determines whether a path(s) should be ignored. Any path which matches the regular expression will not be validated.
+
+The following ignores any path that ends in `/pets`
+
+```
+ignorePaths: /.*\/pets$/
+```
+
+### ▪️ unknownFormats (optional)
+
+Defines how the validator should behave if an unknown or custom format is encountered.
+
+- `true` **(default)** - When an unknown format is encountered, the validator will report a 400 error.
+- `[string]` **_(recommended for unknown formats)_** - An array of unknown format names that will be ignored by the validator. This option can be used to allow usage of third party schemas with format(s), but still fail if another unknown format is used.
+  e.g.
+
+  ```javascript
+  unknownFormats: ['phone-number', 'uuid'];
+  ```
+
+- `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
+
+### ▪️ multerOpts (optional)
+
+Specifies the options to passthrough to multer. express-openapi-validator uses multer to handle file uploads. see [multer opts](https://github.com/expressjs/multer)
+
+### ▪️ coerceTypes (optional)
+
+Determines whether the validator should coerce value types to match the type defined in the OpenAPI spec.
+
+- `true` (**default**) - coerce scalar data types.
+- `false` - no type coercion.
+- `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
+
+## Security handlers
+
+> **Note:** security `handlers` are an optional component. security `handlers` provide a convenience, whereby the request, declared scopes, and the security schema itself are provided as parameters to each security `handlers` callback that you define. The code you write in each callback can then perform authentication and authorization checks. **_Note that the same can be achieved using standard Express middleware_. The difference** is that security `handlers` provide you the OpenAPI schema data described in your specification\_. Ulimately, this means, you don't have to duplicate that information in your code.
+	
+> All in all, security `handlers` are purely optional and are provided as a convenience.
+
+Security handlers specify a set of custom security handlers to be used to validate security i.e. authentication and authorization. If a security `handlers` object is specified, a handler must be defined for **_all_** securities. If `securityHandlers are **_not_** specified, a default handler is always used. The default handler will validate against the OpenAPI spec, then call the next middleware.
+
+If `securityHandlers` are specified, the validator will validate against the OpenAPI spec, then call the security handler providing it the Express request, the security scopes, and the security schema object.
+
+- security `handlers` is an object that maps security keys to security handler functions. Each security key must correspond to `securityScheme` name.
+The `validateSecurity.handlers` object signature is as follows:
+
+  ```typescript
+  {
+    validateSecurity: {
+      handlers: {
+        [securityKey]: function(
+          req: Express.Request,
+          scopes: string[],
+          schema: SecuritySchemeObject
+        ): void,
+      }
+    }
+  }
+  ```
+
+  [SecuritySchemeObject](https://github.com/cdimascio/express-openapi-validator/blob/master/src/framework/types.ts#L269)
+
+  **For example:**
+
+  ```javascript
+  validateSecurity: {
+    handlers: {
+      ApiKeyAuth: function(req, scopes, schema) {
+        console.log('apikey handler throws custom error', scopes, schema);
+        throw Error('my message');
+      },
+    }
+  }
+  ```
+
+
+The _express-openapi-validator_ performs a basic validation pass prior to delegating to security handlers. If basic validation passes, security handler function(s) are invoked.
+
+  In order to signal an auth failure, the security handler function **must** either:
+
+  1. `throw { status: 403, message: 'forbidden' }`
+  2. `throw Error('optional message')`
+  3. `return false`
+  4. return a promise which resolves to `false` e.g `Promise.resolve(false)`
+  5. return a promise rejection e.g.
+     - `Promise.reject({ status: 401, message: 'yikes' });`
+     - `Promise.reject(Error('optional 'message')`
+     - `Promise.reject(false)`
+
+  Note: error status `401` is returned, unless option `i.` above is used
+
+  **Some examples:**
+
+  ```javascript
+  validateSecurity: {
+    handlers: {
+      ApiKeyAuth: (req, scopes, schema) => {
+        throw Error('my message');
+      },
+      OpenID: async (req, scopes, schema) => {
+        throw { status: 403, message: 'forbidden' }
+      },
+      BasicAuth: (req, scopes, schema) => {
+        return Promise.resolve(false);
+      },
+      ...
+    }
+  }
+  ```
+
+  In order to grant authz, the handler function **must** either:
+
+  - `return true`
+  - return a promise which resolves to `true`
+
+  **Some examples**
+
+  ```javascript
+  validateSecurity: {
+    handlers: {
+      ApiKeyAuth: (req, scopes, schema) => {
+        return true;
+      },
+      BearerAuth: async (req, scopes, schema) => {
+        return true;
+      },
+      ...
+    }
+  }
+  ```
+
+  Each `securityHandlers` `securityKey` must match a `components/securitySchemes` property
+
+  ```yaml
+  components:
+    securitySchemes:
+      ApiKeyAuth: # <-- Note this name must be used as the name handler function property
+        type: apiKey
+        in: header
+        name: X-API-Key
+  ```
+
+See [OpenAPI 3](https://swagger.io/docs/specification/authentication/) authentication for `securityScheme` and `security` documentation
+See [examples](https://github.com/cdimascio/express-openapi-validator/blob/security/test/security.spec.ts#L17) from unit tests
+
 ## Other Usage Options
 
 In addition to async/await, express-openapi-validator may be used with promises, callbacks, or synchronously.
@@ -389,255 +671,6 @@ app.use((err, req, res, next) => {
   });
 });
 ```
-
-## Advanced Usage
-
-### OpenApiValidator Options
-
-express-openapi validator provides a good deal of flexibility via its options.
-
-Options are provided via the options object. Options take the following form:
-
-```javascript
-new OpenApiValidator(options).install({
-  apiSpec: './openapi.yaml',
-  validateRequests: true,
-  validateResponses: true,
-  ignorePaths: /.*\/pets$/
-  unknownFormats: ['phone-number', 'uuid'],
-  multerOpts: { ... },
-  validateSecurity: {
-    handlers: {
-      ApiKeyAuth: (req, scopes, schema) => {
-        throw { status: 401, message: 'sorry' }
-      }
-    }
-  }
-});
-```
-
-### ▪️ apiSpec (required)
-
-Specifies the path to an OpenAPI 3 specification or a JSON object representing the OpenAPI 3 specificiation
-
-```javascript
-apiSpec: './path/to/my-openapi-spec.yaml';
-```
-
-or
-
-```javascript
-  apiSpec: {
-  openapi: '3.0.1',
-  info: {...},
-  servers: [...],
-  paths: {...},
-  components: {
-    responses: {...},
-    schemas: {...}
-  }
-}
-```
-
-### ▪️ validateRequests (optional)
-
-Determines whether the validator should validate requests.
-
-- `true` (**default**) - validate requests.
-- `false` - do not validate requests.
-- `{ ... }` - validate requests with options
-
-   **allowUnknownQueryParameters:**
-
-   - `true` - enables unknown/undeclared query parameters to pass validation
-   - `false` - (**default**) fail validation if an unknown query parameter is present
-
-   For example:
-
-   ```javascript
-   validateRequests: {
-     allowUnknownQueryParameters: true
-   }
-   ```
-
-### ▪️ validateResponses (optional)
-
-Determines whether the validator should validate responses. Also accepts response validation options.
-
-- `true` - validate responses in 'strict' mode i.e. responses MUST match the schema.
-- `false` (**default**) - do not validate responses
-- `{ ... }` - validate responses with options
-
-  	**removeAdditional:**
-
-  	- `"failing"` - additional properties that fail schema validation are automatically removed from the response.
-
-  	For example:
-
-  	```javascript
-  	validateResponses: {
-  	  removeAdditional: 'failing'
-  	}
-      	```
-
-### ▪️ ignorePaths (optional)
-
-Defines a regular expression that determines whether a path(s) should be ignored. Any path which matches the regular expression will not be validated.
-
-The following ignores any path that ends in `/pets`
-
-```
-ignorePaths: /.*\/pets$/
-```
-
-### ▪️ unknownFormats (optional)
-
-Defines how the validator should behave if an unknown or custom format is encountered.
-
-- `true` **(default)** - When an unknown format is encountered, the validator will report a 400 error.
-- `[string]` **_(recommended for unknown formats)_** - An array of unknown format names that will be ignored by the validator. This option can be used to allow usage of third party schemas with format(s), but still fail if another unknown format is used.
-  e.g.
-
-  ```javascript
-  unknownFormats: ['phone-number', 'uuid'];
-  ```
-
-- `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
-
-### ▪️ multerOpts (optional)
-
-Specifies the options to passthrough to multer. express-openapi-validator uses multer to handle file uploads. see [multer opts](https://github.com/expressjs/multer)
-
-### ▪️ coerceTypes (optional)
-
-Determines whether the validator should coerce value types to match the type defined in the OpenAPI spec.
-
-- `true` (**default**) - coerce scalar data types.
-- `false` - no type coercion.
-- `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
-
-### ▪️ validateSecurity (optional)
-
-Determines whether the validator should validate securities e.g. apikey, basic, oauth2, openid, etc
-
--  `true` (**default**) - validate security
--  `false` - do not validate security
--  `{ ... }` - validate security with options
-
-  **handlers:**
-
-  Method signature:
-  
-  ```typescript
-  {
-    validateSecurity: {
-      handlers: {
-        [securityKey]: function(
-          req: Express.Request,
-          scopes: string[],
-          schema: SecuritySchemeObject
-        ): void,
-      }
-    }
-  }
-  ```
-
-  [SecuritySchemeObject](https://github.com/cdimascio/express-openapi-validator/blob/master/src/framework/types.ts#L269)
-
-  For example:
-
-  ```javascript
-  validateSecurity: {
-    handlers: {
-      ApiKeyAuth: function(req, scopes, schema) {
-        console.log('apikey handler throws custom error', scopes, schema);
-        throw Error('my message');
-      },
-    }
-  }
-```
-  > **Note:** security `handlers` are an optional component. security `handlers` provide a convenience, whereby the request, declared scopes, and the security schema itself are provided as parameters to each security `handlers` callback that you define. The code you write in each callback can then perform authentication and authorization checks. **_Note that the same can be achieved using standard Express middleware_. The difference** is that security `handlers` provide you the OpenAPI schema data described in your specification\_. Ulimately, this means, you don't have to duplicate that information in your code.
-	
-  > All in all, security `handlers` are purely optional and are provided as a convenience.
-
-  Security handlers specify a set of custom security handlers to be used to validate security i.e. authentication and authorization. If a security `handlers` object is specified, a handler must be defined for **_all_** securities. If `securityHandlers are **_not_** specified, a default handler is always used. The default handler will validate against the OpenAPI spec, then call the next middleware.
-
-  If `securityHandlers` are specified, the validator will validate against the OpenAPI spec, then call the security handler providing it the Express request, the security scopes, and the security schema object.
-
-  - security `handlers` is an object that maps security keys to security handler functions. Each security key must correspond to `securityScheme` name.
-  The `validateSecurity.handlers` object signature is as follows:
-
-
-
-  The _express-openapi-validator_ performs a basic validation pass prior to delegating to security handlers. If basic validation passes, security handler function(s) are invoked.
-
-  In order to signal an auth failure, the security handler function **must** either:
-
-  1. `throw { status: 403, message: 'forbidden' }`
-  2. `throw Error('optional message')`
-  3. `return false`
-  4. return a promise which resolves to `false` e.g `Promise.resolve(false)`
-  5. return a promise rejection e.g.
-     - `Promise.reject({ status: 401, message: 'yikes' });`
-     - `Promise.reject(Error('optional 'message')`
-     - `Promise.reject(false)`
-
-  Note: error status `401` is returned, unless option `i.` above is used
-
-  **Some examples:**
-
-  ```javascript
-  validateSecurity: {
-    handlers: {
-      ApiKeyAuth: (req, scopes, schema) => {
-        throw Error('my message');
-      },
-      OpenID: async (req, scopes, schema) => {
-        throw { status: 403, message: 'forbidden' }
-      },
-      BasicAuth: (req, scopes, schema) => {
-        return Promise.resolve(false);
-      },
-      ...
-    }
-  }
-  ```
-
-  In order to grant authz, the handler function **must** either:
-
-  - `return true`
-  - return a promise which resolves to `true`
-
-  **Some examples**
-
-  ```javascript
-  validateSecurity: {
-    handlers: {
-      ApiKeyAuth: (req, scopes, schema) => {
-        return true;
-      },
-      BearerAuth: async (req, scopes, schema) => {
-        return true;
-      },
-      ...
-    }
-  }
-  ```
-
-  Each `securityHandlers` `securityKey` must match a `components/securitySchemes` property
-
-  ```yaml
-  components:
-    securitySchemes:
-      ApiKeyAuth: # <-- Note this name must be used as the name handler function property
-        type: apiKey
-        in: header
-        name: X-API-Key
-  ```
-
-  See [OpenAPI 3](https://swagger.io/docs/specification/authentication/) authentication for `securityScheme` and `security` documentation
-
-  See [examples](https://github.com/cdimascio/express-openapi-validator/blob/security/test/security.spec.ts#L17) from unit tests
 
 ## The Base URL
 
