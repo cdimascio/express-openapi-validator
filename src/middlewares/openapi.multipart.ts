@@ -15,9 +15,9 @@ export function multipart(
   OpenApiContext: OpenApiContext,
   multerOpts: MulterOptions = {},
 ): OpenApiRequestHandler {
-  const mult = multer(multerOpts);
   return (req, res, next) => {
     if (isMultipart(req) && isValidContentType(req)) {
+      const mult = multer(multerOpts);
       mult.any()(req, res, err => {
         if (err) {
           next(error(req, err));
