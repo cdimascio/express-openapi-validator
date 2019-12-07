@@ -29,7 +29,7 @@ npm i express-openapi-validator
 
 #### Upgrading from v2.x.x
 
-In version 2.x.x, use the `install` method executed synchronously. To get similar behavior in v3, use the `installSync` method instead. See the [synchronous](#synchronous) setion for details.
+In version 2.x.x, the `install` method was executed synchronously, in 3.x it's executed asynchronously. To get v2 behavior in v3, use the `installSync` method. See the [synchronous](#synchronous) section for details.
 
 
 ## Usage
@@ -312,7 +312,6 @@ Errors in response validation return `500`, not of `400`
 
 ### _...and much more. Try it out!_
 
-
 ## Advanced Usage
 
 ### OpenApiValidator Options
@@ -411,20 +410,20 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
 -  `false` - do not validate security
 -  `{ ... }` - validate security with `handlers`. 	See [Security handlers](#security-handlers) doc.
 
-  **handlers:**
+    **handlers:**
 
-  For example:
+    For example:
 
-  ```javascript
-  validateSecurity: {
-    handlers: {
-      ApiKeyAuth: function(req, scopes, schema) {
-        console.log('apikey handler throws custom error', scopes, schema);
-        throw Error('my message');
-      },
+    ```javascript
+    validateSecurity: {
+      handlers: {
+        ApiKeyAuth: function(req, scopes, schema) {
+          console.log('apikey handler throws custom error', scopes, schema);
+          throw Error('my message');
+        },
+      }
     }
-  }
-```
+  ```
 
 ### ▪️ ignorePaths (optional)
 
@@ -483,7 +482,7 @@ that are _not_ under the base URL—such as pages—will not be validated.
 | `https://api.example.com/v1/users`   | :white_check_mark:         |
 | `https://api.example.com/index.html` | no; not under the base URL |
 
-In some cases, it may be necessary to skip validation for paths under the base url. To do this, use the `ignorePaths` option.
+In some cases, it may be necessary to _**skip validation** for paths **under the base url**_. To do this, use the [`ignorePaths`](#ignorepaths) option.
 
 
 ## Security handlers
