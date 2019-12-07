@@ -409,27 +409,9 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
 
 -  `true` (**default**) - validate security
 -  `false` - do not validate security
--  `{ ... }` - validate security with options. [Full security option details](#security-handlers)
+-  `{ ... }` - validate security with `handlers`. 	See [Security handlers](#security-handlers) doc.
 
   **handlers:**
-
-  Method signature:
-  
-  ```typescript
-  {
-    validateSecurity: {
-      handlers: {
-        [securityKey]: function(
-          req: Express.Request,
-          scopes: string[],
-          schema: SecuritySchemeObject
-        ): void,
-      }
-    }
-  }
-  ```
-
-  [SecuritySchemeObject](https://github.com/cdimascio/express-openapi-validator/blob/master/src/framework/types.ts#L269)
 
   For example:
 
@@ -446,7 +428,7 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
 
 ### ▪️ ignorePaths (optional)
 
-Defines a regular expression that determines whether a path(s) should be ignored. Any path which matches the regular expression will not be validated.
+Defines a regular expression that determines whether a path(s) under [the base url](#the-base-url) should be ignored. Any path which matches the regular expression will not be validated.
 
 The following ignores any path that ends in `/pets`
 
@@ -480,15 +462,39 @@ Determines whether the validator should coerce value types to match the type def
 - `false` - no type coercion.
 - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
+## The Base URL
+
+The validator will only validate requests, securities, and responses that are under
+the server's [base URL](https://spec.openapis.org/oas/v3.0.0.html#serverVariableObject). 
+
+This is useful for those times when the API and frontend are being served by the same
+application. ([More detail about the base URL](https://swagger.io/docs/specification/api-host-and-base-path/).)
+
+```yaml
+servers:
+  - url: https://api.example.com/v1
+```
+
+The validation applies to all paths defined under this base URL. Routes in your app
+that are _not_ under the base URL—such as pages—will not be validated.
+
+| URL                                  | Validated?                 |
+| :----------------------------------- | :------------------------- |
+| `https://api.example.com/v1/users`   | :white_check_mark:         |
+| `https://api.example.com/index.html` | no; not under the base URL |
+
+In some cases, it may be necessary to skip validation for paths under the base url. To do this, use the `ignorePaths` option.
+
+
 ## Security handlers
 
 > **Note:** security `handlers` are an optional component. security `handlers` provide a convenience, whereby the request, declared scopes, and the security schema itself are provided as parameters to each security `handlers` callback that you define. The code you write in each callback can then perform authentication and authorization checks. **_Note that the same can be achieved using standard Express middleware_. The difference** is that security `handlers` provide you the OpenAPI schema data described in your specification\_. Ulimately, this means, you don't have to duplicate that information in your code.
 	
 > All in all, security `handlers` are purely optional and are provided as a convenience.
 
-Security handlers specify a set of custom security handlers to be used to validate security i.e. authentication and authorization. If a security `handlers` object is specified, a handler must be defined for **_all_** securities. If `securityHandlers are **_not_** specified, a default handler is always used. The default handler will validate against the OpenAPI spec, then call the next middleware.
+Security handlers specify a set of custom security handlers to be used to validate security i.e. authentication and authorization. If a security `handlers` object is specified, a handler must be defined for **_all_** securities. If security `handlers are **_not_** specified, a default handler is always used. The default handler will validate against the OpenAPI spec, then call the next middleware.
 
-If `securityHandlers` are specified, the validator will validate against the OpenAPI spec, then call the security handler providing it the Express request, the security scopes, and the security schema object.
+If security `handlers` are specified, the validator will validate against the OpenAPI spec, then call the security handler providing it the Express request, the security scopes, and the security schema object.
 
 - security `handlers` is an object that maps security keys to security handler functions. Each security key must correspond to `securityScheme` name.
 The `validateSecurity.handlers` object signature is as follows:
@@ -578,7 +584,7 @@ The _express-openapi-validator_ performs a basic validation pass prior to delega
   }
   ```
 
-  Each `securityHandlers` `securityKey` must match a `components/securitySchemes` property
+  Each security `handlers`' `securityKey` must match a `components/securitySchemes` property
 
   ```yaml
   components:
@@ -672,30 +678,11 @@ app.use((err, req, res, next) => {
 });
 ```
 
-## The Base URL
-
-The validator will only validate requests — and (optionally) responses — that are under
-the server's [base URL](https://spec.openapis.org/oas/v3.0.0.html#serverVariableObject).
-
-This is useful for those times when the API and frontend are being served by the same
-application. ([More detail about the base URL](https://swagger.io/docs/specification/api-host-and-base-path/).)
-
-```yaml
-servers:
-  - url: https://api.example.com/v1
-```
-
-The validation applies to all paths defined under this base URL. Routes in your app
-that are _not_ under the base URL—such as pages—will not be validated.
-
-| URL                                  | Validated?                 |
-| :----------------------------------- | :------------------------- |
-| `https://api.example.com/v1/users`   | :white_check_mark:         |
-| `https://api.example.com/index.html` | no; not under the base URL |
-
-_**Note** that in some cases, it may be necessary to skip validation for paths under the base url. To do this, use the `ignorePaths` option._
-
 ## FAQ
+
+**Q:** What happened to the `securityHandlers` property?
+
+**A:** In v3, `securityHandlers` have been replaced by `validateSecurity.securityHandlers`. To use v3 security handlers, move your existing security handlers to the new property. No other change is required. Note, that the v2 `securityHandlers` property is supported in v3, but deprecated
 
 **Q:** Can I use a top level await?
 
