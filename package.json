@@ -1,6 +1,6 @@
 {
   "name": "express-openapi-validator",
-  "version": "3.0.2",
+  "version": "3.1.1",
   "description": "Automatically validate API requests and responses with OpenAPI 3 and Express.",
   "main": "dist/index.js",
   "scripts": {
@@ -58,7 +58,7 @@
     "morgan": "^1.9.1",
     "nodemon": "^2.0.0",
     "nyc": "^14.1.1",
-    "prettier": "^1.18.2",
+    "prettier": "^1.19.1",
     "source-map-support": "0.5.14",
     "supertest": "^4.0.2",
     "ts-node": "^8.3.0",
