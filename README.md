@@ -423,7 +423,7 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
         },
       }
     }
-  ```
+    ```
 
 ### ▪️ ignorePaths (optional)
 
