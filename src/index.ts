@@ -11,18 +11,22 @@ import {
   OpenApiRequest,
   OpenApiRequestHandler,
   OpenApiRequestMetadata,
+  ValidateSecurityOpts,
 } from './framework/types';
+import { deprecationWarning } from './middlewares/util';
 
 export class OpenApiValidator {
   private readonly options: OpenApiValidatorOpts;
 
   constructor(options: OpenApiValidatorOpts) {
     this.validateOptions(options);
+    this.normalizeOptions(options);
 
     if (options.unknownFormats == null) options.unknownFormats === true;
     if (options.coerceTypes == null) options.coerceTypes = true;
     if (options.validateRequests == null) options.validateRequests = true;
     if (options.validateResponses == null) options.validateResponses = false;
+    if (options.validateSecurity == null) options.validateSecurity = true;
 
     if (options.validateResponses === true) {
       options.validateResponses = {
@@ -34,6 +38,10 @@ export class OpenApiValidator {
       options.validateRequests = {
         allowUnknownQueryParameters: false,
       };
+    }
+
+    if (options.validateSecurity === true) {
+      options.validateSecurity = {};
     }
 
     this.options = options;
@@ -76,7 +84,7 @@ export class OpenApiValidator {
     this.installMultipartMiddleware(app, context);
 
     const components = context.apiDoc.components;
-    if (components && components.securitySchemes) {
+    if (this.options.validateSecurity && components?.securitySchemes) {
       this.installSecurityMiddleware(app, context);
     }
 
@@ -137,10 +145,10 @@ export class OpenApiValidator {
     app: Application,
     context: OpenApiContext,
   ): void {
-    const securityMiddleware = middlewares.security(
-      context,
-      this.options.securityHandlers,
-    );
+    const securityHandlers = (<ValidateSecurityOpts>(
+      this.options.validateSecurity
+    ))?.handlers;
+    const securityMiddleware = middlewares.security(context, securityHandlers);
     app.use(securityMiddleware);
   }
 
@@ -197,6 +205,15 @@ export class OpenApiValidator {
       ) {
         throw ono('securityHandlers must be an object or undefined');
       }
+      deprecationWarning(
+        'securityHandlers is deprecated. Use validateSecurities.handlers instead.',
+      );
+    }
+
+    if (options.securityHandlers && options.validateSecurity) {
+      throw ono(
+        'securityHandlers and validateSecurity may not be used together. Use validateSecurities.handlers to specify handlers.',
+      );
     }
 
     const unknownFormats = options.unknownFormats;
@@ -214,5 +231,15 @@ export class OpenApiValidator {
       throw ono(
         "unknownFormats must contain an array of unknownFormats, 'ignore' or true",
       );
+  }
+
+  private normalizeOptions(options: OpenApiValidatorOpts): void {
+    // Modify the recquest
+    if (options.securityHandlers) {
+      options.validateSecurity = {
+        handlers: options.securityHandlers,
+      };
+      delete options.securityHandlers;
+    }
   }
 }

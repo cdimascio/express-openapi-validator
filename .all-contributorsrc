@@ -130,11 +130,21 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "jy95",
+      "name": "Jacques Yakoub",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/9306961?v=4",
+      "profile": "https://github.com/jy95",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
   "projectName": "express-openapi-validator",
   "projectOwner": "cdimascio",
   "repoType": "github",
-  "repoHost": "https://github.com"
+  "repoHost": "https://github.com",
+  "skipCi": true
 }
