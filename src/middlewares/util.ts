@@ -101,3 +101,6 @@ export function ajvErrorsToValidatorError(
     }),
   };
 }
+
+export const deprecationWarning =
+  process.env.NODE_ENV !== 'production' ? console.warn : () => {};
