@@ -1,5 +1,5 @@
 import { Ajv } from 'ajv';
-import { createRequestAjv } from './ajv';
+import { createRequestAjv } from '../framework/ajv';
 import {
   ContentType,
   validationError,
@@ -63,7 +63,7 @@ export class RequestValidator {
     // cache middleware by combining method, path, and contentType
     // TODO contentType could have value not_provided
     const contentType = ContentType.from(req);
-    const contentTypeKey = contentType.equivalents()[0] || 'not_provided';
+    const contentTypeKey = contentType.equivalents()[0] ?? 'not_provided';
     const key = `${req.method}-${req.originalUrl}-${contentTypeKey}`;
 
     if (!this._middlewareCache[key]) {
@@ -103,7 +103,7 @@ export class RequestValidator {
     );
 
     let requestBody = pathSchema.requestBody;
-    if (requestBody && requestBody.hasOwnProperty('$ref')) {
+    if (requestBody?.hasOwnProperty('$ref')) {
       const ref = (<OpenAPIV3.ReferenceObject>requestBody).$ref;
       const id = ref.replace(/^.+\//i, '');
       requestBody = this._apiDocs.components.requestBodies[id];
@@ -111,7 +111,7 @@ export class RequestValidator {
 
     let body = {};
     const requiredAdds = [];
-    if (requestBody && requestBody.hasOwnProperty('content')) {
+    if (requestBody?.hasOwnProperty('content')) {
       const reqBodyObject = <OpenAPIV3.RequestBodyObject>requestBody;
       body = this.requestBodyToSchema(path, contentType, reqBodyObject);
       if (reqBodyObject.required) requiredAdds.push('body');
@@ -140,7 +140,7 @@ export class RequestValidator {
       const shouldUpdatePathParams = Object.keys(openapi.pathParams).length > 0;
 
       if (shouldUpdatePathParams) {
-        req.params = openapi.pathParams || req.params;
+        req.params = openapi.pathParams ?? req.params;
       }
 
       // (<any>req).schema = schema;
@@ -152,7 +152,7 @@ export class RequestValidator {
        * https://swagger.io/docs/specification/describing-parameters/#schema-vs-content
        */
       parameters.parseJson.forEach(item => {
-        if (req[item.reqField] && req[item.reqField][item.name]) {
+        if (req[item.reqField]?.[item.name]) {
           req[item.reqField][item.name] = JSON.parse(
             req[item.reqField][item.name],
           );
@@ -166,7 +166,7 @@ export class RequestValidator {
        * filter=foo%20bar%20baz
        */
       parameters.parseArray.forEach(item => {
-        if (req[item.reqField] && req[item.reqField][item.name]) {
+        if (req[item.reqField]?.[item.name]) {
           req[item.reqField][item.name] = req[item.reqField][item.name].split(
             item.delimiter,
           );
@@ -178,8 +178,7 @@ export class RequestValidator {
        */
       parameters.parseArrayExplode.forEach(item => {
         if (
-          req[item.reqField] &&
-          req[item.reqField][item.name] &&
+          req[item.reqField]?.[item.name] &&
           !(req[item.reqField][item.name] instanceof Array)
         ) {
           req[item.reqField][item.name] = [req[item.reqField][item.name]];
@@ -197,7 +196,7 @@ export class RequestValidator {
         next();
       } else {
         // TODO look into Ajv async errors plugins
-        const errors = augmentAjvErrors([...(validator.errors || [])]);
+        const errors = augmentAjvErrors([...(validator.errors ?? [])]);
         const err = ajvErrorsToValidatorError(400, errors);
         const message = this.ajv.errorsText(errors, { dataVar: 'request' });
         throw ono(err, message);
@@ -246,7 +245,7 @@ export class RequestValidator {
       }
 
       const schema = this.cleanseContentSchema(contentType, requestBody);
-      return schema || content.schema || {};
+      return schema ?? content.schema ?? {};
     }
     return {};
   }
@@ -301,7 +300,7 @@ export class RequestValidator {
             const securityKey = Object.keys(sec)[0];
             return securitySchema[securityKey];
           })
-          .filter(sec => sec && sec.in && sec.in === 'query')
+          .filter(sec => sec?.in === 'query')
           .map(sec => sec.name)
       : [];
   }
@@ -340,7 +339,7 @@ export class RequestValidator {
       }
 
       let parameterSchema = parameter.schema;
-      if (parameter.content && parameter.content[TYPE_JSON]) {
+      if (parameter.content?.[TYPE_JSON]) {
         parameterSchema = parameter.content[TYPE_JSON].schema;
         parseJson.push({ name, reqField });
       } else if (
@@ -360,11 +359,7 @@ export class RequestValidator {
         throw validationError(400, path, message);
       }
 
-      if (
-        parameter.schema &&
-        parameter.schema.type === 'array' &&
-        !parameter.explode
-      ) {
+      if (parameter.schema?.type === 'array' && !parameter.explode) {
         const delimiter = arrayDelimiter[parameter.style];
         if (!delimiter) {
           const message = `Parameter 'style' has incorrect value '${parameter.style}' for [${parameter.name}]`;
@@ -373,11 +368,7 @@ export class RequestValidator {
         parseArray.push({ name, reqField, delimiter });
       }
 
-      if (
-        parameter.schema &&
-        parameter.schema.type === 'array' &&
-        parameter.explode
-      ) {
+      if (parameter.schema?.type === 'array' && parameter.explode) {
         parseArrayExplode.push({ name, reqField });
       }
 

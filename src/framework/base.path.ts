@@ -26,7 +26,7 @@ export class BasePath {
     for (const variable in server.variables) {
       if (server.variables.hasOwnProperty(variable)) {
         const v = server.variables[variable];
-        const enums = v.enum || [];
+        const enums = v.enum ?? [];
         if (enums.length === 0 && v.default) enums.push(v.default);
 
         this.variables[variable] = {

@@ -28,7 +28,7 @@ describe(packageJson.name, () => {
           body.created_at = new Date().toISOString();
           body.reviews = body.reviews.map(r => ({
             ...(excludeWriteOnly ? {} : { role_x: 'admin' }),
-            rating: r.rating || 2,
+            rating: r.rating ?? 2,
           }));
 
           if (excludeWriteOnly) {

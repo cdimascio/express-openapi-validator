@@ -1,7 +1,7 @@
 import * as Ajv from 'ajv';
 import * as draftSchema from 'ajv/lib/refs/json-schema-draft-04.json';
 import { formats } from './formats';
-import { OpenAPIV3 } from '../../framework/types';
+import { OpenAPIV3 } from '../types';
 import ajv = require('ajv');
 
 const TYPE_JSON = 'application/json';
