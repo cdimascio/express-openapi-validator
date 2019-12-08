@@ -80,10 +80,10 @@ export class OpenApiSpecLoader {
                 continue;
               }
               const schemaParameters = new Set();
-              (schema.parameters || []).forEach(parameter =>
+              (schema.parameters ?? []).forEach(parameter =>
                 schemaParameters.add(parameter),
               );
-              (methods.parameters || []).forEach(parameter =>
+              (methods.parameters ?? []).forEach(parameter =>
                 schemaParameters.add(parameter),
               );
               schema.parameters = Array.from(schemaParameters);

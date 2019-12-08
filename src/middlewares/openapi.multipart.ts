@@ -4,8 +4,6 @@ import { Request } from 'express';
 import {
   OpenApiRequest,
   OpenApiRequestHandler,
-  OpenApiRequestMetadata,
-  OpenAPIV3,
   ValidationError,
 } from '../framework/types';
 import { MulterError } from 'multer';
@@ -57,16 +55,7 @@ function isValidContentType(req: Request): boolean {
 }
 
 function isMultipart(req: OpenApiRequest): boolean {
-  const openapi = <OpenApiRequestMetadata>req.openapi;
-  return !!(
-    openapi &&
-    openapi.schema &&
-    openapi.schema.requestBody &&
-    (<OpenAPIV3.RequestBodyObject>openapi.schema.requestBody).content &&
-    (<OpenAPIV3.RequestBodyObject>openapi.schema.requestBody).content[
-      'multipart/form-data'
-    ]
-  );
+  return (<any>req?.openapi)?.schema?.requestBody?.content?.['multipart/form-data'];
 }
 
 function error(req: OpenApiRequest, err: Error): ValidationError {
@@ -86,7 +75,7 @@ function error(req: OpenApiRequest, err: Error): ValidationError {
     // HACK
     // TODO improve multer error handling
     const missingField = /Multipart: Boundary not found/i.test(
-      err.message || '',
+      err.message ?? '',
     );
     if (missingField) {
       return validationError(400, req.path, 'multipart file(s) required');

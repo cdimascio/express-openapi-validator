@@ -14,7 +14,7 @@ export class OpenAPISchemaValidator {
     if (!ver) throw Error('version missing from OpenAPI specification');
     if (ver != 3) throw Error('OpenAPI v3 specification version is required');
 
-    const schema = merge({}, openapi3Schema, extensions || {});
+    const schema = merge({}, openapi3Schema, extensions ?? {});
     v.addSchema(schema);
     this.validator = v.compile(schema);
   }

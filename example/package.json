@@ -11,7 +11,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.4",
     "express-openapi-validator": "file:../",

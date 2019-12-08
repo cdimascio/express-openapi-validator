@@ -1,7 +1,7 @@
 import ono from 'ono';
 import * as ajv from 'ajv';
 import mung from './modded.express.mung';
-import { createResponseAjv } from './ajv';
+import { createResponseAjv } from '../framework/ajv';
 import {
   augmentAjvErrors,
   ContentType,
@@ -28,7 +28,7 @@ export class ResponseValidator {
   public validate() {
     return mung.json((body, req: any, res) => {
       if (req.openapi) {
-        const responses = req.openapi.schema && req.openapi.schema.responses;
+        const responses = req.openapi.schema?.responses;
         const validators = this._getOrBuildValidator(req, responses);
         const statusCode = res.statusCode;
         const path = req.originalUrl;
@@ -101,10 +101,7 @@ export class ResponseValidator {
    * @returns a map of validators
    */
   private buildValidators(responses) {
-    const canValidate = r =>
-      typeof r.content === 'object' &&
-      r.content[TYPE_JSON] &&
-      r.content[TYPE_JSON].schema;
+    const canValidate = r => typeof r.content === 'object' && r.content[TYPE_JSON]?.schema;
 
     const schemas = {};
     for (const entry of <any[]>Object.entries(responses)) {
@@ -123,7 +120,7 @@ export class ResponseValidator {
         properties: {
           response: schema,
         },
-        components: this.spec.components || {},
+        components: this.spec.components ?? {},
       };
     }
 
