@@ -1,7 +1,5 @@
 import ajv = require('ajv');
 import { Request, Response, NextFunction } from 'express';
-import { BasePath } from './base.path';
-import { OpenAPIFramework } from '.';
 export { OpenAPIFrameworkArgs };
 
 export interface OpenAPIFrameworkInit {
@@ -28,10 +26,15 @@ export type ValidateResponseOpts = {
   removeAdditional?: 'failing' | boolean;
 };
 
+export type ValidateSecurityOpts = {
+  handlers?: SecurityHandlers;
+};
+
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
   validateResponses?: boolean | ValidateResponseOpts;
   validateRequests?: boolean | ValidateRequestOpts;
+  validateSecurity?: boolean | ValidateSecurityOpts;
   ignorePaths?: RegExp;
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';

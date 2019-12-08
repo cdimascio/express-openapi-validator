@@ -4,10 +4,9 @@ import { Request } from 'express';
 import {
   OpenApiRequest,
   OpenApiRequestHandler,
-  OpenApiRequestMetadata,
-  OpenAPIV3,
   ValidationError,
 } from '../framework/types';
+import { MulterError } from 'multer';
 const multer = require('multer');
 
 export function multipart(
@@ -56,27 +55,27 @@ function isValidContentType(req: Request): boolean {
 }
 
 function isMultipart(req: OpenApiRequest): boolean {
-  const openapi = <OpenApiRequestMetadata>req.openapi;
-  return !!(
-    openapi &&
-    openapi.schema &&
-    openapi.schema.requestBody &&
-    (<OpenAPIV3.RequestBodyObject>openapi.schema.requestBody).content &&
-    (<OpenAPIV3.RequestBodyObject>openapi.schema.requestBody).content[
-      'multipart/form-data'
-    ]
-  );
+  return (<any>req?.openapi)?.schema?.requestBody?.content?.['multipart/form-data'];
 }
 
 function error(req: OpenApiRequest, err: Error): ValidationError {
   if (err instanceof multer.MulterError) {
-    // TODO is special handling for MulterErrors needed
-    return validationError(500, req.path, err.message);
+    // distinguish common errors :
+    // - 413 ( Request Entity Too Large ) : Too many parts / File too large / Too many files
+    // - 400 ( Bad Request ) : Field * too long / Too many fields
+    // - 500 ( Internal Server Error ) : Unexpected field
+    const multerError = <MulterError>err;
+    const payload_too_big = /LIMIT_(FILE|PART)_(SIZE|COUNT)/.test(
+      multerError.code,
+    );
+    const unexpected = /LIMIT_UNEXPECTED_FILE/.test(multerError.code);
+    const status = payload_too_big ? 413 : !unexpected ? 400 : 500;
+    return validationError(status, req.path, err.message);
   } else {
     // HACK
     // TODO improve multer error handling
     const missingField = /Multipart: Boundary not found/i.test(
-      err.message || '',
+      err.message ?? '',
     );
     if (missingField) {
       return validationError(400, req.path, 'multipart file(s) required');

@@ -47,7 +47,7 @@ export function security(
 
     // use the local security object or fallbac to api doc's security or undefined
     const securities: OpenAPIV3.SecurityRequirementObject[] =
-      req.openapi.schema.security || context.apiDoc.security;
+      req.openapi.schema.security ?? context.apiDoc.security;
 
     const path: string = req.openapi.openApiRoute;
 
@@ -85,7 +85,7 @@ export function security(
       if (success) next();
       else throw firstError;
     } catch (e) {
-      const message = (e && e.error && e.error.message) || 'unauthorized';
+      const message = e?.error?.message || 'unauthorized';
       const err = validationError(e.status, path, message);
       next(err);
     }
@@ -118,9 +118,7 @@ class SecuritySchemes {
         }
         const securityKey = Object.keys(s)[0];
         const scheme: any = this.securitySchemes[securityKey];
-        const handler =
-          (this.securityHandlers && this.securityHandlers[securityKey]) ||
-          fallbackHandler;
+        const handler = this.securityHandlers?.[securityKey] ?? fallbackHandler;
         const scopesTmp = s[securityKey];
         const scopes = Array.isArray(scopesTmp) ? scopesTmp : [];
 
@@ -155,7 +153,7 @@ class SecuritySchemes {
       } catch (e) {
         return {
           success: false,
-          status: e.status || 401,
+          status: e.status ?? 401,
           error: e,
         };
       }

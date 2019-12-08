@@ -3,21 +3,15 @@ import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
-import * as packageJson from '../package.json';
 
-// TODO:
-// NOTE: These tests modify eovConf.securityHandlers
-// Thus test execution order matters :-(
-describe(packageJson.name, () => {
+describe('security.top.level', () => {
   let app = null;
   let basePath = null;
-  const eovConf = {
-    apiSpec: path.join('test', 'resources', 'security.top.level.yaml'),
-  };
 
   before(async () => {
     // Set up the express app
-    app = await createApp(eovConf, 3005);
+    const apiSpec = path.join('test', 'resources', 'security.top.level.yaml');
+    app = await createApp({ apiSpec }, 3005);
     basePath = app.basePath;
 
     app.use(

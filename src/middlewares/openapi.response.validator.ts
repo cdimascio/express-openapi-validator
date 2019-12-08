@@ -1,7 +1,7 @@
 import ono from 'ono';
 import * as ajv from 'ajv';
 import mung from './modded.express.mung';
-import { createResponseAjv } from './ajv';
+import { createResponseAjv } from '../framework/ajv';
 import {
   augmentAjvErrors,
   ContentType,
@@ -27,7 +27,7 @@ export class ResponseValidator {
   public validate() {
     return mung.json((body, req: any, res) => {
       if (req.openapi) {
-        const responses = req.openapi.schema && req.openapi.schema.responses;
+        const responses = req.openapi.schema?.responses;
         const validators = this._getOrBuildValidator(req, responses);
         const statusCode = res.statusCode;
         const path = req.originalUrl;
@@ -107,14 +107,19 @@ export class ResponseValidator {
       for (let mediaType of Object.keys(response.content)) {
         const mediaTypeParsed = mediaTypeParser.fromString(mediaType);
 
-        if (mediaTypeParsed.subtype === 'json' || mediaTypeParsed.suffix === 'json') {
+        if (
+          mediaTypeParsed.subtype === 'json' ||
+          mediaTypeParsed.suffix === 'json'
+        ) {
           return response.content[mediaType] &&
-                 response.content[mediaType].schema ? mediaType : false;
+            response.content[mediaType].schema
+            ? mediaType
+            : false;
         }
       }
 
       return false;
-    }
+    };
 
     const schemas = {};
     for (const [name, response] of <any[]>Object.entries(responses)) {
@@ -135,10 +140,9 @@ export class ResponseValidator {
         properties: {
           response: schema,
         },
-        components: this.spec.components || {},
+        components: this.spec.components ?? {},
       };
     }
-
 
     const validators = {};
     for (const [name, schema] of Object.entries(schemas)) {
