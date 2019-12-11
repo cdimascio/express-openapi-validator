@@ -9,7 +9,8 @@ import {
   validationError,
 } from './util';
 import { OpenAPIV3 } from '../framework/types';
-import * as mediaTypeParser from 'media-type';
+import * as mediaTypeParser from 'media-typer';
+import * as contentTypeParser from 'content-type';
 
 export class ResponseValidator {
   private ajv: ajv.Ajv;
@@ -104,16 +105,17 @@ export class ResponseValidator {
       if (typeof response.content !== 'object') {
         return false;
       }
-      for (let mediaType of Object.keys(response.content)) {
-        const mediaTypeParsed = mediaTypeParser.fromString(mediaType);
+      for (let contentType of Object.keys(response.content)) {
+        const contentTypeParsed = contentTypeParser.parse(contentType);
+        const mediaTypeParsed = mediaTypeParser.parse(contentTypeParsed.type);
 
         if (
           mediaTypeParsed.subtype === 'json' ||
           mediaTypeParsed.suffix === 'json'
         ) {
-          return response.content[mediaType] &&
-            response.content[mediaType].schema
-            ? mediaType
+          return response.content[contentType] &&
+            response.content[contentType].schema
+            ? contentType
             : false;
         }
       }

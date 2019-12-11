@@ -15,7 +15,8 @@ import {
   ValidateRequestOpts,
   OpenApiRequestMetadata,
 } from '../framework/types';
-import * as mediaTypeParser from 'media-type';
+import * as mediaTypeParser from 'media-typer';
+import * as contentTypeParser from 'content-type';
 
 export class RequestValidator {
   private _middlewareCache: { [key: string]: RequestHandler } = {};
@@ -345,10 +346,12 @@ export class RequestValidator {
          * and the value describes it. The map MUST only contain one entry.
          * https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#parameterContent
          */
-        const mediaType = Object.keys(parameter.content)[0];
-        const mediaTypeParsed = mediaTypeParser.fromString(mediaType);
+        const contentType = Object.keys(parameter.content)[0];
+        const contentTypeParsed = contentTypeParser.parse(contentType)
 
-        parameterSchema = parameter.content[mediaType].schema;
+        const mediaTypeParsed = mediaTypeParser.parse(contentTypeParsed.type);
+
+        parameterSchema = parameter.content[contentType].schema;
 
         if (
           mediaTypeParsed.subtype === 'json' ||
