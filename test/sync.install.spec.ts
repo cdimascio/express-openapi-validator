@@ -3,7 +3,7 @@ import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import * as http from 'http';
-import { OpenApiValidator } from '../dist';
+import { OpenApiValidator } from '../src';
 import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
