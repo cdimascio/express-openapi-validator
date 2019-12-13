@@ -20,7 +20,10 @@ paths:
               schema:
                 type: string
             application/json:
-              schema: 
+              schema:
+                $ref: '#/components/schemas/Test'
+            application/hal+json:
+              schema:
                 $ref: '#/components/schemas/Test'
         '400':
           description: Bad Request
@@ -36,7 +39,7 @@ components:
           example: +15017122661
           format: phone-number
       required:
-        - testProperty      
+        - testProperty
 
   requestBodies:
     TestBody:
@@ -46,5 +49,8 @@ components:
             schema:
               type: string
         application/json:
+          schema:
+            $ref: '#/components/schemas/Test'
+        application/hal+json:
           schema:
             $ref: '#/components/schemas/Test'
