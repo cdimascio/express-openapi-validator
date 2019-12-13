@@ -15,8 +15,8 @@ import {
   ValidateRequestOpts,
   OpenApiRequestMetadata,
 } from '../framework/types';
-
-const TYPE_JSON = 'application/json';
+import * as mediaTypeParser from 'media-typer';
+import * as contentTypeParser from 'content-type';
 
 export class RequestValidator {
   private _middlewareCache: { [key: string]: RequestHandler } = {};
@@ -339,9 +339,26 @@ export class RequestValidator {
       }
 
       let parameterSchema = parameter.schema;
-      if (parameter.content?.[TYPE_JSON]) {
-        parameterSchema = parameter.content[TYPE_JSON].schema;
-        parseJson.push({ name, reqField });
+      if (parameter.content) {
+        /**
+         * Per the OpenAPI3 spec:
+         * A map containing the representations for the parameter. The key is the media type
+         * and the value describes it. The map MUST only contain one entry.
+         * https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#parameterContent
+         */
+        const contentType = Object.keys(parameter.content)[0];
+        const contentTypeParsed = contentTypeParser.parse(contentType)
+
+        const mediaTypeParsed = mediaTypeParser.parse(contentTypeParsed.type);
+
+        parameterSchema = parameter.content[contentType].schema;
+
+        if (
+          mediaTypeParsed.subtype === 'json' ||
+          mediaTypeParsed.suffix === 'json'
+        ) {
+          parseJson.push({ name, reqField });
+        }
       } else if (
         // handle complex json types in schema
         $in === 'query' &&

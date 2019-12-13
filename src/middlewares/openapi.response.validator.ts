@@ -9,8 +9,8 @@ import {
   validationError,
 } from './util';
 import { OpenAPIV3 } from '../framework/types';
-
-const TYPE_JSON = 'application/json';
+import * as mediaTypeParser from 'media-typer';
+import * as contentTypeParser from 'content-type';
 
 export class ResponseValidator {
   private ajv: ajv.Ajv;
@@ -101,18 +101,40 @@ export class ResponseValidator {
    * @returns a map of validators
    */
   private buildValidators(responses) {
-    const canValidate = r => typeof r.content === 'object' && r.content[TYPE_JSON]?.schema;
+    const canValidate = response => {
+      if (typeof response.content !== 'object') {
+        return false;
+      }
+      for (let contentType of Object.keys(response.content)) {
+        const contentTypeParsed = contentTypeParser.parse(contentType);
+        const mediaTypeParsed = mediaTypeParser.parse(contentTypeParsed.type);
+
+        if (
+          mediaTypeParsed.subtype === 'json' ||
+          mediaTypeParsed.suffix === 'json'
+        ) {
+          return response.content[contentType] &&
+            response.content[contentType].schema
+            ? contentType
+            : false;
+        }
+      }
+
+      return false;
+    };
 
     const schemas = {};
-    for (const entry of <any[]>Object.entries(responses)) {
-      const [name, response] = entry;
-      if (!canValidate(response)) {
+    for (const [name, response] of <any[]>Object.entries(responses)) {
+      const mediaTypeToValidate = canValidate(response);
+
+      if (!mediaTypeToValidate) {
         // TODO support content other than JSON
         // don't validate
         // assume is valid
         continue;
       }
-      const schema = response.content[TYPE_JSON].schema;
+      const schema = response.content[mediaTypeToValidate].schema;
+
       schemas[name] = {
         // $schema: 'http://json-schema.org/schema#',
         // $schema: "http://json-schema.org/draft-04/schema#",
