@@ -651,7 +651,7 @@ _Note syncrhonous mode makes use of the [`deasync`](https://github.com/abbr/deas
 
 **Q:** What does it mean to use the validator 'synchronously'?
 
-**A:** The validator's initial parse and `$ref` resolution of the OpenAPI 3 spec are executed synchronously. Use `installSync(app)` instead of `install(app)` to setup the validator in a blocking manner.
+**A:** The installation of the validator handled synchronously. That is the initial parse and `$ref` resolution of the OpenAPI 3 spec. All validation executed _**a**synchronously_ i.e. request, response, and security validation. Use `installSync(app)` instead of `install(app)` to install the validator in a blocking manner.
 
 1. Install the openapi validator
 
