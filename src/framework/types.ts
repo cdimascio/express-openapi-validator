@@ -40,6 +40,7 @@ export interface OpenApiValidatorOpts {
   coerceTypes?: boolean | 'array';
   unknownFormats?: true | string[] | 'ignore';
   multerOpts?: {};
+  unsafeRefs?: boolean
 }
 
 export namespace OpenAPIV3 {
@@ -359,6 +360,7 @@ export interface OpenAPIFrameworkPathObject {
 interface OpenAPIFrameworkArgs {
   apiDoc: OpenAPIV3.Document | string;
   validateApiDoc?: boolean;
+  unsafeRefs?: boolean;
 }
 
 export interface OpenAPIFrameworkAPIContext {

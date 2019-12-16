@@ -23,7 +23,7 @@ export class OpenAPIFramework {
     visitor: OpenAPIFrameworkVisitor,
   ): Promise<OpenAPIFrameworkInit> {
     const args = this.args;
-    const apiDoc = await this.copy(await this.loadSpec(args.apiDoc));
+    const apiDoc = await this.copy(await this.loadSpec(args.apiDoc, args.unsafeRefs));
     const basePathObs = this.getBasePathsFromServers(apiDoc.servers);
     const basePaths = Array.from(
       basePathObs.reduce((acc, bp) => {
@@ -71,9 +71,9 @@ export class OpenAPIFramework {
     };
   }
 
-  private loadSpec(filePath: string | object): Promise<OpenAPIV3.Document> {
+  private loadSpec(filePath: string | object, unsafeRefs: boolean = false): Promise<OpenAPIV3.Document> {
     // Because of this issue ( https://github.com/APIDevTools/json-schema-ref-parser/issues/101#issuecomment-421755168 )
-    // We need this workaround ( use '$RefParser.dereference' instead of '$RefParser.bundle' )
+    // We need this workaround ( use '$RefParser.dereference' instead of '$RefParser.bundle' ) if asked by user
     if (typeof filePath === 'string') {
       const origCwd = process.cwd();
       const specDir = path.resolve(origCwd, path.dirname(filePath));
@@ -86,7 +86,7 @@ export class OpenAPIFramework {
             fs.readFileSync(absolutePath, 'utf8'),
             { json: true },
           );
-          return $RefParser.dereference(docWithRefs);
+          return (!unsafeRefs) ? $RefParser.bundle(docWithRefs) : $RefParser.dereference(docWithRefs);
         } finally {
           process.chdir(origCwd);
         }
@@ -96,7 +96,7 @@ export class OpenAPIFramework {
         );
       }
     }
-    return $RefParser.dereference(filePath);
+    return (!unsafeRefs) ? $RefParser.bundle(filePath) : $RefParser.dereference(filePath);
   }
 
   private copy<T>(obj: T): T {
