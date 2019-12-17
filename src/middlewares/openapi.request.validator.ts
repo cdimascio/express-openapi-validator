@@ -372,7 +372,7 @@ export class RequestValidator {
             [].concat(
               schema.allOf,
               schema.oneOf,
-              schema.anyOf,
+              schema.anyOf
             ).some(schemaHasObject)
           );
 
