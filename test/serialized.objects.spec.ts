@@ -45,8 +45,7 @@ describe(packageJson.name, () => {
             foo: 'bar',
           },
         });
-      })
-  );
+      }));
 
   it('should not deserialize when non-object', async () =>
     request(app)
@@ -61,8 +60,7 @@ describe(packageJson.name, () => {
           timestamp: 1234567890123,
           fooBar: 'fooBar',
         });
-      })
-  );
+      }));
 
   it('should fail on validation, not parsing', async () =>
     request(app)
@@ -73,6 +71,5 @@ describe(packageJson.name, () => {
       .expect(400)
       .then(response => {
         expect(response.body.message).to.equal('request.query.settings should be object');
-      })
-  );
+      }));
 });
