@@ -34,8 +34,9 @@ describe(packageJson.name, () => {
         fooBar: '{"foo":"bar"}',
       })
       .expect(200)
-      .then(response => {
-        expect(response.body).to.deep.equal({
+      .then((r: any) => {
+        const e = r.body;
+        expect(e).to.deep.equal({
           settings: {
             onlyValidated: true,
             onlySelected: [],
@@ -56,8 +57,9 @@ describe(packageJson.name, () => {
         fooBar: 'fooBar',
       })
       .expect(200)
-      .then(response => {
-        expect(response.body).to.deep.equal({
+      .then((r: any) => {
+        const e = r.body;
+        expect(e).to.deep.equal({
           timestamp: 1234567890123,
           fooBar: 'fooBar',
         });
@@ -71,8 +73,9 @@ describe(packageJson.name, () => {
         settings: 'this is not valid json',
       })
       .expect(400)
-      .then(response => {
-        expect(response.body.message).to.equal('request.query.settings should be object');
-      })
+      .then((r: any) => {
+        const e = r.body;
+        expect(e.message).to.equal('request.query.settings should be object');
+      }),
   );
 });
