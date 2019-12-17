@@ -366,21 +366,15 @@ export class RequestValidator {
         }
       } else if ($in === 'query') {
         // handle complex json types in schema
-        const schemaHasObject = schema => {
-          return (
-            schema.type === 'object' &&
-            schema.type !== 'array'
-          ) || (
-            schema.allOf &&
-            schema.allOf.some(schemaHasObject)
-          ) || (
-            schema.oneOf &&
-            schema.oneOf.some(schemaHasObject)
-          ) || (
-            schema.anyOf &&
-            schema.anyOf.some(schemaHasObject)
-          )
-        };
+        const schemaHasObject = schema =>
+          schema && (
+            schema.type === 'object' ||
+            [].concat(
+              schema.allOf,
+              schema.oneOf,
+              schema.anyOf,
+            ).some(schemaHasObject)
+          );
 
         if (schemaHasObject(parameterSchema)) {
           parseJson.push({ name, reqField });
