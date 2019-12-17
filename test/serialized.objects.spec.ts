@@ -68,7 +68,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/serialisable`)
       .query({
-        settings: 'this is not valid json'
+        settings: 'this is not valid json',
       })
       .expect(400)
       .then(response => {
