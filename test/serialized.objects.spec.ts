@@ -71,8 +71,8 @@ describe(packageJson.name, () => {
         settings: 'this is not valid json',
       })
       .expect(400)
-      .then(response => {
-        expect(response.body.message).to.equal('request.query.settings should be object');
-      })
+      .then(response =>
+        expect(response.body.message).to.equal('request.query.settings should be object')
+      )
   );
 });
