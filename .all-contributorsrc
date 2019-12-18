@@ -121,11 +121,40 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "rowanc1",
+      "name": "Rowan Cockett",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/913249?v=4",
+      "profile": "http://row1.ca",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "jy95",
+      "name": "Jacques Yakoub",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/9306961?v=4",
+      "profile": "https://github.com/jy95",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ckeboss",
+      "name": "ckeboss",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/723809?v=4",
+      "profile": "https://github.com/ckeboss",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
   "projectName": "express-openapi-validator",
   "projectOwner": "cdimascio",
   "repoType": "github",
-  "repoHost": "https://github.com"
+  "repoHost": "https://github.com",
+  "skipCi": true
 }

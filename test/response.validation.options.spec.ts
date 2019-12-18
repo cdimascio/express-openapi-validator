@@ -3,8 +3,8 @@ import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
+import * as packageJson from '../package.json';
 
-const packageJson = require('../package.json');
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 
 describe(packageJson.name, () => {
@@ -36,9 +36,9 @@ describe(packageJson.name, () => {
           res.json(req.body);
         });
         app.use((err, req, res, next) => {
-          res.status(err.status || 500).json({
+          res.status(err.status ?? 500).json({
             message: err.message,
-            code: err.status || 500,
+            code: err.status ?? 500,
           });
         });
       },

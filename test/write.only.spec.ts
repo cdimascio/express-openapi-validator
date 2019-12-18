@@ -3,8 +3,7 @@ import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
-
-const packageJson = require('../package.json');
+import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
   let app = null;
@@ -29,7 +28,7 @@ describe(packageJson.name, () => {
           body.created_at = new Date().toISOString();
           body.reviews = body.reviews.map(r => ({
             ...(excludeWriteOnly ? {} : { role_x: 'admin' }),
-            rating: r.rating || 2,
+            rating: r.rating ?? 2,
           }));
 
           if (excludeWriteOnly) {

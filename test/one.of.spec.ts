@@ -1,10 +1,8 @@
 import * as path from 'path';
-import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
-
-const packageJson = require('../package.json');
+import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
   let app = null;
@@ -22,9 +20,9 @@ describe(packageJson.name, () => {
           res.json(req.body);
         });
         app.use((err, req, res, next) => {
-          res.status(err.status || 500).json({
+          res.status(err.status ?? 500).json({
             message: err.message,
-            code: err.status || 500,
+            code: err.status ?? 500,
           });
         });
       },
@@ -100,7 +98,7 @@ describe(packageJson.name, () => {
           {
             type: 'type_1',
             unique_one: 'unique_one',
-            value: 1
+            value: 1,
           },
         ],
       })
@@ -117,7 +115,7 @@ describe(packageJson.name, () => {
           {
             type: 'type_2',
             unique_two: 'unique_two',
-            value: 2
+            value: 2,
           },
         ],
       })
