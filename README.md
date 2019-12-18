@@ -704,27 +704,21 @@ async function main() {
     }).install(app);
     
     // 3. init routes for v1 and v2
-    if (v === 1) initV1(app);
-    if (v === 2) initV2(app);
+    if (v === 1) routesV1(app);
+    if (v === 2) routesV2(app);
 
     v += 1;
   }
 
-  const server = http.createServer(app);
-  server.listen(3000);
-  console.log('Listening on port 3000');
+   http.createServer(app).listen(3000);
 }
 
-// 3a. /api/v1 routes
-async function initV1(app, v) {
+async function routesV1(app, v) {
   const v = '/api/v1';
-
   app.post(`${v}/annotations`, (req, res, next) => {
-    res.json({ ...req.body, annotations: v, method: 'post' });
+    res.json({ ...req.body, version: v });
   });
-
   app.use((err, req, res, next) => {
-    // format error
     res.status(err.status || 500).json({
       message: err.message,
       errors: err.errors,
@@ -732,16 +726,12 @@ async function initV1(app, v) {
   });
 }
 
-// 3b. /api/v2 routes
-async function initV2(app) {
+async function routesV2(app) {
   const v = '/api/v2';
-
   app.post(`${v}/annotations`, (req, res, next) => {
-    res.json({ ...req.body, annotations: v, method: 'post' });
+    res.json({ ...req.body, version: v });
   });
-
   app.use((err, req, res, next) => {
-    // format error
     res.status(err.status || 500).json({
       message: err.message,
       errors: err.errors,
