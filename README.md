@@ -680,45 +680,47 @@ app.use((err, req, res, next) => {
 It may be useful to serve multiple APIs with separate specs via single service. An exampe might be an API that serves both `v1` and `v2` from the samee service. The sample code below show how one might accomplish this.
 
 ```javascript
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const http = require('http');
+const { OpenApiValidator } = require('express-openapi-validator');
+
 async function main() {
-  // 1. initialize express and any body parsers
   app = express();
-  app.use(bodyParser.urlencoded());
+  app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.text());
   app.use(bodyParser.json());
-
-  app.use(logger('dev'));
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: false }));
-  app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
 
   const versions = [1, 2];
 
   for (let v of versions) {
     let apiSpec = path.join(__dirname, `v${v}.yaml`);
-    
-    // 2. install the validator for each api version
     await new OpenApiValidator({
       apiSpec,
     }).install(app);
-    
-    // 3. init routes for v1 and v2
-    if (v === 1) routesV1(app);
-    if (v === 2) routesV2(app);
 
-    v += 1;
+    routes(app, v++);
   }
 
-   http.createServer(app).listen(3000);
+  http.createServer(app).listen(3000);
+  console.log('Listening on port 3000');
 }
 
-async function routesV1(app, v) {
+async function routes(app, v) {
+  if (v === 1) routesV1(app);
+  if (v === 2) routesV2(app);
+}
+
+async function routesV1(app) {
   const v = '/api/v1';
   app.post(`${v}/annotations`, (req, res, next) => {
-    res.json({ ...req.body, version: v });
+    res.json({ ...req.body, annotations: v, method: 'post' });
   });
+
   app.use((err, req, res, next) => {
+    // format error
     res.status(err.status || 500).json({
       message: err.message,
       errors: err.errors,
@@ -729,9 +731,11 @@ async function routesV1(app, v) {
 async function routesV2(app) {
   const v = '/api/v2';
   app.post(`${v}/annotations`, (req, res, next) => {
-    res.json({ ...req.body, version: v });
+    res.json({ ...req.body, annotations: v, method: 'post' });
   });
+
   app.use((err, req, res, next) => {
+    // format error
     res.status(err.status || 500).json({
       message: err.message,
       errors: err.errors,
