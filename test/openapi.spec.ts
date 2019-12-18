@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { expect } from 'chai';
 import * as request from 'supertest';
+import * as getPort from 'get-port';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
 
@@ -11,13 +12,15 @@ describe(packageJson.name, () => {
   before(() => {
     const apiSpecPath = path.join('test', 'resources', 'openapi.yaml');
     const apiSpecJson = require('./resources/openapi.json');
-    return Promise.all([
-      createApp({ apiSpec: apiSpecPath }, 3001),
-      createApp({ apiSpec: apiSpecJson }, 3002),
-    ]).then(([a1, a2]) => {
-      apps.push(a1);
-      apps.push(a2);
-      basePath = (<any>a1).basePath;
+    return Promise.all([getPort(), getPort()]).then(ports => {
+      return Promise.all([
+        createApp({ apiSpec: apiSpecPath }, ports[0]),
+        createApp({ apiSpec: apiSpecJson }, ports[1]),
+      ]).then(([a1, a2]) => {
+        apps.push(a1);
+        apps.push(a2);
+        basePath = (<any>a1).basePath;
+      });
     });
   });
 
