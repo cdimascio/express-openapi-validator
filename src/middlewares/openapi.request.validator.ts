@@ -156,6 +156,22 @@ export class RequestValidator {
        */
       parameters.parseJson.forEach(item => {
         if (item.reqField === 'query' && queryParamsToValidate[item.name]) {
+          if (queryParamsToValidate[item.name] === req[item.reqField][item.name]) {
+            queryParamsToValidate[item.name] = req[item.reqField][item.name] = JSON.parse(
+              queryParamsToValidate[item.name],
+            );
+
+            /**
+             * The query param we parse and the query param express
+             * parsed are the same value, so we assign them the same
+             * parsed value.
+             */
+            return;
+          }
+          /**
+           * They query params are not the same, so we parse the
+           * `queryParamsToValidate` and don't return.
+           */
           queryParamsToValidate[item.name] = JSON.parse(
             queryParamsToValidate[item.name],
           );
@@ -175,6 +191,13 @@ export class RequestValidator {
        */
       parameters.parseArray.forEach(item => {
         if (item.reqField === 'query' && queryParamsToValidate[item.name]) {
+          if (queryParamsToValidate[item.name] === req[item.reqField][item.name]) {
+            queryParamsToValidate[item.name] = req[item.reqField][item.name] = queryParamsToValidate[item.name].split(
+              item.delimiter,
+            );
+
+            return;
+          }
           queryParamsToValidate[item.name] = queryParamsToValidate[item.name].split(
             item.delimiter,
           );

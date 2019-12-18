@@ -56,6 +56,7 @@
     "coveralls": "^3.0.5",
     "deasync": "^0.1.16",
     "express": "^4.17.1",
+    "get-port": "^5.0.0",
     "mocha": "^6.2.0",
     "morgan": "^1.9.1",
     "nodemon": "^2.0.0",
