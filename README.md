@@ -826,6 +826,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/ckeboss"><img src="https://avatars1.githubusercontent.com/u/723809?v=4" width="100px;" alt=""/><br /><sub><b>ckeboss</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=ckeboss" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=ckeboss" title="Tests">⚠️</a></td>
+    <td align="center"><a href="https://github.com/JacobLey"><img src="https://avatars0.githubusercontent.com/u/37151850?v=4" width="100px;" alt=""/><br /><sub><b>JacobLey</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=JacobLey" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=JacobLey" title="Tests">⚠️</a></td>
   </tr>
 </table>
 
