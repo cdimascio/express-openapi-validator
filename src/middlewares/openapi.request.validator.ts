@@ -153,9 +153,14 @@ export class RequestValidator {
        */
       parameters.parseJson.forEach(item => {
         if (req[item.reqField]?.[item.name]) {
-          req[item.reqField][item.name] = JSON.parse(
-            req[item.reqField][item.name],
-          );
+          try {
+            req[item.reqField][item.name] = JSON.parse(
+              req[item.reqField][item.name],
+            );
+          } catch (e) {
+              // NOOP If parsing failed but _should_ contain JSON, validator will catch it.
+              // May contain falsely flagged parameter (e.g. input was object OR string)
+          }
         }
       });
 
@@ -359,16 +364,21 @@ export class RequestValidator {
         ) {
           parseJson.push({ name, reqField });
         }
-      } else if (
+      } else if ($in === 'query') {
         // handle complex json types in schema
-        $in === 'query' &&
-        (parameterSchema.allOf ||
-          parameterSchema.oneOf ||
-          parameterSchema.anyOf ||
-          (parameterSchema.type === 'object' &&
-            parameterSchema.type !== 'array'))
-      ) {
-        parseJson.push({ name, reqField });
+        const schemaHasObject = schema =>
+          schema && (
+            schema.type === 'object' ||
+            [].concat(
+              schema.allOf,
+              schema.oneOf,
+              schema.anyOf
+            ).some(schemaHasObject)
+          );
+
+        if (schemaHasObject(parameterSchema)) {
+          parseJson.push({ name, reqField });
+        }
       }
 
       if (!parameterSchema) {

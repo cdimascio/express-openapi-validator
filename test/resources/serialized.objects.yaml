@@ -2,12 +2,12 @@
 openapi: '3.0.2'
 info:
   version: 1.0.0
-  title: requestBodies $ref
-  description: requestBodies $ref Test
+  title: Request Query Serialization
+  description: Request Query Serialization Test
 
 servers:
   - url: /v1/
-  
+
 paths:
   /serialisable:
     get:
@@ -16,6 +16,7 @@ paths:
         - in: query
           style: form
           name: settings
+          description: Should be serialized
           explode: true
           schema:
             allOf:
@@ -32,21 +33,41 @@ paths:
                       type: integer
                       minimum: 0
                       example: 42
+        - in: query
+          name: timestamp
+          description: Should not be serialized
+          schema:
+            description: Value passed to Javascript's `new Date()`.
+            example: '2019-06-24T12:34:56.789Z'
+            anyOf:
+              - type: integer
+                description: Unix milliseconds
+                example: 1234567890123
+                nullable: true
+              - type: string
+                description: ISO Timestamp
+                pattern: \S
+        - in: query
+          name: fooBar
+          description: Should be serialized if an object
+          schema:
+            oneOf:
+              - type: string
+                pattern: fooBar
+              - type: object
+                properties:
+                  foo:
+                    type: string
+                    pattern: bar
+                additionalProperties: false
+                required:
+                  - foo
       responses:
         '200':
-          description: "An array of items"
+          description: parsed & validated query params
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/someItem"
-                uniqueItems: true
-                
-components:
-  schemas:
-    someItem:
-      type: object
-      properties:
-        id:
-          type: string
+                type: object
+
+components: {}
