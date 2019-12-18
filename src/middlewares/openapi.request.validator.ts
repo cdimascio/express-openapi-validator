@@ -99,7 +99,7 @@ export class RequestValidator {
 
     const securityQueryParameter = this.getSecurityQueryParams(
       usedSecuritySchema,
-      this._apiDocs.components.securitySchemes,
+      this._apiDocs.components?.securitySchemes,
     );
 
     let requestBody = pathSchema.requestBody;

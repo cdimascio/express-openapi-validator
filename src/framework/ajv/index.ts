@@ -85,7 +85,7 @@ function createAjv(
     });
   }
 
-  if (openApiSpec.components.schemas) {
+  if (openApiSpec.components?.schemas) {
     Object.entries(openApiSpec.components.schemas).forEach(
       ([id, schema]: any[]) => {
         ajv.addSchema(schema, `#/components/schemas/${id}`);
