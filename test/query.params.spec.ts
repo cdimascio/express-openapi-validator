@@ -30,10 +30,44 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets`)
       .query({
-        tags: 'one,two,three',
-        limit: 10,
         breed: 'german_shepherd',
+        'filter[date]': '2000-02-29',
+        limit: 10,
         owner_name: 'carmine',
+        tags: 'one,two,three',
+      })
+      .expect(200));
+
+  it('should pass with query params containing []', async () =>
+    request(app)
+      .get(`${app.basePath}/pets`)
+      .query({
+        breed: 'german_shepherd',
+        'filter[date]': '2000-02-29',
+        limit: 10,
+        owner_name: 'carmine',
+      })
+      .expect(200));
+
+  it('should fail with invalid query params containing []', async () =>
+    request(app)
+      .get(`${app.basePath}/pets`)
+      .query({
+        breed: 'german_shepherd',
+        'filter[date]': 'not-a-date',
+        limit: 10,
+        owner_name: 'carmine',
+      })
+      .expect(400)
+      .then(r => {
+        expect(r.body.errors).to.be.an('array');
+      }));
+
+  it('should pass with required query params containing []', async () =>
+    request(app)
+      .get(`${app.basePath}/pets/with-required-date-filter`)
+      .query({
+        'filter[date]': '2000-02-29',
       })
       .expect(200));
 
@@ -41,10 +75,10 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets`)
       .query({
-        tags: 'one,two,three',
-        limit: 10,
         breed: 'german_shepherd',
+        limit: 10,
         owner_name: 'carmine',
+        tags: 'one,two,three',
         unknown_prop: 'test',
       })
       .expect(400)
