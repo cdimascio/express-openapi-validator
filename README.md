@@ -677,7 +677,7 @@ app.use((err, req, res, next) => {
 
 ## Example: Multiple Validators and API specs 
 
-I may be useful to host multiple API specs in single API. Perhaps, an API serves both `v1` and `v2` from a single service. Below is a contrived example describing how one might accomplish this.
+It may be useful to serve multiple APIs with separate specs via single service. An exampe might be an API that serves both `v1` and `v2` from the samee service. The sample code below show how one might accomplish this.
 
 ```javascript
 async function main() {
