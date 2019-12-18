@@ -1,10 +1,11 @@
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const logger = require('morgan');
-const http = require('http');
-const OpenApiValidator = require('../../src').OpenApiValidator;
+import * as express from 'express';
+import * as path from 'path';
+import * as cookieParser from 'cookie-parser';
+import * as bodyParser from 'body-parser';
+import * as logger from 'morgan';
+import * as http from 'http';
+import { OpenApiValidator } from '../../src';
+
 const app = express();
 
 app.use(bodyParser.urlencoded());

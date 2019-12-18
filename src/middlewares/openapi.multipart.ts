@@ -4,9 +4,10 @@ import { Request } from 'express';
 import {
   OpenApiRequest,
   OpenApiRequestHandler,
-  OpenApiRequestMetadata,
-  OpenAPIV3,
+  ValidationError,
 } from '../framework/types';
+import { MulterError } from 'multer';
+
 const multer = require('multer');
 
 export function multipart(
@@ -32,13 +33,31 @@ export function multipart(
           //
           // This is a bit complex because the schema may be defined inline (easy) or via a $ref (complex) in which
           // case we must follow the $ref to check the type.
+
           if (req.files) {
-            // add files to body
-            (<Express.Multer.File[]>req.files).forEach(
-              (f: Express.Multer.File) => {
-                req.body[f.fieldname] = '';
-              },
-            );
+
+            // to handle single and multiple file upload at the same time, let us this initialize this count variable
+            // for example { "files": 5 }
+            const count_by_fieldname = (<Express.Multer.File[]>req.files)
+              .map(file => file.fieldname)
+              .reduce((acc, curr) => {
+                acc[curr] = (acc[curr] || 0) + 1;
+                return acc;
+              }, {});
+
+            // add file(s) to body
+            Object
+              .entries(count_by_fieldname)
+              .forEach(
+                ([fieldname, count]: [string, number]) => {
+                  // TODO maybe also check in the api doc if it is a single upload or multiple
+                  const is_multiple = count > 1;
+                  req.body[fieldname] = (is_multiple)
+                    ? new Array(count).fill('')
+                    : '';
+                },
+              );
+
           }
           next();
         }
@@ -55,27 +74,27 @@ function isValidContentType(req: Request): boolean {
 }
 
 function isMultipart(req: OpenApiRequest): boolean {
-  const openapi = <OpenApiRequestMetadata>req.openapi;
-  return !!(
-    openapi &&
-    openapi.schema &&
-    openapi.schema.requestBody &&
-    (<OpenAPIV3.RequestBodyObject>openapi.schema.requestBody).content &&
-    (<OpenAPIV3.RequestBodyObject>openapi.schema.requestBody).content[
-      'multipart/form-data'
-    ]
-  );
+  return (<any>req?.openapi)?.schema?.requestBody?.content?.['multipart/form-data'];
 }
 
-function error(req: OpenApiRequest, err: Error) {
+function error(req: OpenApiRequest, err: Error): ValidationError {
   if (err instanceof multer.MulterError) {
-    // TODO is special handling for MulterErrors needed
-    return validationError(500, req.path, err.message);
+    // distinguish common errors :
+    // - 413 ( Request Entity Too Large ) : Too many parts / File too large / Too many files
+    // - 400 ( Bad Request ) : Field * too long / Too many fields
+    // - 500 ( Internal Server Error ) : Unexpected field
+    const multerError = <MulterError>err;
+    const payload_too_big = /LIMIT_(FILE|PART)_(SIZE|COUNT)/.test(
+      multerError.code,
+    );
+    const unexpected = /LIMIT_UNEXPECTED_FILE/.test(multerError.code);
+    const status = payload_too_big ? 413 : !unexpected ? 400 : 500;
+    return validationError(status, req.path, err.message);
   } else {
     // HACK
     // TODO improve multer error handling
     const missingField = /Multipart: Boundary not found/i.test(
-      err.message || '',
+      err.message ?? '',
     );
     if (missingField) {
       return validationError(400, req.path, 'multipart file(s) required');

@@ -10,14 +10,15 @@ import { OpenApiValidatorOpts } from '../../src/framework/types';
 
 export async function createApp(
   opts?: OpenApiValidatorOpts,
-  port: number = 3000,
-  customRoutes: (app) => void = () => {},
-  useRoutes: boolean = true,
+  port = 3000,
+  customRoutes = app => {},
+  useRoutes = true,
 ) {
   var app = express();
   (<any>app).basePath = '/v1';
 
   app.use(bodyParser.json());
+  app.use(bodyParser.json({type: 'application/hal+json'}));
   app.use(bodyParser.text());
   app.use(logger('dev'));
   app.use(express.json());
@@ -25,7 +26,7 @@ export async function createApp(
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
 
-  new OpenApiValidator(opts).install(app);
+  await new OpenApiValidator(opts).install(app);
 
   if (useRoutes) {
     // register common routes
@@ -38,7 +39,7 @@ export async function createApp(
   if (useRoutes) {
     // Register error handler
     app.use((err, req, res, next) => {
-      res.status(err.status || 500).json({
+      res.status(err.status ?? 500).json({
         message: err.message,
         errors: err.errors,
       });

@@ -1,7 +1,7 @@
 import * as http from 'http';
 import * as express from 'express';
 
-export function startServer(app, port): Promise<http.Server> {
+export function startServer(app, port: number): Promise<http.Server> {
   return new Promise((resolve, reject) => {
     const http = require('http');
     const server = http.createServer(app);

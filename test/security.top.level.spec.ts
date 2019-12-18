@@ -4,20 +4,14 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 
-const packageJson = require('../package.json');
-
-// NOTE/TODO: These tests modify eovConf.securityHandlers
-// Thus test execution order matters :-(
-describe(packageJson.name, () => {
+describe('security.top.level', () => {
   let app = null;
   let basePath = null;
-  const eovConf = {
-    apiSpec: path.join('test', 'resources', 'security.top.level.yaml'),
-  };
 
   before(async () => {
     // Set up the express app
-    app = await createApp(eovConf, 3005);
+    const apiSpec = path.join('test', 'resources', 'security.top.level.yaml');
+    app = await createApp({ apiSpec }, 3005);
     basePath = app.basePath;
 
     app.use(
@@ -94,11 +88,15 @@ describe(packageJson.name, () => {
       .query({ param1: 'anotherTest' })
       .expect(200));
 
-  it('should return 200 if apikey exist as query param with no query parmeter in the request but in the spec', async () =>
-    request(app)
-      .get(`${basePath}/api_query_keys`)
-      .query({ APIKey: 'test' })
-      .expect(200));
+  it(
+    'should return 200 if apikey exist as query param with no query parmeter ' +
+      'in the request but in the spec',
+    async () =>
+      request(app)
+        .get(`${basePath}/api_query_keys`)
+        .query({ APIKey: 'test' })
+        .expect(200),
+  );
   it('should return 200 if apikey or anonymous', async () =>
     request(app)
       .get(`${basePath}/api_key_or_anonymous`)

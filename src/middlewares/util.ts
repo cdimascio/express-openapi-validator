@@ -19,11 +19,11 @@ export class ContentType {
       }
     }
   }
-  static from(req: Request): ContentType {
+  public static from(req: Request): ContentType {
     return new ContentType(req.headers['content-type']);
   }
 
-  equivalents(): string[] {
+  public equivalents(): string[] {
     if (!this.withoutBoundary) return [];
     if (this.charSet) {
       return [this.mediaType, `${this.mediaType}; ${this.charSet}`];
@@ -43,7 +43,7 @@ const _validationError = (
     {
       path,
       message,
-      ...({ errors } || {}),
+      ...({ errors } ?? {}),
     },
   ],
 });
@@ -68,7 +68,7 @@ export function augmentAjvErrors(
   errors.forEach(e => {
     if (e.keyword === 'enum') {
       const params: any = e.params;
-      const allowedEnumValues = params && params.allowedValues;
+      const allowedEnumValues = params?.allowedValues;
       e.message = !!allowedEnumValues
         ? `${e.message}: ${allowedEnumValues.join(', ')}`
         : e.message;
@@ -84,15 +84,9 @@ export function ajvErrorsToValidatorError(
     status,
     errors: errors.map(e => {
       const params: any = e.params;
-      const required =
-        params &&
-        params.missingProperty &&
-        e.dataPath + '.' + params.missingProperty;
-      const additionalProperty =
-        params &&
-        params.additionalProperty &&
-        e.dataPath + '.' + params.additionalProperty;
-      const path = required || additionalProperty || e.dataPath || e.schemaPath;
+      const required = params?.missingProperty && e.dataPath + '.' + params.missingProperty;
+      const additionalProperty = params?.additionalProperty && e.dataPath + '.' + params.additionalProperty;
+      const path = required ?? additionalProperty ?? e.dataPath ?? e.schemaPath;
       return {
         path,
         message: e.message,
@@ -101,3 +95,6 @@ export function ajvErrorsToValidatorError(
     }),
   };
 }
+
+export const deprecationWarning =
+  process.env.NODE_ENV !== 'production' ? console.warn : () => {};

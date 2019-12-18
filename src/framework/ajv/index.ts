@@ -1,10 +1,8 @@
 import * as Ajv from 'ajv';
 import * as draftSchema from 'ajv/lib/refs/json-schema-draft-04.json';
 import { formats } from './formats';
-import { OpenAPIV3 } from '../../framework/types';
+import { OpenAPIV3 } from '../types';
 import ajv = require('ajv');
-
-const TYPE_JSON = 'application/json';
 
 export function createRequestAjv(
   openApiSpec: OpenAPIV3.Document,
@@ -15,14 +13,14 @@ export function createRequestAjv(
 
 export function createResponseAjv(
   openApiSpec: OpenAPIV3.Document,
-  options: any = {},
+  options: ajv.Options = {},
 ): Ajv.Ajv {
   return createAjv(openApiSpec, options, false);
 }
 
 function createAjv(
   openApiSpec: OpenAPIV3.Document,
-  options: any = {},
+  options: ajv.Options = {},
   request = true,
 ): Ajv.Ajv {
   const ajv = new Ajv({
@@ -36,7 +34,7 @@ function createAjv(
   ajv.removeKeyword('propertyNames');
   ajv.removeKeyword('contains');
   ajv.removeKeyword('const');
-  
+
   if (request) {
     ajv.removeKeyword('readOnly');
     ajv.addKeyword('readOnly', {
@@ -91,18 +89,6 @@ function createAjv(
     Object.entries(openApiSpec.components.schemas).forEach(
       ([id, schema]: any[]) => {
         ajv.addSchema(schema, `#/components/schemas/${id}`);
-      },
-    );
-  }
-
-  if (openApiSpec.components.requestBodies) {
-    Object.entries(openApiSpec.components.requestBodies).forEach(
-      ([id, schema]: any[]) => {
-        // TODO add support for content all content types
-        ajv.addSchema(
-          schema.content[TYPE_JSON].schema,
-          `#/components/requestBodies/${id}`,
-        );
       },
     );
   }
