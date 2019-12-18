@@ -55,8 +55,7 @@ export function security(
       return next();
     }
 
-    const securitySchemes =
-      context.apiDoc.components && context.apiDoc.components.securitySchemes;
+    const securitySchemes = context.apiDoc.components?.securitySchemes;
 
     if (!securitySchemes) {
       const message = `security referenced at path ${path}, but not defined in 'components.securitySchemes'`;
