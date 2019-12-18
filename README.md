@@ -675,6 +675,84 @@ app.use((err, req, res, next) => {
 });
 ```
 
+## Using multiple API specs 
+
+I may be useful to host multiple API specs in single API. Perhaps, an API serves both `v1` and `v2` from a single service. Below is a contrived example describing how one might accomplish this.
+
+```javascript
+async function main() {
+  // 1. initialize express and any body parsers
+  app = express();
+  app.use(bodyParser.urlencoded());
+  app.use(bodyParser.text());
+  app.use(bodyParser.json());
+
+  app.use(logger('dev'));
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: false }));
+  app.use(cookieParser());
+  app.use(express.static(path.join(__dirname, 'public')));
+
+  const versions = [1, 2];
+
+  for (let v of versions) {
+    let apiSpec = path.join(__dirname, `v${v}.yaml`);
+    
+    // 2. install the validator for each api version
+    await new OpenApiValidator({
+      apiSpec,
+    }).install(app);
+    
+    // 3. init routes for v1 and v2
+    if (v === 1) initV1(app);
+    if (v === 2) initV2(app);
+
+    v += 1;
+  }
+
+  const server = http.createServer(app);
+  server.listen(3000);
+  console.log('Listening on port 3000');
+}
+
+// 3a. /api/v1 routes
+async function initV1(app, v) {
+  const v = '/api/v1';
+
+  app.post(`${v}/annotations`, (req, res, next) => {
+    res.json({ ...req.body, annotations: v, method: 'post' });
+  });
+
+  app.use((err, req, res, next) => {
+    // format error
+    res.status(err.status || 500).json({
+      message: err.message,
+      errors: err.errors,
+    });
+  });
+}
+
+// 3b. /api/v2 routes
+async function initV2(app) {
+  const v = '/api/v2';
+
+  app.post(`${v}/annotations`, (req, res, next) => {
+    res.json({ ...req.body, annotations: v, method: 'post' });
+  });
+
+  app.use((err, req, res, next) => {
+    // format error
+    res.status(err.status || 500).json({
+      message: err.message,
+      errors: err.errors,
+    });
+  });
+}
+
+main();
+module.exports = app;
+```
+
 ## FAQ
 
 **Q:** What happened to the `securityHandlers` property?
