@@ -63,7 +63,7 @@ export class OpenApiValidator {
   ): Promise<void> | void {
     const p = new OpenApiSpecLoader({
       apiDoc: this.options.apiSpec,
-      unsafeRefs: this.options.unsafeRefs
+      unsafeRefs: this.options.unsafeRefs,
     })
       .load()
       .then(spec => this.installMiddleware(app, spec));

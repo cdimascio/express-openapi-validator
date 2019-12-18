@@ -40,7 +40,7 @@ export interface OpenApiValidatorOpts {
   coerceTypes?: boolean | 'array';
   unknownFormats?: true | string[] | 'ignore';
   multerOpts?: {};
-  unsafeRefs?: boolean
+  unsafeRefs?: boolean;
 }
 
 export namespace OpenAPIV3 {
