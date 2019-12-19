@@ -71,7 +71,7 @@ export class OpenAPIFramework {
     };
   }
 
-  private loadSpec(filePath: string | object, $refParser: { mode: 'bundle' | 'dereference' }): Promise<OpenAPIV3.Document> {
+  private loadSpec(filePath: string | object, $refParser: { mode: 'bundle' | 'dereference' } = { mode: 'bundle'}): Promise<OpenAPIV3.Document> {
     // Because of this issue ( https://github.com/APIDevTools/json-schema-ref-parser/issues/101#issuecomment-421755168 )
     // We need this workaround ( use '$RefParser.dereference' instead of '$RefParser.bundle' ) if asked by user
     if (typeof filePath === 'string') {
