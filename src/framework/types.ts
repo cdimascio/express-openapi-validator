@@ -41,7 +41,7 @@ export interface OpenApiValidatorOpts {
   unknownFormats?: true | string[] | 'ignore';
   multerOpts?: {};
   $refParser?: {
-    mode: 'bundle' | 'dereference'
+    mode: 'bundle' | 'dereference',
   };
 }
 
