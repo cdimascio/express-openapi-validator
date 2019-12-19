@@ -363,7 +363,7 @@ interface OpenAPIFrameworkArgs {
   apiDoc: OpenAPIV3.Document | string;
   validateApiDoc?: boolean;
   $refParser?: {
-    mode: 'bundle' | 'dereference'
+    mode: 'bundle' | 'dereference',
   };
 }
 
