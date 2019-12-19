@@ -10,7 +10,7 @@ describe(packageJson.name, () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'escaped.characters.in.path.yaml');
-    app = await createApp({ apiSpec, unsafeRefs: true }, 3005, app => {
+    app = await createApp({ apiSpec, $refParser: {mode: 'dereference'} }, 3005, app => {
       app.use(
         `${app.basePath}`,
         express

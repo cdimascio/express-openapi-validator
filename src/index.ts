@@ -27,7 +27,7 @@ export class OpenApiValidator {
     if (options.validateRequests == null) options.validateRequests = true;
     if (options.validateResponses == null) options.validateResponses = false;
     if (options.validateSecurity == null) options.validateSecurity = true;
-    if (options.unsafeRefs == null) options.unsafeRefs = false;
+    if (options.$refParser == null) options.$refParser = {mode: 'bundle'};
 
     if (options.validateResponses === true) {
       options.validateResponses = {
@@ -63,7 +63,7 @@ export class OpenApiValidator {
   ): Promise<void> | void {
     const p = new OpenApiSpecLoader({
       apiDoc: this.options.apiSpec,
-      unsafeRefs: this.options.unsafeRefs,
+      $refParser: this.options.$refParser,
     })
       .load()
       .then(spec => this.installMiddleware(app, spec));
