@@ -128,12 +128,9 @@ export class RequestValidator {
 
     const validator = this.ajv.compile(schema);
     return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
-
-      const queryParamsToValidate = this.parseQueryParamsFromURL(req.originalUrl);
-
       if (!this._requestOpts.allowUnknownQueryParameters) {
         this.rejectUnknownQueryParams(
-          queryParamsToValidate,
+          req.query,
           schema.properties.query,
           securityQueryParameter,
         );
@@ -155,27 +152,6 @@ export class RequestValidator {
        * https://swagger.io/docs/specification/describing-parameters/#schema-vs-content
        */
       parameters.parseJson.forEach(item => {
-        if (item.reqField === 'query' && queryParamsToValidate[item.name]) {
-          if (queryParamsToValidate[item.name] === req[item.reqField][item.name]) {
-            queryParamsToValidate[item.name] = req[item.reqField][item.name] = JSON.parse(
-              queryParamsToValidate[item.name],
-            );
-
-            /**
-             * The query param we parse and the query param express
-             * parsed are the same value, so we assign them the same
-             * parsed value.
-             */
-            return;
-          }
-          /**
-           * They query params are not the same, so we parse the
-           * `queryParamsToValidate` and don't return.
-           */
-          queryParamsToValidate[item.name] = JSON.parse(
-            queryParamsToValidate[item.name],
-          );
-        }
         if (req[item.reqField]?.[item.name]) {
           try {
             req[item.reqField][item.name] = JSON.parse(
@@ -195,18 +171,6 @@ export class RequestValidator {
        * filter=foo%20bar%20baz
        */
       parameters.parseArray.forEach(item => {
-        if (item.reqField === 'query' && queryParamsToValidate[item.name]) {
-          if (queryParamsToValidate[item.name] === req[item.reqField][item.name]) {
-            queryParamsToValidate[item.name] = req[item.reqField][item.name] = queryParamsToValidate[item.name].split(
-              item.delimiter,
-            );
-
-            return;
-          }
-          queryParamsToValidate[item.name] = queryParamsToValidate[item.name].split(
-            item.delimiter,
-          );
-        }
         if (req[item.reqField]?.[item.name]) {
           req[item.reqField][item.name] = req[item.reqField][item.name].split(
             item.delimiter,
@@ -219,13 +183,6 @@ export class RequestValidator {
        */
       parameters.parseArrayExplode.forEach(item => {
         if (
-          item.reqField === 'query' &&
-          queryParamsToValidate[item.name] &&
-          !(queryParamsToValidate[item.name] instanceof Array)
-        ) {
-          queryParamsToValidate[item.name] = [queryParamsToValidate[item.name]];
-        }
-        if (
           req[item.reqField]?.[item.name] &&
           !(req[item.reqField][item.name] instanceof Array)
         ) {
@@ -235,7 +192,6 @@ export class RequestValidator {
 
       const reqToValidate = {
         ...req,
-        query: queryParamsToValidate,
         cookies: req.cookies
           ? { ...req.cookies, ...req.signedCookies }
           : undefined,
@@ -460,26 +416,5 @@ export class RequestValidator {
     });
 
     return { schema, parseJson, parseArray, parseArrayExplode };
-  }
-
-  private parseQueryParamsFromURL(url: string): object {
-    const queryIndex = url.indexOf('?');
-    const queryString = (queryIndex >= 0) ? url.slice(queryIndex + 1) : '';
-    const searchParams = new URLSearchParams(queryString);
-    const queryParamsToValidate: object = {};
-
-    searchParams.forEach((value, key) => {
-      if (queryParamsToValidate[key]) {
-        if (queryParamsToValidate[key] instanceof Array) {
-          queryParamsToValidate[key].push(value)
-        } else {
-          queryParamsToValidate[key] = [queryParamsToValidate[key], value]
-        }
-      } else {
-        queryParamsToValidate[key] = value
-      }
-    });
-
-    return queryParamsToValidate;
   }
 }

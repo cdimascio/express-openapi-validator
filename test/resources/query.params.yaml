@@ -33,16 +33,8 @@ paths:
   /pets:
     get:
       description: |
-        Returns all pets from the system that the user has access to
+        Returns all pets from the system that the user has access tp
       parameters:
-        - name: filter[date]
-          in: query
-          description: date to filter by
-          required: false
-          style: form
-          schema:
-            type: string
-            format: date
         - name: tags
           in: query
           description: tags to filter by
@@ -70,28 +62,6 @@ paths:
               - german_shepherd
               - golden_retreiver
         - $ref: '#/components/parameters/owner_name'
-      responses:
-        '200':
-          description: pet response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pet'
-  /pets/with-required-date-filter:
-    get:
-      description: |
-        Returns all pets from the system that the user has access to with required date filter
-      parameters:
-        - name: filter[date]
-          in: query
-          description: date to filter by
-          required: true
-          style: form
-          schema:
-            type: string
-            format: date
       responses:
         '200':
           description: pet response
