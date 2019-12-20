@@ -128,6 +128,25 @@ export class RequestValidator {
 
     const validator = this.ajv.compile(schema);
     return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
+
+      // forcing convert to object if scheme describes param as object + explode
+      // for easy validation, keep the schema but update whereabouts of its sub components
+      parameters.parseObjectExplode.forEach(item => {
+        if (req[item.reqField]) {
+          // check if there is at least one of the nested properties before create the parent
+          const atLeastOne = item.properties.some(p => req[item.reqField].hasOwnProperty(p));
+          if (atLeastOne) {
+            req[item.reqField][item.name] = {};
+            item.properties.forEach(property => {
+              if (req[item.reqField][property]) {
+                req[item.reqField][item.name][property] = req[item.reqField][property];
+                delete req[item.reqField][property];
+              }
+            });
+          }
+        }
+      });
+
       if (!this._requestOpts.allowUnknownQueryParameters) {
         this.rejectUnknownQueryParams(
           req.query,
@@ -158,8 +177,8 @@ export class RequestValidator {
               req[item.reqField][item.name],
             );
           } catch (e) {
-              // NOOP If parsing failed but _should_ contain JSON, validator will catch it.
-              // May contain falsely flagged parameter (e.g. input was object OR string)
+            // NOOP If parsing failed but _should_ contain JSON, validator will catch it.
+            // May contain falsely flagged parameter (e.g. input was object OR string)
           }
         }
       });
@@ -300,13 +319,13 @@ export class RequestValidator {
   ): string[] {
     return usedSecuritySchema && securitySchema
       ? usedSecuritySchema
-          .filter(obj => Object.entries(obj).length !== 0)
-          .map(sec => {
-            const securityKey = Object.keys(sec)[0];
-            return securitySchema[securityKey];
-          })
-          .filter(sec => sec?.in === 'query')
-          .map(sec => sec.name)
+        .filter(obj => Object.entries(obj).length !== 0)
+        .map(sec => {
+          const securityKey = Object.keys(sec)[0];
+          return securitySchema[securityKey];
+        })
+        .filter(sec => sec?.in === 'query')
+        .map(sec => sec.name)
       : [];
   }
 
@@ -326,6 +345,7 @@ export class RequestValidator {
     const parseJson = [];
     const parseArray = [];
     const parseArrayExplode = [];
+    const parseObjectExplode = [];
 
     parameters.forEach(parameter => {
       if (parameter.hasOwnProperty('$ref')) {
@@ -352,7 +372,7 @@ export class RequestValidator {
          * https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#parameterContent
          */
         const contentType = Object.keys(parameter.content)[0];
-        const contentTypeParsed = contentTypeParser.parse(contentType)
+        const contentTypeParsed = contentTypeParser.parse(contentType);
 
         const mediaTypeParsed = mediaTypeParser.parse(contentTypeParsed.type);
 
@@ -372,7 +392,7 @@ export class RequestValidator {
             [].concat(
               schema.allOf,
               schema.oneOf,
-              schema.anyOf
+              schema.anyOf,
             ).some(schemaHasObject)
           );
 
@@ -399,6 +419,30 @@ export class RequestValidator {
         parseArrayExplode.push({ name, reqField });
       }
 
+      // handle object serialization in query
+      if (parameter?.style === 'form' && parameter?.explode === true) {
+        // fetch the keys used for this kind of explode
+
+        const properties = ['allOf', 'oneOf', 'anyOf'].reduce(
+          (acc, key) => {
+            if (!parameter.schema.hasOwnProperty(key)) {
+              return acc;
+            } else {
+              const found_properties = parameter.schema[key].reduce((acc2, obj) => {
+                return (obj.type === 'object')
+                  ? acc2.concat(...Object.keys(obj.properties))
+                  : acc2;
+              }, []);
+              return (found_properties.length > 0)
+                ? acc.concat(...found_properties)
+                : acc;
+            }
+          },
+          [],
+        );
+        parseObjectExplode.push({ reqField, name, properties });
+      }
+
       if (!schema[reqField].properties) {
         schema[reqField] = {
           type: 'object',
@@ -415,6 +459,6 @@ export class RequestValidator {
       }
     });
 
-    return { schema, parseJson, parseArray, parseArrayExplode };
+    return { schema, parseJson, parseArray, parseArrayExplode, parseObjectExplode };
   }
 }

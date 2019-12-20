@@ -29,7 +29,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/serialisable`)
       .query({
-        settings: '{"onlyValidated":true}',
+        onlyValidated: true,
         timestamp: '2019-06-24T12:34:56.789Z',
         fooBar: '{"foo":"bar"}',
       })
