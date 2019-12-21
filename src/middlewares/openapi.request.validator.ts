@@ -453,27 +453,7 @@ export class RequestValidator {
           : parameterSchema.type === 'object'
           ? Object.keys(parameterSchema.properties)
           : [];
-        // const properties = hasXOf
-        //   ? ['allOf', 'oneOf', 'anyOf'].reduce((acc, key) => {
-        //       if (!parameter.schema.hasOwnProperty(key)) {
-        //         return acc;
-        //       } else {
-        //         const found_properties = parameter.schema[key].reduce(
-        //           (acc2, obj) => {
-        //             return obj.type === 'object'
-        //               ? acc2.concat(...Object.keys(obj.properties))
-        //               : acc2;
-        //           },
-        //           [],
-        //         );
-        //         return found_properties.length > 0
-        //           ? acc.concat(...found_properties)
-        //           : acc;
-        //       }
-        //     }, [])
-        //   : parameterSchema.type === 'object'
-        //   ? Object.keys(parameterSchema.properties)
-        //   : [];
+
         parseObjectExplode.push({ reqField, name, properties });
       }
 
