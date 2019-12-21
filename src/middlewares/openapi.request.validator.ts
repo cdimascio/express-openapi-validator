@@ -139,13 +139,14 @@ export class RequestValidator {
           if (atLeastOne) {
             req[item.reqField][item.name] = {};
             item.properties.forEach(property => {
-              // const removeME = schema;
               if (req[item.reqField][property]) {
                 const type =
                   schema.properties[item.reqField].properties[item.name]
-                    .properties[property].type;
-                [req[item.reqField][item.name]][property] =
-                  req[item.reqField][property];
+                    .properties?.[property]?.type;
+                const value = req[item.reqField][property];
+                const coercedValue =
+                  type === 'array' && !Array.isArray(value) ? [value] : value;
+                req[item.reqField][item.name][property] = coercedValue;
                 delete req[item.reqField][property];
               }
             });
