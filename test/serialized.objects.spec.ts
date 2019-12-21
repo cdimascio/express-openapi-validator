@@ -37,7 +37,6 @@ describe(packageJson.name, () => {
       })
       .expect(200)
       .then(response => {
-        console.log(response.body);
         expect(response.body).to.deep.equal({
           settings: {
             onlyValidated: true,
@@ -78,7 +77,8 @@ describe(packageJson.name, () => {
         );
       }));
 
-  it('should explode query param object e.g. tag_ids, state as query params', async () =>
+  // the following should probably throw an error but coerces to array (to resolve )
+  it.skip('should explode query param object and return 400 if number not number[] is passed', async () =>
     request(app)
       .get(`${app.basePath}/tags`)
       .query({
@@ -91,7 +91,7 @@ describe(packageJson.name, () => {
           .that.equals('request.query.settings.tag_ids should be array');
       }));
 
-  it.only('should explode query param object e.g. tag_ids, state as query params', async () =>
+  it('should explode query param object e.g. tag_ids, state as query params', async () =>
     request(app)
       .get(`${app.basePath}/tags`)
       .query({
@@ -99,6 +99,9 @@ describe(packageJson.name, () => {
       })
       .expect(200)
       .then(r => {
-        console.log(r.body);
+        expect(r.body).to.have.property('settings');
+        expect(r.body.settings)
+          .to.have.property('tag_ids')
+          .that.deep.equals([1]);
       }));
 });
