@@ -16,7 +16,8 @@ describe(packageJson.name, () => {
         `${app.basePath}`,
         express
           .Router()
-          .get(`/serialisable`, (req, res) => res.json(req.query)),
+          .get(`/serialisable`, (req, res) => res.json(req.query))
+          .get(`/tags`, (req, res) => res.json(req.query)),
       ),
     );
   });
@@ -29,8 +30,9 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/serialisable`)
       .query({
-        settings: '{"onlyValidated":true}',
+        onlyValidated: true,
         timestamp: '2019-06-24T12:34:56.789Z',
+        onlySelected: [1, 2, 3],
         fooBar: '{"foo":"bar"}',
       })
       .expect(200)
@@ -38,7 +40,7 @@ describe(packageJson.name, () => {
         expect(response.body).to.deep.equal({
           settings: {
             onlyValidated: true,
-            onlySelected: [],
+            onlySelected: [1, 2, 3],
           },
           timestamp: '2019-06-24T12:34:56.789Z',
           fooBar: {
@@ -70,6 +72,36 @@ describe(packageJson.name, () => {
       })
       .expect(400)
       .then(response => {
-        expect(response.body.message).to.equal('request.query.settings should be object');
+        expect(response.body.message).to.equal(
+          'request.query.settings should be object',
+        );
+      }));
+
+  // the following should probably throw an error but coerces to array (to resolve )
+  it.skip('should explode query param object and return 400 if number not number[] is passed', async () =>
+    request(app)
+      .get(`${app.basePath}/tags`)
+      .query({
+        tag_ids: 1,
+      })
+      .expect(400)
+      .then(r => {
+        expect(r.body)
+          .to.have.property('message')
+          .that.equals('request.query.settings.tag_ids should be array');
+      }));
+
+  it('should explode query param object e.g. tag_ids, state as query params', async () =>
+    request(app)
+      .get(`${app.basePath}/tags`)
+      .query({
+        tag_ids: [1],
+      })
+      .expect(200)
+      .then(r => {
+        expect(r.body).to.have.property('settings');
+        expect(r.body.settings)
+          .to.have.property('tag_ids')
+          .that.deep.equals([1]);
       }));
 });
