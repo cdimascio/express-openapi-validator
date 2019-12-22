@@ -9,6 +9,32 @@ servers:
   - url: /v1/
 
 paths:
+  /tags:
+    get:
+      summary: "Retrieve all tags"
+      operationId: getTags
+      parameters:
+        - in: query
+          style: form
+          name: settings
+          explode: true
+          schema:
+            type: object
+            properties:
+              tag_ids:
+                type: array
+                items:
+                  type: integer
+                  minimum: 0
+                minItems: 1
+              state:
+                type: string
+                enum: ["default", "validated", "pending"]
+                default: "default"
+                description: "Filter the tags by their validity. The default value ('default') stands for no filtering."
+      responses:
+        '200':
+          description: "An array of tag"
   /serialisable:
     get:
       summary: "Retrieve something"
