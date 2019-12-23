@@ -16,14 +16,27 @@ const PARAM_TYPE = {
   cookie: 'cookies',
 };
 
+interface ParseType {
+  name: string;
+  reqField: string;
+}
+export interface ParseJson extends ParseType {}
+export interface ParseArrayExplode extends ParseType {}
+export interface ParseArray extends ParseArrayExplode {
+  delimiter: string;
+}
+export interface ParseObjectExplode extends ParseType {
+  properties: string[];
+}
+
 export class Parameters {
   private _apiDocs: OpenAPIV3.Document;
-  private parseJson = [];
-  private parseArray = [];
-  private parseArrayExplode = [];
-  private parseObjectExplode = [];
+  private parseJson: ParseJson[] = [];
+  private parseArray: ParseArray[] = [];
+  private parseArrayExplode: ParseArrayExplode[] = [];
+  private parseObjectExplode: ParseObjectExplode[] = [];
 
-  constructor(apiDocs) {
+  constructor(apiDocs: OpenAPIV3.Document) {
     this._apiDocs = apiDocs;
   }
 
