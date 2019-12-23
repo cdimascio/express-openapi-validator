@@ -55,23 +55,17 @@ export class RequestValidator {
 
     const pathSchema = openapi.schema;
     if (!pathSchema) {
-      // add openapi metadata to make this case more clear
-      // its not obvious that missig schema means methodNotAllowed
       throw validationError(405, req.path, `${req.method} method not allowed`);
     }
 
     // cache middleware by combining method, path, and contentType
-    // TODO contentType could have value not_provided
     const contentType = ContentType.from(req);
     const contentTypeKey = contentType.equivalents()[0] ?? 'not_provided';
     const key = `${req.method}-${req.originalUrl}-${contentTypeKey}`;
 
     if (!this._middlewareCache[key]) {
-      this._middlewareCache[key] = this.buildMiddleware(
-        path,
-        pathSchema,
-        contentType,
-      );
+      const middleware = this.buildMiddleware(path, pathSchema, contentType);
+      this._middlewareCache[key] = middleware;
     }
     return this._middlewareCache[key](req, res, next);
   }
@@ -238,7 +232,7 @@ export class RequestValidator {
 }
 
 class RequestBody {
-  static toSchema(
+  public static toSchema(
     ajv: Ajv,
     path: string,
     contentType: ContentType,
@@ -311,7 +305,7 @@ class RequestBody {
 }
 
 class Security {
-  static queryParam(
+  public static queryParam(
     apiDocs: OpenAPIV3.Document,
     schema: OpenAPIV3.OperationObject,
   ) {
