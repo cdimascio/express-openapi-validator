@@ -1,5 +1,6 @@
 import { OpenApiRequest, OpenApiRequestMetadata } from '../../framework/types';
 import { ParametersParse } from './parameters.parse';
+import { DraftSchema } from '../openapi.request.validator';
 
 /**
  * A class top arse incoing parameters and populate a list of request fields e.g. id and field types e.g. query
@@ -7,9 +8,9 @@ import { ParametersParse } from './parameters.parse';
  */
 export class ParametersTransform {
   private parameters: ParametersParse;
-  private schema;
+  private schema: DraftSchema;
 
-  constructor(parseResult: ParametersParse, schema) {
+  constructor(parseResult: ParametersParse, schema: DraftSchema) {
     this.parameters = parseResult;
     this.schema = schema;
   }
