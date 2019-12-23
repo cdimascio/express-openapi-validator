@@ -17,15 +17,19 @@ import {
 } from '../framework/types';
 
 import {
-  ParametersParser,
+  ParametersSchemaParser,
   ParametersSchema,
 } from './parameters/parameters.parse';
 import { ParametersTransform } from './parameters/parameters.transform';
 
 type BodySchema = OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject | {};
+interface DraftProperties extends ParametersSchema {
+  body?: BodySchema;
+}
+
 export interface DraftSchema {
   required: string[];
-  properties: ParametersSchema & BodySchema;
+  properties: DraftProperties;
 }
 
 export class RequestValidator {
@@ -85,35 +89,23 @@ export class RequestValidator {
     pathSchema: OpenAPIV3.OperationObject,
     contentType: ContentType,
   ): RequestHandler {
-    const parser = new ParametersParser(this._apiDocs);
-    const parameters = parser.parse(path, pathSchema.parameters);
+    const paramSchemaParser = new ParametersSchemaParser(this._apiDocs);
+    const parameters = paramSchemaParser.parse(path, pathSchema.parameters);
     const securityQueryParam = Security.queryParam(this._apiDocs, pathSchema);
+    const bodySchemaParser = new BodySchemaParser(this.ajv, this._apiDocs);
+    // TODO bodyParser.parse should return OpenAPIV3.SchemaObject instead of BodySchema
+    const body = <OpenAPIV3.SchemaObject>(
+      bodySchemaParser.parse(path, pathSchema, contentType)
+    );
 
-    let requestBody = pathSchema.requestBody;
-    if (requestBody?.hasOwnProperty('$ref')) {
-      const ref = (<OpenAPIV3.ReferenceObject>requestBody).$ref;
-      const id = ref.replace(/^.+\//i, '');
-      requestBody = this._apiDocs.components.requestBodies[id];
-    }
+    const required = ['query', 'headers', 'params'];
+    const properties = { ...parameters.schema, body: body };
+    if (body.required) required.push('body');
 
-    let body = {};
-    const requiredAdds = [];
-    if (requestBody?.hasOwnProperty('content')) {
-      const reqBodyObject = <OpenAPIV3.RequestBodyObject>requestBody;
-      body = RequestBody.toSchema(this.ajv, path, contentType, reqBodyObject);
-      if (reqBodyObject.required) requiredAdds.push('body');
-    }
-
-    const schema = {
-      // $schema: "http://json-schema.org/draft-04/schema#",
-      required: ['query', 'headers', 'params'].concat(requiredAdds),
-      properties: {
-        body,
-        ...parameters.schema,
-      },
-    };
-
+    // $schema: "http://json-schema.org/draft-04/schema#",
+    const schema = { required, properties };
     const validator = this.ajv.compile(schema);
+
     return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
       const parametersRequest = new ParametersTransform(parameters, schema);
 
@@ -169,9 +161,34 @@ export class RequestValidator {
   }
 }
 
-class RequestBody {
-  public static toSchema(
-    ajv: Ajv,
+class BodySchemaParser {
+  private _apiDoc: OpenAPIV3.Document;
+  private ajv: Ajv;
+  constructor(ajv: Ajv, apiDoc: OpenAPIV3.Document) {
+    this.ajv = ajv;
+    this._apiDoc = apiDoc;
+  }
+  public parse(
+    path: string,
+    pathSchema: OpenAPIV3.OperationObject,
+    contentType: ContentType,
+  ): BodySchema {
+    // TODO should return OpenAPIV3.SchemaObject instead
+    let schemaRequestBody = pathSchema.requestBody;
+    if (schemaRequestBody?.hasOwnProperty('$ref')) {
+      // TODO use ajv.getSchema instead
+      const ref = (<OpenAPIV3.ReferenceObject>schemaRequestBody).$ref;
+      const id = ref.replace(/^.+\//i, '');
+      schemaRequestBody = this._apiDoc.components.requestBodies[id];
+    }
+    const requestBody = <OpenAPIV3.RequestBodyObject>schemaRequestBody;
+    if (requestBody?.hasOwnProperty('content')) {
+      return this.toSchema(path, contentType, requestBody);
+      // if (requestBody.required) required.push('body');
+    }
+    return {};
+  }
+  private toSchema(
     path: string,
     contentType: ContentType,
     requestBody: OpenAPIV3.RequestBodyObject,
@@ -191,18 +208,13 @@ class RequestBody {
         throw validationError(415, path, msg);
       }
 
-      const schema = RequestBody.cleanseContentSchema(
-        ajv,
-        contentType,
-        requestBody,
-      );
+      const schema = this.cleanseContentSchema(contentType, requestBody);
       return schema ?? content.schema ?? {};
     }
     return {};
   }
 
-  private static cleanseContentSchema(
-    ajv: Ajv,
+  private cleanseContentSchema(
     contentType: ContentType,
     requestBody: OpenAPIV3.RequestBodyObject,
   ): BodySchema {
@@ -212,7 +224,7 @@ class RequestBody {
 
     let bodyContentRefSchema = null;
     if (bodyContentSchema && '$ref' in bodyContentSchema) {
-      const objectSchema = ajv.getSchema(bodyContentSchema.$ref);
+      const objectSchema = this.ajv.getSchema(bodyContentSchema.$ref);
       bodyContentRefSchema =
         objectSchema &&
         objectSchema.schema &&

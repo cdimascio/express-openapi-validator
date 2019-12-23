@@ -49,7 +49,7 @@ export interface ParametersParse {
  * A class top arse incoing parameters and populate a list of request fields e.g. id and field types e.g. query
  * whose value must later be parsed as a JSON object, JSON Exploded Object, JSON Array, or JSON Exploded Array
  */
-export class ParametersParser {
+export class ParametersSchemaParser {
   private _apiDocs: OpenAPIV3.Document;
   private parseJson: ParseJson[] = [];
   private parseArray: ParseArray[] = [];
