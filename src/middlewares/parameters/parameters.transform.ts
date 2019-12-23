@@ -14,7 +14,7 @@ export class ParametersTransform {
     this.schema = schema;
   }
 
-  applyExplodedJsonTransform(req: OpenApiRequest) {
+  public applyExplodedJsonTransform(req: OpenApiRequest): void {
     // forcing convert to object if scheme describes param as object + explode
     // for easy validation, keep the schema but update whereabouts of its sub components
     this.parameters.parseObjectExplode.forEach(item => {
@@ -42,7 +42,7 @@ export class ParametersTransform {
     });
   }
 
-  applyJsonTransform(req: OpenApiRequest) {
+  public applyJsonTransform(req: OpenApiRequest): void {
     /**
      * support json in request params, query, headers and cookies
      * like this filter={"type":"t-shirt","color":"blue"}
@@ -63,7 +63,7 @@ export class ParametersTransform {
     });
   }
 
-  applyJsonArrayTransform(req: OpenApiRequest) {
+  public applyJsonArrayTransform(req: OpenApiRequest): void {
     /**
      * array deserialization
      * filter=foo,bar,baz
@@ -79,7 +79,7 @@ export class ParametersTransform {
     });
   }
 
-  applyExplodedJsonArrayTransform(req: OpenApiRequest) {
+  public applyExplodedJsonArrayTransform(req: OpenApiRequest): void {
     /**
      * forcing convert to array if scheme describes param as array + explode
      */
@@ -93,7 +93,7 @@ export class ParametersTransform {
     });
   }
 
-  applyPathTransform(req: OpenApiRequest) {
+  public applyPathTransform(req: OpenApiRequest): void {
     const openapi = <OpenApiRequestMetadata>req.openapi;
     const shouldUpdatePathParams = Object.keys(openapi.pathParams).length > 0;
 
