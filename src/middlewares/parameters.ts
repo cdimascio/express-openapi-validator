@@ -42,7 +42,7 @@ export class Parameters {
     this._apiDocs = apiDocs;
   }
 
-  parse(path: string, parameters: Parameter[] = []) {
+  public parse(path: string, parameters: Parameter[] = []) {
     const schemas = { query: {}, headers: {}, params: {}, cookies: {} };
 
     parameters.forEach(p => {
@@ -103,7 +103,7 @@ export class Parameters {
     path: string,
     name: string,
     parameter: OpenAPIV3.ParameterObject,
-  ) {
+  ): void {
     /**
      * Per the OpenAPI3 spec:
      * A map containing the representations for the parameter. The key is the media type
@@ -127,7 +127,7 @@ export class Parameters {
     name: string,
     schema: OpenAPIV3.SchemaObject,
     parameter: OpenAPIV3.ParameterObject,
-  ) {
+  ): void {
     // fetch the keys used for this kind of explode
     const type = schema.type;
     const reqField = PARAM_TYPE[parameter.in];
@@ -160,10 +160,10 @@ export class Parameters {
 }
 
 class Util {
-  static is$Ref(parameter: Parameter) {
+  public static is$Ref(parameter: Parameter): boolean {
     return parameter.hasOwnProperty('$ref');
   }
-  static dereference(
+  public static dereference(
     apiDocs: OpenAPIV3.Document,
     parameter: OpenAPIV3.ReferenceObject,
   ): OpenAPIV3.ParameterObject {
@@ -172,7 +172,12 @@ class Util {
     return <OpenAPIV3.ParameterObject>apiDocs.components.parameters[id];
   }
 
-  static normalize(parameter: OpenAPIV3.ParameterObject) {
+  public static normalize(
+    parameter: OpenAPIV3.ParameterObject,
+  ): {
+    name: string;
+    schema: Schema;
+  } {
     let schema = parameter.schema;
     if (!schema) {
       const contentType = Object.keys(parameter.content)[0];
@@ -183,7 +188,7 @@ class Util {
     return { name, schema };
   }
 
-  static hasSchemaObject(schema: Schema) {
+  public static hasSchemaObject(schema: Schema): boolean {
     const schemaHasObject = schema => {
       if (!schema) return false;
       const { type, allOf, oneOf, anyOf } = schema;
@@ -197,7 +202,10 @@ class Util {
 }
 
 class Validate {
-  static parameterType(path: string, parameter: OpenAPIV3.ParameterObject) {
+  public static parameterType(
+    path: string,
+    parameter: OpenAPIV3.ParameterObject,
+  ): void {
     const isKnownType = PARAM_TYPE[parameter.in];
     if (!isKnownType) {
       const message = `Parameter 'in' has incorrect value '${parameter.in}' for [${parameter.name}]`;
@@ -216,11 +224,11 @@ class Validate {
     }
   }
 
-  static arrayDelimiter(
+  public static arrayDelimiter(
     path: string,
     delimiter: string,
     parameter: OpenAPIV3.ParameterObject,
-  ) {
+  ): void {
     if (!delimiter) {
       const message = `Parameter 'style' has incorrect value '${parameter.style}' for [${parameter.name}]`;
       throw validationError(400, path, message);
