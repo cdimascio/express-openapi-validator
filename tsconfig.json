@@ -13,6 +13,6 @@
   "include": [
     "typings/**/*.d.ts",
     "src/**/*.ts",
-    "src/middlewares/modded.express.mung.ts"
+    "src/framework/modded.express.mung.ts"
   ]
 }

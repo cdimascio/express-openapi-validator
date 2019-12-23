@@ -16,7 +16,8 @@ import {
   OpenApiRequestMetadata,
 } from '../framework/types';
 
-import { Parameters } from './parameters';
+import { ParametersParser } from './parameters/parameters.parse';
+import { ParametersTransform } from './parameters/parameters.transform';
 
 export class RequestValidator {
   private _middlewareCache: { [key: string]: RequestHandler } = {};
@@ -75,7 +76,7 @@ export class RequestValidator {
     pathSchema: OpenAPIV3.OperationObject,
     contentType: ContentType,
   ): RequestHandler {
-    const parser = new Parameters(this._apiDocs);
+    const parser = new ParametersParser(this._apiDocs);
     const parameters = parser.parse(path, pathSchema.parameters);
     const securityQueryParam = Security.queryParam(this._apiDocs, pathSchema);
 
@@ -105,31 +106,10 @@ export class RequestValidator {
 
     const validator = this.ajv.compile(schema);
     return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
-      // forcing convert to object if scheme describes param as object + explode
-      // for easy validation, keep the schema but update whereabouts of its sub components
-      parameters.parseObjectExplode.forEach(item => {
-        if (req[item.reqField]) {
-          // check if there is at least one of the nested properties before create the parent
-          const atLeastOne = item.properties.some(p =>
-            req[item.reqField].hasOwnProperty(p),
-          );
-          if (atLeastOne) {
-            req[item.reqField][item.name] = {};
-            item.properties.forEach(property => {
-              if (req[item.reqField][property]) {
-                const type =
-                  schema.properties[item.reqField].properties[item.name]
-                    .properties?.[property]?.type;
-                const value = req[item.reqField][property];
-                const coercedValue =
-                  type === 'array' && !Array.isArray(value) ? [value] : value;
-                req[item.reqField][item.name][property] = coercedValue;
-                delete req[item.reqField][property];
-              }
-            });
-          }
-        }
-      });
+      const parametersRequest = new ParametersTransform(parameters, schema);
+
+      parametersRequest.applyExplodedJsonTransform(req);
+      parametersRequest.applyExplodedJsonArrayTransform(req);
 
       if (!this._requestOpts.allowUnknownQueryParameters) {
         this.rejectUnknownQueryParams(
@@ -139,69 +119,18 @@ export class RequestValidator {
         );
       }
 
-      const openapi = <OpenApiRequestMetadata>req.openapi;
-      const shouldUpdatePathParams = Object.keys(openapi.pathParams).length > 0;
+      parametersRequest.applyPathTransform(req);
+      parametersRequest.applyJsonTransform(req);
+      parametersRequest.applyJsonArrayTransform(req);
 
-      if (shouldUpdatePathParams) {
-        req.params = openapi.pathParams ?? req.params;
-      }
+      const cookies = req.cookies
+        ? { ...req.cookies, ...req.signedCookies }
+        : undefined;
 
-      /**
-       * support json in request params, query, headers and cookies
-       * like this filter={"type":"t-shirt","color":"blue"}
-       *
-       * https://swagger.io/docs/specification/describing-parameters/#schema-vs-content
-       */
-      parameters.parseJson.forEach(item => {
-        if (req[item.reqField]?.[item.name]) {
-          try {
-            req[item.reqField][item.name] = JSON.parse(
-              req[item.reqField][item.name],
-            );
-          } catch (e) {
-            // NOOP If parsing failed but _should_ contain JSON, validator will catch it.
-            // May contain falsely flagged parameter (e.g. input was object OR string)
-          }
-        }
-      });
-
-      /**
-       * array deserialization
-       * filter=foo,bar,baz
-       * filter=foo|bar|baz
-       * filter=foo%20bar%20baz
-       */
-      parameters.parseArray.forEach(item => {
-        if (req[item.reqField]?.[item.name]) {
-          req[item.reqField][item.name] = req[item.reqField][item.name].split(
-            item.delimiter,
-          );
-        }
-      });
-
-      /**
-       * forcing convert to array if scheme describes param as array + explode
-       */
-      parameters.parseArrayExplode.forEach(item => {
-        if (
-          req[item.reqField]?.[item.name] &&
-          !(req[item.reqField][item.name] instanceof Array)
-        ) {
-          req[item.reqField][item.name] = [req[item.reqField][item.name]];
-        }
-      });
-
-      const reqToValidate = {
-        ...req,
-        cookies: req.cookies
-          ? { ...req.cookies, ...req.signedCookies }
-          : undefined,
-      };
-      const valid = validator(reqToValidate);
+      const valid = validator({ ...req, cookies });
       if (valid) {
         next();
       } else {
-        // TODO look into Ajv async errors plugins
         const errors = augmentAjvErrors([...(validator.errors ?? [])]);
         const err = ajvErrorsToValidatorError(400, errors);
         const message = this.ajv.errorsText(errors, { dataVar: 'request' });
