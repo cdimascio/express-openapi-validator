@@ -15,8 +15,8 @@ import {
   ValidateRequestOpts,
   OpenApiRequestMetadata,
 } from '../framework/types';
-import * as mediaTypeParser from 'media-typer';
-import * as contentTypeParser from 'content-type';
+
+import { Parameters } from './parameters';
 
 export class RequestValidator {
   private _middlewareCache: { [key: string]: RequestHandler } = {};
@@ -81,26 +81,9 @@ export class RequestValidator {
     pathSchema: OpenAPIV3.OperationObject,
     contentType: ContentType,
   ): RequestHandler {
-    const parameters = this.parametersToSchema(path, pathSchema.parameters);
-
-    let usedSecuritySchema: OpenAPIV3.SecurityRequirementObject[] = [];
-    if (
-      pathSchema.hasOwnProperty('security') &&
-      pathSchema.security.length > 0
-    ) {
-      usedSecuritySchema = pathSchema.security;
-    } else if (
-      this._apiDocs.hasOwnProperty('security') &&
-      this._apiDocs.security.length > 0
-    ) {
-      // if no security schema for the path, use top-level security schema
-      usedSecuritySchema = this._apiDocs.security;
-    }
-
-    const securityQueryParameter = this.getSecurityQueryParams(
-      usedSecuritySchema,
-      this._apiDocs.components?.securitySchemes,
-    );
+    const parser = new Parameters(this._apiDocs);
+    const parameters = parser.parse(path, pathSchema.parameters);
+    const securityQueryParam = Security.queryParam(this._apiDocs, pathSchema);
 
     let requestBody = pathSchema.requestBody;
     if (requestBody?.hasOwnProperty('$ref')) {
@@ -158,7 +141,7 @@ export class RequestValidator {
         this.rejectUnknownQueryParams(
           req.query,
           schema.properties.query,
-          securityQueryParameter,
+          securityQueryParam,
         );
       }
 
@@ -319,8 +302,34 @@ export class RequestValidator {
       return schema;
     }
   }
+}
 
-  private getSecurityQueryParams(
+class Security {
+  static queryParam(
+    apiDocs: OpenAPIV3.Document,
+    schema: OpenAPIV3.OperationObject,
+  ) {
+    const hasPathSecurity =
+      schema.hasOwnProperty('security') && schema.security.length > 0;
+    const hasRootSecurity =
+      apiDocs.hasOwnProperty('security') && apiDocs.security.length > 0;
+
+    let usedSecuritySchema: OpenAPIV3.SecurityRequirementObject[] = [];
+    if (hasPathSecurity) {
+      usedSecuritySchema = schema.security;
+    } else if (hasRootSecurity) {
+      // if no security schema for the path, use top-level security schema
+      usedSecuritySchema = apiDocs.security;
+    }
+
+    const securityQueryParameter = this.getSecurityQueryParams(
+      usedSecuritySchema,
+      apiDocs.components?.securitySchemes,
+    );
+    return securityQueryParameter;
+  }
+
+  private static getSecurityQueryParams(
     usedSecuritySchema: OpenAPIV3.SecurityRequirementObject[],
     securitySchema,
   ): string[] {
@@ -334,151 +343,5 @@ export class RequestValidator {
           .filter(sec => sec?.in === 'query')
           .map(sec => sec.name)
       : [];
-  }
-
-  private parametersToSchema(path: string, parameters = []) {
-    const schema = { query: {}, headers: {}, params: {}, cookies: {} };
-    const reqFields = {
-      query: 'query',
-      header: 'headers',
-      path: 'params',
-      cookie: 'cookies',
-    };
-    const arrayDelimiter = {
-      form: ',',
-      spaceDelimited: ' ',
-      pipeDelimited: '|',
-    };
-    const parseJson = [];
-    const parseArray = [];
-    const parseArrayExplode = [];
-    const parseObjectExplode = [];
-
-    parameters.forEach(parameter => {
-      if (parameter.hasOwnProperty('$ref')) {
-        const id = parameter.$ref.replace(/^.+\//i, '');
-        parameter = this._apiDocs.components.parameters[id];
-      }
-
-      const $in = parameter.in;
-      const name =
-        $in === 'header' ? parameter.name.toLowerCase() : parameter.name;
-
-      const reqField = reqFields[$in];
-      if (!reqField) {
-        const message = `Parameter 'in' has incorrect value '${$in}' for [${parameter.name}]`;
-        throw validationError(400, path, message);
-      }
-
-      let parameterSchema = parameter.schema;
-      if (parameter.content) {
-        /**
-         * Per the OpenAPI3 spec:
-         * A map containing the representations for the parameter. The key is the media type
-         * and the value describes it. The map MUST only contain one entry.
-         * https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#parameterContent
-         */
-        const contentType = Object.keys(parameter.content)[0];
-        const contentTypeParsed = contentTypeParser.parse(contentType);
-
-        const mediaTypeParsed = mediaTypeParser.parse(contentTypeParsed.type);
-
-        parameterSchema = parameter.content[contentType].schema;
-
-        if (
-          mediaTypeParsed.subtype === 'json' ||
-          mediaTypeParsed.suffix === 'json'
-        ) {
-          parseJson.push({ name, reqField });
-        }
-      } else if ($in === 'query') {
-        // handle complex json types in schema
-        const schemaHasObject = schema =>
-          schema &&
-          (schema.type === 'object' ||
-            []
-              .concat(schema.allOf, schema.oneOf, schema.anyOf)
-              .some(schemaHasObject));
-
-        if (schemaHasObject(parameterSchema)) {
-          parseJson.push({ name, reqField });
-        }
-      }
-
-      if (!parameterSchema) {
-        const message = `No available parameter 'schema' or 'content' for [${parameter.name}]`;
-        throw validationError(400, path, message);
-      }
-
-      if (parameter.schema?.type === 'array' && !parameter.explode) {
-        const delimiter = arrayDelimiter[parameter.style];
-        if (!delimiter) {
-          const message = `Parameter 'style' has incorrect value '${parameter.style}' for [${parameter.name}]`;
-          throw validationError(400, path, message);
-        }
-        parseArray.push({ name, reqField, delimiter });
-      }
-
-      if (parameter.schema?.type === 'array' && parameter.explode) {
-        parseArrayExplode.push({ name, reqField });
-      }
-
-      // handle object serialization in query
-      if (parameter?.style === 'form' && parameter?.explode === true) {
-        // fetch the keys used for this kind of explode
-        const hasXOf =
-          parameterSchema.allOf ||
-          parameterSchema.oneOf ||
-          parameterSchema.anyOf;
-
-        const xOfProperties = schema => {
-          return ['allOf', 'oneOf', 'anyOf'].reduce((acc, key) => {
-            if (!schema.hasOwnProperty(key)) {
-              return acc;
-            } else {
-              const found_properties = schema[key].reduce((acc2, obj) => {
-                return obj.type === 'object'
-                  ? acc2.concat(...Object.keys(obj.properties))
-                  : acc2;
-              }, []);
-              return found_properties.length > 0
-                ? acc.concat(...found_properties)
-                : acc;
-            }
-          }, []);
-        };
-
-        const properties = hasXOf
-          ? xOfProperties(parameterSchema)
-          : parameterSchema.type === 'object'
-          ? Object.keys(parameterSchema.properties)
-          : [];
-
-        parseObjectExplode.push({ reqField, name, properties });
-      }
-
-      if (!schema[reqField].properties) {
-        schema[reqField] = {
-          type: 'object',
-          properties: {},
-        };
-      }
-
-      schema[reqField].properties[name] = parameterSchema;
-      if (parameter.required) {
-        if (!schema[reqField].required) {
-          schema[reqField].required = [];
-        }
-        schema[reqField].required.push(name);
-      }
-    });
-
-    return {
-      schema,
-      parseJson,
-      parseArray,
-      parseArrayExplode,
-      parseObjectExplode,
-    };
   }
 }
