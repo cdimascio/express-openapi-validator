@@ -16,8 +16,17 @@ import {
   OpenApiRequestMetadata,
 } from '../framework/types';
 
-import { ParametersParser } from './parameters/parameters.parse';
+import {
+  ParametersParser,
+  ParametersSchema,
+} from './parameters/parameters.parse';
 import { ParametersTransform } from './parameters/parameters.transform';
+
+type BodySchema = OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject | {};
+export interface DraftSchema {
+  required: string[];
+  properties: ParametersSchema & BodySchema;
+}
 
 export class RequestValidator {
   private _middlewareCache: { [key: string]: RequestHandler } = {};
@@ -166,7 +175,7 @@ class RequestBody {
     path: string,
     contentType: ContentType,
     requestBody: OpenAPIV3.RequestBodyObject,
-  ): object {
+  ): BodySchema {
     if (requestBody.content) {
       let content = null;
       for (const type of contentType.equivalents()) {
@@ -196,7 +205,7 @@ class RequestBody {
     ajv: Ajv,
     contentType: ContentType,
     requestBody: OpenAPIV3.RequestBodyObject,
-  ): object {
+  ): BodySchema {
     const bodyContentSchema =
       requestBody.content[contentType.contentType] &&
       requestBody.content[contentType.contentType].schema;
