@@ -308,7 +308,7 @@ class Security {
   public static queryParam(
     apiDocs: OpenAPIV3.Document,
     schema: OpenAPIV3.OperationObject,
-  ) {
+  ): string[] {
     const hasPathSecurity =
       schema.hasOwnProperty('security') && schema.security.length > 0;
     const hasRootSecurity =
