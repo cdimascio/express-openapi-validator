@@ -3,7 +3,10 @@ import { ContentType, validationError } from '../util';
 
 import { OpenAPIV3 } from '../../framework/types';
 
-export type BodySchema = OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject | {};
+export type BodySchema =
+  | OpenAPIV3.ReferenceObject
+  | OpenAPIV3.SchemaObject
+  | {};
 
 export class BodySchemaParser {
   private _apiDoc: OpenAPIV3.Document;
@@ -68,13 +71,9 @@ export class BodySchemaParser {
 
     let bodyContentRefSchema = null;
     if (bodyContentSchema && '$ref' in bodyContentSchema) {
-      const objectSchema = this.ajv.getSchema(bodyContentSchema.$ref);
-      bodyContentRefSchema =
-        objectSchema &&
-        objectSchema.schema &&
-        (<any>objectSchema.schema).properties
-          ? { ...(<any>objectSchema).schema }
-          : null;
+      const resolved = this.ajv.getSchema(bodyContentSchema.$ref);
+      const schema = <OpenAPIV3.SchemaObject>resolved?.schema;
+      bodyContentRefSchema = schema?.properties ? { ...schema } : null;
     }
     // handle readonly / required request body refs
     // don't need to copy schema if validator gets its own copy of the api spec
