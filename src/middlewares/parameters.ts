@@ -154,7 +154,7 @@ export class Parameters {
 
     this.parseObjectExplode.push({ reqField, name, properties });
 
-    function xOfProperties(schema: Schema) {
+    function xOfProperties(schema: Schema): string[] {
       return ['allOf', 'oneOf', 'anyOf'].reduce((acc, key) => {
         if (!schema.hasOwnProperty(key)) {
           return acc;
