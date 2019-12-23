@@ -97,13 +97,14 @@ export class RequestValidator {
     const body = <OpenAPIV3.SchemaObject>(
       bodySchemaParser.parse(path, pathSchema, contentType)
     );
-
-    const required = ['query', 'headers', 'params'];
-    const properties = { ...parameters.schema, body: body };
-    if (body.required) required.push('body');
+ ;
+    const required = body.required ? ['body'] : [];
 
     // $schema: "http://json-schema.org/draft-04/schema#",
-    const schema = { required, properties };
+    const schema = {
+      required: ['query', 'headers', 'params'].concat(required),
+      properties: { ...parameters.schema, body: body },
+    };
     const validator = this.ajv.compile(schema);
 
     return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
