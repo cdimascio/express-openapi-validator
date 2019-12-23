@@ -1,5 +1,5 @@
-import { OpenAPIV3 } from '../framework/types';
-import { validationError } from './util';
+import { OpenAPIV3 } from '../../framework/types';
+import { validationError } from '../util';
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
 
@@ -45,7 +45,11 @@ export interface ParametersParse {
   parseObjectExplode: ParseObjectExplode[];
 }
 
-export class Parameters {
+/**
+ * A class top arse incoing parameters and populate a list of request fields e.g. id and field types e.g. query
+ * whose value must later be parsed as a JSON object, JSON Exploded Object, JSON Array, or JSON Exploded Array
+ */
+export class ParametersParser {
   private _apiDocs: OpenAPIV3.Document;
   private parseJson: ParseJson[] = [];
   private parseArray: ParseArray[] = [];
@@ -56,6 +60,12 @@ export class Parameters {
     this._apiDocs = apiDocs;
   }
 
+  /**
+   * Parse incoing parameters and populate a list of request fields e.g. id and field types e.g. query
+   * whose value must later be parsed as a JSON object, JSON Exploded Object, JSON Array, or JSON Exploded Array
+   * @param path
+   * @param parameters
+   */
   public parse(path: string, parameters: Parameter[] = []): ParametersParse {
     const schemas = { query: {}, headers: {}, params: {}, cookies: {} };
 

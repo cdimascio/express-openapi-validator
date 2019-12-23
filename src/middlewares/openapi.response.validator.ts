@@ -1,6 +1,6 @@
 import ono from 'ono';
 import * as ajv from 'ajv';
-import mung from './modded.express.mung';
+import mung from '../framework/modded.express.mung';
 import { createResponseAjv } from '../framework/ajv';
 import {
   augmentAjvErrors,
