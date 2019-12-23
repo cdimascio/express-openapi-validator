@@ -31,6 +31,20 @@ export interface ParseObjectExplode extends ParseType {
   properties: string[];
 }
 
+export interface ParametersSchema {
+  query: object;
+  headers: object;
+  params: object;
+  cookies: object;
+}
+export interface ParametersParse {
+  schema: ParametersSchema;
+  parseJson: ParseJson[];
+  parseArray: ParseArray[];
+  parseArrayExplode: ParseArrayExplode[];
+  parseObjectExplode: ParseObjectExplode[];
+}
+
 export class Parameters {
   private _apiDocs: OpenAPIV3.Document;
   private parseJson: ParseJson[] = [];
@@ -42,7 +56,7 @@ export class Parameters {
     this._apiDocs = apiDocs;
   }
 
-  public parse(path: string, parameters: Parameter[] = []) {
+  public parse(path: string, parameters: Parameter[] = []): ParametersParse {
     const schemas = { query: {}, headers: {}, params: {}, cookies: {} };
 
     parameters.forEach(p => {
