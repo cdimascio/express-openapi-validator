@@ -331,10 +331,13 @@ new OpenApiValidator(options).install({
         throw { status: 401, message: 'sorry' }
       }
     }
-  }
-  ignorePaths: /.*\/pets$/
+  },
+  ignorePaths: /.*\/pets$/,
   unknownFormats: ['phone-number', 'uuid'],
   multerOpts: { ... },
+  $refParser: { 
+    mode: 'bundle'
+  }
 });
 ```
 
@@ -460,6 +463,15 @@ Determines whether the validator should coerce value types to match the type def
 - `true` (**default**) - coerce scalar data types.
 - `false` - no type coercion.
 - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
+
+### ▪️ $refParser.mode (optional)
+
+As express-openapi-validator uses internally [json-schema-ref-parser](https://github.com/APIDevTools/json-schema-ref-parser), two choices are possibles :
+
+- `bundle` **(default)** - It will use the `bundle` method (which prevent circular references issues)
+- `dereference` - It will use the `dereference` method (which may be needed if you split your specifications into many files and use escaped characters in your [$refs](https://swagger.io/docs/specification/using-ref/))
+
+See this [issue](https://github.com/APIDevTools/json-schema-ref-parser/issues/101#issuecomment-421755168) for more information.
 
 ## The Base URL
 
