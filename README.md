@@ -395,17 +395,17 @@ Determines whether the validator should validate responses. Also accepts respons
 - `false` (**default**) - do not validate responses
 - `{ ... }` - validate responses with options
 
-      **removeAdditional:**
+    **removeAdditional:**
 
-      - `"failing"` - additional properties that fail schema validation are automatically removed from the response.
+    - `"failing"` - additional properties that fail schema validation are automatically removed from the response.
 
-      For example:
+    For example:
 
-      ```javascript
-      validateResponses: {
-        removeAdditional: 'failing'
-      }
-      	```
+    ```javascript
+    validateResponses: {
+      removeAdditional: 'failing'
+    }
+    ```
 
 ### ▪️ validateSecurity (optional)
 
@@ -477,12 +477,13 @@ See this [issue](https://github.com/APIDevTools/json-schema-ref-parser/issues/10
 
 e.g.
 
-````javascript
+```javascript
 {
   $refParser: {
     mode: 'bundle'
   }
 }
+```
 
 ## The Base URL
 
@@ -495,7 +496,7 @@ application. ([More detail about the base URL](https://swagger.io/docs/specifica
 ```yaml
 servers:
 - url: https://api.example.com/v1
-````
+```
 
 The validation applies to all paths defined under this base URL. Routes in your app
 that are _not_ under the base URL—such as pages—will not be validated.
