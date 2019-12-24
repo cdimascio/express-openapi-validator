@@ -40,6 +40,9 @@ export interface OpenApiValidatorOpts {
   coerceTypes?: boolean | 'array';
   unknownFormats?: true | string[] | 'ignore';
   multerOpts?: {};
+  $refParser?: {
+    mode: 'bundle' | 'dereference',
+  };
 }
 
 export namespace OpenAPIV3 {
@@ -359,6 +362,9 @@ export interface OpenAPIFrameworkPathObject {
 interface OpenAPIFrameworkArgs {
   apiDoc: OpenAPIV3.Document | string;
   validateApiDoc?: boolean;
+  $refParser?: {
+    mode: 'bundle' | 'dereference',
+  };
 }
 
 export interface OpenAPIFrameworkAPIContext {
