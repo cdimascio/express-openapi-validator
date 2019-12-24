@@ -478,10 +478,8 @@ See this [issue](https://github.com/APIDevTools/json-schema-ref-parser/issues/10
 e.g.
 
 ```javascript
-{
-  $refParser: {
-    mode: 'bundle'
-  }
+$refParser: {
+  mode: 'bundle'
 }
 ```
 
