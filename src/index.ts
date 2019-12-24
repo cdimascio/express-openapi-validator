@@ -27,7 +27,7 @@ export class OpenApiValidator {
     if (options.validateRequests == null) options.validateRequests = true;
     if (options.validateResponses == null) options.validateResponses = false;
     if (options.validateSecurity == null) options.validateSecurity = true;
-    if (options.$refParser == null) options.$refParser = {mode: 'bundle'};
+    if (options.$refParser == null) options.$refParser = { mode: 'bundle' };
 
     if (options.validateResponses === true) {
       options.validateResponses = {
