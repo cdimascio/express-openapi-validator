@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { OpenAPIV3 } from '../../framework/types';
 import { validationError } from '../util';
+import { dereferenceParameter, normalizeParameter } from './util';
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
 
@@ -50,26 +51,21 @@ export class RequestParameterMutator {
    */
   public modifyRequest(req: Request): void {
     this.parameters.forEach(p => {
-      const parameter = Util.is$Ref(p)
-        ? Util.dereference(this._apiDocs, <ReferenceObject>p)
-        : <ParameterObject>p;
-
-      Validate.parameterType(this.path, parameter);
-
-      const { name, schema } = Util.normalize(parameter);
+      const parameter = dereferenceParameter(this._apiDocs, p);
+      const { name, schema } = normalizeParameter(parameter);
       const { type } = <SchemaObject>schema;
       const { style, explode } = parameter;
 
       if (parameter.content) {
         this.handleContent(req, name, parameter);
-      } else if (parameter.in === 'query' && Util.isObjectOrXOf(schema)) {
+      } else if (parameter.in === 'query' && this.isObjectOrXOf(schema)) {
         this.parseJsonAndMutateRequest(req, parameter.in, name);
         if (style === 'form' && explode) {
           this.handleFormExplode(req, name, <SchemaObject>schema, parameter);
         }
       } else if (type === 'array' && !explode) {
         const delimiter = ARRAY_DELIMITER[parameter.style];
-        Validate.arrayDelimiter(this.path, delimiter, parameter);
+        this.validateArrayDelimiter(delimiter, parameter);
         this.parseJsonArrayAndMutateRequest(req, parameter.in, name, delimiter);
       } else if (type === 'array' && explode) {
         this.explodeJsonArrayAndMutateRequest(req, parameter.in, name);
@@ -227,38 +223,8 @@ export class RequestParameterMutator {
       req[field][name] = value;
     }
   }
-}
 
-class Util {
-  public static is$Ref(parameter: Parameter): boolean {
-    return parameter.hasOwnProperty('$ref');
-  }
-  public static dereference(
-    apiDocs: OpenAPIV3.Document,
-    parameter: ReferenceObject,
-  ): ParameterObject {
-    const id = parameter.$ref.replace(/^.+\//i, '');
-    // TODO use ajv.getSchema. double nested $ref may later fail
-    return <ParameterObject>apiDocs.components.parameters[id];
-  }
-
-  public static normalize(
-    parameter: ParameterObject,
-  ): {
-    name: string;
-    schema: Schema;
-  } {
-    let schema = parameter.schema;
-    if (!schema) {
-      const contentType = Object.keys(parameter.content)[0];
-      schema = parameter.content?.[contentType]?.schema;
-    }
-    const name =
-      parameter.in === 'header' ? parameter.name.toLowerCase() : parameter.name;
-    return { name, schema };
-  }
-
-  public static isObjectOrXOf(schema: Schema): boolean {
+  private isObjectOrXOf(schema: Schema): boolean {
     const schemaHasObject = schema => {
       if (!schema) return false;
       const { type, allOf, oneOf, anyOf } = schema;
@@ -269,36 +235,14 @@ class Util {
     };
     return schemaHasObject(schema);
   }
-}
 
-class Validate {
-  public static parameterType(path: string, parameter: ParameterObject): void {
-    const isKnownType = REQUEST_FIELDS[parameter.in];
-    if (!isKnownType) {
-      const message = `Parameter 'in' has incorrect value '${parameter.in}' for [${parameter.name}]`;
-      throw validationError(400, path, message);
-    }
-
-    const hasSchema = () => {
-      const contentType =
-        parameter.content && Object.keys(parameter.content)[0];
-      return !parameter.schema || !parameter.content?.[contentType]?.schema;
-    };
-
-    if (!hasSchema()) {
-      const message = `No available parameter in 'schema' or 'content' for [${parameter.name}]`;
-      throw validationError(400, path, message);
-    }
-  }
-
-  public static arrayDelimiter(
-    path: string,
+  private validateArrayDelimiter(
     delimiter: string,
     parameter: ParameterObject,
   ): void {
     if (!delimiter) {
       const message = `Parameter 'style' has incorrect value '${parameter.style}' for [${parameter.name}]`;
-      throw validationError(400, path, message);
+      throw validationError(400, this.path, message);
     }
   }
 }
