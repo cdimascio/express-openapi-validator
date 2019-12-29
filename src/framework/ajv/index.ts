@@ -44,9 +44,10 @@ function createAjv(
           return function validate(data, path, obj, propName) {
             const isValid = !(sch === true && data != null);
             delete obj[propName];
-            (<any>validate).errors = [
+            (<ajv.ValidateFunction>validate).errors = [
               {
                 keyword: 'readOnly',
+                schemaPath: data,
                 dataPath: path,
                 message: `is read-only`,
                 params: { readOnly: propName },
@@ -68,10 +69,11 @@ function createAjv(
         if (sch) {
           return function validate(data, path, obj, propName) {
             const isValid = !(sch === true && data != null);
-            (<any>validate).errors = [
+            (<ajv.ValidateFunction>validate).errors = [
               {
                 keyword: 'writeOnly',
                 dataPath: path,
+                schemaPath: path,
                 message: `is write-only`,
                 params: { writeOnly: propName },
               },
@@ -86,11 +88,9 @@ function createAjv(
   }
 
   if (openApiSpec.components?.schemas) {
-    Object.entries(openApiSpec.components.schemas).forEach(
-      ([id, schema]: any[]) => {
-        ajv.addSchema(schema, `#/components/schemas/${id}`);
-      },
-    );
+    Object.entries(openApiSpec.components.schemas).forEach(([id, schema]) => {
+      ajv.addSchema(schema, `#/components/schemas/${id}`);
+    });
   }
 
   return ajv;
