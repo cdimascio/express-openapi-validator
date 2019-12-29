@@ -35,6 +35,7 @@ export class BodySchemaParser {
     }
     return {};
   }
+
   private toSchema(
     path: string,
     contentType: ContentType,
