@@ -290,7 +290,7 @@ describe('security.handlers', () => {
     const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
     validateSecurity.handlers.OAuth2 = function(
       req,
-      scopes,
+      scopes: string[],
       schema: OpenAPIV3.OAuth2SecurityScheme,
     ) {
       expect(schema.type).to.equal('oauth2');

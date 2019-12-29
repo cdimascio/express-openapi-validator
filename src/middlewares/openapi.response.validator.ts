@@ -58,7 +58,7 @@ export class ResponseValidator {
   }
 
   // TODO public for test only - fix me
-  _validate({ validators, body, statusCode, path }) {
+  public _validate({ validators, body, statusCode, path }) {
     // find the validator for the 'status code' e.g 200, 2XX or 'default'
     let validator;
     const status = statusCode;
