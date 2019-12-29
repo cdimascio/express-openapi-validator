@@ -1,5 +1,5 @@
 import ono from 'ono';
-import * as _ from 'lodash';
+import * as _uniq from 'lodash.uniq';
 import * as middlewares from './middlewares';
 import { Application, Response, NextFunction } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
@@ -108,7 +108,7 @@ export class OpenApiValidator {
     }
 
     // install param on routes with paths
-    for (const p of _.uniq(pathParams)) {
+    for (const p of _uniq(pathParams)) {
       app.param(
         p,
         (
