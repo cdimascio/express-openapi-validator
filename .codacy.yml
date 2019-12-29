@@ -1,7 +1,3 @@
 exclude_paths:
   - '/test/**'
-  - example/README.md
-  - README.md
-  - CONTRIBUTING.md
-  - CODE_OF_CONDUCT.md
-  - TODO.md
+  - '**/*.md'
