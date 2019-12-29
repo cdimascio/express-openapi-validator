@@ -78,7 +78,7 @@ export function security(
       // This assumes OR only! i.e. at least one security passed authentication
       let firstError: SecurityHandlerResult = null;
       let success = false;
-      for (var r of results) {
+      for (const r of results) {
         if (r.success) {
           success = true;
           break;
@@ -127,7 +127,7 @@ class SecuritySchemes {
           return { success: true };
         }
         const securityKey = Object.keys(s)[0];
-        const scheme: any = this.securitySchemes[securityKey];
+        const scheme = this.securitySchemes[securityKey];
         const handler = this.securityHandlers?.[securityKey] ?? fallbackHandler;
         const scopesTmp = s[securityKey];
         const scopes = Array.isArray(scopesTmp) ? scopesTmp : [];
@@ -136,7 +136,7 @@ class SecuritySchemes {
           const message = `components.securitySchemes.${securityKey} does not exist`;
           throw { status: 500, message };
         }
-        if (!scheme.type) {
+        if (!scheme.hasOwnProperty('type')) {
           const message = `components.securitySchemes.${securityKey} must have property 'type'`;
           throw { status: 500, message };
         }
@@ -154,7 +154,8 @@ class SecuritySchemes {
         // - return false,
         // - return Promise<false>
         // everything else should be treated as false
-        const success = await handler(req, scopes, scheme);
+        const securityScheme = <OpenAPIV3.SecuritySchemeObject>scheme;
+        const success = await handler(req, scopes, securityScheme);
         if (success === true) {
           return { success };
         } else {

@@ -37,6 +37,13 @@ export class BasePath {
     }
   }
 
+  public static fromServers(servers: OpenAPIV3.ServerObject[]): BasePath[] {
+    if (!servers) {
+      return [new BasePath({ url: '' })];
+    }
+    return servers.map(server => new BasePath(server));
+  }
+
   public hasVariables(): boolean {
     return Object.keys(this.variables).length > 0;
   }
@@ -63,13 +70,6 @@ export class BasePath {
     }
     this.allPaths = Array.from(paths);
     return this.allPaths;
-  }
-
-  public static fromServers(servers: OpenAPIV3.ServerObject[]): BasePath[] {
-    if (!servers) {
-      return [new BasePath({ url: '' })];
-    }
-    return servers.map(server => new BasePath(server));
   }
 
   private findUrlPath(u: string): string {
@@ -99,7 +99,7 @@ export class BasePath {
 function cartesian(...arg) {
   const r = [],
     max = arg.length - 1;
-  function helper(obj, i) {
+  function helper(obj, i: number) {
     const values = arg[i];
     for (var j = 0, l = values.length; j < l; j++) {
       const a = { ...obj };
