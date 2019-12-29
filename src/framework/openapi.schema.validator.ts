@@ -3,10 +3,17 @@ import * as merge from 'lodash.merge';
 import * as draftSchema from 'ajv/lib/refs/json-schema-draft-04.json';
 // https://github.com/OAI/OpenAPI-Specification/blob/master/schemas/v3.0/schema.json
 import * as openapi3Schema from './openapi.v3.schema.json';
+import { OpenAPIV3 } from './types.js';
 
 export class OpenAPISchemaValidator {
   private validator: Ajv.ValidateFunction;
-  constructor({ version, extensions }: { version: string; extensions?: object }) {
+  constructor({
+    version,
+    extensions,
+  }: {
+    version: string;
+    extensions?: object;
+  }) {
     const v = new Ajv({ schemaId: 'auto', allErrors: true });
     v.addMetaSchema(draftSchema);
 
@@ -19,7 +26,9 @@ export class OpenAPISchemaValidator {
     this.validator = v.compile(schema);
   }
 
-  public validate(openapiDoc) {
+  public validate(
+    openapiDoc: OpenAPIV3.Document,
+  ): { errors: Array<Ajv.ErrorObject> | null } {
     const valid = this.validator(openapiDoc);
     if (!valid) {
       return { errors: this.validator.errors };

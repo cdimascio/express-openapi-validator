@@ -1,4 +1,4 @@
-import ajv = require('ajv');
+import * as ajv from 'ajv';
 import { Request, Response, NextFunction } from 'express';
 export { OpenAPIFrameworkArgs };
 
