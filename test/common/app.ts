@@ -10,9 +10,9 @@ import { OpenApiValidatorOpts } from '../../src/framework/types';
 
 export async function createApp(
   opts?: OpenApiValidatorOpts,
-  port: number = 3000,
+  port = 3000,
   customRoutes = app => {},
-  useRoutes: boolean = true,
+  useRoutes = true,
 ) {
   var app = express();
   (<any>app).basePath = '/v1';
