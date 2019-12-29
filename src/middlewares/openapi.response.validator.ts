@@ -26,7 +26,9 @@ interface ValidateResult {
 export class ResponseValidator {
   private ajv: ajv.Ajv;
   private spec: OpenAPIV3.Document;
-  private validatorsCache = {};
+  private validatorsCache: {
+    [key: string]: { [key: string]: ajv.ValidateFunction };
+  } = {};
 
   constructor(openApiSpec: OpenAPIV3.Document, options: ajv.Options = {}) {
     this.spec = openApiSpec;
@@ -51,6 +53,7 @@ export class ResponseValidator {
   }
 
   // TODO public for test only - fix me
+  // Build validators for each url/method/contenttype tuple
   public _getOrBuildValidator(
     req: OpenApiRequest,
     responses: OpenAPIV3.ResponsesObject,
@@ -116,7 +119,7 @@ export class ResponseValidator {
 
   /**
    * Build a map of response name to response validator, for the set of responses
-   * defined on the current endpoint endpoint
+   * defined on the current endpoint
    * @param responses
    * @returns a map of validators
    */
