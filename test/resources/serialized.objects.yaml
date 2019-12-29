@@ -1,5 +1,4 @@
-
-openapi: '3.0.2'
+openapi: "3.0.2"
 info:
   version: 1.0.0
   title: Request Query Serialization
@@ -9,6 +8,33 @@ servers:
   - url: /v1/
 
 paths:
+  /deep_object:
+    get:
+      summary: "retrieve a deep object"
+      operationId: getDeepObject
+      parameters:
+        - in: query
+          style: deepObject
+          explode: true
+          name: settings
+          schema:
+            type: object
+            properties:
+              tag_ids:
+                type: array
+                items:
+                  type: integer
+                  minimum: 0
+                minItems: 1
+              state:
+                type: string
+                enum: ["default", "validated", "pending"]
+                default: "default"
+                description: "Filter the tags by their validity. The default value ('default') stands for no filtering."
+      responses:
+        "200":
+          description: the object
+
   /tags:
     get:
       summary: "Retrieve all tags"
@@ -33,7 +59,7 @@ paths:
                 default: "default"
                 description: "Filter the tags by their validity. The default value ('default') stands for no filtering."
       responses:
-        '200':
+        "200":
           description: "An array of tag"
   /serialisable:
     get:
@@ -64,7 +90,7 @@ paths:
           description: Should not be serialized
           schema:
             description: Value passed to Javascript's `new Date()`.
-            example: '2019-06-24T12:34:56.789Z'
+            example: "2019-06-24T12:34:56.789Z"
             anyOf:
               - type: integer
                 description: Unix milliseconds
@@ -89,7 +115,7 @@ paths:
                 required:
                   - foo
       responses:
-        '200':
+        "200":
           description: parsed & validated query params
           content:
             application/json:
