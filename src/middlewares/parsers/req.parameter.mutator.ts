@@ -85,7 +85,7 @@ export class RequestParameterMutator {
     });
   }
 
-  private handleDeepObject(req: Request, qs: string, name: string) {
+  private handleDeepObject(req: Request, qs: string, name: string): void {
     // nothing to do
     // TODO handle url encoded?
   }
@@ -154,7 +154,11 @@ export class RequestParameterMutator {
     }
   }
 
-  private parseJsonAndMutateRequest(req: Request, $in: string, name: string) {
+  private parseJsonAndMutateRequest(
+    req: Request,
+    $in: string,
+    name: string,
+  ): void {
     /**
      * support json in request params, query, headers and cookies
      * like this filter={"type":"t-shirt","color":"blue"}
