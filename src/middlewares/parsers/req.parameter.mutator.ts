@@ -31,8 +31,8 @@ type Schema = ReferenceObject | SchemaObject;
 type Parameter = ReferenceObject | ParameterObject;
 
 /**
- * A class top parse incoing parameters and populate a list of request fields e.g. id and field types e.g. query
- * whose value must later be parsed as a JSON object, JSON Exploded Object, JSON Array, or JSON Exploded Array
+ * A class top parse and mutate the incoming request parameters according to the openapi spec.
+ * the request is mutated to accomodate various styles and types e.g. form, explode, deepObject, etc
  */
 export class RequestParameterMutator {
   private _apiDocs: OpenAPIV3.Document;
@@ -61,6 +61,8 @@ export class RequestParameterMutator {
       const { name, schema } = normalizeParameter(parameter);
       const { type } = <SchemaObject>schema;
       const { style, explode } = parameter;
+      const i = req.originalUrl.indexOf('?');
+      const queryString = req.originalUrl.substr(i + 1);
 
       if (parameter.content) {
         this.handleContent(req, name, parameter);
@@ -68,6 +70,8 @@ export class RequestParameterMutator {
         this.parseJsonAndMutateRequest(req, parameter.in, name);
         if (style === 'form' && explode) {
           this.handleFormExplode(req, name, <SchemaObject>schema, parameter);
+        } else if (parameter.in === 'query' && style === 'deepObject') {
+          this.handleDeepObject(req, queryString, name);
         }
       } else if (type === 'array' && !explode) {
         const delimiter = ARRAY_DELIMITER[parameter.style];
@@ -79,6 +83,11 @@ export class RequestParameterMutator {
         this.handleFormExplode(req, name, <SchemaObject>schema, parameter);
       }
     });
+  }
+
+  private handleDeepObject(req: Request, qs: string, name: string) {
+    // nothing to do
+    // TODO handle url encoded?
   }
 
   private handleContent(

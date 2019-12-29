@@ -17,7 +17,8 @@ describe(packageJson.name, () => {
         express
           .Router()
           .get(`/serialisable`, (req, res) => res.json(req.query))
-          .get(`/tags`, (req, res) => res.json(req.query)),
+          .get(`/tags`, (req, res) => res.json(req.query))
+          .get(`/deep_object`, (req, res) => res.json(req.query)),
       ),
     );
   });
@@ -103,5 +104,18 @@ describe(packageJson.name, () => {
         expect(r.body.settings)
           .to.have.property('tag_ids')
           .that.deep.equals([1]);
+      }));
+
+  it('should explode deepObject query params', async () =>
+    request(app)
+      .get(`${app.basePath}/deep_object?settings[state]=validated`)
+      .expect(200)
+      .then(r => {
+        const expected = {
+          settings: {
+            state: 'validated',
+          },
+        };
+        expect(r.body).to.deep.equals(expected);
       }));
 });
