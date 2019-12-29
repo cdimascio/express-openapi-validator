@@ -65,14 +65,14 @@ export class BasePath {
     return this.allPaths;
   }
 
-  public static fromServers(servers: OpenAPIV3.ServerObject[]) {
+  public static fromServers(servers: OpenAPIV3.ServerObject[]): BasePath[] {
     if (!servers) {
       return [new BasePath({ url: '' })];
     }
     return servers.map(server => new BasePath(server));
   }
 
-  private findUrlPath(u) {
+  private findUrlPath(u: string): string {
     const findColonSlashSlash = p => {
       const r = /:\/\//.exec(p);
       if (r) return r.index;
