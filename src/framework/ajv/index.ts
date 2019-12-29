@@ -21,7 +21,7 @@ export function createResponseAjv(
 function createAjv(
   openApiSpec: OpenAPIV3.Document,
   options: ajv.Options = {},
-  request: boolean = true,
+  request = true,
 ): Ajv.Ajv {
   const ajv = new Ajv({
     ...options,
