@@ -4,6 +4,7 @@ import * as jsyaml from 'js-yaml';
 import { expect } from 'chai';
 import { ResponseValidator } from '../src/middlewares/openapi.response.validator';
 import * as packageJson from '../package.json';
+import { OpenAPIV3 } from '../src/framework/types';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 const apiSpec = jsyaml.safeLoad(fs.readFileSync(apiSpecPath, 'utf8'));
@@ -94,7 +95,7 @@ describe(packageJson.name, () => {
     }
   });
 });
-function petsResponseSchema() {
+function petsResponseSchema(): OpenAPIV3.ResponsesObject{
   return {
     '200': {
       description: 'pet response',

@@ -1,3 +1,4 @@
+import { Request, Response, ErrorRequestHandler } from 'express';
 import * as express from 'express';
 import * as path from 'path';
 import * as cookieParser from 'cookie-parser';
@@ -28,20 +29,23 @@ new OpenApiValidator({
 }).install(app);
 
 // 2. Add routes
-app.get('/v1/pets', function(req, res, next) {
-  res.json([{ id: 1, name: 'max' }, { id: 2, name: 'mini' }]);
+app.get('/v1/pets', function(req: Request, res: Response): void {
+  res.json([
+    { id: 1, name: 'max' },
+    { id: 2, name: 'mini' },
+  ]);
 });
 
-app.post('/v1/pets', function(req, res, next) {
+app.post('/v1/pets', function(req: Request, res: Response): void {
   res.json({ name: 'sparky' });
 });
 
-app.get('/v1/pets/:id', function(req, res, next) {
+app.get('/v1/pets/:id', function(req: Request, res: Response): void {
   res.json({ id: req.params.id, name: 'sparky' });
 });
 
 // 2a. Add a route upload file(s)
-app.post('/v1/pets/:id/photos', function(req, res, next) {
+app.post('/v1/pets/:id/photos', function(req: Request, res: Response): void {
   // DO something with the file
   // files are found in req.files
   // non file multipar params are in req.body['my-param']
