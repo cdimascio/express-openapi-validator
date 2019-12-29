@@ -36,14 +36,12 @@ const _validationError = (
   status: number,
   path: string,
   message: string,
-  errors?: any, // TODO rename - normalize...something else
 ): ValidationError => ({
   status,
   errors: [
     {
       path,
       message,
-      ...({ errors } ?? {}),
     },
   ],
 });
