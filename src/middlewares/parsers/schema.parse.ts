@@ -1,5 +1,6 @@
 import { OpenAPIV3 } from '../../framework/types';
 import { validationError } from '../util';
+import { dereferenceParameter, normalizeParameter } from './util';
 
 const PARAM_TYPE = {
   query: 'query',
@@ -8,7 +9,6 @@ const PARAM_TYPE = {
   cookie: 'cookies',
 };
 
-type Schema = OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject;
 type Parameter = OpenAPIV3.ReferenceObject | OpenAPIV3.ParameterObject;
 
 export interface ParametersSchema {
@@ -39,14 +39,12 @@ export class ParametersSchemaParser {
     const schemas = { query: {}, headers: {}, params: {}, cookies: {} };
 
     parameters.forEach(p => {
-      const parameter = Util.is$Ref(p)
-        ? Util.dereference(this._apiDocs, <OpenAPIV3.ReferenceObject>p)
-        : <OpenAPIV3.ParameterObject>p;
+      const parameter = dereferenceParameter(this._apiDocs, p);
 
-      Validate.parameterType(path, parameter);
+      this.validateParameterType(path, parameter);
 
       const reqField = PARAM_TYPE[parameter.in];
-      const { name, schema } = Util.normalize(parameter);
+      const { name, schema } = normalizeParameter(parameter);
 
       if (!schemas[reqField].properties) {
         schemas[reqField] = {
@@ -66,39 +64,8 @@ export class ParametersSchemaParser {
 
     return schemas;
   }
-}
-class Util {
-  public static is$Ref(parameter: Parameter): boolean {
-    return parameter.hasOwnProperty('$ref');
-  }
-  public static dereference(
-    apiDocs: OpenAPIV3.Document,
-    parameter: OpenAPIV3.ReferenceObject,
-  ): OpenAPIV3.ParameterObject {
-    const id = parameter.$ref.replace(/^.+\//i, '');
-    // TODO use ajv.getSchema. double nested $ref may later fail
-    return <OpenAPIV3.ParameterObject>apiDocs.components.parameters[id];
-  }
 
-  public static normalize(
-    parameter: OpenAPIV3.ParameterObject,
-  ): {
-    name: string;
-    schema: Schema;
-  } {
-    let schema = parameter.schema;
-    if (!schema) {
-      const contentType = Object.keys(parameter.content)[0];
-      schema = parameter.content?.[contentType]?.schema;
-    }
-    const name =
-      parameter.in === 'header' ? parameter.name.toLowerCase() : parameter.name;
-    return { name, schema };
-  }
-}
-
-class Validate {
-  public static parameterType(
+  private validateParameterType(
     path: string,
     parameter: OpenAPIV3.ParameterObject,
   ): void {
