@@ -110,7 +110,9 @@ class SecuritySchemes {
     this.securities = securities;
   }
 
-  async executeHandlers(req: OpenApiRequest): Promise<SecurityHandlerResult[]> {
+  public async executeHandlers(
+    req: OpenApiRequest,
+  ): Promise<SecurityHandlerResult[]> {
     // use a fallback handler if security handlers is not specified
     // This means if security handlers is specified, the user must define
     // all security handlers
@@ -190,21 +192,21 @@ class AuthValidator {
     this.validateOpenID();
   }
 
-  private validateOauth2() {
+  private validateOauth2(): void {
     const { req, scheme, path } = this;
     if (['oauth2'].includes(scheme.type.toLowerCase())) {
       // TODO oauth2 validation
     }
   }
 
-  private validateOpenID() {
+  private validateOpenID(): void {
     const { req, scheme, path } = this;
     if (['openIdConnect'].includes(scheme.type.toLowerCase())) {
       // TODO openidconnect validation
     }
   }
 
-  private validateHttp() {
+  private validateHttp(): void {
     const { req, scheme, path } = this;
     if (['http'].includes(scheme.type.toLowerCase())) {
       const authHeader =
@@ -228,7 +230,7 @@ class AuthValidator {
     }
   }
 
-  private validateApiKey() {
+  private validateApiKey(): void {
     const { req, scheme, path } = this;
     if (scheme.type === 'apiKey') {
       if (scheme.in === 'header') {
@@ -246,7 +248,7 @@ class AuthValidator {
     }
   }
 
-  private dissallowScopes() {
+  private dissallowScopes(): void {
     if (this.scopes.length > 0) {
       // https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#security-requirement-object
       throw {
