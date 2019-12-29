@@ -22,7 +22,10 @@ import { RequestParameterMutator } from './parsers/req.parameter.mutator';
 
 type OperationObject = OpenAPIV3.OperationObject;
 type SchemaObject = OpenAPIV3.SchemaObject;
+type ReferenceObject = OpenAPIV3.ReferenceObject;
 type SecurityRequirementObject = OpenAPIV3.SecurityRequirementObject;
+type SecuritySchemeObject = OpenAPIV3.SecuritySchemeObject;
+type ApiKeySecurityScheme = OpenAPIV3.ApiKeySecurityScheme;
 
 export class RequestValidator {
   private middlewareCache: { [key: string]: RequestHandler } = {};
@@ -186,17 +189,17 @@ class Security {
 
   private static getSecurityQueryParams(
     usedSecuritySchema: SecurityRequirementObject[],
-    securitySchema,
+    securitySchema: { [key: string]: ReferenceObject | SecuritySchemeObject },
   ): string[] {
     return usedSecuritySchema && securitySchema
       ? usedSecuritySchema
           .filter(obj => Object.entries(obj).length !== 0)
           .map(sec => {
             const securityKey = Object.keys(sec)[0];
-            return securitySchema[securityKey];
+            return <SecuritySchemeObject>securitySchema[securityKey];
           })
-          .filter(sec => sec?.in === 'query')
-          .map(sec => sec.name)
+          .filter(sec => sec?.type === 'apiKey' && sec?.in == 'query')
+          .map((sec: ApiKeySecurityScheme) => sec.name)
       : [];
   }
 }

@@ -69,7 +69,7 @@ export class OpenApiSpecLoader {
     // let apiDoc: OpenAPIV3.Document = null;
     // let basePaths: string[] = null;
     const { apiDoc, basePaths } = await this.framework.initialize({
-      visitApi(ctx: OpenAPIFrameworkAPIContext) {
+      visitApi(ctx: OpenAPIFrameworkAPIContext): void {
         const apiDoc = ctx.getApiDoc();
         const basePaths = ctx.basePaths;
         for (const bpa of basePaths) {

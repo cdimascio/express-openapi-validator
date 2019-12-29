@@ -1,4 +1,5 @@
 import ono from 'ono';
+import { RequestHandler } from 'express';
 import * as ajv from 'ajv';
 import mung from '../framework/modded.express.mung';
 import { createResponseAjv } from '../framework/ajv';
@@ -8,10 +9,20 @@ import {
   ajvErrorsToValidatorError,
   validationError,
 } from './util';
-import { OpenAPIV3 } from '../framework/types';
+import {
+  OpenAPIV3,
+  OpenApiRequest,
+  OpenApiRequestMetadata,
+} from '../framework/types';
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
 
+interface ValidateResult {
+  validators: { [key: string]: ajv.ValidateFunction };
+  body: object;
+  statusCode: number;
+  path: string;
+}
 export class ResponseValidator {
   private ajv: ajv.Ajv;
   private spec: OpenAPIV3.Document;
@@ -25,10 +36,11 @@ export class ResponseValidator {
     };
   }
 
-  public validate() {
-    return mung.json((body, req: any, res) => {
+  public validate(): RequestHandler {
+    return mung.json((body, req, res) => {
       if (req.openapi) {
-        const responses = req.openapi.schema?.responses;
+        const openapi = <OpenApiRequestMetadata>req.openapi;
+        const responses = openapi.schema?.responses;
         const validators = this._getOrBuildValidator(req, responses);
         const statusCode = res.statusCode;
         const path = req.originalUrl;
@@ -39,7 +51,10 @@ export class ResponseValidator {
   }
 
   // TODO public for test only - fix me
-  public _getOrBuildValidator(req, responses) {
+  public _getOrBuildValidator(
+    req: OpenApiRequest,
+    responses: OpenAPIV3.ResponsesObject,
+  ): { [key: string]: ajv.ValidateFunction } {
     if (!req) {
       // use !req is only possible in unit tests
       return this.buildValidators(responses);
@@ -58,7 +73,12 @@ export class ResponseValidator {
   }
 
   // TODO public for test only - fix me
-  public _validate({ validators, body, statusCode, path }) {
+  public _validate({
+    validators,
+    body,
+    statusCode,
+    path,
+  }: ValidateResult): void {
     // find the validator for the 'status code' e.g 200, 2XX or 'default'
     let validator;
     const status = statusCode;
@@ -100,7 +120,9 @@ export class ResponseValidator {
    * @param responses
    * @returns a map of validators
    */
-  private buildValidators(responses) {
+  private buildValidators(
+    responses: OpenAPIV3.ResponsesObject,
+  ): { [key: string]: ajv.ValidateFunction } {
     const canValidate = response => {
       if (typeof response.content !== 'object') {
         return false;

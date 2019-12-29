@@ -4,10 +4,10 @@ import { Request } from 'express';
 import { ValidationError } from '../framework/types';
 
 export class ContentType {
-  private withoutBoundary: string = null;
-  public contentType = null;
+  public contentType: string = null;
   public mediaType: string = null;
   public charSet: string = null;
+  private withoutBoundary: string = null;
   private constructor(contentType: string | null) {
     this.contentType = contentType;
     if (contentType) {
@@ -84,8 +84,11 @@ export function ajvErrorsToValidatorError(
     status,
     errors: errors.map(e => {
       const params: any = e.params;
-      const required = params?.missingProperty && e.dataPath + '.' + params.missingProperty;
-      const additionalProperty = params?.additionalProperty && e.dataPath + '.' + params.additionalProperty;
+      const required =
+        params?.missingProperty && e.dataPath + '.' + params.missingProperty;
+      const additionalProperty =
+        params?.additionalProperty &&
+        e.dataPath + '.' + params.additionalProperty;
       const path = required ?? additionalProperty ?? e.dataPath ?? e.schemaPath;
       return {
         path,
