@@ -70,7 +70,7 @@ export class RequestParameterMutator {
         this.parseJsonAndMutateRequest(req, parameter.in, name);
         if (style === 'form' && explode) {
           this.handleFormExplode(req, name, <SchemaObject>schema, parameter);
-        } else if (parameter.in === 'query' && style === 'deepObject') {
+        } else if (style === 'deepObject') {
           this.handleDeepObject(req, queryString, name);
         }
       } else if (type === 'array' && !explode) {
