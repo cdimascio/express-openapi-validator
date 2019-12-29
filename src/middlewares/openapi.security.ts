@@ -14,6 +14,9 @@ const defaultSecurityHandler = (
   schema: OpenAPIV3.SecuritySchemeObject,
 ) => true;
 
+type SecuritySchemesMap = {
+  [key: string]: OpenAPIV3.ReferenceObject | OpenAPIV3.SecuritySchemeObject;
+};
 interface SecurityHandlerResult {
   success: boolean;
   status?: number;
@@ -94,10 +97,14 @@ export function security(
 }
 
 class SecuritySchemes {
-  private securitySchemes;
+  private securitySchemes: SecuritySchemesMap;
   private securityHandlers: SecurityHandlers;
   private securities: OpenAPIV3.SecurityRequirementObject[];
-  constructor(securitySchemes, securityHandlers: SecurityHandlers, securities: OpenAPIV3.SecurityRequirementObject[]) {
+  constructor(
+    securitySchemes: SecuritySchemesMap,
+    securityHandlers: SecurityHandlers,
+    securities: OpenAPIV3.SecurityRequirementObject[],
+  ) {
     this.securitySchemes = securitySchemes;
     this.securityHandlers = securityHandlers;
     this.securities = securities;
