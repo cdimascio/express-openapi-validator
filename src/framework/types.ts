@@ -2,6 +2,22 @@ import ajv = require('ajv');
 import { Request, Response, NextFunction } from 'express';
 export { OpenAPIFrameworkArgs };
 
+export type BodySchema =
+  | OpenAPIV3.ReferenceObject
+  | OpenAPIV3.SchemaObject
+  | {};
+
+export interface ParametersSchema {
+  query: object;
+  headers: object;
+  params: object;
+  cookies: object;
+}
+
+export interface ValidationSchema extends ParametersSchema {
+  body: BodySchema;
+}
+
 export interface OpenAPIFrameworkInit {
   apiDoc: OpenAPIV3.Document;
   basePaths: string[];
@@ -41,7 +57,7 @@ export interface OpenApiValidatorOpts {
   unknownFormats?: true | string[] | 'ignore';
   multerOpts?: {};
   $refParser?: {
-    mode: 'bundle' | 'dereference',
+    mode: 'bundle' | 'dereference';
   };
 }
 
@@ -363,7 +379,7 @@ interface OpenAPIFrameworkArgs {
   apiDoc: OpenAPIV3.Document | string;
   validateApiDoc?: boolean;
   $refParser?: {
-    mode: 'bundle' | 'dereference',
+    mode: 'bundle' | 'dereference';
   };
 }
 

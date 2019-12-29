@@ -1,5 +1,10 @@
 import { Request } from 'express';
-import { OpenAPIV3 } from '../../framework/types';
+import {
+  OpenAPIV3,
+  OpenApiRequest,
+  OpenApiRequestMetadata,
+  ValidationSchema,
+} from '../../framework/types';
 import { validationError } from '../util';
 import { dereferenceParameter, normalizeParameter } from './util';
 import * as mediaTypeParser from 'media-typer';
@@ -31,17 +36,17 @@ type Parameter = ReferenceObject | ParameterObject;
  */
 export class RequestParameterMutator {
   private _apiDocs: OpenAPIV3.Document;
-  private parameters: Parameter[];
   private path: string;
+  private parsedSchema: ValidationSchema;
 
   constructor(
     apiDocs: OpenAPIV3.Document,
     path: string,
-    parameters: Parameter[] = [],
+    parsedSchema: ValidationSchema,
   ) {
     this._apiDocs = apiDocs;
     this.path = path;
-    this.parameters = parameters;
+    this.parsedSchema = parsedSchema;
   }
 
   /**
@@ -49,8 +54,9 @@ export class RequestParameterMutator {
    * req values may be parsed/mutated as a JSON object, JSON Exploded Object, JSON Array, or JSON Exploded Array
    * @param req
    */
-  public modifyRequest(req: Request): void {
-    this.parameters.forEach(p => {
+  public modifyRequest(req: OpenApiRequest): void {
+    const { parameters } = (<OpenApiRequestMetadata>req.openapi).schema;
+    parameters.forEach(p => {
       const parameter = dereferenceParameter(this._apiDocs, p);
       const { name, schema } = normalizeParameter(parameter);
       const { type } = <SchemaObject>schema;
@@ -195,13 +201,12 @@ export class RequestParameterMutator {
         req[field][name] = {};
         properties.forEach(property => {
           if (req[field][property]) {
-            // const type = schema.properties[field].properties[name]
-            //   .properties?.[property]?.type;
-            // const value = req[field][property];
-            // const coercedValue =
-            //   type === 'array' && !Array.isArray(value) ? [value] : value;
-            // req[field][name][property] = coercedValue;
-            req[field][name][property] = req[field][property];
+            const schema = this.parsedSchema[field];
+            const type = schema.properties[name].properties?.[property]?.type;
+            const value = req[field][property];
+            const coercedValue =
+              type === 'array' && !Array.isArray(value) ? [value] : value;
+            req[field][name][property] = coercedValue;
             delete req[field][property];
           }
         });

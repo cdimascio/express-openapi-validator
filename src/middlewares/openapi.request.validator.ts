@@ -9,6 +9,7 @@ import {
 import ono from 'ono';
 import { NextFunction, RequestHandler, Response } from 'express';
 import {
+  ValidationSchema,
   OpenAPIV3,
   OpenApiRequest,
   RequestValidatorOptions,
@@ -82,18 +83,18 @@ export class RequestValidator {
   ): RequestHandler {
     const apiDoc = this.apiDoc;
     const schemaParser = new ParametersSchemaParser(apiDoc);
-    const parametersSchema = schemaParser.parse(path, reqSchema.parameters);
-    const securityQueryParam = Security.queryParam(apiDoc, reqSchema);
     const bodySchemaParser = new BodySchemaParser(this.ajv, apiDoc);
-
-    // TODO bodyParser.parse should return OpenAPIV3.SchemaObject instead of BodySchema
+    const parameters = schemaParser.parse(path, reqSchema.parameters);
+    const securityQueryParam = Security.queryParam(apiDoc, reqSchema);
     const body = bodySchemaParser.parse(path, reqSchema, contentType);
+
+    const properties: ValidationSchema = { ...parameters, body: body };
     const required = (<SchemaObject>body).required ? ['body'] : [];
 
     // $schema: "http://json-schema.org/draft-04/schema#",
     const schema = {
       required: ['query', 'headers', 'params'].concat(required),
-      properties: { ...parametersSchema, body: body },
+      properties,
     };
 
     const validator = this.ajv.compile(schema);
@@ -106,8 +107,7 @@ export class RequestValidator {
         req.params = openapi.pathParams ?? req.params;
       }
 
-      const parameters = reqSchema.parameters;
-      const mutator = new RequestParameterMutator(apiDoc, path, parameters);
+      const mutator = new RequestParameterMutator(apiDoc, path, properties);
 
       mutator.modifyRequest(req);
 
