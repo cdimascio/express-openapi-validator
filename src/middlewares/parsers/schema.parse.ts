@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from '../../framework/types';
+import { OpenAPIV3, ParametersSchema } from '../../framework/types';
 import { validationError } from '../util';
 import { dereferenceParameter, normalizeParameter } from './util';
 
@@ -10,13 +10,6 @@ const PARAM_TYPE = {
 };
 
 type Parameter = OpenAPIV3.ReferenceObject | OpenAPIV3.ParameterObject;
-
-export interface ParametersSchema {
-  query: object;
-  headers: object;
-  params: object;
-  cookies: object;
-}
 
 /**
  * A class top arse incoing parameters and populate a list of request fields e.g. id and field types e.g. query

@@ -1,12 +1,7 @@
 import { Ajv } from 'ajv';
 import { ContentType, validationError } from '../util';
 
-import { OpenAPIV3 } from '../../framework/types';
-
-export type BodySchema =
-  | OpenAPIV3.ReferenceObject
-  | OpenAPIV3.SchemaObject
-  | {};
+import { OpenAPIV3, BodySchema } from '../../framework/types';
 
 export class BodySchemaParser {
   private _apiDoc: OpenAPIV3.Document;
