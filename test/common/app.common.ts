@@ -18,22 +18,22 @@ export function routes(app) {
   const basePath = app.basePath;
   const router1 = express
     .Router()
-    .post('/', function(req: Request, res: Response) {
+    .post('/', function(req: Request, res: Response): void {
       res.json({
         name: `${req.method}: /router_1`,
       });
     })
-    .get('/', function(req: Request, res: Response) {
+    .get('/', function(req: Request, res: Response): void {
       res.json({
         name: `${req.method}: /router_1`,
       });
     })
-    .get('/:id', function(req: Request, res: Response) {
+    .get('/:id', function(req: Request, res: Response): void {
       res.json({
         name: `${req.method}: /router_1/${req.params.id}`,
       });
     })
-    .get('/:id/best/:bid', function(req: Request, res: Response) {
+    .get('/:id/best/:bid', function(req: Request, res: Response): void {
       res.json({
         name: `${req.method}: /router_1/${req.params.id}/best/${req.params.bid}`,
       });
@@ -41,21 +41,21 @@ export function routes(app) {
 
   app.use(`${basePath}/router_1`, router1);
 
-  app.get(`${basePath}/pets`, function(req: Request, res: Response) {
+  app.get(`${basePath}/pets`, function(req: Request, res: Response): void {
     res.json({
       test: 'hi',
       ...req.body,
     });
   });
 
-  app.post(`${basePath}/pets`, function(req: Request, res: Response) {
+  app.post(`${basePath}/pets`, function(req: Request, res: Response): void {
     res.json({
       ...req.body,
       id: 'new-id',
     });
   });
 
-  app.get(`${basePath}/pets/:id`, function(req: Request, res: Response) {
+  app.get(`${basePath}/pets/:id`, function(req: Request, res: Response): void {
     res.json({
       id: req.params.id,
     });
@@ -64,7 +64,7 @@ export function routes(app) {
   app.get(`${basePath}/pets/:id/attributes`, function(
     req: Request,
     res: Response,
-  ) {
+  ): void {
     res.json({
       id: req.params.id,
     });
@@ -73,7 +73,7 @@ export function routes(app) {
   app.get(`${basePath}/pets/:id/attributes/:attribute_id`, function(
     req: Request,
     res: Response,
-  ) {
+  ): void {
     res.json({
       id: req.params.id,
       attribute_id: req.params.attribute_id,
@@ -83,7 +83,7 @@ export function routes(app) {
   app.post(`${basePath}/route_defined_in_express_not_openapi`, function(
     req: Request,
     res: Response,
-  ) {
+  ): void {
     res.json({
       id: req.params.id,
     });
@@ -92,13 +92,13 @@ export function routes(app) {
   app.get('/not_under_an_openapi_basepath', function(
     req: Request,
     res: Response,
-  ) {
+  ): void {
     res.json({
       id: '/not_under_an_openapi_basepath',
     });
   });
 
-  app.post('/v1/pets/:id/photos', function(req: Request, res: Response) {
+  app.post('/v1/pets/:id/photos', function(req: Request, res: Response): void {
     // req.file is the `avatar` file
     // req.body will hold the text fields, if there were any
     const files = req.files;
@@ -107,7 +107,7 @@ export function routes(app) {
       metadata: req.body.metadata,
     });
   });
-  app.post('/v1/pets_charset', function(req: Request, res: Response) {
+  app.post('/v1/pets_charset', function(req: Request, res: Response): void {
     // req.file is the `avatar` file
     // req.body will hold the text fields, if there were any
     res.json({
