@@ -17,6 +17,12 @@ import {
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
 
+interface ValidateResult {
+  validators: { [key: string]: ajv.ValidateFunction };
+  body: object;
+  statusCode: number;
+  path: string;
+}
 export class ResponseValidator {
   private ajv: ajv.Ajv;
   private spec: OpenAPIV3.Document;
@@ -67,7 +73,12 @@ export class ResponseValidator {
   }
 
   // TODO public for test only - fix me
-  public _validate({ validators, body, statusCode, path }): void {
+  public _validate({
+    validators,
+    body,
+    statusCode,
+    path,
+  }: ValidateResult): void {
     // find the validator for the 'status code' e.g 200, 2XX or 'default'
     let validator;
     const status = statusCode;
@@ -109,7 +120,9 @@ export class ResponseValidator {
    * @param responses
    * @returns a map of validators
    */
-  private buildValidators(responses): { [key: string]: ajv.ValidateFunction } {
+  private buildValidators(
+    responses: OpenAPIV3.ResponsesObject,
+  ): { [key: string]: ajv.ValidateFunction } {
     const canValidate = response => {
       if (typeof response.content !== 'object') {
         return false;
