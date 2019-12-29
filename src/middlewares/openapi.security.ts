@@ -3,6 +3,7 @@ import {
   OpenApiRequest,
   SecurityHandlers,
   OpenApiRequestMetadata,
+  OpenApiRequestHandler,
 } from '../framework/types';
 import { validationError } from './util';
 import { OpenApiContext } from '../framework/openapi.context';
@@ -13,6 +14,9 @@ const defaultSecurityHandler = (
   schema: OpenAPIV3.SecuritySchemeObject,
 ) => true;
 
+type SecuritySchemesMap = {
+  [key: string]: OpenAPIV3.ReferenceObject | OpenAPIV3.SecuritySchemeObject;
+};
 interface SecurityHandlerResult {
   success: boolean;
   status?: number;
@@ -21,7 +25,7 @@ interface SecurityHandlerResult {
 export function security(
   context: OpenApiContext,
   securityHandlers: SecurityHandlers,
-) {
+): OpenApiRequestHandler {
   return async (req, res, next) => {
     // TODO move the folllowing 3 check conditions to a dedicated upstream middleware
     if (!req.openapi) {
@@ -31,12 +35,13 @@ export function security(
       return next();
     }
 
-    const expressRoute = req.openapi.expressRoute;
+    const openapi = <OpenApiRequestMetadata>req.openapi;
+    const expressRoute = openapi.expressRoute;
     if (!expressRoute) {
       return next(validationError(404, req.path, 'not found'));
     }
 
-    const pathSchema = req.openapi.schema;
+    const pathSchema = openapi.schema;
     if (!pathSchema) {
       // add openapi metadata to make this case more clear
       // its not obvious that missig schema means methodNotAllowed
@@ -47,9 +52,9 @@ export function security(
 
     // use the local security object or fallbac to api doc's security or undefined
     const securities: OpenAPIV3.SecurityRequirementObject[] =
-      req.openapi.schema.security ?? context.apiDoc.security;
+      openapi.schema.security ?? context.apiDoc.security;
 
-    const path: string = req.openapi.openApiRoute;
+    const path: string = openapi.openApiRoute;
 
     if (!path || !Array.isArray(securities) || securities.length === 0) {
       return next();
@@ -92,10 +97,14 @@ export function security(
 }
 
 class SecuritySchemes {
-  private securitySchemes;
+  private securitySchemes: SecuritySchemesMap;
   private securityHandlers: SecurityHandlers;
-  private securities;
-  constructor(securitySchemes, securityHandlers: SecurityHandlers, securities) {
+  private securities: OpenAPIV3.SecurityRequirementObject[];
+  constructor(
+    securitySchemes: SecuritySchemesMap,
+    securityHandlers: SecurityHandlers,
+    securities: OpenAPIV3.SecurityRequirementObject[],
+  ) {
     this.securitySchemes = securitySchemes;
     this.securityHandlers = securityHandlers;
     this.securities = securities;
