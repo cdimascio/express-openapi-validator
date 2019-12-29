@@ -1,4 +1,4 @@
-import * as _ from 'lodash';
+import * as _zipObject from 'lodash.zipobject';
 import { pathToRegexp } from 'path-to-regexp';
 import { Response, NextFunction } from 'express';
 import { OpenApiContext } from '../framework/openapi.context';
@@ -50,7 +50,7 @@ export function applyOpenApiMetadata(
       if (matchedRoute) {
         const paramKeys = keys.map(k => k.name);
         const paramsVals = matchedRoute.slice(1);
-        const pathParams = _.zipObject(paramKeys, paramsVals);
+        const pathParams = _zipObject(paramKeys, paramsVals);
 
         return {
           schema,
