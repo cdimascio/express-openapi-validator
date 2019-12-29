@@ -9,44 +9,36 @@ import {
 import ono from 'ono';
 import { NextFunction, RequestHandler, Response } from 'express';
 import {
+  ValidationSchema,
   OpenAPIV3,
   OpenApiRequest,
   RequestValidatorOptions,
   ValidateRequestOpts,
   OpenApiRequestMetadata,
 } from '../framework/types';
+import { BodySchemaParser } from './parsers/body.parse';
+import { ParametersSchemaParser } from './parsers/schema.parse';
+import { RequestParameterMutator } from './parsers/req.parameter.mutator';
 
-import {
-  ParametersSchemaParser,
-  ParametersSchema,
-} from './schemas/parameters.parse';
-import { ParametersTransform } from './schemas/parameters.transform';
-import { BodySchemaParser } from './schemas/body.parse';
-
-interface DraftProperties extends ParametersSchema {
-  body?: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject | {};
-}
-
-export interface DraftSchema {
-  required: string[];
-  properties: DraftProperties;
-}
+type OperationObject = OpenAPIV3.OperationObject;
+type SchemaObject = OpenAPIV3.SchemaObject;
+type SecurityRequirementObject = OpenAPIV3.SecurityRequirementObject;
 
 export class RequestValidator {
-  private _middlewareCache: { [key: string]: RequestHandler } = {};
-  private _apiDocs: OpenAPIV3.Document;
+  private middlewareCache: { [key: string]: RequestHandler } = {};
+  private apiDoc: OpenAPIV3.Document;
   private ajv: Ajv;
-  private _requestOpts: ValidateRequestOpts = {};
+  private requestOpts: ValidateRequestOpts = {};
 
   constructor(
-    apiDocs: OpenAPIV3.Document,
+    apiDoc: OpenAPIV3.Document,
     options: RequestValidatorOptions = {},
   ) {
-    this._middlewareCache = {};
-    this._apiDocs = apiDocs;
-    this._requestOpts.allowUnknownQueryParameters =
+    this.middlewareCache = {};
+    this.apiDoc = apiDoc;
+    this.requestOpts.allowUnknownQueryParameters =
       options.allowUnknownQueryParameters;
-    this.ajv = createRequestAjv(apiDocs, options);
+    this.ajv = createRequestAjv(apiDoc, options);
   }
 
   public validate(
@@ -67,8 +59,8 @@ export class RequestValidator {
       throw validationError(404, req.path, 'not found');
     }
 
-    const pathSchema = openapi.schema;
-    if (!pathSchema) {
+    const reqSchema = openapi.schema;
+    if (!reqSchema) {
       throw validationError(405, req.path, `${req.method} method not allowed`);
     }
 
@@ -77,43 +69,49 @@ export class RequestValidator {
     const contentTypeKey = contentType.equivalents()[0] ?? 'not_provided';
     const key = `${req.method}-${req.originalUrl}-${contentTypeKey}`;
 
-    if (!this._middlewareCache[key]) {
-      const middleware = this.buildMiddleware(path, pathSchema, contentType);
-      this._middlewareCache[key] = middleware;
+    if (!this.middlewareCache[key]) {
+      const middleware = this.buildMiddleware(path, reqSchema, contentType);
+      this.middlewareCache[key] = middleware;
     }
-    return this._middlewareCache[key](req, res, next);
+    return this.middlewareCache[key](req, res, next);
   }
 
   private buildMiddleware(
     path: string,
-    pathSchema: OpenAPIV3.OperationObject,
+    reqSchema: OperationObject,
     contentType: ContentType,
   ): RequestHandler {
-    const paramSchemaParser = new ParametersSchemaParser(this._apiDocs);
-    const parameters = paramSchemaParser.parse(path, pathSchema.parameters);
-    const securityQueryParam = Security.queryParam(this._apiDocs, pathSchema);
-    const bodySchemaParser = new BodySchemaParser(this.ajv, this._apiDocs);
-    // TODO bodyParser.parse should return OpenAPIV3.SchemaObject instead of BodySchema
-    const body = <OpenAPIV3.SchemaObject>(
-      bodySchemaParser.parse(path, pathSchema, contentType)
-    );
- ;
-    const required = body.required ? ['body'] : [];
+    const apiDoc = this.apiDoc;
+    const schemaParser = new ParametersSchemaParser(apiDoc);
+    const bodySchemaParser = new BodySchemaParser(this.ajv, apiDoc);
+    const parameters = schemaParser.parse(path, reqSchema.parameters);
+    const securityQueryParam = Security.queryParam(apiDoc, reqSchema);
+    const body = bodySchemaParser.parse(path, reqSchema, contentType);
+
+    const properties: ValidationSchema = { ...parameters, body: body };
+    const required = (<SchemaObject>body).required ? ['body'] : [];
 
     // $schema: "http://json-schema.org/draft-04/schema#",
     const schema = {
       required: ['query', 'headers', 'params'].concat(required),
-      properties: { ...parameters.schema, body: body },
+      properties,
     };
+
     const validator = this.ajv.compile(schema);
 
     return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
-      const parametersRequest = new ParametersTransform(parameters, schema);
+      const openapi = <OpenApiRequestMetadata>req.openapi;
+      const hasPathParams = Object.keys(openapi.pathParams).length > 0;
 
-      parametersRequest.applyExplodedJsonTransform(req);
-      parametersRequest.applyExplodedJsonArrayTransform(req);
+      if (hasPathParams) {
+        req.params = openapi.pathParams ?? req.params;
+      }
 
-      if (!this._requestOpts.allowUnknownQueryParameters) {
+      const mutator = new RequestParameterMutator(apiDoc, path, properties);
+
+      mutator.modifyRequest(req);
+
+      if (!this.requestOpts.allowUnknownQueryParameters) {
         this.rejectUnknownQueryParams(
           req.query,
           schema.properties.query,
@@ -121,12 +119,11 @@ export class RequestValidator {
         );
       }
 
-      parametersRequest.applyPathTransform(req);
-      parametersRequest.applyJsonTransform(req);
-      parametersRequest.applyJsonArrayTransform(req);
-
       const cookies = req.cookies
-        ? { ...req.cookies, ...req.signedCookies }
+        ? {
+            ...req.cookies,
+            ...req.signedCookies,
+          }
         : undefined;
 
       const valid = validator({ ...req, cookies });
@@ -165,14 +162,14 @@ export class RequestValidator {
 class Security {
   public static queryParam(
     apiDocs: OpenAPIV3.Document,
-    schema: OpenAPIV3.OperationObject,
+    schema: OperationObject,
   ): string[] {
     const hasPathSecurity =
       schema.hasOwnProperty('security') && schema.security.length > 0;
     const hasRootSecurity =
       apiDocs.hasOwnProperty('security') && apiDocs.security.length > 0;
 
-    let usedSecuritySchema: OpenAPIV3.SecurityRequirementObject[] = [];
+    let usedSecuritySchema: SecurityRequirementObject[] = [];
     if (hasPathSecurity) {
       usedSecuritySchema = schema.security;
     } else if (hasRootSecurity) {
@@ -188,7 +185,7 @@ class Security {
   }
 
   private static getSecurityQueryParams(
-    usedSecuritySchema: OpenAPIV3.SecurityRequirementObject[],
+    usedSecuritySchema: SecurityRequirementObject[],
     securitySchema,
   ): string[] {
     return usedSecuritySchema && securitySchema
