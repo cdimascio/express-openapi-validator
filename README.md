@@ -336,7 +336,7 @@ new OpenApiValidator(options).install({
   },
   ignorePaths: /.*\/pets$/,
   unknownFormats: ['phone-number', 'uuid'],
-  multerOpts: { ... },
+  fileUploader: { ... } | true | false,
   $refParser: {
     mode: 'bundle'
   }
@@ -454,9 +454,21 @@ Defines how the validator should behave if an unknown or custom format is encoun
 
 - `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
 
-### ▪️ multerOpts (optional)
+### ▪️ fileUploader (optional)
 
 Specifies the options to passthrough to multer. express-openapi-validator uses multer to handle file uploads. see [multer opts](https://github.com/expressjs/multer)
+
+- `true` (**default**) - enables multer and provides simple file(s) upload capabilities
+- `false` - disables file upload capability. Upload capabilities may be provided by the user
+- `{...}` - multer options to be passed-through to multer. see [multer opts](https://github.com/expressjs/multer) for possible options
+
+  e.g.
+
+  ```javascript
+  fileUploader: {
+    dest: 'uploads/';
+  }
+  ```
 
 ### ▪️ coerceTypes (optional)
 
@@ -772,6 +784,10 @@ module.exports = app;
 **Q:** What happened to the `securityHandlers` property?
 
 **A:** In v3, `securityHandlers` have been replaced by `validateSecurity.handlers`. To use v3 security handlers, move your existing security handlers to the new property. No other change is required. Note that the v2 `securityHandlers` property is supported in v3, but deprecated
+
+Q: What happened to the `multerOpts` property?
+
+A: In v3, `multerOpts` have been replaced by `fileUploader`. In order to use the v3 `fileUploader`, move your multer options to `fileUploader` No other change is required. Note that the v2 `multerOpts` property is supported in v3, but deprecated
 
 **Q:** Can I use a top level await?
 

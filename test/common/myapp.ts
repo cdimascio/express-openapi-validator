@@ -9,12 +9,12 @@ import { OpenApiValidator } from '../../src';
 
 const app = express();
 
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
 app.use(bodyParser.json());
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 const spec = path.join(__dirname, 'openapi.yaml');
@@ -42,6 +42,13 @@ app.post('/v1/pets', function(req: Request, res: Response): void {
 
 app.get('/v1/pets/:id', function(req: Request, res: Response): void {
   res.json({ id: req.params.id, name: 'sparky' });
+});
+
+app.get('/v1/pets/:id/form_urlencoded', function(
+  req: Request,
+  res: Response,
+): void {
+  res.json(req.body);
 });
 
 // 2a. Add a route upload file(s)

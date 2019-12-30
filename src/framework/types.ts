@@ -1,4 +1,5 @@
 import * as ajv from 'ajv';
+import * as multer from 'multer';
 import { Request, Response, NextFunction } from 'express';
 export { OpenAPIFrameworkArgs };
 
@@ -55,7 +56,8 @@ export interface OpenApiValidatorOpts {
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
   unknownFormats?: true | string[] | 'ignore';
-  multerOpts?: {};
+  fileUploader?: boolean | multer.Options;
+  multerOpts?: multer.Options;
   $refParser?: {
     mode: 'bundle' | 'dereference';
   };
