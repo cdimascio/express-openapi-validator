@@ -21,7 +21,6 @@ export async function createApp(
   app.use(bodyParser.json({ type: 'application/hal+json' }));
   app.use(bodyParser.text());
   app.use(logger('dev'));
-  app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
