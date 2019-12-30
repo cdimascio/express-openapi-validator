@@ -115,7 +115,7 @@ export class RequestValidator {
       mutator.modifyRequest(req);
 
       if (!this.requestOpts.allowUnknownQueryParameters) {
-        this.rejectUnknownQueryParams(
+        this.processQueryParam(
           req.query,
           schema.properties.query,
           securityQueryParam,
@@ -141,21 +141,27 @@ export class RequestValidator {
     };
   }
 
-  private rejectUnknownQueryParams(
-    query,
-    schema,
-    whiteList: string[] = [],
-  ): void {
+  private processQueryParam(query, schema, whiteList: string[] = []) {
     if (!schema.properties) return;
     const knownQueryParams = new Set(Object.keys(schema.properties));
     whiteList.forEach(item => knownQueryParams.add(item));
     const queryParams = Object.keys(query);
+    const allowedEmpty = schema.allowEmptyValue;
     for (const q of queryParams) {
-      if (!knownQueryParams.has(q)) {
+      if (
+        !this.requestOpts.allowUnknownQueryParameters &&
+        !knownQueryParams.has(q)
+      ) {
         throw validationError(
           400,
           `.query.${q}`,
           `Unknown query parameter ${q}`,
+        );
+      } else if (!allowedEmpty?.has(q) && (query[q] === '' || null)) {
+        throw validationError(
+          400,
+          `.query.${q}`,
+          `query parameter ${q} has empty value`,
         );
       }
     }

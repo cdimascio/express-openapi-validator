@@ -29,6 +29,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets`)
       .query({
+        name: 'max',
         tags: 'one,two,three',
         limit: 10,
         breed: 'german_shepherd',
@@ -40,6 +41,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets`)
       .query({
+        name: 'max',
         tags: 'one,two,three',
         limit: 10,
         breed: 'german_shepherd',
@@ -50,4 +52,37 @@ describe(packageJson.name, () => {
       .then(r => {
         expect(r.body.errors).to.be.an('array');
       }));
+
+  it('should not allow empty query param value', async () =>
+    request(app)
+      .get(`${app.basePath}/pets`)
+      .query({
+        name: 'max',
+        tags: 'one,two,three',
+        limit: 10,
+        breed: '',
+        owner_name: 'carmine',
+      })
+      .expect(400)
+      .then(r => {
+        expect(r.body)
+          .to.have.property('message')
+          .that.equals('query parameter breed has empty value');
+        expect(r.body.errors)
+          .to.be.an('array')
+          .with.length(1);
+        expect(r.body.errors[0].path).to.equal('.query.breed');
+      }));
+
+  it('should allow empty query param value with allowEmptyValue: true', async () =>
+    request(app)
+      .get(`${app.basePath}/pets`)
+      .query({
+        name: '',
+        tags: 'one,two,three',
+        limit: 10,
+        breed: 'german_shepherd',
+        owner_name: 'carmine',
+      })
+      .expect(200));
 });
