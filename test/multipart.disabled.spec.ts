@@ -58,8 +58,8 @@ describe(packageJson.name, () => {
         .send('form_p1=stuff&form_p2=morestuff')
         .expect(200));
 
-    // TODO make this work when fileUpload i.e. multer is disabled
-    it.skip('should return 200 for multipart/form-data with p1 and p2 fields present (with fileUpload false)', async () =>
+    // TODO make this work when fileUploader i.e. multer is disabled
+    it.skip('should return 200 for multipart/form-data with p1 and p2 fields present (with fileUploader false)', async () =>
       request(app)
         .post(`${app.basePath}/sample_1`)
         .set('Content-Type', 'multipart/form-data')

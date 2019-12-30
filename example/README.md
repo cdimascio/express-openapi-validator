@@ -153,7 +153,10 @@ new OpenApiValidator({
   .then(app => {
     // 5. Define routes using Express
     app.get('/v1/pets', function(req, res, next) {
-      res.json([{ id: 1, name: 'max' }, { id: 2, name: 'mini' }]);
+      res.json([
+        { id: 1, name: 'max' },
+        { id: 2, name: 'mini' },
+      ]);
     });
 
     app.post('/v1/pets', function(req, res, next) {
@@ -364,7 +367,7 @@ new OpenApiValidator(options).install({
   validateResponses: true,
   ignorePaths: /.*\/pets$/
   unknownFormats: ['phone-number', 'uuid'],
-  multerOpts: { ... },
+  fileUploader: { ... },
   securityHandlers: {
     ApiKeyAuth: (req, scopes, schema) => {
       throw { status: 401, message: 'sorry' }
@@ -461,9 +464,21 @@ Defines how the validator should behave if an unknown or custom format is encoun
 
 - `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
 
-### ▪️ multerOpts (optional)
+### ▪️ fileUploader (optional)
 
 Specifies the options to passthrough to multer. express-openapi-validator uses multer to handle file uploads. see [multer opts](https://github.com/expressjs/multer)
+
+- `true` (**default**) - enables multer and provides simple file(s) upload capabilities
+- `false` - disables file upload capability. Upload capabilities may be provided by the user
+- `{...}` - multer options to be passed-through to multer. see [multer opts](https://github.com/expressjs/multer) for possible options
+
+  e.g.
+
+  ```javascript
+  fileUploader: {
+    dest: 'uploads/';
+  }
+  ```
 
 ### ▪️ coerceTypes (optional)
 
