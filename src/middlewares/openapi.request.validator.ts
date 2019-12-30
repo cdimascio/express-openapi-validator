@@ -155,13 +155,13 @@ export class RequestValidator {
         throw validationError(
           400,
           `.query.${q}`,
-          `Unknown query parameter ${q}`,
+          `Unknown query parameter '${q}'`,
         );
       } else if (!allowedEmpty?.has(q) && (query[q] === '' || null)) {
         throw validationError(
           400,
           `.query.${q}`,
-          `query parameter ${q} has empty value`,
+          `Empty valued found for query parameter '${q}'`,
         );
       }
     }
