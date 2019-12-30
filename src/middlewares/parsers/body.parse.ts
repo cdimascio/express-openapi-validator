@@ -62,8 +62,8 @@ export class BodySchemaParser {
     requestBody: OpenAPIV3.RequestBodyObject,
   ): BodySchema {
     const bodyContentSchema =
-      requestBody.content[contentType.contentType] &&
-      requestBody.content[contentType.contentType].schema;
+      requestBody.content[contentType.withoutBoundary] &&
+      requestBody.content[contentType.withoutBoundary].schema;
 
     let bodyContentRefSchema = null;
     if (bodyContentSchema && '$ref' in bodyContentSchema) {

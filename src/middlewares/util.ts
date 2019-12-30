@@ -7,7 +7,7 @@ export class ContentType {
   public contentType: string = null;
   public mediaType: string = null;
   public charSet: string = null;
-  private withoutBoundary: string = null;
+  public withoutBoundary: string = null;
   private constructor(contentType: string | null) {
     this.contentType = contentType;
     if (contentType) {

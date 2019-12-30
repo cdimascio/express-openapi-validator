@@ -98,15 +98,15 @@ export function routes(app) {
     });
   });
 
-  app.post('/v1/pets/:id/photos', function(req: Request, res: Response): void {
-    // req.file is the `avatar` file
-    // req.body will hold the text fields, if there were any
-    const files = req.files;
-    res.status(200).json({
-      files,
-      metadata: req.body.metadata,
-    });
-  });
+  // app.post('/v1/pets/:id/photos', function(req: Request, res: Response): void {
+  //   // req.file is the `avatar` file
+  //   // req.body will hold the text fields, if there were any
+  //   const files = req.files;
+  //   res.status(200).json({
+  //     files,
+  //     metadata: req.body.metadata,
+  //   });
+  // });
   app.post('/v1/pets_charset', function(req: Request, res: Response): void {
     // req.file is the `avatar` file
     // req.body will hold the text fields, if there were any
