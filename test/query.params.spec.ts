@@ -85,4 +85,9 @@ describe(packageJson.name, () => {
         owner_name: 'carmine',
       })
       .expect(200));
+
+      it("should succeed when query param 'name' has empty value and sets allowEmptyValue: true", async () =>
+      request(app)
+        .get(`${app.basePath}/pets?name=&tags=one&limit=10&breed=german_shepherd&owner_name=carmine`)
+        .expect(200));
 });
