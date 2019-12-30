@@ -192,6 +192,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
 
+  # /pets/{id}/form_urlencoded:
+  #   post:
+  #     requestBody:
+  #       content:
+  #         application/x-www-form-urlencoded:
+  #           schema:
+  #             type: object
+  #             required:
+  #               - form_p1
+  #             properties:
+  #               form_p1:
+  #                 type: string
+  #               form_p2:
+  #                 type: string
+  #     responses:
+  #       '200':
+  #         description: photo uploaded
   /pets/{id}/photos:
     post:
       description: upload a photo of the pet
@@ -219,7 +236,16 @@ paths:
                   format: binary
                 metadata:
                   type: string
-              # $ref: '#/components/schemas/NewPhoto'
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - form_p1
+              properties:
+                form_p1:
+                  type: string
+                form_p2:
+                  type: string
       responses:
         '200':
           description: photo uploaded

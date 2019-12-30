@@ -27,6 +27,7 @@ export class OpenApiValidator {
     if (options.validateRequests == null) options.validateRequests = true;
     if (options.validateResponses == null) options.validateResponses = false;
     if (options.validateSecurity == null) options.validateSecurity = true;
+    if (options.fileUploader == null) options.fileUploader = {};
     if (options.$refParser == null) options.$refParser = { mode: 'bundle' };
 
     if (options.validateResponses === true) {
@@ -83,7 +84,9 @@ export class OpenApiValidator {
 
     this.installPathParams(app, context);
     this.installMetadataMiddleware(app, context);
-    this.installMultipartMiddleware(app, context);
+    if (this.options.fileUploader) {
+      this.installMultipartMiddleware(app, context);
+    }
 
     const components = context.apiDoc.components;
     if (this.options.validateSecurity && components?.securitySchemes) {
@@ -218,6 +221,20 @@ export class OpenApiValidator {
       );
     }
 
+    const multerOpts = options.multerOpts;
+    if (securityHandlers != null) {
+      if (typeof multerOpts !== 'object' || Array.isArray(securityHandlers)) {
+        throw ono('multerOpts must be an object or undefined');
+      }
+      deprecationWarning('multerOpts is deprecated. Use fileUploader instead.');
+    }
+
+    if (options.multerOpts && options.fileUploader) {
+      throw ono(
+        'multerOpts and fileUploader may not be used together. Use fileUploader to specify upload options.',
+      );
+    }
+
     const unknownFormats = options.unknownFormats;
     if (typeof unknownFormats === 'boolean') {
       if (!unknownFormats) {
@@ -242,6 +259,10 @@ export class OpenApiValidator {
         handlers: options.securityHandlers,
       };
       delete options.securityHandlers;
+    }
+    if (options.multerOpts) {
+      options.fileUploader = options.multerOpts;
+      delete options.multerOpts;
     }
   }
 }

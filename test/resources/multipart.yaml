@@ -1,0 +1,111 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  description: A sample API that uses a petstore as an example to demonstrate features in the OpenAPI 3.0 specification
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: Swagger API Team
+    email: apiteam@swagger.io
+    url: http://swagger.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: /v1/
+paths:
+  /sample_1:
+    post:
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - form_p1
+              properties:
+                form_p1:
+                  type: string
+                form_p2:
+                  type: string
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - p1
+                - p2
+              properties:
+                p1:
+                  type: string
+                p2:
+                  type: string
+      responses:
+        "200":
+          description: form data
+  /sample_2:
+    post:
+      description: upload a photo of the pet
+      operationId: formData
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - metadata
+              properties:
+                file:
+                  description: The photo
+                  type: string
+                  format: binary
+                metadata:
+                  type: string
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - form_p1
+              properties:
+                form_p1:
+                  type: string
+                form_p2:
+                  type: string
+      responses:
+        "200":
+          description: form data
+  /range:
+    get:
+      parameters:
+        - name: tags
+          in: query
+          description: tags to filter by
+          required: false
+          style: form
+          schema:
+            type: array
+            items:
+              type: string
+        - name: number
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 5
+            maximum: 10
+      responses:
+        "200":
+          description: form data
+
+components:
+  schemas:
+    NewPhoto:
+      type: object
+      required:
+        - file
+      properties:
+        file:
+          description: The photo
+          type: string
+          format: binary

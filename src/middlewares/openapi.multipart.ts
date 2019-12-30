@@ -12,7 +12,7 @@ const multer = require('multer');
 
 export function multipart(
   OpenApiContext: OpenApiContext,
-  multerOpts: {} = {},
+  multerOpts: {},
 ): OpenApiRequestHandler {
   const mult = multer(multerOpts);
   return (req, res, next) => {
@@ -35,7 +35,6 @@ export function multipart(
           // case we must follow the $ref to check the type.
 
           if (req.files) {
-
             // to handle single and multiple file upload at the same time, let us this initialize this count variable
             // for example { "files": 5 }
             const count_by_fieldname = (<Express.Multer.File[]>req.files)
@@ -46,18 +45,15 @@ export function multipart(
               }, {});
 
             // add file(s) to body
-            Object
-              .entries(count_by_fieldname)
-              .forEach(
-                ([fieldname, count]: [string, number]) => {
-                  // TODO maybe also check in the api doc if it is a single upload or multiple
-                  const is_multiple = count > 1;
-                  req.body[fieldname] = (is_multiple)
-                    ? new Array(count).fill('')
-                    : '';
-                },
-              );
-
+            Object.entries(count_by_fieldname).forEach(
+              ([fieldname, count]: [string, number]) => {
+                // TODO maybe also check in the api doc if it is a single upload or multiple
+                const is_multiple = count > 1;
+                req.body[fieldname] = is_multiple
+                  ? new Array(count).fill('')
+                  : '';
+              },
+            );
           }
           next();
         }
@@ -74,7 +70,9 @@ function isValidContentType(req: Request): boolean {
 }
 
 function isMultipart(req: OpenApiRequest): boolean {
-  return (<any>req?.openapi)?.schema?.requestBody?.content?.['multipart/form-data'];
+  return (<any>req?.openapi)?.schema?.requestBody?.content?.[
+    'multipart/form-data'
+  ];
 }
 
 function error(req: OpenApiRequest, err: Error): ValidationError {
