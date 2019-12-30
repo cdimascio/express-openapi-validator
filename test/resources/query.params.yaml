@@ -35,6 +35,7 @@ paths:
       description: |
         Returns all pets from the system that the user has access tp
       parameters:
+        - $ref: '#/components/parameters/name'
         - name: tags
           in: query
           description: tags to filter by
@@ -73,6 +74,14 @@ paths:
                   $ref: '#/components/schemas/Pet'
 components:
   parameters:
+    name:
+      name: name
+      in: query
+      description: name
+      required: true
+      schema:
+        type: string
+      allowEmptyValue: true
     owner_name:
       name: owner_name
       in: query

@@ -47,6 +47,12 @@ export class ParametersSchemaParser {
       }
 
       schemas[reqField].properties[name] = schema;
+      if (reqField === 'query' && parameter.allowEmptyValue) {
+        if (!schemas[reqField].allowEmptyValue) {
+          schemas[reqField].allowEmptyValue = new Set<string>();
+        }
+        schemas[reqField].allowEmptyValue.add(name);
+      }
       if (parameter.required) {
         if (!schemas[reqField].required) {
           schemas[reqField].required = [];

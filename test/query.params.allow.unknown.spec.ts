@@ -32,6 +32,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets`)
       .query({
+        name: 'max',
         tags: 'one,two,three',
         limit: 10,
         breed: 'german_shepherd',
@@ -43,6 +44,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets`)
       .query({
+        name: 'max',
         tags: 'one,two,three',
         limit: 10,
         breed: 'german_shepherd',
