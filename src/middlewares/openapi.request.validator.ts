@@ -161,7 +161,7 @@ export class RequestValidator {
         throw validationError(
           400,
           `.query.${q}`,
-          `Empty valued found for query parameter '${q}'`,
+          `Empty value found for query parameter '${q}'`,
         );
       }
     }
