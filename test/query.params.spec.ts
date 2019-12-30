@@ -67,7 +67,7 @@ describe(packageJson.name, () => {
       .then(r => {
         expect(r.body)
           .to.have.property('message')
-          .that.equals('query parameter breed has empty value');
+          .that.equals("Empty value found for query parameter 'breed'");
         expect(r.body.errors)
           .to.be.an('array')
           .with.length(1);
