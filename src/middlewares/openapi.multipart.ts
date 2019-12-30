@@ -16,6 +16,8 @@ export function multipart(
 ): OpenApiRequestHandler {
   const mult = multer(multerOpts);
   return (req, res, next) => {
+    // TODO check that format: binary (for upload) else do not use multer.any()
+    // use multer.none() if no binary parameters exist
     if (isMultipart(req) && isValidContentType(req)) {
       mult.any()(req, res, err => {
         if (err) {
