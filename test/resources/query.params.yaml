@@ -35,6 +35,13 @@ paths:
       description: |
         Returns all pets from the system that the user has access tp
       parameters:
+        - name: name
+          in: query
+          description: name
+          required: true
+          schema:
+            type: string
+          allowEmptyValue: true
         - name: tags
           in: query
           description: tags to filter by
