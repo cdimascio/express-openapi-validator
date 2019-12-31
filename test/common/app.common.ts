@@ -44,13 +44,15 @@ export function routes(app) {
   app.get(`${basePath}/pets`, function(req: Request, res: Response): void {
     res.json({
       test: 'hi',
-      ...req.body,
+      body: req.body,
+      query: req.query,
     });
   });
 
   app.post(`${basePath}/pets`, function(req: Request, res: Response): void {
     res.json({
-      ...req.body,
+      body: req.body,
+      query: req.query,
       id: 'new-id',
     });
   });

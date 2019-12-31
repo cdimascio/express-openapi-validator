@@ -5,6 +5,7 @@ import {
   OpenApiRequestMetadata,
   ValidationSchema,
 } from '../../framework/types';
+import * as url from 'url';
 import { validationError } from '../util';
 import { dereferenceParameter, normalizeParameter } from './util';
 import * as mediaTypeParser from 'media-typer';
@@ -13,6 +14,8 @@ import * as contentTypeParser from 'content-type';
 type SchemaObject = OpenAPIV3.SchemaObject;
 type ReferenceObject = OpenAPIV3.ReferenceObject;
 type ParameterObject = OpenAPIV3.ParameterObject;
+
+const RESERVED_CHARS = /[\:\/\?#\[\]@!\$&\'()\*\+,;=]/;
 
 const ARRAY_DELIMITER = {
   form: ',',
@@ -56,6 +59,10 @@ export class RequestParameterMutator {
    */
   public modifyRequest(req: OpenApiRequest): void {
     const { parameters } = (<OpenApiRequestMetadata>req.openapi).schema;
+    const rawQuery = this.parseQueryStringUndecoded(
+      url.parse(req.originalUrl).query,
+    );
+
     parameters.forEach(p => {
       const parameter = dereferenceParameter(this._apiDocs, p);
       const { name, schema } = normalizeParameter(parameter);
@@ -63,6 +70,10 @@ export class RequestParameterMutator {
       const { style, explode } = parameter;
       const i = req.originalUrl.indexOf('?');
       const queryString = req.originalUrl.substr(i + 1);
+
+      if (parameter.in === 'query' && !parameter.allowReserved) {
+        this.validateReservedCharacters(name, rawQuery);
+      }
 
       if (parameter.content) {
         this.handleContent(req, name, parameter);
@@ -260,7 +271,32 @@ export class RequestParameterMutator {
   ): void {
     if (!delimiter) {
       const message = `Parameter 'style' has incorrect value '${parameter.style}' for [${parameter.name}]`;
-      throw validationError(400, this.path, message);
+      throw validationError(400, `.query.${parameter.name}`, message);
     }
+  }
+
+  private validateReservedCharacters(
+    name: string,
+    pairs: { [key: string]: string[] },
+  ) {
+    const vs = pairs[name];
+    if (!vs) return;
+    for (const v of vs) {
+      if (v?.match(RESERVED_CHARS)) {
+        const message = `Parameter '${name}' must be url encoded. It's value may not contain reserved characters.`;
+        throw validationError(400, `.query.${name}`, message);
+      }
+    }
+  }
+
+  private parseQueryStringUndecoded(qs: string) {
+    if (!qs) return {};
+    const q = qs.replace('?', '');
+    return q.split('&').reduce((m, p) => {
+      const [k, v] = p.split('=');
+      m[k] = m[k] ?? [];
+      m[k].push(v);
+      return m;
+    }, {});
   }
 }

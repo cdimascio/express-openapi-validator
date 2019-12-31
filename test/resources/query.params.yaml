@@ -30,6 +30,46 @@ servers:
         enum:
           - v1
 paths:
+  /no_reserved:
+    get:
+      parameters:
+        - name: value
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+  /allow_reserved:
+    get:
+      parameters:
+       -  name: value
+          in: query
+          required: true
+          schema:
+            type: string
+          allowReserved: true
+      responses:
+        '200':
+          description: success
+
+  /allow_reserved/array_explode:
+    get:
+      parameters:
+       -  name: value
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+          explode: true
+          allowReserved: true
+      responses:
+        '200':
+          description: success
+
   /pets:
     get:
       description: |
@@ -45,6 +85,7 @@ paths:
             type: array
             items:
               type: string
+          # allowReserved: true
         - name: limit
           in: query
           description: maximum number of results to return
