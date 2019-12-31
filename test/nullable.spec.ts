@@ -52,7 +52,7 @@ describe(packageJson.name, () => {
       })
       .expect(200)
       .then(r => {
-        expect(r.body.tag).to.equal('my default value');
+        expect(r.body.body.tag).to.equal('my default value');
       }));
 
   it('should fail if required and not provided (nullable true)', async () =>

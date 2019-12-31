@@ -9,11 +9,10 @@
     "resolveJsonModule": true,
     "typeRoots": ["./node_modules/@types", "./typings"]
   },
-  "exclude": ["node_modules", "a_reference"],
+  "exclude": ["node_modules"],
   "include": [
     "typings/**/*.d.ts",
     "src/**/*.ts",
-    "src/framework/modded.express.mung.ts",
-    "a_reference/query.parser.ts"
+    "src/framework/modded.express.mung.ts"
   ]
 }
