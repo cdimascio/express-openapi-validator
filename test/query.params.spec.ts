@@ -16,7 +16,9 @@ describe(packageJson.name, () => {
         `${app.basePath}`,
         express
           .Router()
-          .post(`/pets/nullable`, (req, res) => res.json(req.body)),
+          .post(`/pets/nullable`, (req, res) => res.json(req.body))
+          .get(`/no_reserved`, (req, res) => res.json(req.body))
+          .get(`/allow_reserved`, (req, res) => res.json(req.body)),
       ),
     );
   });
@@ -86,8 +88,26 @@ describe(packageJson.name, () => {
       })
       .expect(200));
 
-      it("should succeed when query param 'name' has empty value and sets allowEmptyValue: true", async () =>
-      request(app)
-        .get(`${app.basePath}/pets?name=&tags=one&limit=10&breed=german_shepherd&owner_name=carmine`)
-        .expect(200));
+  it("should succeed when query param 'name' has empty value and sets allowEmptyValue: true", async () =>
+    request(app)
+      .get(
+        `${app.basePath}/pets?name=&tags=one&limit=10&breed=german_shepherd&owner_name=carmine`,
+      )
+      .expect(200));
+
+  it('should not allow reserved characters', async () =>
+    request(app)
+      .get(`${app.basePath}/no_reserved?value=ThisHas$ReservedChars!`)
+      .expect(400)
+      .then(r => {
+        const body = r.body;
+        expect(body.message).equals(
+          "Parameter 'value' must be url encoded. It's value may not contain reserved characters.",
+        );
+      }));
+
+  it('should may allow reserved characters when allowedReserved: true', async () =>
+    request(app)
+      .get(`${app.basePath}/allow_reserved?value=ThisHas$ReservedChars!`)
+      .expect(200));
 });
