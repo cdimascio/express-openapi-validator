@@ -1,0 +1,72 @@
+openapi: '3.0.2'
+info:
+  version: 1.0.0
+  title: Nested Express Routes
+  description: Nested Express Routes Test
+
+servers:
+  - url: /v1/api-path
+
+paths:
+  /pets:
+    description: endpoints for pets
+    summary: endpoints for pets
+    get:
+      description: find pets
+      operationId: findPets
+      parameters:
+        - name: qparam
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    NewPet:
+      required:
+        - name
+      properties:
+        bought_at:
+          type: string
+          format: date-time
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        tag:
+          type: string
+
+    Pet:
+      allOf:
+        - $ref: '#/components/schemas/NewPet'
+        - required:
+            - id
+          properties:
+            id:
+              type: integer
+              format: int64
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
