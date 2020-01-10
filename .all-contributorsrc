@@ -159,6 +159,16 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "vdmitriy",
+      "name": "Dmitriy Voeykov",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/2050542?v=4",
+      "profile": "https://github.com/vdmitriy",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
