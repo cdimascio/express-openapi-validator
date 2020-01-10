@@ -13,6 +13,7 @@ export async function createApp(
   port = 3000,
   customRoutes = app => {},
   useRoutes = true,
+  apiRouter = undefined,
 ) {
   var app = express();
   (<any>app).basePath = '/v1';
@@ -25,7 +26,7 @@ export async function createApp(
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
 
-  await new OpenApiValidator(opts).install(app);
+  await new OpenApiValidator(opts).install(apiRouter || app);
 
   if (useRoutes) {
     // register common routes
