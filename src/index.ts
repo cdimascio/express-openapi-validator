@@ -1,9 +1,9 @@
 import ono from 'ono';
 import * as _uniq from 'lodash.uniq';
 import * as middlewares from './middlewares';
-import { Application, Response, NextFunction } from 'express';
+import { Application, Response, NextFunction, Router } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
-import { OpenApiSpecLoader, Spec } from './framework/openapi.spec.loader';
+import { OpenApiSpecLoader, Spec, RouteMetadata } from './framework/openapi.spec.loader';
 import {
   OpenApiValidatorOpts,
   ValidateRequestOpts,
@@ -49,17 +49,17 @@ export class OpenApiValidator {
     this.options = options;
   }
 
-  public installSync(app: Application): void {
+  public installSync(app: Application | Router): void {
     const spec = new OpenApiSpecLoader({
       apiDoc: this.options.apiSpec,
     }).loadSync();
     this.installMiddleware(app, spec);
   }
 
-  public async install(app: Application): Promise<void>;
-  public install(app: Application, callback: (error: Error) => void): void;
+  public async install(app: Application | Router): Promise<void>;
+  public install(app: Application | Router, callback: (error: Error) => void): void;
   public install(
-    app: Application,
+    app: Application | Router,
     callback?: (error: Error) => void,
   ): Promise<void> | void {
     const p = new OpenApiSpecLoader({
@@ -79,7 +79,7 @@ export class OpenApiValidator {
     }
   }
 
-  private installMiddleware(app: Application, spec: Spec): void {
+  private installMiddleware(app: Application | Router, spec: Spec): void {
     const context = new OpenApiContext(spec, this.options.ignorePaths);
 
     this.installPathParams(app, context);
@@ -102,7 +102,7 @@ export class OpenApiValidator {
     }
   }
 
-  private installPathParams(app: Application, context: OpenApiContext): void {
+  private installPathParams(app: Application | Router, context: OpenApiContext): void {
     const pathParams: string[] = [];
     for (const route of context.routes) {
       if (route.pathParams.length > 0) {
@@ -133,21 +133,21 @@ export class OpenApiValidator {
   }
 
   private installMetadataMiddleware(
-    app: Application,
+    app: Application | Router,
     context: OpenApiContext,
   ): void {
     app.use(middlewares.applyOpenApiMetadata(context));
   }
 
   private installMultipartMiddleware(
-    app: Application,
+    app: Application | Router,
     context: OpenApiContext,
   ): void {
     app.use(middlewares.multipart(context, this.options.multerOpts));
   }
 
   private installSecurityMiddleware(
-    app: Application,
+    app: Application | Router,
     context: OpenApiContext,
   ): void {
     const securityHandlers = (<ValidateSecurityOpts>(
@@ -158,7 +158,7 @@ export class OpenApiValidator {
   }
 
   private installRequestValidationMiddleware(
-    app: Application,
+    app: Application | Router,
     context: OpenApiContext,
   ): void {
     const { coerceTypes, unknownFormats, validateRequests } = this.options;
@@ -180,7 +180,7 @@ export class OpenApiValidator {
   }
 
   private installResponseValidationMiddleware(
-    app: Application,
+    app: Application | Router,
     context: OpenApiContext,
   ): void {
     const { coerceTypes, unknownFormats, validateResponses } = this.options;
