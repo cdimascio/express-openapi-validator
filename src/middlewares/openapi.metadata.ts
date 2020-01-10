@@ -29,7 +29,7 @@ export function applyOpenApiMetadata(
   };
 
   function lookupRoute(req: OpenApiRequest): OpenApiRequestMetadata {
-    const path = req.path;
+    const path = req.originalUrl.split("?")[0];
     const method = req.method;
     const routeEntries = Object.entries(openApiContext.expressRouteMap);
     for (const [expressRoute, methods] of routeEntries) {
