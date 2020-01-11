@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { OpenAPIFramework } from './index';
 import {
   OpenAPIFrameworkAPIContext,
@@ -51,7 +52,7 @@ export class OpenApiSpecLoader {
 
       // Deasync should be used here any nowhere else!
       // it is an optional peer dep
-      // Only necessary for those looking to use a blocking 
+      // Only necessary for those looking to use a blocking
       // intial openapi parse to resolve json-schema-refs
       require('deasync').loopWhile(() => !done);
 
@@ -110,6 +111,9 @@ export class OpenApiSpecLoader {
         }
       },
     });
+
+    routes.sort(this.sortRoutes.bind(this));
+
     return {
       apiDoc,
       basePaths,
@@ -119,5 +123,26 @@ export class OpenApiSpecLoader {
 
   private toExpressParams(part: string): string {
     return part.replace(/\{([^}]+)}/g, ':$1');
+  }
+
+  // Sort routes by most specific to least specific i.e. static routes before dynamic
+  // e.g. /users/my_route before /users/{id}
+  private sortRoutes(r1: RouteMetadata, r2: RouteMetadata) {
+    const e1 = r1.expressRoute;
+    const e2 = r2.expressRoute;
+    const a = {
+      dirname: path.dirname(e1).replace(/^\./i, ''),
+      basename: path.basename(e1).replace(/\:/i, '~'),
+    };
+    const b = {
+      dirname: path.dirname(e2).replace(/^\./i, ''),
+      basename: path.basename(e2).replace(/\:/i, '~'),
+    };
+
+    if (a.dirname === b.dirname) {
+      return a.basename > b.basename ? 1 : -1;
+    } else {
+      return a.dirname < b.dirname ? -1 : 1;
+    }
   }
 }
