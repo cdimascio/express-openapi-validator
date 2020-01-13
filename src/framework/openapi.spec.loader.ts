@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { OpenAPIFramework } from './index';
 import {
   OpenAPIFrameworkAPIContext,
@@ -25,6 +24,15 @@ interface DiscoveredRoutes {
   basePaths: string[];
   routes: RouteMetadata[];
 }
+// Sort routes by most specific to least specific i.e. static routes before dynamic
+// e.g. /users/my_route before /users/{id}
+// Exported for tests
+export const sortRoutes = (r1, r2) => {
+  const e1 = r1.expressRoute.replace(/\/:/g, '/~');
+  const e2 = r2.expressRoute.replace(/\/:/g, '/~');
+  return e1 > e2 ? 1 : -1;
+};
+
 export class OpenApiSpecLoader {
   private readonly framework: OpenAPIFramework;
   constructor(opts: OpenAPIFrameworkArgs) {
@@ -112,7 +120,7 @@ export class OpenApiSpecLoader {
       },
     });
 
-    routes.sort(this.sortRoutes.bind(this));
+    routes.sort(sortRoutes);
 
     return {
       apiDoc,
@@ -123,26 +131,5 @@ export class OpenApiSpecLoader {
 
   private toExpressParams(part: string): string {
     return part.replace(/\{([^}]+)}/g, ':$1');
-  }
-
-  // Sort routes by most specific to least specific i.e. static routes before dynamic
-  // e.g. /users/my_route before /users/{id}
-  private sortRoutes(r1: RouteMetadata, r2: RouteMetadata) {
-    const e1 = r1.expressRoute;
-    const e2 = r2.expressRoute;
-    const a = {
-      dirname: path.dirname(e1).replace(/^\./i, ''),
-      basename: path.basename(e1).replace(/\:/i, '~'),
-    };
-    const b = {
-      dirname: path.dirname(e2).replace(/^\./i, ''),
-      basename: path.basename(e2).replace(/\:/i, '~'),
-    };
-
-    if (a.dirname === b.dirname) {
-      return a.basename > b.basename ? 1 : -1;
-    } else {
-      return a.dirname < b.dirname ? -1 : 1;
-    }
   }
 }
