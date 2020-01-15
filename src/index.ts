@@ -57,7 +57,10 @@ export class OpenApiValidator {
   }
 
   public async install(app: Application | Router): Promise<void>;
-  public install(app: Application | Router, callback: (error: Error) => void): void;
+  public install(
+    app: Application | Router,
+    callback: (error: Error) => void,
+  ): void;
   public install(
     app: Application | Router,
     callback?: (error: Error) => void,
@@ -102,7 +105,10 @@ export class OpenApiValidator {
     }
   }
 
-  private installPathParams(app: Application | Router, context: OpenApiContext): void {
+  private installPathParams(
+    app: Application | Router,
+    context: OpenApiContext,
+  ): void {
     const pathParams: string[] = [];
     for (const route of context.routes) {
       if (route.pathParams.length > 0) {
@@ -121,8 +127,9 @@ export class OpenApiValidator {
           value: any,
           name: string,
         ) => {
-          const { pathParams } = <OpenApiRequestMetadata>req.openapi;
-          if (pathParams) {
+          const openapi = <OpenApiRequestMetadata>req.openapi;
+          if (openapi?.pathParams) {
+            const { pathParams } = openapi;
             // override path params
             req.params[name] = pathParams[name] || req.params[name];
           }
