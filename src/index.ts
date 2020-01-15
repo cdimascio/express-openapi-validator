@@ -3,7 +3,7 @@ import * as _uniq from 'lodash.uniq';
 import * as middlewares from './middlewares';
 import { Application, Response, NextFunction, Router } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
-import { OpenApiSpecLoader, Spec, RouteMetadata } from './framework/openapi.spec.loader';
+import { OpenApiSpecLoader, Spec } from './framework/openapi.spec.loader';
 import {
   OpenApiValidatorOpts,
   ValidateRequestOpts,
