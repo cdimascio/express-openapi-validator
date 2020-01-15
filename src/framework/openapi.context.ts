@@ -49,15 +49,6 @@ export class OpenApiContext {
     return openApiRouteMethods;
   }
 
-  // private schema(route: string, method: string) {
-  //   const methods = this.methods(route);
-  //   if (methods) {
-  //     const schema = methods[method];
-  //     return schema;
-  //   }
-  //   return null;
-  // }
-
   // side-effecting builds express/openapi route maps
   private buildRouteMaps(routes: RouteMetadata[]): void {
     for (const route of routes) {

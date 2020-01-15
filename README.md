@@ -863,12 +863,12 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/ckeboss"><img src="https://avatars1.githubusercontent.com/u/723809?v=4" width="100px;" alt=""/><br /><sub><b>ckeboss</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=ckeboss" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=ckeboss" title="Tests">⚠️</a></td>
     <td align="center"><a href="https://github.com/JacobLey"><img src="https://avatars0.githubusercontent.com/u/37151850?v=4" width="100px;" alt=""/><br /><sub><b>JacobLey</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=JacobLey" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=JacobLey" title="Tests">⚠️</a></td>
+    <td align="center"><a href="https://github.com/vdmitriy"><img src="https://avatars0.githubusercontent.com/u/2050542?v=4" width="100px;" alt=""/><br /><sub><b>Dmitriy Voeykov</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=vdmitriy" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=vdmitriy" title="Tests">⚠️</a></td>
   </tr>
 </table>
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

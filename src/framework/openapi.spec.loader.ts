@@ -24,6 +24,15 @@ interface DiscoveredRoutes {
   basePaths: string[];
   routes: RouteMetadata[];
 }
+// Sort routes by most specific to least specific i.e. static routes before dynamic
+// e.g. /users/my_route before /users/{id}
+// Exported for tests
+export const sortRoutes = (r1, r2) => {
+  const e1 = r1.expressRoute.replace(/\/:/g, '/~');
+  const e2 = r2.expressRoute.replace(/\/:/g, '/~');
+  return e1 > e2 ? 1 : -1;
+};
+
 export class OpenApiSpecLoader {
   private readonly framework: OpenAPIFramework;
   constructor(opts: OpenAPIFrameworkArgs) {
@@ -51,7 +60,7 @@ export class OpenApiSpecLoader {
 
       // Deasync should be used here any nowhere else!
       // it is an optional peer dep
-      // Only necessary for those looking to use a blocking 
+      // Only necessary for those looking to use a blocking
       // intial openapi parse to resolve json-schema-refs
       require('deasync').loopWhile(() => !done);
 
@@ -110,6 +119,9 @@ export class OpenApiSpecLoader {
         }
       },
     });
+
+    routes.sort(sortRoutes);
+
     return {
       apiDoc,
       basePaths,
