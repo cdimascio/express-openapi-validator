@@ -19,6 +19,9 @@ describe(packageJson.name, () => {
       },
       3005,
       app => {
+        app.get(`${app.basePath}/empty_response`, (req, res) => {
+          return res.end();
+        });
         app.get(`${app.basePath}/users`, (req, res) => {
           const json = ['user1', 'user2', 'user3'];
           return res.json(json);
@@ -38,7 +41,12 @@ describe(packageJson.name, () => {
               },
               { id: 3, name: 'name', tag: 'tag' },
             ];
+          } else if (req.query.mode === 'empty_object') {
+            json = {};
+          } else if (req.query.mode === 'empty_response') {
+            return res.json();
           }
+
           return res.json(json);
         });
         app.post(`${app.basePath}/no_additional_props`, (req, res) => {
@@ -69,6 +77,34 @@ describe(packageJson.name, () => {
           .to.have.property('code')
           .that.equals(500);
       }));
+
+  it('should fail if response is response is empty object', async () =>
+    request(app)
+      .get(`${app.basePath}/pets?mode=empty_object`)
+      .expect(500)
+      .then((r: any) => {
+        console.log(r.body);
+        expect(r.body.message).to.contain('should be array');
+        expect(r.body)
+          .to.have.property('code')
+          .that.equals(500);
+      }));
+
+  it('should fail if response is response is empty', async () =>
+    request(app)
+      .get(`${app.basePath}/pets?mode=empty_response`)
+      .expect(500)
+      .then((r: any) => {
+        expect(r.body.message).to.contain('body required');
+        expect(r.body)
+          .to.have.property('code')
+          .that.equals(500);
+      }));
+
+  it('should return 200 for endpoints that return empty response', async () =>
+    request(app)
+      .get(`${app.basePath}/empty_response`)
+      .expect(200));
 
   it('should fail if additional properties are provided when set false', async () =>
     request(app)

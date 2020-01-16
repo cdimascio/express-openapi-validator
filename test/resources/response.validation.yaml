@@ -14,6 +14,20 @@ info:
 servers:
   - url: /v1
 paths:
+  /empty_response:
+    description: get empty response
+    summary: get empty response
+    get:
+      description: get empty response
+      operationId: get empty resp
+      parameters:
+        - name: mode
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: empty
   /pets:
     description: endpoints for pets
     summary: endpoints for pets
