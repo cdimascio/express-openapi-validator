@@ -150,7 +150,7 @@ export class OpenApiValidator {
     app: Application | Router,
     context: OpenApiContext,
   ): void {
-    app.use(middlewares.multipart(context, this.options.multerOpts));
+    app.use(middlewares.multipart(context, this.options.fileUploader));
   }
 
   private installSecurityMiddleware(
