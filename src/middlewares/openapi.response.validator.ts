@@ -104,6 +104,9 @@ export class ResponseValidator {
       // assume valid
       return;
     }
+    if (!body) {
+      throw validationError(500, '.response', 'response body required.');
+    }
     const valid = validator({
       response: body,
     });
@@ -127,6 +130,9 @@ export class ResponseValidator {
     responses: OpenAPIV3.ResponsesObject,
   ): { [key: string]: ajv.ValidateFunction } {
     const canValidate = response => {
+      if (!response.content) {
+        return 'no_content';
+      }
       if (typeof response.content !== 'object') {
         return false;
       }
@@ -156,6 +162,9 @@ export class ResponseValidator {
         // TODO support content other than JSON
         // don't validate
         // assume is valid
+        continue;
+      } else if (mediaTypeToValidate === 'no_content') {
+        schemas[name] = {};
         continue;
       }
       const schema = response.content[mediaTypeToValidate].schema;
