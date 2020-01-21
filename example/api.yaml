@@ -10,11 +10,34 @@ info:
 servers:
   - url: /v1
 paths:
+  /ping:
+    get:
+      description: |
+        ping then pong!
+      operationId: ping
+      x-eov-operationId: ping#get
+      x-eov-controller: ping
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: pong
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /pets:
     get:
       description: |
         Returns all pets
       operationId: findPets
+      x-eov-operationId: pets#list
+      x-eov-controller: pets
       parameters:
         - name: type
           in: query
@@ -62,6 +85,8 @@ paths:
     post:
       description: Creates a new pet in the store.
       operationId: addPet
+      x-eov-operationId: pets#create
+      x-eov-controller: pets
       security:
         - ApiKeyAuth: []
       requestBody:
@@ -89,6 +114,8 @@ paths:
     get:
       description: Returns a user based on a single ID, if the user does not have access to the pet
       operationId: find pet by id
+      x-eov-operationId: pets#pet
+      x-eov-controller: pets
       parameters:
         - name: id
           in: path
@@ -113,6 +140,8 @@ paths:
     delete:
       description: deletes a single pet based on the ID supplied
       operationId: deletePet
+      x-eov-operationId: pets#delete
+      x-eov-controller: pets
       parameters:
         - name: id
           in: path
@@ -135,6 +164,8 @@ paths:
     post:
       description: upload a photo of the pet
       operationId: uploadPetPhoto
+      x-eov-operationId: pets#petPhotos
+      x-eov-controller: pets
       parameters:
         - name: id
           in: path
