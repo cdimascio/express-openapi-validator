@@ -14,6 +14,7 @@ import {
   ValidateSecurityOpts,
 } from './framework/types';
 import { deprecationWarning } from './middlewares/util';
+import * as path from 'path';
 
 export class OpenApiValidator {
   private readonly options: OpenApiValidatorOpts;
@@ -29,6 +30,7 @@ export class OpenApiValidator {
     if (options.validateSecurity == null) options.validateSecurity = true;
     if (options.fileUploader == null) options.fileUploader = {};
     if (options.$refParser == null) options.$refParser = { mode: 'bundle' };
+    if (options.controller == null) options.controller = false;
 
     if (options.validateResponses === true) {
       options.validateResponses = {
@@ -102,6 +104,10 @@ export class OpenApiValidator {
 
     if (this.options.validateResponses) {
       this.installResponseValidationMiddleware(app, context);
+    }
+
+    if (this.options.controller) {
+      this.installControllers(app, context);
     }
   }
 
@@ -204,6 +210,24 @@ export class OpenApiValidator {
     );
 
     app.use(responseValidator.validate());
+  }
+
+  private installControllers(app: Application | Router, context: OpenApiContext): void {
+    const tmpModules = {};
+
+    for (const route of context.routes) {
+      const { expressRoute, method, schema } = route;
+      const oId = schema['x-eov-operationId'];
+      const baseName = schema['x-eov-controller'];
+      if (oId && baseName && typeof this.options.controller === 'string') {
+        const modulePath = path.join(this.options.controller, baseName);
+        if(!tmpModules[modulePath]) {
+          tmpModules[modulePath] = require(modulePath);
+        }
+        const fn = tmpModules[modulePath][oId];
+        app[method.toLowerCase()](expressRoute, fn);
+      }
+    }
   }
 
   private validateOptions(options: OpenApiValidatorOpts): void {
