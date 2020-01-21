@@ -61,6 +61,7 @@ export interface OpenApiValidatorOpts {
   $refParser?: {
     mode: 'bundle' | 'dereference';
   };
+  controller?: false | string;
 }
 
 export namespace OpenAPIV3 {
