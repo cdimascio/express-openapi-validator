@@ -33,7 +33,7 @@ In version 2.x.x, the `install` method was executed synchronously, in 3.x it's e
 
 ## Usage
 
-[🦋express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) may be used asynchronously ([promises](#promise), [async/await](#asyncawait), [callbacks](#callback)) or [synchronously](#synchronous). See a complete [example](#example-express-api-server)
+[🦋express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) may be used asynchronously ([promises](#promise), [async/await](#asyncawait), [callbacks](#callback)) or [synchronously](#synchronous). See a complete [example](#example-express-api-server).
 
 #### Async/Await
 
