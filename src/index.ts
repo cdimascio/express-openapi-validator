@@ -229,8 +229,8 @@ export class OpenApiValidator {
     }
 
     const multerOpts = options.multerOpts;
-    if (securityHandlers != null) {
-      if (typeof multerOpts !== 'object' || Array.isArray(securityHandlers)) {
+    if (multerOpts != null) {
+      if (typeof multerOpts !== 'object' || Array.isArray(multerOpts)) {
         throw ono('multerOpts must be an object or undefined');
       }
       deprecationWarning('multerOpts is deprecated. Use fileUploader instead.');
