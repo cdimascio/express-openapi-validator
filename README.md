@@ -79,7 +79,7 @@ See [Advanced Usage](#Advanced-Usage) options to:
 
 The following demonstrates how to use express-openapi-validator to auto validate requests and responses. It also includes file upload!
 
-See the complete [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/example) for the example below:
+See the complete [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/example) and [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/example/api.yaml) for the example below:
 
 ```javascript
 const express = require('express');
