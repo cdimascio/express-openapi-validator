@@ -4,7 +4,6 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const http = require('http');
-const { pets } = require('./pets');
 const { OpenApiValidator } = require('express-openapi-validator');
 
 const port = 3000;
@@ -26,11 +25,12 @@ app.use('/spec', express.static(apiSpec));
 new OpenApiValidator({
   apiSpec,
   validateResponses: true, // default false
-  controller: path.join(__dirname, 'routes'), // default false
+  // 3. Provide the path to the controllers directory
+  operationHandlers: path.join(__dirname), // default false
 })
   .install(app)
   .then(() => {
-    // 3. Create a custom error handler
+    // 4. Create a custom error handler
     app.use((err, req, res, next) => {
       // format errors
       res.status(err.status || 500).json({
