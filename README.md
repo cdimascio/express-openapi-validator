@@ -1,4 +1,4 @@
-# express-openapi-validator
+# 🦋 express-openapi-validator
 
 [![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) [![](https://img.shields.io/npm/dm/express-openapi-validator?color=blue)](https://www.npmjs.com/package/express-openapi-validator) [![All Contributors](https://img.shields.io/badge/all_contributors-15-darkcyan.svg?style=flat)](#contributors) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1570a06f609345ddb237114bbd6ceed7)](https://www.codacy.com/manual/cdimascio/express-openapi-validator?utm_source=github.com&utm_medium=referral&utm_content=cdimascio/express-openapi-validator&utm_campaign=Badge_Grade) [![Greenkeeper badge](https://badges.greenkeeper.io/cdimascio/express-openapi-validator.svg)](https://greenkeeper.io/) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
 
@@ -33,7 +33,7 @@ In version 2.x.x, the `install` method was executed synchronously, in 3.x it's e
 
 ## Usage
 
-[🦋express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) may be used asynchronously ([promises](#promise), [async/await](#asyncawait), [callbacks](#callback)) or [synchronously](#synchronous). See a complete [example](#example-express-api-server)
+[🦋express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) may be used asynchronously ([promises](#promise), [async/await](#asyncawait), [callbacks](#callback)) or [synchronously](#synchronous). See a complete [example](#example-express-api-server).
 
 #### Async/Await
 
@@ -79,7 +79,7 @@ See [Advanced Usage](#Advanced-Usage) options to:
 
 The following demonstrates how to use express-openapi-validator to auto validate requests and responses. It also includes file upload!
 
-See the complete [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/example) for the example below:
+See the complete [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/example) and [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/example/api.yaml) for the example below:
 
 ```javascript
 const express = require('express');
