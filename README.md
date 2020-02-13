@@ -170,8 +170,8 @@ Use express-openapi-validator's OpenAPI `x-eov` vendor extensions. See the compl
 
 **Here's how**
 
-- Specifiy the `operationHandlers` option to set base directory that contains your operation handlers js files.
-- Use the `x-eov-operation-handler` OpenAPI vendor extension to specify a relative path to the file that contains the operation's handler (*no need* to specify the `.js` or `.ts` extension)
+- Specifiy the `operationHandlers` option to set the base directory that contains your operation handler files.
+- Use the `x-eov-operation-handler` OpenAPI vendor extension to specify a path (relative to `operationHandlers`) that contains the handler for this operation (*no need* to specify the `.js` or `.ts` extension). A file may contain *one* or *many* handlers.
 - Use the `x-eov-operation-id` OpenAPI vendor extension to specify the id of opeartion handler to invoke.
 
 **app.js**
