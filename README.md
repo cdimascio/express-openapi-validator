@@ -161,7 +161,7 @@ new OpenApiValidator({
   });
 ```
 
-### [Example Express API Server (with operationHandlers)](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
+### [Example Express API Server: Auto-wiring with operationHandlers](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
 
 Don't want to manunally wire up your routes? express-openapi-validator has you covered. See full [example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
 
