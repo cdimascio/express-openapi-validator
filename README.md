@@ -254,8 +254,8 @@ module.exports = app;
 
 ```javascript
 module.exports = {
-  // ping must match operationId or x-eov-operation-id
-  // note that x-eov-operation-id override operationId
+  // ping must match operationId or x-eov-operation-id above
+  // note that x-eov-operation-id overrides operationId
   ping: (req, res) => res.status(200).send('pong'),
 };
 ```
