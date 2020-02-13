@@ -535,9 +535,16 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
 
 Defines the base directory for operation handlers. This is used in conjunction with express-openapi-validator's OpenAPI vendor extensions.
 
+- `string` - the base directory containing operation handlers
+- `false` - (default) do not validate security
+
 ```
-ignorePaths: 'operations/base/path
+operationHandlers: 'operations/base/path'
 ```
+
+**Note** that the `x-eov-operation-handler` OpenAPI vendor extension specifies a path relative to `operationHandlers`. Thus if `operationHandlers` is `/handlers` and an `x-eov-operation-handler` has path `routes/ping`, then the handler file `/handlers/routes/ping.js` (or `ts`) is used. 
+
+Complete example [here](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
 
 **api.yaml**
 
