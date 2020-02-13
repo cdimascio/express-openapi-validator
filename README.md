@@ -165,7 +165,7 @@ new OpenApiValidator({
 
 Don't want to manually wire up your routes? express-openapi-validator has you covered. 
 
-Use express-openapi-validator's OpenAPI `x-eov` vendor extensions. See the complete [source code] (https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations) and [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/examples/2-eov-operations/api.yaml#L39)
+Use express-openapi-validator's OpenAPI `x-eov` vendor extensions. See the complete [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations) and [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/examples/2-eov-operations/api.yaml#L39)
 
 
 **Here's how**
