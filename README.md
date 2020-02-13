@@ -163,11 +163,14 @@ new OpenApiValidator({
 
 ### [Example Express API Server: Auto-wiring with operationHandlers](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
 
-Don't want to manunally wire up your routes? express-openapi-validator has you covered. See full [example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
+Don't want to manunally wire up your routes? express-openapi-validator has you covered. 
 
-How to?
+Use express-openapi-validator's OpenAPI vendor extensions. See the complete [source code] (https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations) and [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/examples/2-eov-operations/api.yaml#L39)
 
-- Specifiy the base directory that contains your operationHandlers.
+
+**Here's how**
+
+- Specifiy the base directory that contains your `operationHandlers`.
 - Use the `x-eov-operation-handler` OpenAPI vendor extension to specify the file that contains your operation handler
 - Use the `x-eov-operation-id` OpenAPI vendor extension to specify the opeartion handler to invoke
 
