@@ -1,6 +1,6 @@
 # example
 
-simple example using express-openapi-validator
+example using express-openapi-validator with auto-wiring via `operationHandlers`
 
 ## Install
 
