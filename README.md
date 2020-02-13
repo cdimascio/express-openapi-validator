@@ -163,16 +163,16 @@ new OpenApiValidator({
 
 ## [Example Express API Server: Auto-wiring with operationHandlers](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
 
-Don't want to manunally wire up your routes? express-openapi-validator has you covered. 
+Don't want to manually wire up your routes? express-openapi-validator has you covered. 
 
-Use express-openapi-validator's OpenAPI vendor extensions. See the complete [source code] (https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations) and [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/examples/2-eov-operations/api.yaml#L39)
+Use express-openapi-validator's OpenAPI `x-eov` vendor extensions. See the complete [source code] (https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations) and [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/examples/2-eov-operations/api.yaml#L39)
 
 
 **Here's how**
 
-- Specifiy the base directory that contains your `operationHandlers`.
-- Use the `x-eov-operation-handler` OpenAPI vendor extension to specify the file that contains your operation handler
-- Use the `x-eov-operation-id` OpenAPI vendor extension to specify the opeartion handler to invoke
+- Specifiy the `operationHandlers` option to set base directory that contains your operation handlers js files.
+- Use the `x-eov-operation-handler` OpenAPI vendor extension to specify a relative path to the file that contains the operation's handler (*no need* to specify the `.js` or `.ts` extension)
+- Use the `x-eov-operation-id` OpenAPI vendor extension to specify the id of opeartion handler to invoke.
 
 **app.js**
 
@@ -254,6 +254,8 @@ module.exports = app;
 
 ```javascript
 module.exports = {
+  // ping must match operationId or x-eov-operation-id
+  // note that x-eov-operation-id override operationId
   ping: (req, res) => res.status(200).send('pong'),
 };
 ```
