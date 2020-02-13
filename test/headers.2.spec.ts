@@ -31,7 +31,7 @@ describe(packageJson.name, () => {
     app.server.close();
   });
 
-  it.only('should return 400 invalid header', async () => {
+  it.only('should return 400 missing required header', async () => {
     return request(app)
       .get(`${app.basePath}/headers_1`)
       .expect(400)
