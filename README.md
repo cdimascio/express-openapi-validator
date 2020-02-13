@@ -16,7 +16,7 @@
 - ✔️ response validation (json only)
 - 👮 security validation / custom security functions
 - 👽 3rd party / custom formats
-- 🧵 optionally auto-wires APIs to Express handler functions
+- 🧵 optional auto-wiring of APIs to Express handler functions
 - ✂️ **\$ref** support; split specs over multiple files
 - 🎈 file upload
 
