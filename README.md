@@ -16,6 +16,7 @@
 - ✔️ response validation (json only)
 - 👮 security validation / custom security functions
 - 👽 3rd party / custom formats
+- 🧵 auto-wire APIs to Express handler functions
 - ✂️ **\$ref** support; split specs over multiple files
 - 🎈 file upload
 
@@ -79,7 +80,7 @@ See [Advanced Usage](#Advanced-Usage) options to:
 
 The following demonstrates how to use express-openapi-validator to auto validate requests and responses. It also includes file upload!
 
-See the complete [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/example) and [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/example/api.yaml) for the example below:
+See the complete [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/1-standard) and [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/examples/1-standard/api.yaml) for the example below:
 
 ```javascript
 const express = require('express');
@@ -160,15 +161,18 @@ new OpenApiValidator({
   });
 ```
 
-### [Example Express API Server (with operationHandlers)](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
+## [Example Express API Server: Auto-wiring with operationHandlers](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
 
-Don't want to manunally wire up your routes? express-openapi-validator has you covered. See full [example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
+Don't want to manually wire up your routes? express-openapi-validator has you covered. 
 
-How to?
+Use express-openapi-validator's OpenAPI `x-eov` vendor extensions. See the complete [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations) and [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/examples/2-eov-operations/api.yaml#L39)
 
-- Specifiy the base directory that contains your operationHandlers.
-- Use the `x-eov-operation-handler` OpenAPI vendor extension to specify the file that contains your operation handler
-- Use the `x-eov-operation-id` OpenAPI vendor extension to specify the opeartion handler to invoke
+
+**Here's how**
+
+- Specifiy the `operationHandlers` option to set the base directory that contains your operation handler files.
+- Use the `x-eov-operation-handler` OpenAPI vendor extension to specify a path (relative to `operationHandlers`) that contains the handler for this operation (*no need* to specify the `.js` or `.ts` extension). A file may contain *one* or *many* handlers.
+- Use the `x-eov-operation-id` OpenAPI vendor extension to specify the id of opeartion handler to invoke.
 
 **app.js**
 
@@ -205,7 +209,10 @@ new OpenApiValidator({
 })
   .install(app)
   .then(() => {
-    // 4. Create a custom error handler
+    // 4. Woah sweet! With auto-wired operation handlers, I don't have to declare my routes! 
+    //    See api.yaml for x-eov-* vendor extensions
+
+    // 5. Create a custom error handler
     app.use((err, req, res, next) => {
       // format errors
       res.status(err.status || 500).json({
@@ -247,6 +254,8 @@ module.exports = app;
 
 ```javascript
 module.exports = {
+  // ping must match operationId or x-eov-operation-id above
+  // note that x-eov-operation-id overrides operationId
   ping: (req, res) => res.status(200).send('pong'),
 };
 ```
@@ -998,6 +1007,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/ckeboss"><img src="https://avatars1.githubusercontent.com/u/723809?v=4" width="100px;" alt=""/><br /><sub><b>ckeboss</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=ckeboss" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=ckeboss" title="Tests">⚠️</a></td>
     <td align="center"><a href="https://github.com/JacobLey"><img src="https://avatars0.githubusercontent.com/u/37151850?v=4" width="100px;" alt=""/><br /><sub><b>JacobLey</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=JacobLey" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=JacobLey" title="Tests">⚠️</a></td>
     <td align="center"><a href="https://github.com/vdmitriy"><img src="https://avatars0.githubusercontent.com/u/2050542?v=4" width="100px;" alt=""/><br /><sub><b>Dmitriy Voeykov</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=vdmitriy" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=vdmitriy" title="Tests">⚠️</a></td>
+    <td align="center"><a href="https://github.com/foway0"><img src="https://avatars3.githubusercontent.com/u/30143508?v=4" width="100px;" alt=""/><br /><sub><b>GARAMKIM</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=foway0" title="Code">💻</a> <a href="#ideas-foway0" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
 
