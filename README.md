@@ -209,7 +209,10 @@ new OpenApiValidator({
 })
   .install(app)
   .then(() => {
-    // 4. Create a custom error handler
+    // 4. Woah sweet! With auto-wired operation handlers, I don't have to declare my routes! 
+    //    See api.yaml for x-eov-* vendor extensions
+
+    // 5. Create a custom error handler
     app.use((err, req, res, next) => {
       // format errors
       res.status(err.status || 500).json({
