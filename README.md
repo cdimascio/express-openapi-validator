@@ -1,6 +1,6 @@
 # 🦋 express-openapi-validator
 
-[![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) [![](https://img.shields.io/npm/dm/express-openapi-validator?color=blue)](https://www.npmjs.com/package/express-openapi-validator) [![All Contributors](https://img.shields.io/badge/all_contributors-15-darkcyan.svg?style=flat)](#contributors) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1570a06f609345ddb237114bbd6ceed7)](https://www.codacy.com/manual/cdimascio/express-openapi-validator?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=cdimascio/express-openapi-validator&amp;utm_campaign=Badge_Grade) [![Greenkeeper badge](https://badges.greenkeeper.io/cdimascio/express-openapi-validator.svg)](https://greenkeeper.io/) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
+[![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) [![](https://img.shields.io/npm/dm/express-openapi-validator?color=blue)](https://www.npmjs.com/package/express-openapi-validator) [![All Contributors](https://img.shields.io/badge/all_contributors-15-darkcyan.svg?style=flat)](#contributors) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1570a06f609345ddb237114bbd6ceed7)](https://www.codacy.com/manual/cdimascio/express-openapi-validator?utm_source=github.com&utm_medium=referral&utm_content=cdimascio/express-openapi-validator&utm_campaign=Badge_Grade) [![Greenkeeper badge](https://badges.greenkeeper.io/cdimascio/express-openapi-validator.svg)](https://greenkeeper.io/) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
 
 **An OpenApi validator for ExpressJS** that automatically validates **API** _**requests**_ and _**responses**_ using an **OpenAPI 3** specification.
 
@@ -75,7 +75,7 @@ See [Advanced Usage](#Advanced-Usage) options to:
 - ignore routes
 - and more...
 
-## [Example Express API Server](https://github.com/cdimascio/express-openapi-validator/tree/master/example)
+## [Example Express API Server](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/1-standard)
 
 The following demonstrates how to use express-openapi-validator to auto validate requests and responses. It also includes file upload!
 
@@ -158,6 +158,97 @@ new OpenApiValidator({
 
     http.createServer(app).listen(3000);
   });
+```
+
+### [Example Express API Server (with operationHandlers)](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
+
+Don't want to manunally wire up your routes? express-openapi-validator has you covered. See full [example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
+
+How to?
+
+- Specifiy the base directory that contains your operationHandlers.
+- Use the `x-eov-operation-handler` OpenAPI vendor extension to specify the file that contains your operation handler
+- Use the `x-eov-operation-id` OpenAPI vendor extension to specify the opeartion handler to invoke
+
+**app.js**
+
+```javascript
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const logger = require('morgan');
+const http = require('http');
+const { OpenApiValidator } = require('express-openapi-validator');
+
+const port = 3000;
+const app = express();
+const apiSpec = path.join(__dirname, 'api.yaml');
+
+// 1. Install bodyParsers for the request types your API will support
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.text());
+app.use(bodyParser.json());
+
+app.use(logger('dev'));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/spec', express.static(apiSpec));
+
+//  2. Install the OpenApiValidator on your express app
+new OpenApiValidator({
+  apiSpec,
+  validateResponses: true, // default false
+  // 3. Provide the base path to the operation handlers directory
+  operationHandlers: path.join(__dirname), // default false
+})
+  .install(app)
+  .then(() => {
+    // 4. Create a custom error handler
+    app.use((err, req, res, next) => {
+      // format errors
+      res.status(err.status || 500).json({
+        message: err.message,
+        errors: err.errors,
+      });
+    });
+
+    http.createServer(app).listen(port);
+    console.log(`Listening on port ${port}`);
+  });
+
+module.exports = app;
+```
+
+**api.yaml**
+
+```yaml
+/ping:
+  get:
+    description: |
+      ping then pong!
+    # OpenAPI's operationId may be used to to specify the operation id
+    operationId: ping
+    # x-eov-operation-id may be used to specify the operation id
+    # Used when operationId is omiited. Overrides operationId when both are specified
+    x-eov-operation-id: ping
+    # specifies the path to the operation handler.
+    # the path is relative to the operationHandlers option
+    # e.g. operations/base/path/routes/ping.js
+    x-eov-operation-handler: routes/ping
+    responses:
+      '200':
+        description: OK
+        # ...
+```
+
+**ping.js**
+
+```javascript
+module.exports = {
+  ping: (req, res) => res.status(200).send('pong'),
+};
 ```
 
 ## API Validation Response Examples
@@ -334,6 +425,7 @@ new OpenApiValidator(options).install({
       }
     }
   },
+  operationHandlers: false | 'operations/base/path',
   ignorePaths: /.*\/pets$/,
   unknownFormats: ['phone-number', 'uuid'],
   fileUploader: { ... } | true | false,
@@ -395,17 +487,17 @@ Determines whether the validator should validate responses. Also accepts respons
 - `false` (**default**) - do not validate responses
 - `{ ... }` - validate responses with options
 
-    **removeAdditional:**
+  **removeAdditional:**
 
-    - `"failing"` - additional properties that fail schema validation are automatically removed from the response.
+  - `"failing"` - additional properties that fail schema validation are automatically removed from the response.
 
-    For example:
+  For example:
 
-    ```javascript
-    validateResponses: {
-      removeAdditional: 'failing'
-    }
-    ```
+  ```javascript
+  validateResponses: {
+    removeAdditional: 'failing';
+  }
+  ```
 
 ### ▪️ validateSecurity (optional)
 
@@ -429,6 +521,48 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
     }
   }
   ```
+
+### ▪️ operationHandlers (optional)
+
+Defines the base directory for operation handlers. This is used in conjunction with express-openapi-validator's OpenAPI vendor extensions.
+
+```
+ignorePaths: 'operations/base/path
+```
+
+**api.yaml**
+
+```yaml
+/ping:
+  get:
+    description: |
+      ping then pong!
+    # OpenAPI's operationId may be used to to specify the operation id
+    operationId: ping
+    # x-eov-operation-id may be used to specify the operation id
+    # Used when operationId is omiited. Overrides operationId when both are specified
+    x-eov-operation-id: ping
+    # specifies the path to the operation handler.
+    # the path is relative to the operationHandlers option
+    # e.g. operations/base/path/routes/ping.js
+    x-eov-operation-handler: routes/ping
+    responses:
+      '200':
+        description: OK
+        # ...
+```
+
+**routes/ping.js**
+
+`x-eov-operation-handler` specifies the path to this handlers file, `ping.js`
+
+`x-eov-operation-id` (or `operationId`) specifies operation handler's key e.g. `ping`
+
+```javascript
+module.exports = {
+  ping: (req, res) => res.status(200).send('pong'),
+};
+```
 
 ### ▪️ ignorePaths (optional)
 
@@ -491,7 +625,7 @@ e.g.
 
 ```javascript
 $refParser: {
-  mode: 'bundle'
+  mode: 'bundle';
 }
 ```
 
@@ -505,7 +639,7 @@ application. ([More detail about the base URL](https://swagger.io/docs/specifica
 
 ```yaml
 servers:
-- url: https://api.example.com/v1
+  - url: https://api.example.com/v1
 ```
 
 The validation applies to all paths defined under this base URL. Routes in your app
@@ -869,6 +1003,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

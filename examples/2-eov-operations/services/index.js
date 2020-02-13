@@ -1,4 +1,4 @@
-const data = [
+let data = [
   {
     id: 1,
     name: 'sparky',
@@ -19,7 +19,7 @@ const data = [
   },
 ];
 
-class Pets {
+module.exports.Pets = class {
   constructor() {
     this.id = 4;
   }
@@ -31,11 +31,13 @@ class Pets {
     return data.filter(p => p.id === id)[0];
   }
 
-  add(pet) {
-    const npet = { id: this.id++, ...pet};
+  create(pet) {
+    const npet = { id: this.id++, ...pet };
     data.push(npet);
     return npet;
   }
-}
 
-exports.pets = new Pets();
+  delete(id) {
+    return data.filter(e => e.id !== id);
+  }
+}
