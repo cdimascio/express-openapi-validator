@@ -31,7 +31,7 @@ describe(packageJson.name, () => {
     app.server.close();
   });
 
-  it.only('should return 400 missing required header', async () => {
+  it('should return 400 missing required header', async () => {
     return request(app)
       .get(`${app.basePath}/headers_1`)
       .expect(400)
@@ -43,7 +43,24 @@ describe(packageJson.name, () => {
       });
   });
 
-  it.only('should return 200 for valid headers', async () => {
+  it('should return 400 missing required header', async () => {
+    let longString = '';
+    for (let i = 0; i < 300; i++) {
+      longString += 'a';
+    }
+    return request(app)
+      .get(`${app.basePath}/headers_1`)
+      .set('x-userid', longString)
+      .expect(400)
+      .then(r => {
+        const e = r.body;
+        expect(e.message).to.contain(
+          'should NOT be longer than 255 characters',
+        );
+      });
+  });
+
+  it('should return 200 for valid headers', async () => {
     return request(app)
       .get(`${app.basePath}/headers_1`)
       .set('x-userid', 'some-id')
