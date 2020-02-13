@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
+    "deps": "cd ../../ && npm i && npm run compile",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -13,7 +14,7 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.4",
-    "express-openapi-validator": "^3.x",
+    "express-openapi-validator": "file:../../",
     "morgan": "^1.9.1"
   },
   "devDependencies": {
