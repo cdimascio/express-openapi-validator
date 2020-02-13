@@ -43,7 +43,7 @@ describe(packageJson.name, () => {
       });
   });
 
-  it('should return 400 missing required header', async () => {
+  it('should return 400 invalid required header', async () => {
     let longString = '';
     for (let i = 0; i < 300; i++) {
       longString += 'a';
