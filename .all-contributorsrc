@@ -179,6 +179,15 @@
         "code",
         "ideas"
       ]
+    },
+    {
+      "login": "mathewmeconry",
+      "name": "Mathias Scherer",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/4057473?v=4",
+      "profile": "https://github.com/mathewmeconry",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
