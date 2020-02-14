@@ -399,7 +399,7 @@ export interface OpenAPIFrameworkVisitor {
 export interface OpenApiRequestMetadata {
   expressRoute: string;
   openApiRoute: string;
-  pathParams: string[];
+  pathParams: { [index: string]: string };
   schema: OpenAPIV3.OperationObject;
 }
 
