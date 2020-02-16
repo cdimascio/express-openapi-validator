@@ -222,11 +222,28 @@ export class OpenApiValidator {
       const { expressRoute, method, schema } = route;
       const oId = schema['x-eov-operation-id'] || schema['operationId'];
       const baseName = schema['x-eov-operation-handler'];
-      console.log(oId, baseName);
-      if (oId && baseName && typeof this.options.operationHandlers === 'string') {
+      if (oId && !baseName) {
+        throw Error(
+          `found x-eov-operation-id for route ${method} - ${expressRoute}]. x-eov-operation-handler required.`,
+        );
+      }
+      if (!oId && baseName) {
+        throw Error(
+          `found x-eov-operation-handler for route [${method} - ${expressRoute}]. operationId or x-eov-operation-id required.`,
+        );
+      }
+      if (
+        oId &&
+        baseName &&
+        typeof this.options.operationHandlers === 'string'
+      ) {
         const modulePath = path.join(this.options.operationHandlers, baseName);
         if (!tmpModules[modulePath]) {
           tmpModules[modulePath] = require(modulePath);
+          if (!tmpModules[modulePath].oId) {
+            // if oId is not found only module, try the module's default export
+            tmpModules[modulePath] = tmpModules[modulePath].default;
+          }
         }
         const fn = tmpModules[modulePath][oId];
         app[method.toLowerCase()](expressRoute, fn);
