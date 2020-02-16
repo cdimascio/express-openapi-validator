@@ -1,0 +1,31 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "if test -d dist; then node dist/app; else npm run compile; node dist/app; fi",
+    "dev": "nodemon src/app.js --exec babel-node --config .nodemonrc.json ",
+    "deps": "cd ../../ && npm i && npm run compile",
+    "compile": "babel src --out-dir dist --delete-dir-on-start --source-maps inline --copy-files",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.4",
+    "express-openapi-validator": "file:../../",
+    "morgan": "^1.9.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.7.0",
+    "@babel/core": "^7.7.2",
+    "@babel/node": "^7.7.0",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/register": "^7.7.0",
+    "nodemon": "^2.0.1",
+    "prettier": "^1.19.1"
+  }
+}
