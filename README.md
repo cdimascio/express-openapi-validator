@@ -536,7 +536,7 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
 Defines the base directory for operation handlers. This is used in conjunction with express-openapi-validator's OpenAPI vendor extensions.
 
 - `string` - the base directory containing operation handlers
-- `false` - (default) do not validate security
+- `false` - (default) disabke auto wired operation handlers
 
 ```
 operationHandlers: 'operations/base/path'
