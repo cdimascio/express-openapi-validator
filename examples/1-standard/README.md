@@ -10,7 +10,7 @@ npm i && npm run deps
 
 ## Run
 
-From this `example` directory, run:
+From this `1-standard` directory, run:
 
 ```shell
 npm start
