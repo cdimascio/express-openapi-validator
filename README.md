@@ -16,7 +16,7 @@
 - ✔️ response validation (json only)
 - 👮 security validation / custom security functions
 - 👽 3rd party / custom formats
-- 🧵 optional auto-wiring of APIs to Express handler functions
+- 🧵 optionally auto-map OpenAPI endpoints to Express handler functions
 - ✂️ **\$ref** support; split specs over multiple files
 - 🎈 file upload
 
@@ -161,18 +161,46 @@ new OpenApiValidator({
   });
 ```
 
-## [Example Express API Server: Auto-wiring with operationHandlers](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
+## [Example Express API Server: with operationHandlers](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
 
-Don't want to manually wire up your routes? express-openapi-validator has you covered. 
+Don't want to manually map your OpenAPI endpoints to Express handler functions? express-openapi-validator can do it for you, automatically! 
 
-Use express-openapi-validator's OpenAPI `x-eov` vendor extensions. See the complete [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations) and [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/examples/2-eov-operations/api.yaml#L39)
+Use express-openapi-validator's OpenAPI `x-eov-operation-*` vendor extensions. See a full example with [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations) and an [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/examples/2-eov-operations/api.yaml#L39)
 
 
-**Here's how**
+**Here's the gist**
 
-- Specifiy the `operationHandlers` option to set the base directory that contains your operation handler files.
-- Use the `x-eov-operation-handler` OpenAPI vendor extension to specify a path (relative to `operationHandlers`) that contains the handler for this operation (*no need* to specify the `.js` or `.ts` extension). A file may contain *one* or *many* handlers.
-- Use the `x-eov-operation-id` OpenAPI vendor extension to specify the id of opeartion handler to invoke.
+- First, specifiy the `operationHandlers` option to set the base directory that contains your operation handler files.
+
+```javascript
+new OpenApiValidator({
+  apiSpec,
+  operationHandlers: path.join(__dirname),
+})
+```
+
+- Next, use the `x-eov-operation-id` OpenAPI vendor extension or `operationId` to specify the id of opeartion handler to invoke.
+
+```yaml
+/ping:
+  get:
+    # operationId: ping
+    x-eov-operation-id: ping
+```
+
+- Finally, use the `x-eov-operation-handler` OpenAPI vendor extension to specify a path (relative to `operationHandlers`) to the module that contains the handler for this operation.
+
+```yaml
+/ping:
+  get:
+    x-eov-operation-id: ping
+    x-eov-operation-handler: routes/ping  # no .js or .ts extension
+```
+
+
+**Note:** A file may contain *one* or *many* handlers.
+
+Below are some code snippets:
 
 **app.js**
 
