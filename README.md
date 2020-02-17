@@ -188,13 +188,22 @@ new OpenApiValidator({
     x-eov-operation-id: ping
 ```
 
-- Finally, use the `x-eov-operation-handler` OpenAPI vendor extension to specify a path (relative to `operationHandlers`) to the module that contains the handler for this operation.
+- Next, use the `x-eov-operation-handler` OpenAPI vendor extension to specify a path (relative to `operationHandlers`) to the module that contains the handler for this operation.
 
 ```yaml
 /ping:
   get:
     x-eov-operation-id: ping
     x-eov-operation-handler: routes/ping  # no .js or .ts extension
+```
+
+- Finally, create the express handler module e.g. `routes/ping.js`
+
+```javascript
+module.exports = {
+  // the express handler implementaiton for ping
+  ping: (req, res) => res.status(200).send('pong'),
+};
 ```
 
 
