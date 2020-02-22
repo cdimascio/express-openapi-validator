@@ -74,6 +74,19 @@ paths:
       responses:
         "200":
           description: form data
+  /sample_3:
+    post:
+      description: upload a photo of the pet
+      operationId: octetStream
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "200":
+          description: binary
   /range:
     get:
       parameters:

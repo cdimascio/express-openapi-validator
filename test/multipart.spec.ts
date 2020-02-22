@@ -1,5 +1,6 @@
 import * as express from 'express';
 import * as path from 'path';
+import * as fs from 'fs';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
@@ -33,7 +34,8 @@ describe(packageJson.name, () => {
                 metadata: req.body.metadata,
               });
             })
-            .post(`/sample_1`, (req, res) => res.json(req.body)),
+            .post(`/sample_1`, (req, res) => res.json(req.body))
+            .post(`/sample_3`, (req, res) => res.json(req.body)),
         ),
     );
   });
@@ -66,6 +68,17 @@ describe(packageJson.name, () => {
         .set('Accept', 'application/json')
         .attach('file', 'package.json')
         .expect(400));
+
+    it('should validate application/octet-stream file and metadata', done => {
+      const testImage = `${__dirname}/assets/image.png`;
+      const req = request(app)
+        .post(`${app.basePath}/sample_3`)
+        .set('content-type', 'application/octet-stream');
+
+      const imgStream = fs.createReadStream(testImage);
+      imgStream.on('end', () => req.end(done));
+      imgStream.pipe(<any>req, { end: false });
+    });
 
     it('should validate multipart file and metadata', async () => {
       await request(app)
