@@ -240,7 +240,7 @@ export class OpenApiValidator {
         const modulePath = path.join(this.options.operationHandlers, baseName);
         if (!tmpModules[modulePath]) {
           tmpModules[modulePath] = require(modulePath);
-          if (!tmpModules[modulePath].oId) {
+          if (!tmpModules[modulePath][oId]) {
             // if oId is not found only module, try the module's default export
             tmpModules[modulePath] = tmpModules[modulePath].default;
           }
