@@ -79,10 +79,10 @@ function shouldHandle(Ajv, req: OpenApiRequest): boolean {
   const requestBody = bodyRef
     ? Ajv.getSchema(bodyRef)
     : (<any>req?.openapi)?.schema?.requestBody;
-  const tmp = requestBody?.content;
-  if (!tmp) return false;
+  const bodyContent = requestBody?.content;
+  if (!bodyContent) return false;
 
-  const content = <{ [media: string]: OpenAPIV3.MediaTypeObject }>tmp;
+  const content = <{ [media: string]: OpenAPIV3.MediaTypeObject }>bodyContent;
   const contentTypes = Object.entries(content);
   for (const [contentType, mediaType] of contentTypes) {
     if (!contentType.includes(reqContentType)) continue;
