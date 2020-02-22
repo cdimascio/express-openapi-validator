@@ -1,24 +1,27 @@
 import { OpenApiContext } from '../framework/openapi.context';
+import { createRequestAjv } from '../framework/ajv';
 import { validationError } from './util';
-import { Request } from 'express';
 import {
+  OpenAPIV3,
   OpenApiRequest,
   OpenApiRequestHandler,
   ValidationError,
 } from '../framework/types';
 import { MulterError } from 'multer';
+import ajv = require('ajv');
 
 const multer = require('multer');
 
 export function multipart(
-  OpenApiContext: OpenApiContext,
+  context: OpenApiContext,
   multerOpts: {},
 ): OpenApiRequestHandler {
   const mult = multer(multerOpts);
+  const Ajv = createRequestAjv(context.apiDoc, {});
   return (req, res, next) => {
     // TODO check that format: binary (for upload) else do not use multer.any()
     // use multer.none() if no binary parameters exist
-    if (isMultipart(req) && isValidContentType(req)) {
+    if (shouldHandle(Ajv, req)) {
       mult.any()(req, res, err => {
         if (err) {
           next(error(req, err));
@@ -66,9 +69,32 @@ export function multipart(
   };
 }
 
-function isValidContentType(req: Request): boolean {
-  const contentType = req.headers['content-type'];
-  return !contentType || contentType.includes('multipart/form-data');
+function shouldHandle(Ajv, req: OpenApiRequest): boolean {
+  const reqContentType = req.headers['content-type'];
+  if (isMultipart(req) && reqContentType?.includes('multipart/form-data')) {
+    return true;
+  }
+
+  const bodyRef = (<any>req?.openapi)?.schema?.$ref;
+  const requestBody = bodyRef
+    ? Ajv.getSchema(bodyRef)
+    : (<any>req?.openapi)?.schema?.requestBody;
+  const tmp = requestBody?.content;
+  if (!tmp) return false;
+
+  const content = <{ [media: string]: OpenAPIV3.MediaTypeObject }>tmp;
+  const contentTypes = Object.entries(content);
+  for (const [contentType, mediaType] of contentTypes) {
+    if (!contentType.includes(reqContentType)) continue;
+    const mediaTypeSchema = <any>mediaType?.schema;
+    const schema = mediaTypeSchema?.$ref
+      ? Ajv.getSchema(mediaTypeSchema.$ref)
+      : mediaTypeSchema;
+    const format = schema?.format;
+    if (format === 'binary') {
+      return true;
+    }
+  }
 }
 
 function isMultipart(req: OpenApiRequest): boolean {
