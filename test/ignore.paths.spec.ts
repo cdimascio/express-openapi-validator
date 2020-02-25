@@ -9,17 +9,26 @@ describe(packageJson.name, () => {
   let basePath = null;
 
   before(async () => {
-    const apiSpec = path.join('test', 'resources', 'openapi.yaml');
+    const apiSpec = path.join('test', 'resources', 'ignore.paths.yaml');
     app = await createApp(
       { apiSpec, ignorePaths: /.*\/hippies$/ },
       3005,
       app => {
         app.all('/v1/hippies', (req, res) => {
-          res.json([{ id: 1, name: 'farah' }, { id: 2, name: 'fred' }]);
+          res.json([
+            { id: 1, name: 'farah' },
+            { id: 2, name: 'fred' },
+          ]);
         });
         app.get('/v1/hippies/1', (req, res) => {
           res.json({ id: 1, name: 'farah' });
         });
+        app.get('/v1/pets/1', (req, res) => {
+          res.json({ id: 1, name: 'sparky' });
+        });
+        // app.get('/v1/route_defined_in_express_only', (req, res) => {
+        //   res.json({ hi: 'there' });
+        // });
       },
     );
     basePath = app.basePath;
@@ -29,7 +38,7 @@ describe(packageJson.name, () => {
 
   it('should ignore path and return 200, rather than validate', async () =>
     request(app)
-      .get(`${basePath}/hippies?test`)
+      .get(`${basePath}/hippies`)
       .query({
         test: 'one',
         limit: 2,
@@ -73,22 +82,23 @@ describe(packageJson.name, () => {
         });
     });
 
-    it('should validate a route defined in openapi but not express', async () =>
+    it('should validate a route defined in openapi but not express with invalid params', async () =>
       request(app)
-        .get(`${basePath}/route_not_defined_within_express`)
+        .get(`${basePath}/route_defined_in_openapi_only`)
         .expect(400)
         .then(r => {
           const e = r.body.errors;
-          expect(e[0].message).to.equal("should have required property 'name'");
+          expect(e[0].message).to.equal("should have required property 'id'");
         }));
 
-    it('should return 404 if route is defined in swagger but not express', async () =>
+    it('should return 404 if route is defined in openapi but not express and params are valid', async () =>
       request(app)
-        .get(`${basePath}/route_not_defined_within_express`)
-        .query({ name: 'test' })
+        .get(`${basePath}/route_defined_in_openapi_only`)
+        .query({ id: 123 })
         .expect(404)
         .then(r => {
           const e = r.body;
+          console.log(e)
           // There is no route defined by express, hence the validator verifies parameters,
           // then it fails over to the express error handler. In this case returns empty
           expect(e).to.be.empty;
