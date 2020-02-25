@@ -12,6 +12,9 @@ export function applyOpenApiMetadata(
   openApiContext: OpenApiContext,
 ): OpenApiRequestHandler {
   return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
+    if (openApiContext.shouldIgnoreRoute(req.path)) {
+      return next();
+    }
     const matched = lookupRoute(req);
     if (matched) {
       const { expressRoute, openApiRoute, pathParams, schema } = matched;
@@ -25,11 +28,11 @@ export function applyOpenApiMetadata(
     } else if (openApiContext.isManagedRoute(req.path)) {
       req.openapi = {};
     }
-    -next();
+    next();
   };
 
   function lookupRoute(req: OpenApiRequest): OpenApiRequestMetadata {
-    const path = req.originalUrl.split("?")[0];
+    const path = req.originalUrl.split('?')[0];
     const method = req.method;
     const routeEntries = Object.entries(openApiContext.expressRouteMap);
     for (const [expressRoute, methods] of routeEntries) {

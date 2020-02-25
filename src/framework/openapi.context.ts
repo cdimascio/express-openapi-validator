@@ -24,11 +24,15 @@ export class OpenApiContext {
 
   public isManagedRoute(path: string): boolean {
     for (const bp of this.basePaths) {
-      if (path.startsWith(bp) && !this.ignorePaths?.test(path)) {
+      if (path.startsWith(bp) && !this.shouldIgnoreRoute(path)) {
         return true;
       }
     }
     return false;
+  }
+
+  public shouldIgnoreRoute(path: string) {
+    return this.ignorePaths?.test(path);
   }
 
   public routePair(route: string): RoutePair {
