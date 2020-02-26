@@ -619,9 +619,9 @@ module.exports = {
 
 ### ▪️ ignorePaths (optional)
 
-Defines a regular expression that determines whether a path(s) under [the base url](#the-base-url) should be ignored. Any path which matches the regular expression will not be validated.
+Defines a regular expression that determines whether a path(s) should be ignored. Any path that matches the regular expression will be ignored by the validator. 
 
-The following ignores any path that ends in `/pets`
+The following ignores any path that ends in `/pets` e.g. `/v1/pets`
 
 ```
 ignorePaths: /.*\/pets$/
@@ -696,7 +696,7 @@ servers:
 ```
 
 The validation applies to all paths defined under this base URL. Routes in your app
-that are _not_ under the base URL—such as pages—will not be validated.
+that are _not_se URL—such as pages—will not be validated.
 
 | URL                                  | Validated?                 |
 | :----------------------------------- | :------------------------- |
