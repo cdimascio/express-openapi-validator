@@ -1,0 +1,46 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Test
+
+servers:
+  - url: /v1
+paths:
+  /all_of:
+    post:
+      requestBody:
+        description: body
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Pet"
+
+      responses:
+        "200":
+          description: success
+
+components:
+  schemas:
+    NewPet:
+      # The following causes AJV validation to fail - https://github.com/epoberezkin/ajv/issues/837
+      # additionalProperties: false
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          nullable: true
+        tag:
+          type: string
+
+    Pet:
+      # This causes AVJ validation to fail - https://github.com/epoberezkin/ajv/issues/837
+      # additionalProperties: false
+      allOf:
+        - $ref: "#/components/schemas/NewPet"
+        - required:
+            - id
+          properties:
+            id:
+              type: integer
+              format: int64
