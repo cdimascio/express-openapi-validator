@@ -92,8 +92,10 @@ export class RequestValidator {
     const securityQueryParam = Security.queryParam(apiDoc, reqSchema);
     const body = bodySchemaParser.parse(path, reqSchema, contentType);
 
-    const properties: ValidationSchema = { ...parameters, body: body };
-    const required = (<SchemaObject>body).required ? ['body'] : [];
+    // when the body type is 'application/octet-stream' don't validate the body
+    const isOctetStream = contentType.contentType === 'application/octet-stream';
+    const properties: ValidationSchema = { ...parameters, body: ( isOctetStream ? {} : body) };
+    const required = ((<SchemaObject>body).required  && !isOctetStream) ? ['body'] : [];
 
     // $schema: "http://json-schema.org/draft-04/schema#",
     const schema = {
