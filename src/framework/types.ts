@@ -58,9 +58,11 @@ export interface OpenApiValidatorOpts {
   unknownFormats?: true | string[] | 'ignore';
   fileUploader?: boolean | multer.Options;
   multerOpts?: multer.Options;
-  $refParser?: {
-    mode: 'bundle' | 'dereference';
-  };
+  $refParser?:
+    | false
+    | {
+        mode: 'bundle' | 'dereference';
+      };
   operationHandlers?: false | string;
 }
 
@@ -381,9 +383,11 @@ export interface OpenAPIFrameworkPathObject {
 interface OpenAPIFrameworkArgs {
   apiDoc: OpenAPIV3.Document | string;
   validateApiDoc?: boolean;
-  $refParser?: {
-    mode: 'bundle' | 'dereference';
-  };
+  $refParser?:
+    | false
+    | {
+        mode: 'bundle' | 'dereference';
+      };
 }
 
 export interface OpenAPIFrameworkAPIContext {

@@ -74,12 +74,19 @@ export class OpenAPIFramework {
   }
 
   private loadSpec(
-    filePath: string | object,
-    $refParser: { mode: 'bundle' | 'dereference' } = { mode: 'bundle' },
+    filePath: string | OpenAPIV3.Document,
+    $refParser: false | { mode: 'bundle' | 'dereference' | 'disable' } = {
+      mode: 'bundle',
+    },
   ): Promise<OpenAPIV3.Document> {
-    // Because of this issue ( https://github.com/APIDevTools/json-schema-ref-parser/issues/101#issuecomment-421755168 )
-    // We need this workaround ( use '$RefParser.dereference' instead of '$RefParser.bundle' ) if asked by user
-    if (typeof filePath === 'string') {
+    if (!$refParser) {
+      // if ref parser is false, load spec, but do not dereference
+      return typeof filePath === 'string'
+        ? jsYaml.safeLoad(fs.readFileSync(filePath, 'utf8'), { json: true })
+        : Promise.resolve(filePath);
+    } else if (typeof filePath === 'string') {
+      // Because of this issue ( https://github.com/APIDevTools/json-schema-ref-parser/issues/101#issuecomment-421755168 )
+      // We need this workaround ( use '$RefParser.dereference' instead of '$RefParser.bundle' ) if asked by user
       const origCwd = process.cwd();
       const specDir = path.resolve(origCwd, path.dirname(filePath));
       const absolutePath = path.resolve(origCwd, filePath);
