@@ -92,11 +92,10 @@ export class RequestValidator {
     const securityQueryParam = Security.queryParam(apiDoc, reqSchema);
     const body = bodySchemaParser.parse(path, reqSchema, contentType);
 
-    // when the body type is 'application/octet-stream' don't validate the body
-    const isOctetStream = contentType.contentType === 'application/octet-stream';
-    const properties: ValidationSchema = { ...parameters, body: ( isOctetStream ? {} : body) };
-    const required = ((<SchemaObject>body).required  && !isOctetStream) ? ['body'] : [];
-
+    const isBodyBinary = body?.['format'] === 'binary';
+    const properties: ValidationSchema = { ...parameters, body: isBodyBinary ? {} : body };
+    // TODO throw 400 if missing a required binary body
+    const required = (<SchemaObject>body).required && !isBodyBinary ? ['body'] : [];
     // $schema: "http://json-schema.org/draft-04/schema#",
     const schema = {
       required: ['query', 'headers', 'params'].concat(required),
