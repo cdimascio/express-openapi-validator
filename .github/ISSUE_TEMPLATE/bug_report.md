@@ -20,4 +20,4 @@ A clear and concise description of what happens.
 A clear and concise description of what you expected to happen.
 
 **Examples and context**
-Provide any relevant examples and context e.g. an OpenAPI snippet, an Express handler function snippet
+An example or relevant context e.g. an OpenAPI snippet, an Express handler function snippet
