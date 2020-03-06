@@ -63,7 +63,7 @@ Reach out on [gitter](https://gitter.im/cdimascio-oss/community).
 We're happy to help!
 
 ## FAQ
-**Q:** I don't have permission to create a branch and can't push my changes
+**Q:** I don't have permission to create a branch and I can't push my changes
 
 **A:** You cannot directly create a branch in this repo. Instead [Create a Pull Request](#create-a-pull-request)
 
