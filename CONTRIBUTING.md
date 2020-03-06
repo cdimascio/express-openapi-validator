@@ -19,6 +19,8 @@ See something that needs fixing? Got an idea for a new feature? Contribute!
    # From the project directory, run
    npm i
    ```
+   
+Be [Create a Pull Request](#create_a_pull_request) once you've written you code.
 
 ## Run the tests
 
@@ -59,5 +61,10 @@ See something that needs fixing? Got an idea for a new feature? Contribute!
 Reach out on [gitter](https://gitter.im/cdimascio-oss/community).
 
 We're happy to help!
+
+## FAQ
+**Q:** I don't have permission to create a branch and can't push my changes
+
+**A:** You cannot directly create a branch in this repo. Instead [Create a Pull Request](#create_a_pull_request)
 
 ## Thanks!
