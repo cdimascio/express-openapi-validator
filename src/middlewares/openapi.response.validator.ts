@@ -89,7 +89,7 @@ export class ResponseValidator {
       const statusXX = status.toString()[0] + 'XX';
       if (status in validators) validator = validators[status];
       else if (statusXX in validators) validator = validators[statusXX];
-      else if (validators.default) validator = validator.default;
+      else if (validators.default) validator = validators.default;
       else {
         throw validationError(
           500,
