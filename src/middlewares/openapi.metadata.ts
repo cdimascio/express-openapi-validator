@@ -52,7 +52,7 @@ export function applyOpenApiMetadata(
 
       if (matchedRoute) {
         const paramKeys = keys.map(k => k.name);
-        const paramsVals = matchedRoute.slice(1);
+        const paramsVals = matchedRoute.slice(1).map(decodeURIComponent);
         const pathParams = _zipObject(paramKeys, paramsVals);
 
         return {
