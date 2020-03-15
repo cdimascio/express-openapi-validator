@@ -86,6 +86,7 @@ describe(packageJson.name, () => {
           .that.equals(500);
       }));
 
+ // TODO add test for allOf - when allOf is used an array value passes when object is expected
   it('should fail if response is array when expecting object', async () =>
     request(app)
       .get(`${app.basePath}/object`)
