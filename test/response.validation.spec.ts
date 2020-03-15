@@ -22,6 +22,14 @@ describe(packageJson.name, () => {
         app.get(`${app.basePath}/empty_response`, (req, res) => {
           return res.end();
         });
+        app.get(`${app.basePath}/object`, (req, res) => {
+          return res.json([
+            { id: 1, name: 'name', tag: 'tag', bought_at: null },
+          ]);
+        });
+        app.post(`${app.basePath}/object`, (req, res) => {
+          return res.json(req.body);
+        });
         app.get(`${app.basePath}/users`, (req, res) => {
           const json = ['user1', 'user2', 'user3'];
           return res.json(json);
@@ -73,6 +81,30 @@ describe(packageJson.name, () => {
       .expect(500)
       .then((r: any) => {
         expect(r.body.message).to.contain('should be integer');
+        expect(r.body)
+          .to.have.property('code')
+          .that.equals(500);
+      }));
+
+  it('should fail if response is array when expecting object', async () =>
+    request(app)
+      .get(`${app.basePath}/object`)
+      .expect(500)
+      .then((r: any) => {
+        expect(r.body.message).to.contain('should be object');
+        expect(r.body)
+          .to.have.property('code')
+          .that.equals(500);
+      }));
+
+  // TODO fix me - fails for response and request validation what allOf is in use
+  it.skip('should fail if request is array when expecting object', async () =>
+    request(app)
+      .post(`${app.basePath}/object`)
+      .send([{ id: 1, name: 'name', tag: 'tag', bought_at: null }])
+      .expect(400)
+      .then((r: any) => {
+        expect(r.body.message).to.contain('should be object');
         expect(r.body)
           .to.have.property('code')
           .that.equals(500);
