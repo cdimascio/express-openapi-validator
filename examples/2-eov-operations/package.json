@@ -12,13 +12,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "cookie-parser": "^1.4.4",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
     "express-openapi-validator": "file:../../",
     "morgan": "^1.9.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.1",
+    "nodemon": "^2.0.2",
     "prettier": "^1.19.1"
   }
 }
