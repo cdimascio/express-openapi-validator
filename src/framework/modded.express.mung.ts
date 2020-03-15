@@ -157,7 +157,7 @@ mung.headersAsync = function headersAsync(fn) {
   };
 };
 
-mung.write = function write(fn, options = {}) {
+mung.write = function write(fn, options: any = {}) {
   return function(req, res, next) {
     const original = res.write;
     const mungError = options.mungError;
