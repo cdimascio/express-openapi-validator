@@ -85,7 +85,7 @@ describe(packageJson.name, () => {
         expect(r.body.errors[0].path).to.equal('.body.name');
       }));
 
-  it('should allow nullable anyOf object', async () =>
+  it('should allow nullable object', async () =>
     request(app)
       .post(`${app.basePath}/test/object`)
       .send({ nullableObject: null })
