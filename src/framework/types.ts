@@ -62,6 +62,7 @@ export interface OpenApiValidatorOpts {
     mode: 'bundle' | 'dereference';
   };
   operationHandlers?: false | string;
+  formatValidation?: false | 'fast' | 'fail';
 }
 
 export namespace OpenAPIV3 {
