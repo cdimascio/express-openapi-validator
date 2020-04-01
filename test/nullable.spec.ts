@@ -16,7 +16,8 @@ describe(packageJson.name, () => {
         `${app.basePath}`,
         express
           .Router()
-          .post(`/pets/nullable`, (req, res) => res.json(req.body)),
+          .post(`/pets/nullable`, (req, res) => res.json(req.body))
+          .post(`/test/object`, (req, res) => res.json(req.body)),
       ),
     );
   });
@@ -83,4 +84,10 @@ describe(packageJson.name, () => {
       .then(r => {
         expect(r.body.errors[0].path).to.equal('.body.name');
       }));
+
+  it('should allow nullable anyOf object', async () =>
+    request(app)
+      .post(`${app.basePath}/test/object`)
+      .send({ nullableObject: null })
+      .expect(200));
 });

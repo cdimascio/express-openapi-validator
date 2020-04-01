@@ -29,11 +29,17 @@ servers:
         default: v1
         enum:
           - v1
+tags:
+  - name: test
+  - name: pets
+
 paths:
   /pets/nullable:
     post:
+      tags:
+        - pets
       description: Creates a new pet in the store.  Duplicates are allowed
-      operationId: addPet
+      operationId: getNullablePets
       requestBody:
         description: Pet to add to the store
         required: true
@@ -51,8 +57,10 @@ paths:
 
   /pets:
     post:
+      tags:
+        - pets
       description: Creates a new pet in the store.  Duplicates are allowed
-      operationId: addPet
+      operationId: createPet
       requestBody:
         description: Pet to add to the store
         required: true
@@ -67,6 +75,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Pet'
+
+  /test/object:
+    post:
+      tags:
+        - test
+      description: a test object
+      operationId: postTestObject
+      requestBody:
+        description: create a test object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestObject'
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestObject'
 
 components:
   parameters:
@@ -102,7 +131,6 @@ components:
           type: string
           default: my default value
 
-
     Pet:
       allOf:
         - $ref: '#/components/schemas/NewPet'
@@ -112,3 +140,15 @@ components:
             id:
               type: integer
               format: int64
+
+    TestObject:
+      type: object
+      properties:
+        nullableObject:
+          $ref: '#/components/schemas/OtherObject'
+      required:
+        - nullableObject
+
+    OtherObject:
+      type: object
+      nullable: true
