@@ -6,14 +6,14 @@ import {createApp} from './common/app';
 describe("datetime.validation", () => {
   let app = null;
 
-  async function setupServer(formatValidation?: false | "full" | "fast") {
+  async function setupServer(validateFormats?: false | "full" | "fast") {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'datetime.validation.yaml');
     app = await createApp(
       {
         apiSpec,
         validateResponses: true,
-        formatValidation
+        validateFormats
       },
       3005,
       app => {
