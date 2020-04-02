@@ -1,0 +1,39 @@
+openapi: '3.0.2'
+info:
+  version: 1.0.0
+  title: date-time validation test
+  description: date-time validation test
+
+servers:
+  - url: /v1/
+
+paths:
+  /date-time-validation:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Test'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Test'
+        '400':
+          description: Bad Request
+
+components:
+  schemas:
+    Test:
+      type: object
+      additionalProperties: false
+      properties:
+        testDateTimeProperty:
+          type: string
+          format: date-time
+      required:
+        - testDateTimeProperty

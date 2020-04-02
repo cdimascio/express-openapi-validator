@@ -31,6 +31,7 @@ export class OpenApiValidator {
     if (options.fileUploader == null) options.fileUploader = {};
     if (options.$refParser == null) options.$refParser = { mode: 'bundle' };
     if (options.operationHandlers == null) options.operationHandlers = false;
+    if (options.validateFormats == null) options.validateFormats = 'fast';
 
     if (options.validateResponses === true) {
       options.validateResponses = {
@@ -174,7 +175,7 @@ export class OpenApiValidator {
     app: Application | Router,
     context: OpenApiContext,
   ): void {
-    const { coerceTypes, unknownFormats, validateRequests } = this.options;
+    const { coerceTypes, unknownFormats, validateRequests, validateFormats } = this.options;
     const { allowUnknownQueryParameters } = <ValidateRequestOpts>(
       validateRequests
     );
@@ -185,6 +186,7 @@ export class OpenApiValidator {
       useDefaults: true,
       unknownFormats,
       allowUnknownQueryParameters,
+      format: validateFormats
     });
     const requestValidationHandler: OpenApiRequestHandler = (req, res, next) =>
       requestValidator.validate(req, res, next);
@@ -196,7 +198,7 @@ export class OpenApiValidator {
     app: Application | Router,
     context: OpenApiContext,
   ): void {
-    const { coerceTypes, unknownFormats, validateResponses } = this.options;
+    const { coerceTypes, unknownFormats, validateResponses, validateFormats } = this.options;
     const { removeAdditional } = <ValidateResponseOpts>validateResponses;
 
     const responseValidator = new middlewares.ResponseValidator(
@@ -206,6 +208,7 @@ export class OpenApiValidator {
         coerceTypes,
         removeAdditional,
         unknownFormats,
+        format: validateFormats
       },
     );
 
