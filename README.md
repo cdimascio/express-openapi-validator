@@ -1056,6 +1056,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/mirekgw"><img src="https://avatars1.githubusercontent.com/u/61246716?v=4" width="100px;" alt=""/><br /><sub><b>Mirek</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=mirekgw" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/Emmeral"><img src="https://avatars1.githubusercontent.com/u/35600952?v=4" width="100px;" alt=""/><br /><sub><b>Florian Beutel</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=Emmeral" title="Code">💻</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/jakubskopal"><img src="https://avatars2.githubusercontent.com/u/8149011?v=4" width="100px;" alt=""/><br /><sub><b>jakubskopal</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=jakubskopal" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=jakubskopal" title="Tests">⚠️</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=jakubskopal" title="Documentation">📖</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-enable -->
