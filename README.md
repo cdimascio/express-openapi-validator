@@ -665,6 +665,14 @@ Determines whether the validator should coerce value types to match the type def
 - `false` - no type coercion.
 - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
+### ▪️ validateFormats (optional)
+
+Specifies the strictness of validation of string formats.
+
+- `"fast"` (**default**) - only validate syntax, but not semantics. E.g. `2010-13-30T23:12:35Z` will pass validation eventhough it contains month 13.
+- `"full"` - validate both syntax and semantics. Illegal dates will not pass.
+- `false` - do not validate formats at all.
+
 ### ▪️ \$refParser.mode (optional)
 
 Determines how JSON schema references are resolved by the internal [json-schema-ref-parser](https://github.com/APIDevTools/json-schema-ref-parser). Generally, the default mode, `bundle` is sufficient, however if you use [escape characters in \$refs](https://swagger.io/docs/specification/using-ref/), `dereference` is necessary.
