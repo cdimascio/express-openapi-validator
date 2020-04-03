@@ -76,6 +76,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/Pet'
 
+  /test/object/nullable_int:
+    post:
+      tags:
+        - test
+      description: a test object
+      operationId: postObjectNullableInt
+      requestBody:
+        description: create a test object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TestObjectNullableInt'
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestObjectNullableInt'
+
   /test/object:
     post:
       tags:
@@ -140,6 +161,13 @@ components:
             id:
               type: integer
               format: int64
+
+    TestObjectNullableInt:
+      type: object
+      properties:
+        number:
+          type: integer
+          nullable: true
 
     TestObject:
       type: object
