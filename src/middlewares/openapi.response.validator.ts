@@ -16,12 +16,15 @@ import {
 } from '../framework/types';
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
+import { type } from 'os';
+import { createCipher } from 'crypto';
 
 interface ValidateResult {
   validators: { [key: string]: ajv.ValidateFunction };
   body: object;
   statusCode: number;
   path: string;
+  contentType?: string;
 }
 export class ResponseValidator {
   private ajv: ajv.Ajv;
@@ -43,10 +46,26 @@ export class ResponseValidator {
       if (req.openapi) {
         const openapi = <OpenApiRequestMetadata>req.openapi;
         const responses = openapi.schema?.responses;
-        const validators = this._getOrBuildValidator(req, responses);
+
+        const contentTypeMeta = ContentType.from(req);
+        const contentType =
+          (contentTypeMeta.contentType?.indexOf('multipart') > -1
+            ? contentTypeMeta.equivalents()[0]
+            : contentTypeMeta.contentType) ?? 'not_provided';
+        const validators = this._getOrBuildValidator(
+          req,
+          responses,
+          contentType,
+        );
         const statusCode = res.statusCode;
         const path = req.originalUrl;
-        return this._validate({ validators, body, statusCode, path });
+        return this._validate({
+          validators,
+          body,
+          statusCode,
+          path,
+          contentType,
+        });
       }
       return body;
     });
@@ -57,15 +76,14 @@ export class ResponseValidator {
   public _getOrBuildValidator(
     req: OpenApiRequest,
     responses: OpenAPIV3.ResponsesObject,
+    contentType: string,
   ): { [key: string]: ajv.ValidateFunction } {
     if (!req) {
       // use !req is only possible in unit tests
       return this.buildValidators(responses);
     }
 
-    const contentTypeKey =
-      ContentType.from(req).equivalents()[0] || 'not_provided';
-    const key = `${req.method}-${req.originalUrl}-${contentTypeKey}`;
+    const key = `${req.method}-${req.originalUrl}-${contentType}`;
 
     let validators = this.validatorsCache[key];
     if (!validators) {
@@ -81,16 +99,26 @@ export class ResponseValidator {
     body,
     statusCode,
     path,
+    contentType,
   }: ValidateResult): void {
     // find the validator for the 'status code' e.g 200, 2XX or 'default'
     let validator;
     const status = statusCode;
     if (status) {
       const statusXX = status.toString()[0] + 'XX';
-      if (status in validators) validator = validators[status];
-      else if (statusXX in validators) validator = validators[statusXX];
-      else if (validators.default) validator = validators.default;
-      else {
+      if (status in validators) {
+        const svalidator = validators[status];
+        validator = svalidator[contentType];
+        if (!validator) validator = svalidator[Object.keys(svalidator)[0]]; // take first for backwards compatibility
+      } else if (statusXX in validators) {
+        const svalidator = validators[statusXX];
+        validator = svalidator[contentType];
+        if (!validator) validator = svalidator[Object.keys(svalidator)[0]]; // take first for backwards compatibility
+      } else if (validators.default) {
+        const svalidator = validators.default;
+        validator = svalidator[contentType];
+        if (!validator) validator = svalidator[Object.keys(svalidator)[0]]; // take first for backwards compatibility
+      } else {
         throw validationError(
           500,
           path,
@@ -129,60 +157,77 @@ export class ResponseValidator {
   private buildValidators(
     responses: OpenAPIV3.ResponsesObject,
   ): { [key: string]: ajv.ValidateFunction } {
-    const canValidate = response => {
+    const validationTypes = (response) => {
       if (!response.content) {
-        return 'no_content';
+        return ['no_content'];
       }
       if (typeof response.content !== 'object') {
-        return false;
+        return [];
       }
+      const types: string[] = [];
       for (let contentType of Object.keys(response.content)) {
-        const contentTypeParsed = contentTypeParser.parse(contentType);
-        const mediaTypeParsed = mediaTypeParser.parse(contentTypeParsed.type);
+        try {
+          const contentTypeParsed = contentTypeParser.parse(contentType);
+          const mediaTypeParsed = mediaTypeParser.parse(contentTypeParsed.type);
 
-        if (
-          mediaTypeParsed.subtype === 'json' ||
-          mediaTypeParsed.suffix === 'json'
-        ) {
-          return response.content[contentType] &&
-            response.content[contentType].schema
-            ? contentType
-            : false;
+          if (
+            mediaTypeParsed.subtype === 'json' ||
+            mediaTypeParsed.suffix === 'json'
+          ) {
+            if (
+              response.content[contentType] &&
+              response.content[contentType].schema
+            ) {
+              types.push(contentType);
+            }
+          }
+        } catch (e) {
+          // TODO remove this console log
+          console.error('***Skipping - need to handle wildcard:', e.message, '***');
         }
       }
 
-      return false;
+      return types;
     };
 
-    const schemas = {};
+    const responseSchemas = {};
     for (const [name, response] of <any[]>Object.entries(responses)) {
-      const mediaTypeToValidate = canValidate(response);
+      const types = validationTypes(response);
 
-      if (!mediaTypeToValidate) {
-        // TODO support content other than JSON
-        // don't validate
-        // assume is valid
-        continue;
-      } else if (mediaTypeToValidate === 'no_content') {
-        schemas[name] = {};
-        continue;
+      for (const mediaTypeToValidate of types) {
+        if (!mediaTypeToValidate) {
+          // TODO support content other than JSON
+          // don't validate
+          // assume is valid
+          continue;
+        } else if (mediaTypeToValidate === 'no_content') {
+          responseSchemas[name] = {};
+          continue;
+        }
+        const schema = response.content[mediaTypeToValidate].schema;
+
+        responseSchemas[name] = {
+          [mediaTypeToValidate]: {
+            // $schema: 'http://json-schema.org/schema#',
+            // $schema: "http://json-schema.org/draft-04/schema#",
+            type: 'object',
+            properties: {
+              response: schema,
+            },
+            components: this.spec.components ?? {},
+          },
+        };
       }
-      const schema = response.content[mediaTypeToValidate].schema;
-
-      schemas[name] = {
-        // $schema: 'http://json-schema.org/schema#',
-        // $schema: "http://json-schema.org/draft-04/schema#",
-        type: 'object',
-        properties: {
-          response: schema,
-        },
-        components: this.spec.components ?? {},
-      };
     }
 
     const validators = {};
-    for (const [name, schema] of Object.entries(schemas)) {
-      validators[name] = this.ajv.compile(<object>schema);
+    for (const [code, contentTypeSchemas] of Object.entries(responseSchemas)) {
+      for (const contentType of Object.keys(contentTypeSchemas)) {
+        const schema = contentTypeSchemas[contentType];
+        validators[code] = {
+          [contentType]: this.ajv.compile(<object>schema),
+        };
+      }
     }
     return validators;
   }

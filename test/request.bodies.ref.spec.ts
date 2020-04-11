@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
 
-describe(packageJson.name, () => {
+describe.only(packageJson.name, () => {
   let app = null;
 
   before(async () => {
@@ -87,7 +87,7 @@ describe(packageJson.name, () => {
       });
   });
 
-  it.only('should return 200 if application/vnd.api+json; type=two request body is validated agains the corrent schema', async () => {
+  it('should return 200 if application/vnd.api+json; type=two request body is validated agains the corrent schema', async () => {
     request(app)
       .post(`${app.basePath}/request_bodies_ref`)
       .set('accept', 'application/vnd.api+json; type=two')
