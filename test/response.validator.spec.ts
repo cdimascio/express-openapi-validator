@@ -13,7 +13,11 @@ describe(packageJson.name, () => {
   it('should validate the using default (in this case the error object)', async () => {
     const v = new ResponseValidator(apiSpec);
     const responses = petsResponseSchema();
-    const validators = v._getOrBuildValidator(null, responses);
+    const validators = v._getOrBuildValidator(
+      null,
+      responses,
+      'application/json',
+    );
 
     try {
       expect(
@@ -32,7 +36,11 @@ describe(packageJson.name, () => {
   it('should throw error when default response is invalid', async () => {
     const v = new ResponseValidator(apiSpec);
     const responses = petsResponseSchema();
-    const validators = v._getOrBuildValidator(null, responses);
+    const validators = v._getOrBuildValidator(
+      null,
+      responses,
+      'application/json',
+    );
 
     try {
       const message = { note: 'bad message type' };
@@ -55,7 +63,11 @@ describe(packageJson.name, () => {
   it('should return an error if field type is invalid', async () => {
     const v = new ResponseValidator(apiSpec);
     const responses = petsResponseSchema();
-    const validators = v._getOrBuildValidator(null, responses);
+    const validators = v._getOrBuildValidator(
+      null,
+      responses,
+      'application/json',
+    );
 
     try {
       v._validate({
@@ -95,7 +107,7 @@ describe(packageJson.name, () => {
     }
   });
 });
-function petsResponseSchema(): OpenAPIV3.ResponsesObject{
+function petsResponseSchema(): OpenAPIV3.ResponsesObject {
   return {
     '200': {
       description: 'pet response',
