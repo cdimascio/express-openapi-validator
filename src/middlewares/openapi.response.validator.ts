@@ -106,18 +106,13 @@ export class ResponseValidator {
     const status = statusCode;
     if (status) {
       const statusXX = status.toString()[0] + 'XX';
+      let svalidator;
       if (status in validators) {
-        const svalidator = validators[status];
-        validator = svalidator[contentType];
-        if (!validator) validator = svalidator[Object.keys(svalidator)[0]]; // take first for backwards compatibility
+        svalidator = validators[status];
       } else if (statusXX in validators) {
-        const svalidator = validators[statusXX];
-        validator = svalidator[contentType];
-        if (!validator) validator = svalidator[Object.keys(svalidator)[0]]; // take first for backwards compatibility
+        svalidator = validators[statusXX];
       } else if (validators.default) {
-        const svalidator = validators.default;
-        validator = svalidator[contentType];
-        if (!validator) validator = svalidator[Object.keys(svalidator)[0]]; // take first for backwards compatibility
+        svalidator = validators.default;
       } else {
         throw validationError(
           500,
@@ -125,6 +120,28 @@ export class ResponseValidator {
           `no schema defined for status code '${status}' in the openapi spec`,
         );
       }
+
+      validator = svalidator[contentType];
+
+      if (!validator) { // wildcard support
+        for (const validatorContentType of Object.keys(svalidator).sort().reverse()) {
+          if (validatorContentType === '*/*') {
+            validator = svalidator[validatorContentType];
+            break;
+          }
+
+          if (RegExp(/^[a-z]+\/\*$/).test(validatorContentType)) { // wildcard of type application/*
+            const [type] = validatorContentType.split('/', 1);
+
+            if (new RegExp(`^${type}\/.+$`).test(contentType)) {
+              validator = svalidator[validatorContentType];
+              break;
+            }
+          }
+        }
+      }
+
+      if (!validator) validator = svalidator[Object.keys(svalidator)[0]]; // take first for backwards compatibility
     }
 
     if (!validator) {
@@ -132,9 +149,18 @@ export class ResponseValidator {
       // assume valid
       return;
     }
+    
     if (!body) {
-      throw validationError(500, '.response', 'response body required.');
+      throw validationError(501, '.response', 'response body required.');
     }
+    
+    // CHECK If Content-Type is validatable
+    if (!this.canValidateContentType(contentType)) {
+      console.warn('Cannot validate content type', contentType);
+      // assume valid
+      return;
+    }
+
     const valid = validator({
       response: body,
     });
@@ -167,13 +193,7 @@ export class ResponseValidator {
       const types: string[] = [];
       for (let contentType of Object.keys(response.content)) {
         try {
-          const contentTypeParsed = contentTypeParser.parse(contentType);
-          const mediaTypeParsed = mediaTypeParser.parse(contentTypeParsed.type);
-
-          if (
-            mediaTypeParsed.subtype === 'json' ||
-            mediaTypeParsed.suffix === 'json'
-          ) {
+          if (this.canValidateContentType(contentType)) {
             if (
               response.content[contentType] &&
               response.content[contentType].schema
@@ -182,8 +202,13 @@ export class ResponseValidator {
             }
           }
         } catch (e) {
-          // TODO remove this console log
-          console.error('***Skipping - need to handle wildcard:', e.message, '***');
+          // Handle wildcards
+          if (
+            response.content[contentType].schema &&
+            (contentType === '*/*' || new RegExp(/^[a-z]+\/\*$/).test(contentType))
+          ) {
+            types.push(contentType);
+          }
         }
       }
 
@@ -207,6 +232,7 @@ export class ResponseValidator {
         const schema = response.content[mediaTypeToValidate].schema;
 
         responseSchemas[name] = {
+          ...responseSchemas[name],
           [mediaTypeToValidate]: {
             // $schema: 'http://json-schema.org/schema#',
             // $schema: "http://json-schema.org/draft-04/schema#",
@@ -224,11 +250,29 @@ export class ResponseValidator {
     for (const [code, contentTypeSchemas] of Object.entries(responseSchemas)) {
       for (const contentType of Object.keys(contentTypeSchemas)) {
         const schema = contentTypeSchemas[contentType];
+        
         validators[code] = {
+          ...validators[code],
           [contentType]: this.ajv.compile(<object>schema),
         };
       }
     }
     return validators;
+  }
+
+  /**
+   * Checks if specific Content-Type is validatable
+   * @param contentType
+   * @returns boolean
+   * @throws error on invalid content type format
+   */
+  private canValidateContentType(contentType: string): boolean {
+    const contentTypeParsed = contentTypeParser.parse(contentType);
+    const mediaTypeParsed = mediaTypeParser.parse(contentTypeParsed.type);
+
+    return (
+        mediaTypeParsed.subtype === 'json' ||
+        mediaTypeParsed.suffix === 'json'
+    );
   }
 }

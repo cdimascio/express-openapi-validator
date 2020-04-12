@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
 
-describe.only(packageJson.name, () => {
+describe(packageJson.name, () => {
   let app = null;
 
   before(async () => {
@@ -20,18 +20,12 @@ describe.only(packageJson.name, () => {
       app => {
         // Define new coercion routes
         app.post(`${app.basePath}/request_bodies_ref`, (req, res) => {
-          if (req.header('accept') && req.header('accept').indexOf('text/plain') > -1) {
-            res.type('text').send(req.body);
-          } else if (req.header('accept') && req.header('accept').indexOf('text/html') > -1) {
-            res.type('html').send(req.body);
-          } else if (req.header('accept') && req.header('accept').indexOf('application/hal+json') > -1) {
-            res.type('application/hal+json').send(req.body);
-          } else if (req.header('accept') && req.header('accept').indexOf('application/vnd.api+json') > -1) {
-            res.type(req.header('accept')).send(req.body);
-          } else if (req.query.bad_body) {
+          if (req.query.bad_body) {
             const r = req.body;
             r.unexpected_prop = 'bad';
             res.json(r);
+          } else if (req.header('accept')) {
+            res.type(req.header('accept')).send(req.body);
           } else {
             res.json(req.body);
           }
@@ -67,6 +61,7 @@ describe.only(packageJson.name, () => {
       .send(stringData)
       .expect(200)
       .then(r => {
+        expect(r.get('content-type')).to.contain('text/html')
         expect(r.text).equals(stringData);
       });
   });
@@ -98,7 +93,8 @@ describe.only(packageJson.name, () => {
       .expect(200)
       .then(r => {
         const { body } = r;
-        expect(r.get('content-type')).to.contain('application/vnd.api+json; type=two')
+        expect(r.get('content-type')).to.contain('application/vnd.api+json')
+        expect(r.get('content-type')).to.contain(' type=two')
         expect(body).to.have.property('testPropertyTwo');
       });
   });
