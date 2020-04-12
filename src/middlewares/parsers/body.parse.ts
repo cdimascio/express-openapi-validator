@@ -44,7 +44,7 @@ export class BodySchemaParser {
       }
 
       if (!content) {
-        for (const requestContentType of Object.keys(requestBody.content)) {
+        for (const requestContentType of Object.keys(requestBody.content).sort().reverse()) {
           if (requestContentType === '*/*') {
             content = requestBody.content[requestContentType];
             break;
