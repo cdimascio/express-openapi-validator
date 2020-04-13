@@ -19,8 +19,11 @@ export async function createApp(
   (<any>app).basePath = '/v1';
 
   app.use(bodyParser.json());
-  app.use(bodyParser.json({ type: 'application/hal+json' }));
+  app.use(bodyParser.json({ type: 'application/*+json' }));
+  app.use(bodyParser.json({ type: 'application/*+json*' }));
+
   app.use(bodyParser.text());
+  app.use(bodyParser.text({ type: 'text/html' }));
   app.use(logger('dev'));
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());

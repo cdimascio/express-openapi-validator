@@ -44,7 +44,25 @@ export class BodySchemaParser {
       }
 
       if (!content) {
-        const msg =
+        for (const requestContentType of Object.keys(requestBody.content).sort().reverse()) {
+          if (requestContentType === '*/*') {
+            content = requestBody.content[requestContentType];
+            break;
+          }
+
+          if (!new RegExp(/^[a-z]+\/\*$/).test(requestContentType)) continue; // not a wildcard of type application/*
+
+          const [type] = requestContentType.split('/', 1);
+
+          if (new RegExp(`^${type}\/.+$`).test(contentType.contentType)) {
+            content = requestBody.content[requestContentType];
+            break;
+          }
+        }
+      }
+
+      if (!content) {
+          const msg =
           contentType.contentType === 'not_provided'
             ? 'media type not specified'
             : `unsupported media type ${contentType.contentType}`;
@@ -52,6 +70,7 @@ export class BodySchemaParser {
       }
 
       const schema = this.cleanseContentSchema(contentType, requestBody);
+
       return schema ?? content.schema ?? {};
     }
     return {};

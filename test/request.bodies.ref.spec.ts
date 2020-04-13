@@ -20,14 +20,12 @@ describe(packageJson.name, () => {
       app => {
         // Define new coercion routes
         app.post(`${app.basePath}/request_bodies_ref`, (req, res) => {
-          if (req.header('accept') && req.header('accept').indexOf('text/plain') > -1) {
-            res.type('text').send(req.body);
-          } else if (req.header('accept') && req.header('accept').indexOf('application/hal+json') > -1) {
-            res.type('application/hal+json').send(req.body);
-          } else if (req.query.bad_body) {
+          if (req.query.bad_body) {
             const r = req.body;
             r.unexpected_prop = 'bad';
             res.json(r);
+          } else if (req.header('accept')) {
+            res.type(req.header('accept')).send(req.body);
           } else {
             res.json(req.body);
           }
@@ -51,6 +49,53 @@ describe(packageJson.name, () => {
       .expect(200)
       .then(r => {
         expect(r.text).equals(stringData);
+      });
+  });
+
+  it('should return 200 if text/html request body is satisfied by */*', async () => {
+    const stringData = '<html><body>my html data</body></html>';
+    return request(app)
+      .post(`${app.basePath}/request_bodies_ref`)
+      .set('content-type', 'text/html')
+      .set('accept', 'text/html')
+      .send(stringData)
+      .expect(200)
+      .then(r => {
+        expect(r.get('content-type')).to.contain('text/html')
+        expect(r.text).equals(stringData);
+      });
+  });
+
+  it('should return 200 if application/ld+json request body is satisfied by application/*', async () => {
+    request(app)
+      .post(`${app.basePath}/request_bodies_ref`)
+      .set('accept', 'application/ld+json')
+      .set('content-type', 'application/ld+json')
+      .send({
+        testProperty: 'abc',
+      })
+      .expect(200)
+      .then(r => {
+        const { body } = r;
+        expect(r.get('content-type')).to.contain('application/ld+json')
+        expect(body).to.have.property('testProperty');
+      });
+  });
+
+  it('should return 200 if application/vnd.api+json; type=two request body is validated agains the corrent schema', async () => {
+    request(app)
+      .post(`${app.basePath}/request_bodies_ref`)
+      .set('accept', 'application/vnd.api+json; type=two')
+      .set('content-type', 'application/vnd.api+json; type=two')
+      .send({
+        testPropertyTwo: 'abc',
+      })
+      .expect(200)
+      .then(r => {
+        const { body } = r;
+        expect(r.get('content-type')).to.contain('application/vnd.api+json')
+        expect(r.get('content-type')).to.contain(' type=two')
+        expect(body).to.have.property('testPropertyTwo');
       });
   });
 
