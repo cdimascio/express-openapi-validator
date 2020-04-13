@@ -154,12 +154,16 @@ export class ResponseValidator {
       throw validationError(500, '.response', 'response body required.');
     }
     
-    // // CHECK If Content-Type is validatable
-    // if (!this.canValidateContentType(contentType)) {
-    //   console.warn('Cannot validate content type', contentType);
-    //   // assume valid
-    //   return;
-    // }
+    // CHECK If Content-Type is validatable
+    try {
+        if (!this.canValidateContentType(contentType)) {
+          console.warn('Cannot validate content type', contentType);
+          // assume valid
+          return;
+        }
+    } catch (e) {
+        // Do nothing. Move on and validate response
+    }
 
     const valid = validator({
       response: body,
