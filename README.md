@@ -464,6 +464,7 @@ new OpenApiValidator(options).install({
   apiSpec: './openapi.yaml',
   validateRequests: true,
   validateResponses: true,
+  validateFormats: 'fast',
   validateSecurity: {
     handlers: {
       ApiKeyAuth: (req, scopes, schema) => {
@@ -567,6 +568,29 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
     }
   }
   ```
+  
+### ▪️ validateFormats (optional)
+
+Specifies the strictness of validation of string formats.
+
+- `"fast"` (**default**) - only validate syntax, but not semantics. E.g. `2010-13-30T23:12:35Z` will pass validation eventhough it contains month 13.
+- `"full"` - validate both syntax and semantics. Illegal dates will not pass.
+- `false` - do not validate formats at all.
+
+
+### ▪️ unknownFormats (optional)
+
+Defines how the validator should behave if an unknown or custom format is encountered.
+
+- `true` **(default)** - When an unknown format is encountered, the validator will report a 400 error.
+- `[string]` **_(recommended for unknown formats)_** - An array of unknown format names that will be ignored by the validator. This option can be used to allow usage of third party schemas with format(s), but still fail if another unknown format is used.
+  e.g.
+
+  ```javascript
+  unknownFormats: ['phone-number', 'uuid'];
+  ```
+
+- `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
 
 ### ▪️ operationHandlers (optional)
 
@@ -627,20 +651,6 @@ The following ignores any path that ends in `/pets` e.g. `/v1/pets`
 ignorePaths: /.*\/pets$/
 ```
 
-### ▪️ unknownFormats (optional)
-
-Defines how the validator should behave if an unknown or custom format is encountered.
-
-- `true` **(default)** - When an unknown format is encountered, the validator will report a 400 error.
-- `[string]` **_(recommended for unknown formats)_** - An array of unknown format names that will be ignored by the validator. This option can be used to allow usage of third party schemas with format(s), but still fail if another unknown format is used.
-  e.g.
-
-  ```javascript
-  unknownFormats: ['phone-number', 'uuid'];
-  ```
-
-- `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
-
 ### ▪️ fileUploader (optional)
 
 Specifies the options to passthrough to multer. express-openapi-validator uses multer to handle file uploads. see [multer opts](https://github.com/expressjs/multer)
@@ -664,14 +674,6 @@ Determines whether the validator should coerce value types to match the type def
 - `true` (**default**) - coerce scalar data types.
 - `false` - no type coercion.
 - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
-
-### ▪️ validateFormats (optional)
-
-Specifies the strictness of validation of string formats.
-
-- `"fast"` (**default**) - only validate syntax, but not semantics. E.g. `2010-13-30T23:12:35Z` will pass validation eventhough it contains month 13.
-- `"full"` - validate both syntax and semantics. Illegal dates will not pass.
-- `false` - do not validate formats at all.
 
 ### ▪️ \$refParser.mode (optional)
 
