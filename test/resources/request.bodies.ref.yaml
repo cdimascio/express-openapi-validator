@@ -25,6 +25,19 @@ paths:
             application/hal+json:
               schema:
                 $ref: '#/components/schemas/Test'
+            'application/vnd.api+json; type=one':
+              schema:
+                $ref: '#/components/schemas/Test'
+            'application/vnd.api+json; type=two':
+              schema:
+                $ref: '#/components/schemas/TestTwo'
+            application/*:
+              schema:
+                $ref: '#/components/schemas/Test'
+            '*/*':
+              schema:
+                type: string
+
         '400':
           description: Bad Request
 
@@ -40,17 +53,39 @@ components:
           format: phone-number
       required:
         - testProperty
+    TestTwo:
+      type: object
+      additionalProperties: false
+      properties:
+        testPropertyTwo:
+          type: string
+          example: +15017122661
+          format: phone-number
+      required:
+        - testPropertyTwo
 
   requestBodies:
     TestBody:
       required: true
       content:
         text/plain:
-            schema:
-              type: string
+          schema:
+            type: string
         application/json:
           schema:
             $ref: '#/components/schemas/Test'
         application/hal+json:
           schema:
             $ref: '#/components/schemas/Test'
+        'application/vnd.api+json; type=one':
+          schema:
+            $ref: '#/components/schemas/Test'
+        'application/vnd.api+json; type=two':
+          schema:
+            $ref: '#/components/schemas/TestTwo'
+        application/*:
+          schema:
+            $ref: '#/components/schemas/Test'
+        '*/*':
+          schema:
+            type: string
