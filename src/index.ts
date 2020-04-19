@@ -73,11 +73,11 @@ export class OpenApiValidator {
       $refParser: this.options.$refParser,
     })
       .load()
-      .then(spec => this.installMiddleware(app, spec));
+      .then((spec) => this.installMiddleware(app, spec));
 
     const useCallback = callback && typeof callback === 'function';
     if (useCallback) {
-      p.catch(e => {
+      p.catch((e) => {
         callback(e);
       });
     } else {
@@ -175,7 +175,12 @@ export class OpenApiValidator {
     app: Application | Router,
     context: OpenApiContext,
   ): void {
-    const { coerceTypes, unknownFormats, validateRequests, validateFormats } = this.options;
+    const {
+      coerceTypes,
+      unknownFormats,
+      validateRequests,
+      validateFormats,
+    } = this.options;
     const { allowUnknownQueryParameters } = <ValidateRequestOpts>(
       validateRequests
     );
@@ -186,7 +191,7 @@ export class OpenApiValidator {
       useDefaults: true,
       unknownFormats,
       allowUnknownQueryParameters,
-      format: validateFormats
+      format: validateFormats,
     });
     const requestValidationHandler: OpenApiRequestHandler = (req, res, next) =>
       requestValidator.validate(req, res, next);
@@ -198,7 +203,12 @@ export class OpenApiValidator {
     app: Application | Router,
     context: OpenApiContext,
   ): void {
-    const { coerceTypes, unknownFormats, validateResponses, validateFormats } = this.options;
+    const {
+      coerceTypes,
+      unknownFormats,
+      validateResponses,
+      validateFormats,
+    } = this.options;
     const { removeAdditional } = <ValidateResponseOpts>validateResponses;
 
     const responseValidator = new middlewares.ResponseValidator(
@@ -208,7 +218,7 @@ export class OpenApiValidator {
         coerceTypes,
         removeAdditional,
         unknownFormats,
-        format: validateFormats
+        format: validateFormats,
       },
     );
 
@@ -250,8 +260,10 @@ export class OpenApiValidator {
         }
         const fn = tmpModules[modulePath][oId];
         if (!tmpModules[modulePath][oId]) {
-          throw Error(`Could not resolve 'x-eov-operation-handler' function in module '${modulePath}' for with id '${oId}'. Make sure a function exists for id '${oId}'.`)
-      }
+          throw Error(
+            `Could not find 'x-eov-operation-handler' with id ${oId} in module '${modulePath}'. Make sure operation '${oId}' defined in your API spec exists as a handler function in '${modulePath}'.`,
+          );
+        }
         app[method.toLowerCase()](expressRoute, fn);
       }
     }
