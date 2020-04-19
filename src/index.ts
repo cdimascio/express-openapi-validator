@@ -249,6 +249,9 @@ export class OpenApiValidator {
           }
         }
         const fn = tmpModules[modulePath][oId];
+        if (!tmpModules[modulePath][oId]) {
+          throw Error(`Could not resolve 'x-eov-operation-handler' function in module '${modulePath}' for with id '${oId}'. Make sure a function exists for id '${oId}'.`)
+      }
         app[method.toLowerCase()](expressRoute, fn);
       }
     }
