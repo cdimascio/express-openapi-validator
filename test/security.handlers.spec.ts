@@ -36,6 +36,7 @@ describe('security.handlers', () => {
         .get(`/api_key`, (req, res) => res.json({ logged_in: true }))
         .get(`/bearer`, (req, res) => res.json({ logged_in: true }))
         .get(`/basic`, (req, res) => res.json({ logged_in: true }))
+        .get(`/cookie_auth`, (req, res) => res.json({ logged_in: true }))
         .get(`/oauth2`, (req, res) => res.json({ logged_in: true }))
         .get(`/openid`, (req, res) => res.json({ logged_in: true }))
         .get(`/api_key_or_anonymous`, (req, res) =>
@@ -50,16 +51,14 @@ describe('security.handlers', () => {
   });
 
   it('should return 200 if no security', async () =>
-    request(app)
-      .get(`${basePath}/no_security`)
-      .expect(200));
+    request(app).get(`${basePath}/no_security`).expect(200));
 
   it('should return 401 if apikey handler throws exception', async () =>
     request(app)
       .get(`${basePath}/api_key`)
       .set('X-API-Key', 'test')
       .expect(401)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -70,17 +69,15 @@ describe('security.handlers', () => {
 
   it('should return 401 if apikey handler returns false', async () => {
     const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers.ApiKeyAuth = <any>function(req, scopes, schema) {
-      expect(scopes)
-        .to.be.an('array')
-        .with.length(0);
+    validateSecurity.handlers.ApiKeyAuth = <any>function (req, scopes, schema) {
+      expect(scopes).to.be.an('array').with.length(0);
       return false;
     };
     return request(app)
       .get(`${basePath}/api_key`)
       .set('X-API-Key', 'test')
       .expect(401)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -90,18 +87,35 @@ describe('security.handlers', () => {
 
   it('should return 401 if apikey handler returns Promise with false', async () => {
     const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers.ApiKeyAuth = <any>function(req, scopes, schema) {
-      expect(scopes)
-        .to.be.an('array')
-        .with.length(0);
+    validateSecurity.handlers.ApiKeyAuth = <any>function (req, scopes, schema) {
+      expect(scopes).to.be.an('array').with.length(0);
       return Promise.resolve(false);
     };
     return request(app)
       .get(`${basePath}/api_key`)
       .set('X-API-Key', 'test')
       .expect(401)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
+        expect(body.errors).to.be.an('array');
+        expect(body.errors).to.have.length(1);
+        expect(body.errors[0].message).to.equals('unauthorized');
+      });
+  });
+
+  it('should return 401 if cookie auth handler returns Promise with false', async () => {
+    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
+    validateSecurity.handlers.CookieAuth = <any>function (req, scopes, schema) {
+      expect(scopes).to.be.an('array').with.length(0);
+      return Promise.resolve(false);
+    };
+    return request(app)
+      .get(`${basePath}/cookie_auth`)
+      .set('Cookie', ['JSESSIONID=12345667', 'myApp-other=blah'])
+      .expect(401)
+      .then((r) => {
+        const body = r.body;
+        console.log(body);
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
         expect(body.errors[0].message).to.equals('unauthorized');
@@ -111,16 +125,14 @@ describe('security.handlers', () => {
   it('should return 401 if apikey handler returns Promise reject with custom message', async () => {
     const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
     validateSecurity.handlers.ApiKeyAuth = (req, scopes, schema) => {
-      expect(scopes)
-        .to.be.an('array')
-        .with.length(0);
+      expect(scopes).to.be.an('array').with.length(0);
       return Promise.reject(new Error('rejected promise'));
     };
     return request(app)
       .get(`${basePath}/api_key`)
       .set('X-API-Key', 'test')
       .expect(401)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -134,7 +146,7 @@ describe('security.handlers', () => {
     return request(app)
       .get(`${basePath}/api_key`)
       .expect(401)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -144,7 +156,7 @@ describe('security.handlers', () => {
 
   it('should return 200 if apikey header exists and handler returns true', async () => {
     const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers.ApiKeyAuth = function(
+    validateSecurity.handlers.ApiKeyAuth = function (
       req,
       scopes,
       schema: OpenAPIV3.ApiKeySecurityScheme,
@@ -152,9 +164,7 @@ describe('security.handlers', () => {
       expect(schema.type).to.equal('apiKey');
       expect(schema.in).to.equal('header');
       expect(schema.name).to.equal('X-API-Key');
-      expect(scopes)
-        .to.be.an('array')
-        .with.length(0);
+      expect(scopes).to.be.an('array').with.length(0);
       return true;
     };
     return request(app)
@@ -173,9 +183,7 @@ describe('security.handlers', () => {
       expect(schema.type).to.equal('apiKey');
       expect(schema.in).to.equal('header');
       expect(schema.name).to.equal('X-API-Key');
-      expect(scopes)
-        .to.be.an('array')
-        .with.length(0);
+      expect(scopes).to.be.an('array').with.length(0);
       return true;
     };
     return request(app)
@@ -190,7 +198,7 @@ describe('security.handlers', () => {
     return request(app)
       .get(`${basePath}/basic`)
       .expect(401)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -205,7 +213,7 @@ describe('security.handlers', () => {
       .get(`${basePath}/basic`)
       .set('Authorization', 'XXXX')
       .expect(401)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -221,7 +229,7 @@ describe('security.handlers', () => {
     return request(app)
       .get(`${basePath}/bearer`)
       .expect(401)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -236,7 +244,7 @@ describe('security.handlers', () => {
       .get(`${basePath}/bearer`)
       .set('Authorization', 'XXXX')
       .expect(401)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -255,9 +263,7 @@ describe('security.handlers', () => {
     ) => {
       expect(schema.type).to.equal('http');
       expect(schema.scheme).to.equal('bearer');
-      expect(scopes)
-        .to.be.an('array')
-        .with.length(0);
+      expect(scopes).to.be.an('array').with.length(0);
       return true;
     };
     return request(app)
@@ -268,43 +274,37 @@ describe('security.handlers', () => {
 
   it('should return 200 if oauth2 auth succeeds', async () => {
     const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers.OAuth2 = function(
+    validateSecurity.handlers.OAuth2 = function (
       req,
       scopes,
       schema: OpenAPIV3.OAuth2SecurityScheme,
     ) {
       expect(schema.type).to.equal('oauth2');
       expect(schema).to.have.property('flows');
-      expect(scopes)
-        .to.be.an('array')
-        .with.length(2);
+      expect(scopes).to.be.an('array').with.length(2);
 
       return true;
     };
-    return request(app)
-      .get(`${basePath}/oauth2`)
-      .expect(200);
+    return request(app).get(`${basePath}/oauth2`).expect(200);
   });
 
   it('should return 403 if oauth2 handler throws 403', async () => {
     const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers.OAuth2 = function(
+    validateSecurity.handlers.OAuth2 = function (
       req,
       scopes: string[],
       schema: OpenAPIV3.OAuth2SecurityScheme,
     ) {
       expect(schema.type).to.equal('oauth2');
       expect(schema).to.have.property('flows');
-      expect(scopes)
-        .to.be.an('array')
-        .with.length(2);
+      expect(scopes).to.be.an('array').with.length(2);
 
       throw { status: 403, message: 'forbidden' };
     };
     return request(app)
       .get(`${basePath}/oauth2`)
       .expect(403)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(r.body.message).to.equal('forbidden');
       });
@@ -319,15 +319,11 @@ describe('security.handlers', () => {
     ) => {
       expect(schema.type).to.equal('openIdConnect');
       expect(schema).to.have.property('openIdConnectUrl');
-      expect(scopes)
-        .to.be.an('array')
-        .with.length(2);
+      expect(scopes).to.be.an('array').with.length(2);
 
       return true;
     };
-    return request(app)
-      .get(`${basePath}/openid`)
-      .expect(200);
+    return request(app).get(`${basePath}/openid`).expect(200);
   });
 
   it('should return 500 if security handlers are defined, but not for all securities', async () => {
@@ -340,16 +336,14 @@ describe('security.handlers', () => {
     ) => {
       expect(schema.type).to.equal('openIdConnect');
       expect(schema).to.have.property('openIdConnectUrl');
-      expect(scopes)
-        .to.be.an('array')
-        .with.length(2);
+      expect(scopes).to.be.an('array').with.length(2);
 
       return true;
     };
     return request(app)
       .get(`${basePath}/openid`)
       .expect(500)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         const msg = "a security handler for 'OpenID' does not exist";
         expect(body.message).to.equal(msg);
@@ -363,7 +357,7 @@ describe('security.handlers', () => {
       .get(`${basePath}/api_key_with_scopes`)
       .set('X-Api-Key', 'XXX')
       .expect(500)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.message).to.equal(
           "scopes array must be empty for security type 'http'",
@@ -373,9 +367,7 @@ describe('security.handlers', () => {
   it('should return 200 if api_key or anonymous and no api key is supplied', async () => {
     const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
     validateSecurity.handlers.ApiKeyAuth = <any>((req, scopes, schema) => true);
-    return request(app)
-      .get(`${basePath}/api_key_or_anonymous`)
-      .expect(200);
+    return request(app).get(`${basePath}/api_key_or_anonymous`).expect(200);
   });
 
   it('should return 200 if api_key or anonymous and api key is supplied', async () => {
