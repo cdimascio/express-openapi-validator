@@ -120,7 +120,7 @@ class SecuritySchemes {
       ? defaultSecurityHandler
       : null;
 
-    const promises = this.securities.map(async s => {
+    const promises = this.securities.map(async (s) => {
       try {
         if (Util.isEmptyObject(s)) {
           // anonumous security
@@ -242,8 +242,11 @@ class AuthValidator {
         if (!req.query[scheme.name]) {
           throw Error(`query parameter '${scheme.name}' required`);
         }
+      } else if (scheme.in === 'cookie') {
+        if (!req.cookies[scheme.name]) {
+          throw Error(`cookie '${scheme.name}' required`);
+        }
       }
-      // TODO scheme in cookie
 
       this.dissallowScopes();
     }

@@ -18,6 +18,7 @@ describe('security.defaults', () => {
       express
         .Router()
         .get(`/api_key`, (req, res) => res.json({ logged_in: true }))
+        .get(`/cookie_auth`, (req, res) => res.json({ logged_in: true }))
         .get(`/bearer`, (req, res) => res.json({ logged_in: true }))
         .get(`/basic`, (req, res) => res.json({ logged_in: true }))
         .get('/no_security', (req, res) => res.json({ logged_in: true })),
@@ -29,15 +30,14 @@ describe('security.defaults', () => {
   });
 
   it('should return 200 if no security', async () =>
-    request(app)
-      .get(`${basePath}/no_security`)
-      .expect(200));
+    request(app).get(`${basePath}/no_security`).expect(200));
 
   it('should skip validation, even if auth header is missing for basic auth', async () => {
     return request(app)
       .get(`${basePath}/basic`)
       .expect(401)
-      .then(r => {
+      .then((r) => {
+        console.log(r.body);
         expect(r.body)
           .to.have.property('message')
           .that.equals('Authorization header required');
@@ -47,10 +47,22 @@ describe('security.defaults', () => {
   it('should skip security validation, even if auth header is missing for bearer auth', async () => {
     return request(app)
       .get(`${basePath}/bearer`)
-      .expect(401).then(r => {
+      .expect(401)
+      .then((r) => {
         expect(r.body)
           .to.have.property('message')
           .that.equals('Authorization header required');
-      })
+      });
+  });
+
+  it('should return 401 if cookie auth property is missing', async () => {
+    return request(app)
+      .get(`${basePath}/cookie_auth`)
+      .expect(401)
+      .then((r) => {
+        expect(r.body)
+          .to.have.property('message')
+          .that.equals('cookie \'JSESSIONID\' required');
+      });
   });
 });
