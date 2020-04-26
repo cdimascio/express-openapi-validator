@@ -1083,7 +1083,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/jakubskopal"><img src="https://avatars2.githubusercontent.com/u/8149011?v=4" width="100px;" alt=""/><br /><sub><b>jakubskopal</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=jakubskopal" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=jakubskopal" title="Tests">⚠️</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=jakubskopal" title="Documentation">📖</a></td>
-    <td align="center"><a href="http://www.deetoo.co.uk"><img src="https://avatars3.githubusercontent.com/u/3101390?v=4" width="100px;" alt=""/><br /><sub><b>Jordan Dobrev</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=jordandobrev" title="Tests">⚠️</a></td>
+    <td align="center"><a href="http://www.deetoo.co.uk"><img src="https://avatars3.githubusercontent.com/u/3101390?v=4" width="100px;" alt=""/><br /><sub><b>Jordan Dobrev</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=jordandobrev" title="Tests">⚠️</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=jordandobrev" title="Code">💻</a></td>
   </tr>
 </table>
 
