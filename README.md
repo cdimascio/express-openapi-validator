@@ -876,7 +876,7 @@ new OpenApiValidator({
 
 #### Synchronous
 
-_Note syncrhonous mode makes use of the [`deasync`](https://github.com/abbr/deasync) module. Some users have experienced issues using deasync with some versions of node_
+_Note syncrhonous mode makes use of the [`deasync`](https://github.com/abbr/deasync) module. Some users have experienced issues using deasync with some versions of node. We recommend using the asynchronous method._ 
 
 **Q:** What does it mean to use the validator 'synchronously'?
 
