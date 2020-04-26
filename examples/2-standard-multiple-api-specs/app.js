@@ -34,7 +34,7 @@ async function routes(app, v) {
 async function routesV1(app) {
   const v = '/v1';
   app.post(`${v}/pets`, (req, res, next) => {
-    res.json({ ...req.body, annotations: v, method: 'post' });
+    res.json({ ...req.body });
   });
   app.get(`${v}/pets`, (req, res, next) => {
     res.json([
@@ -67,7 +67,7 @@ async function routesV2(app) {
     ]);
   });
   app.post(`${v}/pets`, (req, res, next) => {
-    res.json({ ...req.body, annotations: v, method: 'post' });
+    res.json({ ...req.body });
   });
 
   app.use((err, req, res, next) => {
