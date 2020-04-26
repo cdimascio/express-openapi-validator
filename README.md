@@ -161,11 +161,11 @@ new OpenApiValidator({
   });
 ```
 
-## [Example Express API Server: with operationHandlers](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
+## [Example Express API Server: with operationHandlers](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/3-eov-operations)
 
 Don't want to manually map your OpenAPI endpoints to Express handler functions? express-openapi-validator can do it for you, automatically! 
 
-Use express-openapi-validator's OpenAPI `x-eov-operation-*` vendor extensions. See a full example with [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations) and an [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/examples/2-eov-operations/api.yaml#L39)
+Use express-openapi-validator's OpenAPI `x-eov-operation-*` vendor extensions. See a full example with [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/3-eov-operations) and an [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/examples/3-eov-operations/api.yaml#L39)
 
 
 **Here's the gist**
@@ -605,7 +605,7 @@ operationHandlers: 'operations/base/path'
 
 **Note** that the `x-eov-operation-handler` OpenAPI vendor extension specifies a path relative to `operationHandlers`. Thus if `operationHandlers` is `/handlers` and an `x-eov-operation-handler` has path `routes/ping`, then the handler file `/handlers/routes/ping.js` (or `ts`) is used. 
 
-Complete example [here](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-eov-operations)
+Complete example [here](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/3-eov-operations)
 
 **api.yaml**
 
@@ -907,6 +907,8 @@ app.use((err, req, res, next) => {
 ## Example: Multiple Validators and API specs
 
 It may be useful to serve multiple APIs with separate specs via single service. An exampe might be an API that serves both `v1` and `v2` from the samee service. The sample code below show how one might accomplish this.
+
+See complete [example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-standard-multiple-api-specs)
 
 ```javascript
 const express = require('express');
