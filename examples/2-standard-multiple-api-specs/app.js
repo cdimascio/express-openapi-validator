@@ -62,7 +62,7 @@ async function routesV2(app) {
       {
         pet_id: 1,
         pet_name: 'happy',
-        pet_type: 'cat',
+        pet_type: 'kitty',
       },
     ]);
   });
