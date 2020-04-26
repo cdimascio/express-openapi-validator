@@ -930,7 +930,7 @@ async function main() {
       apiSpec,
     }).install(app);
 
-    routes(app, v++);
+    routes(app, v);
   }
 
   http.createServer(app).listen(3000);
