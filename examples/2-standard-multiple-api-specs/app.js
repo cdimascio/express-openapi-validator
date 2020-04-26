@@ -1,0 +1,83 @@
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const http = require('http');
+const { OpenApiValidator } = require('express-openapi-validator');
+
+async function main() {
+  app = express();
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.text());
+  app.use(bodyParser.json());
+  app.use(express.static(path.join(__dirname, 'public')));
+
+  const versions = [1, 2];
+
+  for (const v of versions) {
+    const apiSpec = path.join(__dirname, `api.v${v}.yaml`);
+    await new OpenApiValidator({
+      apiSpec,
+    }).install(app);
+
+    routes(app, v);
+  }
+
+  http.createServer(app).listen(3000);
+  console.log('Listening on port 3000');
+}
+
+async function routes(app, v) {
+  if (v === 1) routesV1(app);
+  if (v === 2) routesV2(app);
+}
+
+async function routesV1(app) {
+  const v = '/v1';
+  app.post(`${v}/pets`, (req, res, next) => {
+    res.json({ ...req.body, annotations: v, method: 'post' });
+  });
+  app.get(`${v}/pets`, (req, res, next) => {
+    res.json([
+      {
+        id: 1,
+        name: 'happy',
+        type: 'cat',
+      },
+    ]);
+  });
+
+  app.use((err, req, res, next) => {
+    // format error
+    res.status(err.status || 500).json({
+      message: err.message,
+      errors: err.errors,
+    });
+  });
+}
+
+async function routesV2(app) {
+  const v = '/v2';
+  app.get(`${v}/pets`, (req, res, next) => {
+    res.json([
+      {
+        pet_id: 1,
+        pet_name: 'happy',
+        pet_type: 'cat',
+      },
+    ]);
+  });
+  app.post(`${v}/pets`, (req, res, next) => {
+    res.json({ ...req.body, annotations: v, method: 'post' });
+  });
+
+  app.use((err, req, res, next) => {
+    // format error
+    res.status(err.status || 500).json({
+      message: err.message,
+      errors: err.errors,
+    });
+  });
+}
+
+main();
+module.exports = app;
