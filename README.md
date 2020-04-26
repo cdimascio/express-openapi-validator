@@ -1,6 +1,6 @@
 # 🦋 express-openapi-validator
 
-[![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) [![](https://img.shields.io/npm/dm/express-openapi-validator?color=blue)](https://www.npmjs.com/package/express-openapi-validator) [![All Contributors](https://img.shields.io/badge/all_contributors-15-darkcyan.svg?style=flat)](#contributors) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1570a06f609345ddb237114bbd6ceed7)](https://www.codacy.com/manual/cdimascio/express-openapi-validator?utm_source=github.com&utm_medium=referral&utm_content=cdimascio/express-openapi-validator&utm_campaign=Badge_Grade)  [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/cdimascio/express-openapi-validator)  [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
+[![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) [![](https://img.shields.io/npm/dm/express-openapi-validator?color=blue)](https://www.npmjs.com/package/express-openapi-validator) [![All Contributors](https://img.shields.io/badge/all_contributors-15-darkcyan.svg?style=flat)](#contributors) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1570a06f609345ddb237114bbd6ceed7)](https://www.codacy.com/manual/cdimascio/express-openapi-validator?utm_source=github.com&utm_medium=referral&utm_content=cdimascio/express-openapi-validator&utm_campaign=Badge_Grade) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/cdimascio/express-openapi-validator) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
 
 **An OpenApi validator for ExpressJS** that automatically validates **API** _**requests**_ and _**responses**_ using an **OpenAPI 3** specification.
 
@@ -163,10 +163,9 @@ new OpenApiValidator({
 
 ## [Example Express API Server: with operationHandlers](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/3-eov-operations)
 
-Don't want to manually map your OpenAPI endpoints to Express handler functions? express-openapi-validator can do it for you, automatically! 
+Don't want to manually map your OpenAPI endpoints to Express handler functions? express-openapi-validator can do it for you, automatically!
 
 Use express-openapi-validator's OpenAPI `x-eov-operation-*` vendor extensions. See a full example with [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/3-eov-operations) and an [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/examples/3-eov-operations/api.yaml#L39)
-
 
 **Here's the gist**
 
@@ -176,7 +175,7 @@ Use express-openapi-validator's OpenAPI `x-eov-operation-*` vendor extensions. S
 new OpenApiValidator({
   apiSpec,
   operationHandlers: path.join(__dirname),
-})
+});
 ```
 
 - Next, use the `x-eov-operation-id` OpenAPI vendor extension or `operationId` to specify the id of opeartion handler to invoke.
@@ -194,7 +193,7 @@ new OpenApiValidator({
 /ping:
   get:
     x-eov-operation-id: ping
-    x-eov-operation-handler: routes/ping  # no .js or .ts extension
+    x-eov-operation-handler: routes/ping # no .js or .ts extension
 ```
 
 - Finally, create the express handler module e.g. `routes/ping.js`
@@ -206,8 +205,7 @@ module.exports = {
 };
 ```
 
-
-**Note:** A file may contain *one* or *many* handlers.
+**Note:** A file may contain _one_ or _many_ handlers.
 
 Below are some code snippets:
 
@@ -246,7 +244,7 @@ new OpenApiValidator({
 })
   .install(app)
   .then(() => {
-    // 4. Woah sweet! With auto-wired operation handlers, I don't have to declare my routes! 
+    // 4. Woah sweet! With auto-wired operation handlers, I don't have to declare my routes!
     //    See api.yaml for x-eov-* vendor extensions
 
     // 5. Create a custom error handler
@@ -568,7 +566,7 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
     }
   }
   ```
-  
+
 ### ▪️ validateFormats (optional)
 
 Specifies the strictness of validation of string formats.
@@ -576,7 +574,6 @@ Specifies the strictness of validation of string formats.
 - `"fast"` (**default**) - only validate syntax, but not semantics. E.g. `2010-13-30T23:12:35Z` will pass validation eventhough it contains month 13.
 - `"full"` - validate both syntax and semantics. Illegal dates will not pass.
 - `false` - do not validate formats at all.
-
 
 ### ▪️ unknownFormats (optional)
 
@@ -603,7 +600,7 @@ Defines the base directory for operation handlers. This is used in conjunction w
 operationHandlers: 'operations/base/path'
 ```
 
-**Note** that the `x-eov-operation-handler` OpenAPI vendor extension specifies a path relative to `operationHandlers`. Thus if `operationHandlers` is `/handlers` and an `x-eov-operation-handler` has path `routes/ping`, then the handler file `/handlers/routes/ping.js` (or `ts`) is used. 
+**Note** that the `x-eov-operation-handler` OpenAPI vendor extension specifies a path relative to `operationHandlers`. Thus if `operationHandlers` is `/handlers` and an `x-eov-operation-handler` has path `routes/ping`, then the handler file `/handlers/routes/ping.js` (or `ts`) is used.
 
 Complete example [here](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/3-eov-operations)
 
@@ -643,7 +640,7 @@ module.exports = {
 
 ### ▪️ ignorePaths (optional)
 
-Defines a regular expression that determines whether a path(s) should be ignored. Any path that matches the regular expression will be ignored by the validator. 
+Defines a regular expression that determines whether a path(s) should be ignored. Any path that matches the regular expression will be ignored by the validator.
 
 The following ignores any path that ends in `/pets` e.g. `/v1/pets`
 
@@ -706,7 +703,7 @@ servers:
 ```
 
 The validation applies to all paths defined under this base URL. Routes in your app
-that are _not_se URL—such as pages—will not be validated.
+that are \_not_se URL—such as pages—will not be validated.
 
 | URL                                  | Validated?                 |
 | :----------------------------------- | :------------------------- |
@@ -876,7 +873,7 @@ new OpenApiValidator({
 
 #### Synchronous
 
-_Note syncrhonous mode makes use of the [`deasync`](https://github.com/abbr/deasync) module. Some users have experienced issues using deasync with some versions of node. We recommend using the asynchronous method._ 
+_Note syncrhonous mode makes use of the [`deasync`](https://github.com/abbr/deasync) module. Some users have experienced issues using deasync with some versions of node. We recommend using the asynchronous method._
 
 **Q:** What does it mean to use the validator 'synchronously'?
 
@@ -947,7 +944,7 @@ async function routes(app, v) {
 async function routesV1(app) {
   const v = '/v1';
   app.post(`${v}/pets`, (req, res, next) => {
-    res.json({ ...req.body, annotations: v, method: 'post' });
+    res.json({ ...req.body });
   });
   app.get(`${v}/pets`, (req, res, next) => {
     res.json([
@@ -980,7 +977,7 @@ async function routesV2(app) {
     ]);
   });
   app.post(`${v}/pets`, (req, res, next) => {
-    res.json({ ...req.body, annotations: v, method: 'post' });
+    res.json({ ...req.body });
   });
 
   app.use((err, req, res, next) => {
@@ -994,7 +991,6 @@ async function routesV2(app) {
 
 main();
 module.exports = app;
-
 ```
 
 ## FAQ
@@ -1095,6 +1091,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
