@@ -924,8 +924,8 @@ async function main() {
 
   const versions = [1, 2];
 
-  for (let v of versions) {
-    let apiSpec = path.join(__dirname, `v${v}.yaml`);
+  for (const v of versions) {
+    const apiSpec = path.join(__dirname, `api.v${v}.yaml`);
     await new OpenApiValidator({
       apiSpec,
     }).install(app);
@@ -943,9 +943,18 @@ async function routes(app, v) {
 }
 
 async function routesV1(app) {
-  const v = '/api/v1';
-  app.post(`${v}/annotations`, (req, res, next) => {
+  const v = '/v1';
+  app.post(`${v}/pets`, (req, res, next) => {
     res.json({ ...req.body, annotations: v, method: 'post' });
+  });
+  app.get(`${v}/pets`, (req, res, next) => {
+    res.json([
+      {
+        id: 1,
+        name: 'happy',
+        type: 'cat',
+      },
+    ]);
   });
 
   app.use((err, req, res, next) => {
@@ -958,8 +967,17 @@ async function routesV1(app) {
 }
 
 async function routesV2(app) {
-  const v = '/api/v2';
-  app.post(`${v}/annotations`, (req, res, next) => {
+  const v = '/v2';
+  app.get(`${v}/pets`, (req, res, next) => {
+    res.json([
+      {
+        pet_id: 1,
+        pet_name: 'happy',
+        pet_type: 'kitty',
+      },
+    ]);
+  });
+  app.post(`${v}/pets`, (req, res, next) => {
     res.json({ ...req.body, annotations: v, method: 'post' });
   });
 
@@ -974,6 +992,7 @@ async function routesV2(app) {
 
 main();
 module.exports = app;
+
 ```
 
 ## FAQ
