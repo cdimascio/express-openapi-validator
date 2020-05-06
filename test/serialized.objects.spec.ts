@@ -11,7 +11,7 @@ describe(packageJson.name, () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'serialized.objects.yaml');
-    app = await createApp({ apiSpec }, 3005, app =>
+    app = await createApp({ apiSpec }, 3005, (app) =>
       app.use(
         `${app.basePath}`,
         express
@@ -37,7 +37,7 @@ describe(packageJson.name, () => {
         fooBar: '{"foo":"bar"}',
       })
       .expect(200)
-      .then(response => {
+      .then((response) => {
         expect(response.body).to.deep.equal({
           settings: {
             onlyValidated: true,
@@ -58,7 +58,7 @@ describe(packageJson.name, () => {
         fooBar: 'fooBar',
       })
       .expect(200)
-      .then(response => {
+      .then((response) => {
         expect(response.body).to.deep.equal({
           timestamp: 1234567890123,
           fooBar: 'fooBar',
@@ -72,7 +72,7 @@ describe(packageJson.name, () => {
         settings: 'this is not valid json',
       })
       .expect(400)
-      .then(response => {
+      .then((response) => {
         expect(response.body.message).to.equal(
           'request.query.settings should be object',
         );
@@ -86,7 +86,7 @@ describe(packageJson.name, () => {
         tag_ids: 1,
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         expect(r.body)
           .to.have.property('message')
           .that.equals('request.query.settings.tag_ids should be array');
@@ -99,7 +99,7 @@ describe(packageJson.name, () => {
         tag_ids: [1],
       })
       .expect(200)
-      .then(r => {
+      .then((r) => {
         expect(r.body).to.have.property('settings');
         expect(r.body.settings)
           .to.have.property('tag_ids')
@@ -110,10 +110,37 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/deep_object?settings[state]=validated`)
       .expect(200)
-      .then(r => {
+      .then((r) => {
         const expected = {
           settings: {
             state: 'validated',
+          },
+        };
+        expect(r.body).to.deep.equals(expected);
+      }));
+
+  it('should explode deepObject query params', async () =>
+    request(app)
+      .get(`${app.basePath}/deep_object?settings[state]=validated`)
+      .expect(200)
+      .then((r) => {
+        const expected = {
+          settings: {
+            state: 'validated',
+          },
+        };
+        expect(r.body).to.deep.equals(expected);
+      }));
+
+  it('should explode deepObject query params and use deepObject default values', async () =>
+    request(app)
+      .get(`${app.basePath}/deep_object?settings[tag_ids][0]=1`)
+      .expect(200)
+      .then((r) => {
+        const expected = {
+          settings: {
+            tag_ids: [1],
+            state: 'default',
           },
         };
         expect(r.body).to.deep.equals(expected);
