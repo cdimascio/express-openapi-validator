@@ -18,7 +18,8 @@ describe(packageJson.name, () => {
           .Router()
           .get(`/serialisable`, (req, res) => res.json(req.query))
           .get(`/tags`, (req, res) => res.json(req.query))
-          .get(`/deep_object`, (req, res) => res.json(req.query)),
+          .get(`/deep_object`, (req, res) => res.json(req.query))
+          .get(`/deep_object_2`, (req, res) => res.json(req.query)),
       ),
     );
   });
@@ -113,6 +114,7 @@ describe(packageJson.name, () => {
       .then((r) => {
         const expected = {
           settings: {
+            greeting: 'hello',
             state: 'validated',
           },
         };
@@ -126,15 +128,31 @@ describe(packageJson.name, () => {
       .then((r) => {
         const expected = {
           settings: {
+            greeting: 'hello',
             state: 'validated',
           },
         };
         expect(r.body).to.deep.equals(expected);
       }));
 
-  it('should explode deepObject query params and use deepObject default values', async () =>
+  it('should explode deepObject query params with default values', async () =>
     request(app)
       .get(`${app.basePath}/deep_object?settings[tag_ids][0]=1`)
+      .expect(200)
+      .then((r) => {
+        const expected = {
+          settings: {
+            tag_ids: [1],
+            state: 'default',
+            greeting: 'hello',
+          },
+        };
+        expect(r.body).to.deep.equals(expected);
+      }));
+
+  it('should explode deepObject $ref query params with default values', async () =>
+    request(app)
+      .get(`${app.basePath}/deep_object_2?settings[tag_ids][0]=1`)
       .expect(200)
       .then((r) => {
         const expected = {
