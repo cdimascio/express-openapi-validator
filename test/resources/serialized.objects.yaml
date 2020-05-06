@@ -31,6 +31,9 @@ paths:
                 enum: ["default", "validated", "pending"]
                 default: "default"
                 description: "Filter the tags by their validity. The default value ('default') stands for no filtering."
+              greeting:
+                type: string
+                default: "hello"
       responses:
         "200":
           description: the object
