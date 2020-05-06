@@ -141,6 +141,7 @@ describe(packageJson.name, () => {
           settings: {
             tag_ids: [1],
             state: 'default',
+            greeting: 'hello',
           },
         };
         expect(r.body).to.deep.equals(expected);
