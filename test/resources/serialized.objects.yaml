@@ -38,6 +38,20 @@ paths:
         "200":
           description: the object
 
+  /deep_object_2:
+    get:
+      summary: "retrieve a deep object"
+      operationId: getDeepObject2
+      parameters:
+        - in: query
+          style: deepObject
+          explode: true
+          name: settings
+          schema:
+            $ref: '#/components/schemas/Deep'
+      responses:
+        "200":
+          description: the object
   /tags:
     get:
       summary: "Retrieve all tags"
@@ -124,3 +138,23 @@ paths:
             application/json:
               schema:
                 type: object
+
+components:
+  schemas:
+    Deep: 
+      type: object
+      properties:
+        tag_ids:
+          type: array
+          items:
+            type: integer
+            minimum: 0
+          minItems: 1
+        state:
+          type: string
+          enum: ["default", "validated", "pending"]
+          default: "default"
+          description: "Filter the tags by their validity. The default value ('default') stands for no filtering."
+        greeting:
+          type: string
+          default: "hello"
