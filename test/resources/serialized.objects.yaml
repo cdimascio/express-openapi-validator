@@ -9,7 +9,9 @@ servers:
 
 paths:
   /deep_object:
+    x-vendorExtension1: accounts
     get:
+      x-vendorExtension2: accounts
       summary: "retrieve a deep object"
       operationId: getDeepObject
       parameters:
