@@ -9,7 +9,7 @@ import {
 } from '../../framework/types';
 import * as url from 'url';
 import { validationError } from '../util';
-import { /* dereference, */dereferenceParameter, normalizeParameter } from './util';
+import { dereferenceParameter, normalizeParameter } from './util';
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
 
@@ -109,7 +109,6 @@ export class RequestParameterMutator {
       req.query[name] = {};
     }
     this.parseJsonAndMutateRequest(req, 'query', name);
-    // nothing to do
     // TODO handle url encoded?
   }
 
@@ -165,9 +164,6 @@ export class RequestParameterMutator {
           return acc;
         } else {
           const foundProperties = schema[key].reduce((acc2, obj) => {
-            // if (obj.$ref) {
-            //   obj = dereference(apiDocs, obj);
-            // }
             return obj.type === 'object'
               ? acc2.concat(...Object.keys(obj.properties))
               : acc2;
@@ -234,12 +230,9 @@ export class RequestParameterMutator {
     // for easy validation, keep the schema but update whereabouts of its sub components
     const field = REQUEST_FIELDS[$in];
     if (req[field]) {
-      // check if there is at least one of the nested properties before create the parent
+      // check if there is at least one of the nested properties before creating the root property
       const atLeastOne = properties.some((p) => req[field].hasOwnProperty(p));
-      const val = req[field][name];
-      const shouldBeObject =
-        val && typeof val === 'object' && !Array.isArray(val);
-      if (shouldBeObject || atLeastOne) {
+      if (atLeastOne) {
         req[field][name] = {};
         properties.forEach((property) => {
           if (req[field][property]) {
