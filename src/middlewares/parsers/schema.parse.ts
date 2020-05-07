@@ -1,6 +1,7 @@
 import { OpenAPIV3, ParametersSchema } from '../../framework/types';
 import { validationError } from '../util';
 import { dereferenceParameter, normalizeParameter } from './util';
+import { Ajv } from 'ajv';
 
 const PARAM_TYPE = {
   query: 'query',
@@ -16,9 +17,11 @@ type Parameter = OpenAPIV3.ReferenceObject | OpenAPIV3.ParameterObject;
  * whose value must later be parsed as a JSON object, JSON Exploded Object, JSON Array, or JSON Exploded Array
  */
 export class ParametersSchemaParser {
+  private _ajv: Ajv;
   private _apiDocs: OpenAPIV3.Document;
 
-  constructor(apiDocs: OpenAPIV3.Document) {
+  constructor(ajv: Ajv, apiDocs: OpenAPIV3.Document) {
+    this._ajv = ajv;
     this._apiDocs = apiDocs;
   }
 
@@ -31,13 +34,13 @@ export class ParametersSchemaParser {
   public parse(path: string, parameters: Parameter[] = []): ParametersSchema {
     const schemas = { query: {}, headers: {}, params: {}, cookies: {} };
 
-    parameters.forEach(p => {
+    parameters.forEach((p) => {
       const parameter = dereferenceParameter(this._apiDocs, p);
 
       this.validateParameterType(path, parameter);
 
       const reqField = PARAM_TYPE[parameter.in];
-      const { name, schema } = normalizeParameter(parameter);
+      const { name, schema } = normalizeParameter(this._ajv, parameter);
 
       if (!schemas[reqField].properties) {
         schemas[reqField] = {
