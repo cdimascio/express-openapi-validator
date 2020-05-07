@@ -11,7 +11,7 @@ import { OpenApiValidatorOpts } from '../../src/framework/types';
 export async function createApp(
   opts?: OpenApiValidatorOpts,
   port = 3000,
-  customRoutes = app => {},
+  customRoutes = (app) => {},
   useRoutes = true,
   apiRouter = undefined,
 ) {

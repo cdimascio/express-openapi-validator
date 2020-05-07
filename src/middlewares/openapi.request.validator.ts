@@ -86,7 +86,7 @@ export class RequestValidator {
     contentType: ContentType,
   ): RequestHandler {
     const apiDoc = this.apiDoc;
-    const schemaParser = new ParametersSchemaParser(apiDoc);
+    const schemaParser = new ParametersSchemaParser(this.ajv, apiDoc);
     const bodySchemaParser = new BodySchemaParser(this.ajv, apiDoc);
     const parameters = schemaParser.parse(path, reqSchema.parameters);
     const securityQueryParam = Security.queryParam(apiDoc, reqSchema);
@@ -112,7 +112,7 @@ export class RequestValidator {
         req.params = openapi.pathParams ?? req.params;
       }
 
-      const mutator = new RequestParameterMutator(apiDoc, path, properties);
+      const mutator = new RequestParameterMutator(this.ajv, apiDoc, path, properties);
 
       mutator.modifyRequest(req);
 

@@ -1,4 +1,6 @@
 import { Request } from 'express';
+import { Ajv } from 'ajv';
+import * as ajv from 'ajv';
 import {
   OpenAPIV3,
   OpenApiRequest,
@@ -40,13 +42,16 @@ type Parameter = ReferenceObject | ParameterObject;
 export class RequestParameterMutator {
   private _apiDocs: OpenAPIV3.Document;
   private path: string;
+  private ajv: Ajv;
   private parsedSchema: ValidationSchema;
 
   constructor(
+    ajv: Ajv,
     apiDocs: OpenAPIV3.Document,
     path: string,
     parsedSchema: ValidationSchema,
   ) {
+    this.ajv = ajv;
     this._apiDocs = apiDocs;
     this.path = path;
     this.parsedSchema = parsedSchema;
@@ -63,9 +68,10 @@ export class RequestParameterMutator {
       url.parse(req.originalUrl).query,
     );
 
-    parameters.forEach(p => {
+    parameters.forEach((p) => {
       const parameter = dereferenceParameter(this._apiDocs, p);
-      const { name, schema } = normalizeParameter(parameter);
+      const { name, schema } = normalizeParameter(this.ajv, parameter);
+
       const { type } = <SchemaObject>schema;
       const { style, explode } = parameter;
       const i = req.originalUrl.indexOf('?');
@@ -78,11 +84,13 @@ export class RequestParameterMutator {
       if (parameter.content) {
         this.handleContent(req, name, parameter);
       } else if (parameter.in === 'query' && this.isObjectOrXOf(schema)) {
-        this.parseJsonAndMutateRequest(req, parameter.in, name);
         if (style === 'form' && explode) {
+          this.parseJsonAndMutateRequest(req, parameter.in, name);
           this.handleFormExplode(req, name, <SchemaObject>schema, parameter);
         } else if (style === 'deepObject') {
           this.handleDeepObject(req, queryString, name);
+        } else {
+          this.parseJsonAndMutateRequest(req, parameter.in, name);
         }
       } else if (type === 'array' && !explode) {
         const delimiter = ARRAY_DELIMITER[parameter.style];
@@ -97,7 +105,10 @@ export class RequestParameterMutator {
   }
 
   private handleDeepObject(req: Request, qs: string, name: string): void {
-    // nothing to do
+    if (!req.query?.[name]) {
+      req.query[name] = {};
+    }
+    this.parseJsonAndMutateRequest(req, 'query', name);
     // TODO handle url encoded?
   }
 
@@ -219,11 +230,11 @@ export class RequestParameterMutator {
     // for easy validation, keep the schema but update whereabouts of its sub components
     const field = REQUEST_FIELDS[$in];
     if (req[field]) {
-      // check if there is at least one of the nested properties before create the parent
-      const atLeastOne = properties.some(p => req[field].hasOwnProperty(p));
+      // check if there is at least one of the nested properties before creating the root property
+      const atLeastOne = properties.some((p) => req[field].hasOwnProperty(p));
       if (atLeastOne) {
         req[field][name] = {};
-        properties.forEach(property => {
+        properties.forEach((property) => {
           if (req[field][property]) {
             const schema = this.parsedSchema[field];
             const type = schema.properties[name].properties?.[property]?.type;
@@ -254,8 +265,9 @@ export class RequestParameterMutator {
   }
 
   private isObjectOrXOf(schema: Schema): boolean {
-    const schemaHasObject = schema => {
+    const schemaHasObject = (schema) => {
       if (!schema) return false;
+      if (schema.$ref) return true;
       const { type, allOf, oneOf, anyOf } = schema;
       return (
         type === 'object' ||
