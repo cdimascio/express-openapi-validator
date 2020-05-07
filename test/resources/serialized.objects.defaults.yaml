@@ -1,0 +1,58 @@
+components:
+  schemas:
+    PageSort:
+      allOf:
+        - $ref: "#/components/schemas/Paging"
+        - $ref: "#/components/schemas/Sorting"
+    Paging:
+      properties:
+        page:
+          default: 1
+          minimum: 1
+          type: integer
+        perPage:
+          default: 25
+          type: integer
+      type: object
+    Sorting:
+      properties:
+        field:
+          default: id
+          enum:
+            - id
+            - name
+          type: string
+        order:
+          default: ASC
+          enum:
+            - ASC
+            - DESC
+          type: string
+      type: object
+info:
+  description: API
+  title: API
+  version: 1.0.0
+openapi: 3.0.0
+servers:
+  - url: /v1/
+paths:
+  /deep_object:
+    get:
+      operationId: getDeepObject
+      parameters:
+        - explode: true
+          in: query
+          name: pagesort
+          schema:
+            $ref: "#/components/schemas/PageSort"
+          style: deepObject
+      responses:
+        "200":
+          description: description
+          content:
+            application/json:
+              schema:
+                items:
+                  type: number
+                type: array
