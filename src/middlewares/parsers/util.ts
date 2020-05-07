@@ -18,27 +18,6 @@ export function dereferenceParameter(
   }
 }
 
-// export function dereference(
-//   apiDocs: OpenAPIV3.Document,
-//   schema: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject,
-// ): OpenAPIV3.SchemaObject {
-//   // TODO this should recurse or use ajv.getSchema - if implemented as such, may want to cache the result
-//   // as it is called by query.paraer and req.parameter mutator
-
-//   if (schema?.['$ref']) {
-//     const ref = (<OpenAPIV3.ReferenceObject>schema).$ref;
-//     const id = ref.replace(/^.+\//i, '');
-//     if (apiDocs.components?.parameters?.[id]) {
-//       return <OpenAPIV3.SchemaObject>(
-//         (<unknown>apiDocs.components.parameters[id])
-//       );
-//     } else if (apiDocs.components?.schemas?.[id]) {
-//       return <OpenAPIV3.SchemaObject>apiDocs.components.schemas[id];
-//     }
-//   }
-//   return <OpenAPIV3.SchemaObject>schema;
-// }
-
 export function normalizeParameter(
   ajv: Ajv,
   parameter: OpenAPIV3.ParameterObject,
