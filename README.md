@@ -449,6 +449,25 @@ Errors in response validation return `500`, not of `400`
 
 ### _...and much more. Try it out!_
 
+### Response status codes
+
+express-openapi-validator returns the following error codes depending on the situation.
+
+#### Request validation (validateRequests=true)
+
+|status|when|
+|--|--|
+|`400` (bad request)|a validation error is encountered|
+|`401` (unauthorized)|a security / authentication errors is encountered e.g. missing api-key, Authorization header, etc|
+|`404` (not found)|a path is not found i.e. not declared in the API spec|
+|`405` (method not allowed)|a path is declared in the API spec, but a no schema is provided for the method|
+
+#### Response validation (validateResponses=true)
+
+|status|when|
+|--|--|
+|`500` (internal server error)|any error is encountered by the validator|
+
 ## Advanced Usage
 
 ### OpenApiValidator Options
