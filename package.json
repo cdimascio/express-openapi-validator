@@ -4,8 +4,8 @@
   "description": "Automatically validate API requests and responses with OpenAPI 3 and Express.",
   "main": "dist/index.js",
   "scripts": {
-    "compile:windows": "rmdir dist /s /q & tsc",
     "compile": "rm -rf dist/ && tsc",
+    "compile:windows": "rmdir dist /s /q & tsc",
     "test": "TS_NODE_FILES=true mocha -r source-map-support/register -r ts-node/register  --files --recursive test/**/*.spec.ts",
     "test:windows": "set TS_NODE_FILES=true & mocha -r source-map-support/register -r ts-node/register  --files --recursive test/**/*.spec.ts",
     "test:coverage": "TS_NODE_FILES=true nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
