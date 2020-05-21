@@ -1,7 +1,11 @@
 import { Ajv } from 'ajv';
-import { ContentType, validationError } from '../util';
+import { ContentType } from '../util';
 
-import { OpenAPIV3, BodySchema } from '../../framework/types';
+import {
+  OpenAPIV3,
+  BodySchema,
+  UnsupportedMediaType,
+} from '../../framework/types';
 
 export class BodySchemaParser {
   private _apiDoc: OpenAPIV3.Document;
@@ -44,7 +48,9 @@ export class BodySchemaParser {
       }
 
       if (!content) {
-        for (const requestContentType of Object.keys(requestBody.content).sort().reverse()) {
+        for (const requestContentType of Object.keys(requestBody.content)
+          .sort()
+          .reverse()) {
           if (requestContentType === '*/*') {
             content = requestBody.content[requestContentType];
             break;
@@ -62,11 +68,11 @@ export class BodySchemaParser {
       }
 
       if (!content) {
-          const msg =
+        const msg =
           contentType.contentType === 'not_provided'
             ? 'media type not specified'
             : `unsupported media type ${contentType.contentType}`;
-        throw validationError(415, path, msg);
+        throw new UnsupportedMediaType({ path: path, message: msg });
       }
 
       const schema = this.cleanseContentSchema(contentType, requestBody);
@@ -95,7 +101,7 @@ export class BodySchemaParser {
     // currently all middlware i.e. req and res validators share the spec
     const schema = bodyContentRefSchema || bodyContentSchema;
     if (schema && schema.properties) {
-      Object.keys(schema.properties).forEach(prop => {
+      Object.keys(schema.properties).forEach((prop) => {
         const propertyValue = schema.properties[prop];
         const required = schema.required;
         if (propertyValue.readOnly && required) {

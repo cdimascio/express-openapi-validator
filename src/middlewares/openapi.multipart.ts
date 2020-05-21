@@ -1,11 +1,13 @@
 import { OpenApiContext } from '../framework/openapi.context';
 import { createRequestAjv } from '../framework/ajv';
-import { validationError } from './util';
 import {
   OpenAPIV3,
   OpenApiRequest,
   OpenApiRequestHandler,
   ValidationError,
+  BadRequest,
+  RequestEntityToLarge,
+  InternalServerError,
 } from '../framework/types';
 import { MulterError } from 'multer';
 import ajv = require('ajv');
@@ -22,7 +24,7 @@ export function multipart(
     // TODO check that format: binary (for upload) else do not use multer.any()
     // use multer.none() if no binary parameters exist
     if (shouldHandle(Ajv, req)) {
-      mult.any()(req, res, err => {
+      mult.any()(req, res, (err) => {
         if (err) {
           next(error(req, err));
         } else {
@@ -43,7 +45,7 @@ export function multipart(
             // to handle single and multiple file upload at the same time, let us this initialize this count variable
             // for example { "files": 5 }
             const count_by_fieldname = (<Express.Multer.File[]>req.files)
-              .map(file => file.fieldname)
+              .map((file) => file.fieldname)
               .reduce((acc, curr) => {
                 acc[curr] = (acc[curr] || 0) + 1;
                 return acc;
@@ -115,7 +117,11 @@ function error(req: OpenApiRequest, err: Error): ValidationError {
     );
     const unexpected = /LIMIT_UNEXPECTED_FILE/.test(multerError.code);
     const status = payload_too_big ? 413 : !unexpected ? 400 : 500;
-    return validationError(status, req.path, err.message);
+    return payload_too_big
+      ? new RequestEntityToLarge({ path: req.path, message: err.message })
+      : !unexpected
+      ? new BadRequest({ path: req.path, message: err.message })
+      : new InternalServerError({ path: req.path, message: err.message });
   } else {
     // HACK
     // TODO improve multer error handling
@@ -123,9 +129,12 @@ function error(req: OpenApiRequest, err: Error): ValidationError {
       err.message ?? '',
     );
     if (missingField) {
-      return validationError(400, req.path, 'multipart file(s) required');
+      return new BadRequest({
+        path: req.path,
+        message: 'multipart file(s) required',
+      });
     } else {
-      return validationError(500, req.path, err.message);
+      return new InternalServerError({ path: req.path, message: err.message });
     }
   }
 }

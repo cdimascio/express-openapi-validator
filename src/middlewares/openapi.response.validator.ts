@@ -1,4 +1,3 @@
-import ono from 'ono';
 import { RequestHandler } from 'express';
 import * as ajv from 'ajv';
 import mung from '../framework/modded.express.mung';
@@ -7,17 +6,16 @@ import {
   augmentAjvErrors,
   ContentType,
   ajvErrorsToValidatorError,
-  validationError,
 } from './util';
 import {
   OpenAPIV3,
   OpenApiRequest,
   OpenApiRequestMetadata,
+  InternalServerError,
+  ValidationError,
 } from '../framework/types';
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
-import { type } from 'os';
-import { createCipher } from 'crypto';
 
 interface ValidateResult {
   validators: { [key: string]: ajv.ValidateFunction };
@@ -114,23 +112,26 @@ export class ResponseValidator {
       } else if (validators.default) {
         svalidator = validators.default;
       } else {
-        throw validationError(
-          500,
-          path,
-          `no schema defined for status code '${status}' in the openapi spec`,
-        );
+        throw new InternalServerError({
+          path: path,
+          message: `no schema defined for status code '${status}' in the openapi spec`,
+        });
       }
 
       validator = svalidator[contentType];
 
-      if (!validator) { // wildcard support
-        for (const validatorContentType of Object.keys(svalidator).sort().reverse()) {
+      if (!validator) {
+        // wildcard support
+        for (const validatorContentType of Object.keys(svalidator)
+          .sort()
+          .reverse()) {
           if (validatorContentType === '*/*') {
             validator = svalidator[validatorContentType];
             break;
           }
 
-          if (RegExp(/^[a-z]+\/\*$/).test(validatorContentType)) { // wildcard of type application/*
+          if (RegExp(/^[a-z]+\/\*$/).test(validatorContentType)) {
+            // wildcard of type application/*
             const [type] = validatorContentType.split('/', 1);
 
             if (new RegExp(`^${type}\/.+$`).test(contentType)) {
@@ -149,20 +150,23 @@ export class ResponseValidator {
       // assume valid
       return;
     }
-    
+
     if (!body) {
-      throw validationError(500, '.response', 'response body required.');
+      throw new InternalServerError({
+        path: '.response',
+        message: 'response body required.',
+      });
     }
-    
+
     // CHECK If Content-Type is validatable
     try {
-        if (!this.canValidateContentType(contentType)) {
-          console.warn('Cannot validate content type', contentType);
-          // assume valid
-          return;
-        }
+      if (!this.canValidateContentType(contentType)) {
+        console.warn('Cannot validate content type', contentType);
+        // assume valid
+        return;
+      }
     } catch (e) {
-        // Do nothing. Move on and validate response
+      // Do nothing. Move on and validate response
     }
 
     const valid = validator({
@@ -174,7 +178,11 @@ export class ResponseValidator {
       const message = this.ajv.errorsText(errors, {
         dataVar: '', // responses
       });
-      throw ono(ajvErrorsToValidatorError(500, errors), message);
+      throw new InternalServerError({
+        path: path,
+        errors: ajvErrorsToValidatorError(500, errors).errors,
+        message: message,
+      });
     }
   }
 
@@ -209,7 +217,8 @@ export class ResponseValidator {
           // Handle wildcards
           if (
             response.content[contentType].schema &&
-            (contentType === '*/*' || new RegExp(/^[a-z]+\/\*$/).test(contentType))
+            (contentType === '*/*' ||
+              new RegExp(/^[a-z]+\/\*$/).test(contentType))
           ) {
             types.push(contentType);
           }
@@ -254,7 +263,7 @@ export class ResponseValidator {
     for (const [code, contentTypeSchemas] of Object.entries(responseSchemas)) {
       for (const contentType of Object.keys(contentTypeSchemas)) {
         const schema = contentTypeSchemas[contentType];
-        
+
         validators[code] = {
           ...validators[code],
           [contentType]: this.ajv.compile(<object>schema),
@@ -275,8 +284,7 @@ export class ResponseValidator {
     const mediaTypeParsed = mediaTypeParser.parse(contentTypeParsed.type);
 
     return (
-        mediaTypeParsed.subtype === 'json' ||
-        mediaTypeParsed.suffix === 'json'
+      mediaTypeParsed.subtype === 'json' || mediaTypeParsed.suffix === 'json'
     );
   }
 }
