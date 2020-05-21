@@ -2,11 +2,9 @@ import { Ajv } from 'ajv';
 import { createRequestAjv } from '../framework/ajv';
 import {
   ContentType,
-  validationError,
   ajvErrorsToValidatorError,
   augmentAjvErrors,
 } from './util';
-import ono from 'ono';
 import { NextFunction, RequestHandler, Response } from 'express';
 import {
   ValidationSchema,
@@ -15,6 +13,9 @@ import {
   RequestValidatorOptions,
   ValidateRequestOpts,
   OpenApiRequestMetadata,
+  NotFound,
+  MethodNotAllowed,
+  BadRequest,
 } from '../framework/types';
 import { BodySchemaParser } from './parsers/body.parse';
 import { ParametersSchemaParser } from './parsers/schema.parse';
@@ -59,12 +60,18 @@ export class RequestValidator {
     const openapi = <OpenApiRequestMetadata>req.openapi;
     const path = openapi.expressRoute;
     if (!path) {
-      throw validationError(404, req.path, 'not found');
+      throw new NotFound({
+        path: req.path,
+        message: 'not found',
+      });
     }
 
     const reqSchema = openapi.schema;
     if (!reqSchema) {
-      throw validationError(405, req.path, `${req.method} method not allowed`);
+      throw new MethodNotAllowed({
+        path: req.path,
+        message: `${req.method} method not allowed`,
+      });
     }
 
     // cache middleware by combining method, path, and contentType
@@ -93,9 +100,13 @@ export class RequestValidator {
     const body = bodySchemaParser.parse(path, reqSchema, contentType);
 
     const isBodyBinary = body?.['format'] === 'binary';
-    const properties: ValidationSchema = { ...parameters, body: isBodyBinary ? {} : body };
+    const properties: ValidationSchema = {
+      ...parameters,
+      body: isBodyBinary ? {} : body,
+    };
     // TODO throw 400 if missing a required binary body
-    const required = (<SchemaObject>body).required && !isBodyBinary ? ['body'] : [];
+    const required =
+      (<SchemaObject>body).required && !isBodyBinary ? ['body'] : [];
     // $schema: "http://json-schema.org/draft-04/schema#",
     const schema = {
       required: ['query', 'headers', 'params'].concat(required),
@@ -112,7 +123,12 @@ export class RequestValidator {
         req.params = openapi.pathParams ?? req.params;
       }
 
-      const mutator = new RequestParameterMutator(this.ajv, apiDoc, path, properties);
+      const mutator = new RequestParameterMutator(
+        this.ajv,
+        apiDoc,
+        path,
+        properties,
+      );
 
       mutator.modifyRequest(req);
 
@@ -138,7 +154,12 @@ export class RequestValidator {
         const errors = augmentAjvErrors([...(validator.errors ?? [])]);
         const err = ajvErrorsToValidatorError(400, errors);
         const message = this.ajv.errorsText(errors, { dataVar: 'request' });
-        throw ono(err, message);
+        const error: BadRequest = new BadRequest({
+          path: req.path,
+          message: message,
+        });
+        error.errors = err.errors;
+        throw error;
       }
     };
   }
@@ -146,7 +167,7 @@ export class RequestValidator {
   private processQueryParam(query, schema, whiteList: string[] = []) {
     if (!schema.properties) return;
     const knownQueryParams = new Set(Object.keys(schema.properties));
-    whiteList.forEach(item => knownQueryParams.add(item));
+    whiteList.forEach((item) => knownQueryParams.add(item));
     const queryParams = Object.keys(query);
     const allowedEmpty = schema.allowEmptyValue;
     for (const q of queryParams) {
@@ -154,17 +175,15 @@ export class RequestValidator {
         !this.requestOpts.allowUnknownQueryParameters &&
         !knownQueryParams.has(q)
       ) {
-        throw validationError(
-          400,
-          `.query.${q}`,
-          `Unknown query parameter '${q}'`,
-        );
+        throw new BadRequest({
+          path: `.query.${q}`,
+          message: `Unknown query parameter '${q}'`,
+        });
       } else if (!allowedEmpty?.has(q) && (query[q] === '' || null)) {
-        throw validationError(
-          400,
-          `.query.${q}`,
-          `Empty value found for query parameter '${q}'`,
-        );
+        throw new BadRequest({
+          path: `.query.${q}`,
+          message: `Empty value found for query parameter '${q}'`,
+        });
       }
     }
   }
@@ -201,12 +220,12 @@ class Security {
   ): string[] {
     return usedSecuritySchema && securitySchema
       ? usedSecuritySchema
-          .filter(obj => Object.entries(obj).length !== 0)
-          .map(sec => {
+          .filter((obj) => Object.entries(obj).length !== 0)
+          .map((sec) => {
             const securityKey = Object.keys(sec)[0];
             return <SecuritySchemeObject>securitySchema[securityKey];
           })
-          .filter(sec => sec?.type === 'apiKey' && sec?.in == 'query')
+          .filter((sec) => sec?.type === 'apiKey' && sec?.in == 'query')
           .map((sec: ApiKeySecurityScheme) => sec.name)
       : [];
   }
