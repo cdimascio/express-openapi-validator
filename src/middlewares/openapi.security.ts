@@ -9,6 +9,7 @@ import {
   InternalServerError,
   Unauthorized,
   Forbidden,
+  HttpError,
 } from '../framework/types';
 import { OpenApiContext } from '../framework/openapi.context';
 
@@ -105,12 +106,17 @@ export function security(
       }
     } catch (e) {
       const message = e?.error?.message || 'unauthorized';
-      const err =
+      const err = HttpError.create({
+        status: e.status,
+        path: path,
+        message: message,
+      });
+      /*const err =
         e.status == 500
           ? new InternalServerError({ path: path, message: message })
           : e.status == 403
           ? new Forbidden({ path: path, message: message })
-          : new Unauthorized({ path: path, message: message });
+          : new Unauthorized({ path: path, message: message });*/
       next(err);
     }
   };
