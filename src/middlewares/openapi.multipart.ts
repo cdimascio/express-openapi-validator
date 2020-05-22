@@ -8,6 +8,7 @@ import {
   BadRequest,
   RequestEntityToLarge,
   InternalServerError,
+  HttpError,
 } from '../framework/types';
 import { MulterError } from 'multer';
 import ajv = require('ajv');
@@ -117,11 +118,16 @@ function error(req: OpenApiRequest, err: Error): ValidationError {
     );
     const unexpected = /LIMIT_UNEXPECTED_FILE/.test(multerError.code);
     const status = payload_too_big ? 413 : !unexpected ? 400 : 500;
-    return payload_too_big
+    return HttpError.create({
+      status: status,
+      path: req.path,
+      message: err.message,
+    });
+    /*return payload_too_big
       ? new RequestEntityToLarge({ path: req.path, message: err.message })
       : !unexpected
       ? new BadRequest({ path: req.path, message: err.message })
-      : new InternalServerError({ path: req.path, message: err.message });
+      : new InternalServerError({ path: req.path, message: err.message });*/
   } else {
     // HACK
     // TODO improve multer error handling
