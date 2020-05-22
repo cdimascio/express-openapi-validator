@@ -500,7 +500,6 @@ export class HttpError extends Error implements ValidationError {
   public static create(err: {
     status: number;
     path: string;
-    name: string;
     message?: string;
     errors?: ValidationErrorItem[];
   }):
@@ -512,22 +511,23 @@ export class HttpError extends Error implements ValidationError {
     | NotFound
     | Unauthorized
     | Forbidden {
-    if (err.status == 400) {
-      return new BadRequest(err);
-    } else if (err.status == 401) {
-      return new Unauthorized(err);
-    } else if (err.status == 403) {
-      return new Forbidden(err);
-    } else if (err.status == 404) {
-      return new NotFound(err);
-    } else if (err.status == 405) {
-      return new MethodNotAllowed(err);
-    } else if (err.status == 413) {
-      return new RequestEntityToLarge(err);
-    } else if (err.status == 415) {
-      return new UnsupportedMediaType(err);
-    } else {
-      return new InternalServerError(err);
+    switch (err.status) {
+      case 400:
+        return new BadRequest(err);
+      case 401:
+        return new Unauthorized(err);
+      case 403:
+        return new Forbidden(err);
+      case 404:
+        return new NotFound(err);
+      case 405:
+        return new MethodNotAllowed(err);
+      case 413:
+        return new RequestEntityToLarge(err);
+      case 415:
+        return new UnsupportedMediaType(err);
+      default:
+        return new InternalServerError(err);
     }
   }
 }
