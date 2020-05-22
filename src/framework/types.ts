@@ -496,6 +496,40 @@ export class HttpError extends Error implements ValidationError {
           ]
         : err.errors;
   }
+
+  public static create(err: {
+    status: number;
+    path: string;
+    name: string;
+    message?: string;
+    errors?: ValidationErrorItem[];
+  }):
+    | InternalServerError
+    | UnsupportedMediaType
+    | RequestEntityToLarge
+    | BadRequest
+    | MethodNotAllowed
+    | NotFound
+    | Unauthorized
+    | Forbidden {
+    if (err.status == 400) {
+      return new BadRequest(err);
+    } else if (err.status == 401) {
+      return new Unauthorized(err);
+    } else if (err.status == 403) {
+      return new Forbidden(err);
+    } else if (err.status == 404) {
+      return new NotFound(err);
+    } else if (err.status == 405) {
+      return new MethodNotAllowed(err);
+    } else if (err.status == 413) {
+      return new RequestEntityToLarge(err);
+    } else if (err.status == 415) {
+      return new UnsupportedMediaType(err);
+    } else {
+      return new InternalServerError(err);
+    }
+  }
 }
 
 export class NotFound extends HttpError {
