@@ -28,3 +28,7 @@ secrets.zip.enc
 README.md
 tsconfig.json
 TODO.md
+/typings
+_config.yml
+.all-contributorsrc
+.gitignore
