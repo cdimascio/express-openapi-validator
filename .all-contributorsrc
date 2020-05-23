@@ -227,6 +227,15 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "efabris",
+      "name": "Enrico Fabris",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/9377503?v=4",
+      "profile": "https://github.com/efabris",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
