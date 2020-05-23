@@ -1,4 +1,3 @@
-import ono from 'ono';
 import * as Ajv from 'ajv';
 import { Request } from 'express';
 import { ValidationError } from '../framework/types';
@@ -32,29 +31,6 @@ export class ContentType {
   }
 }
 
-const _validationError = (
-  status: number,
-  path: string,
-  message: string,
-): ValidationError => ({
-  status,
-  errors: [
-    {
-      path,
-      message,
-    },
-  ],
-});
-
-export function validationError(
-  status: number,
-  path: string,
-  message: string,
-): ValidationError {
-  const err = _validationError(status, path, message);
-  return ono(err, message);
-}
-
 /**
  * (side-effecting) modifies the errors object
  * TODO - do this some other way
@@ -63,7 +39,7 @@ export function validationError(
 export function augmentAjvErrors(
   errors: Ajv.ErrorObject[] = [],
 ): Ajv.ErrorObject[] {
-  errors.forEach(e => {
+  errors.forEach((e) => {
     if (e.keyword === 'enum') {
       const params: any = e.params;
       const allowedEnumValues = params?.allowedValues;
@@ -80,7 +56,7 @@ export function ajvErrorsToValidatorError(
 ): ValidationError {
   return {
     status,
-    errors: errors.map(e => {
+    errors: errors.map((e) => {
       const params: any = e.params;
       const required =
         params?.missingProperty && e.dataPath + '.' + params.missingProperty;

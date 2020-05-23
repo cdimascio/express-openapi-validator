@@ -4,8 +4,13 @@ import {
   SecurityHandlers,
   OpenApiRequestMetadata,
   OpenApiRequestHandler,
+  NotFound,
+  MethodNotAllowed,
+  InternalServerError,
+  Unauthorized,
+  Forbidden,
+  HttpError,
 } from '../framework/types';
-import { validationError } from './util';
 import { OpenApiContext } from '../framework/openapi.context';
 
 const defaultSecurityHandler = (
@@ -38,7 +43,12 @@ export function security(
     const openapi = <OpenApiRequestMetadata>req.openapi;
     const expressRoute = openapi.expressRoute;
     if (!expressRoute) {
-      return next(validationError(404, req.path, 'not found'));
+      return next(
+        new NotFound({
+          path: req.path,
+          message: 'not found',
+        }),
+      );
     }
 
     const pathSchema = openapi.schema;
@@ -46,7 +56,10 @@ export function security(
       // add openapi metadata to make this case more clear
       // its not obvious that missig schema means methodNotAllowed
       return next(
-        validationError(405, req.path, `${req.method} method not allowed`),
+        new MethodNotAllowed({
+          path: req.path,
+          message: `${req.method} method not allowed`,
+        }),
       );
     }
 
@@ -64,7 +77,7 @@ export function security(
 
     if (!securitySchemes) {
       const message = `security referenced at path ${path}, but not defined in 'components.securitySchemes'`;
-      return next(validationError(500, path, message));
+      return next(new InternalServerError({ path: path, message: message }));
     }
 
     try {
@@ -86,11 +99,24 @@ export function security(
           firstError = r;
         }
       }
-      if (success) next();
-      else throw firstError;
+      if (success) {
+        next();
+      } else {
+        throw firstError;
+      }
     } catch (e) {
       const message = e?.error?.message || 'unauthorized';
-      const err = validationError(e.status, path, message);
+      const err = HttpError.create({
+        status: e.status,
+        path: path,
+        message: message,
+      });
+      /*const err =
+        e.status == 500
+          ? new InternalServerError({ path: path, message: message })
+          : e.status == 403
+          ? new Forbidden({ path: path, message: message })
+          : new Unauthorized({ path: path, message: message });*/
       next(err);
     }
   };
@@ -134,15 +160,15 @@ class SecuritySchemes {
 
         if (!scheme) {
           const message = `components.securitySchemes.${securityKey} does not exist`;
-          throw { status: 500, message };
+          throw new InternalServerError({ message });
         }
         if (!scheme.hasOwnProperty('type')) {
           const message = `components.securitySchemes.${securityKey} must have property 'type'`;
-          throw { status: 500, message };
+          throw new InternalServerError({ message });
         }
         if (!handler) {
           const message = `a security handler for '${securityKey}' does not exist`;
-          throw { status: 500, message };
+          throw new InternalServerError({ message });
         }
 
         new AuthValidator(req, scheme, scopes).validate();
@@ -255,10 +281,9 @@ class AuthValidator {
   private dissallowScopes(): void {
     if (this.scopes.length > 0) {
       // https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#security-requirement-object
-      throw {
-        status: 500,
+      throw new InternalServerError({
         message: "scopes array must be empty for security type 'http'",
-      };
+      });
     }
   }
 }

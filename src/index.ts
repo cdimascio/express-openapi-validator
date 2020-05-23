@@ -16,6 +16,17 @@ import {
 import { deprecationWarning } from './middlewares/util';
 import * as path from 'path';
 
+export {
+  InternalServerError,
+  UnsupportedMediaType,
+  RequestEntityToLarge,
+  BadRequest,
+  MethodNotAllowed,
+  NotFound,
+  Unauthorized,
+  Forbidden,
+} from './framework/types';
+
 export class OpenApiValidator {
   private readonly options: OpenApiValidatorOpts;
 

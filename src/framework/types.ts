@@ -467,3 +467,191 @@ export interface ValidationErrorItem {
   message: string;
   error_code?: string;
 }
+
+export class HttpError extends Error implements ValidationError {
+  status!: number;
+  message!: string;
+  errors!: ValidationErrorItem[];
+  path?: string;
+  name!: string;
+  constructor(err: {
+    status: number;
+    path: string;
+    name: string;
+    message?: string;
+    errors?: ValidationErrorItem[];
+  }) {
+    super(err.name);
+    this.name = err.name;
+    this.status = err.status;
+    this.path = err.path;
+    this.message = err.message;
+    this.errors =
+      err.errors == undefined
+        ? [
+            {
+              path: err.path,
+              message: err.message,
+            },
+          ]
+        : err.errors;
+  }
+
+  public static create(err: {
+    status: number;
+    path: string;
+    message?: string;
+    errors?: ValidationErrorItem[];
+  }):
+    | InternalServerError
+    | UnsupportedMediaType
+    | RequestEntityToLarge
+    | BadRequest
+    | MethodNotAllowed
+    | NotFound
+    | Unauthorized
+    | Forbidden {
+    switch (err.status) {
+      case 400:
+        return new BadRequest(err);
+      case 401:
+        return new Unauthorized(err);
+      case 403:
+        return new Forbidden(err);
+      case 404:
+        return new NotFound(err);
+      case 405:
+        return new MethodNotAllowed(err);
+      case 413:
+        return new RequestEntityToLarge(err);
+      case 415:
+        return new UnsupportedMediaType(err);
+      default:
+        return new InternalServerError(err);
+    }
+  }
+}
+
+export class NotFound extends HttpError {
+  constructor(err: {
+    path: string;
+    message?: string;
+    overrideStatus?: number;
+  }) {
+    super({
+      status: err.overrideStatus || 404,
+      path: err.path,
+      message: err.message,
+      name: 'Not Found',
+    });
+  }
+}
+
+export class MethodNotAllowed extends HttpError {
+  constructor(err: {
+    path: string;
+    message?: string;
+    overrideStatus?: number;
+  }) {
+    super({
+      status: err.overrideStatus || 405,
+      path: err.path,
+      name: 'Method Not Allowed',
+      message: err.message,
+    });
+  }
+}
+
+export class BadRequest extends HttpError {
+  constructor(err: {
+    path: string;
+    message?: string;
+    overrideStatus?: number;
+    errors?: ValidationErrorItem[];
+  }) {
+    super({
+      status: err.overrideStatus || 400,
+      path: err.path,
+      name: 'Bad Request',
+      message: err.message,
+      errors: err.errors,
+    });
+  }
+}
+
+export class RequestEntityToLarge extends HttpError {
+  constructor(err: {
+    path: string;
+    message?: string;
+    overrideStatus?: number;
+  }) {
+    super({
+      status: err.overrideStatus || 413,
+      path: err.path,
+      name: 'Request Entity Too Large',
+      message: err.message,
+    });
+  }
+}
+
+export class InternalServerError extends HttpError {
+  constructor(err: {
+    path?: string;
+    message?: string;
+    overrideStatus?: number;
+    errors?: ValidationErrorItem[];
+  }) {
+    super({
+      status: err.overrideStatus || 500,
+      path: err.path,
+      name: 'Internal Server Error',
+      message: err.message,
+      errors: err.errors,
+    });
+  }
+}
+
+export class UnsupportedMediaType extends HttpError {
+  constructor(err: {
+    path: string;
+    message?: string;
+    overrideStatus?: number;
+  }) {
+    super({
+      status: err.overrideStatus || 415,
+      path: err.path,
+      name: 'Unsupported Media Type',
+      message: err.message,
+    });
+  }
+}
+
+export class Unauthorized extends HttpError {
+  constructor(err: {
+    path: string;
+    message?: string;
+    overrideStatus?: number;
+  }) {
+    super({
+      status: err.overrideStatus || 401,
+      path: err.path,
+      name: 'Unauthorized',
+      message: err.message,
+    });
+  }
+}
+
+export class Forbidden extends HttpError {
+  constructor(err: {
+    path: string;
+    message?: string;
+    overrideStatus?: number;
+  }) {
+    super({
+      status: err.overrideStatus || 403,
+      path: err.path,
+      name: 'Forbidden',
+      message: err.message,
+    });
+  }
+}

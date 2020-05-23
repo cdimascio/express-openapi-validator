@@ -1,5 +1,4 @@
-import { OpenAPIV3, ParametersSchema } from '../../framework/types';
-import { validationError } from '../util';
+import { OpenAPIV3, ParametersSchema, BadRequest } from '../../framework/types';
 import { dereferenceParameter, normalizeParameter } from './util';
 import { Ajv } from 'ajv';
 
@@ -74,7 +73,7 @@ export class ParametersSchemaParser {
     const isKnownType = PARAM_TYPE[parameter.in];
     if (!isKnownType) {
       const message = `Parameter 'in' has incorrect value '${parameter.in}' for [${parameter.name}]`;
-      throw validationError(400, path, message);
+      throw new BadRequest({ path: path, message: message });
     }
 
     const hasSchema = () => {
@@ -85,7 +84,7 @@ export class ParametersSchemaParser {
 
     if (!hasSchema()) {
       const message = `No available parameter in 'schema' or 'content' for [${parameter.name}]`;
-      throw validationError(400, path, message);
+      throw new BadRequest({ path: path, message: message });
     }
   }
 }
