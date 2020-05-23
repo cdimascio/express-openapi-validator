@@ -6,9 +6,9 @@ import {
   OpenApiRequest,
   OpenApiRequestMetadata,
   ValidationSchema,
+  BadRequest,
 } from '../../framework/types';
 import * as url from 'url';
-import { validationError } from '../util';
 import { dereferenceParameter, normalizeParameter } from './util';
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
@@ -283,7 +283,10 @@ export class RequestParameterMutator {
   ): void {
     if (!delimiter) {
       const message = `Parameter 'style' has incorrect value '${parameter.style}' for [${parameter.name}]`;
-      throw validationError(400, `.query.${parameter.name}`, message);
+      throw new BadRequest({
+        path: `.query.${parameter.name}`,
+        message: message,
+      });
     }
   }
 
@@ -296,7 +299,7 @@ export class RequestParameterMutator {
     for (const v of vs) {
       if (v?.match(RESERVED_CHARS)) {
         const message = `Parameter '${name}' must be url encoded. It's value may not contain reserved characters.`;
-        throw validationError(400, `.query.${name}`, message);
+        throw new BadRequest({ path: `.query.${name}`, message: message });
       }
     }
   }
