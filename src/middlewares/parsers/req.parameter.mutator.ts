@@ -20,6 +20,7 @@ type ParameterObject = OpenAPIV3.ParameterObject;
 const RESERVED_CHARS = /[\:\/\?#\[\]@!\$&\'()\*\+,;=]/;
 
 const ARRAY_DELIMITER = {
+  simple: ',',
   form: ',',
   spaceDelimited: ' ',
   pipeDelimited: '|',

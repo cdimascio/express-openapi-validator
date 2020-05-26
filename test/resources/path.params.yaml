@@ -20,6 +20,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+  /multi_users/{ids}:
+    get:
+      summary: Deletes Features given a number of uuids.
+      parameters:
+        - in: path
+          name: ids
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+          style: simple
+      responses:
+        "200":
+          description: Features were successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
 components:
   schemas:
     User:
