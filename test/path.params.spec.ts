@@ -53,9 +53,8 @@ describe('path params', () => {
   it('should handle path parameter with style=simple', async () =>
     request(app)
       .get(`${app.basePath}/multi_users/aa,bb,cc`)
-      // .expect(200)
+      .expect(200)
       .then((r) => {
-        console.log(r.body);
-        // expect(r.body.id).to.equal('c dimascio');
+        expect(r.body.ids).to.deep.equal(['aa', 'bb', 'cc']);
       }));
 });
