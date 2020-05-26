@@ -16,13 +16,17 @@ describe('path params', () => {
         validateResponses: true,
       },
       3005,
-      app => {
+      (app) => {
         app.get(`${app.basePath}/users/:id?`, (req, res) => {
           res.json({
             id: req.params.id,
           });
         });
-
+        app.get(`${app.basePath}/multi_users/:ids?`, (req, res) => {
+          res.json({
+            ids: req.params.ids,
+          });
+        });
         app.use((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
@@ -42,7 +46,16 @@ describe('path params', () => {
     request(app)
       .get(`${app.basePath}/users/c%20dimascio`)
       .expect(200)
-      .then(r => {
+      .then((r) => {
         expect(r.body.id).to.equal('c dimascio');
+      }));
+
+  it('should handle path parameter with style=simple', async () =>
+    request(app)
+      .get(`${app.basePath}/multi_users/aa,bb,cc`)
+      // .expect(200)
+      .then((r) => {
+        console.log(r.body);
+        // expect(r.body.id).to.equal('c dimascio');
       }));
 });
