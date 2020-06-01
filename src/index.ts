@@ -3,7 +3,7 @@ import * as _uniq from 'lodash.uniq';
 import * as middlewares from './middlewares';
 import { Application, Response, NextFunction, Router } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
-import { OpenApiSpecLoader, Spec } from './framework/openapi.spec.loader';
+import { OpenApiSpecLoader, Spec, RouteMetadata } from './framework/openapi.spec.loader';
 import {
   OpenApiValidatorOpts,
   ValidateRequestOpts,
@@ -15,6 +15,7 @@ import {
 } from './framework/types';
 import { deprecationWarning } from './middlewares/util';
 import * as path from 'path';
+import { BasePath } from './framework/base.path';
 
 export {
   InternalServerError,
@@ -43,6 +44,45 @@ export class OpenApiValidator {
     if (options.$refParser == null) options.$refParser = { mode: 'bundle' };
     if (options.operationHandlers == null) options.operationHandlers = false;
     if (options.validateFormats == null) options.validateFormats = 'fast';
+
+    if (options.operationResolver == null) {
+      options.operationResolver = (handlersPath: false | string, route: RouteMetadata) => {
+        const tmpModules = {};
+        const { expressRoute, method, schema } = route;
+        const oId = schema['x-eov-operation-id'] || schema['operationId'];
+        const baseName = schema['x-eov-operation-handler'];
+        if (oId && !baseName) {
+          throw Error(
+            `found x-eov-operation-id for route ${method} - ${expressRoute}]. x-eov-operation-handler required.`,
+          );
+        }
+        if (!oId && baseName) {
+          throw Error(
+            `found x-eov-operation-handler for route [${method} - ${expressRoute}]. operationId or x-eov-operation-id required.`,
+          );
+        }
+        if (
+          oId &&
+          baseName &&
+          typeof handlersPath === 'string'
+        ) {
+          const modulePath = path.join(handlersPath, baseName);
+          if (!tmpModules[modulePath]) {
+            tmpModules[modulePath] = require(modulePath);
+            if (!tmpModules[modulePath][oId]) {
+              // if oId is not found only module, try the module's default export
+              tmpModules[modulePath] = tmpModules[modulePath].default;
+            }
+          }
+          if (!tmpModules[modulePath][oId]) {
+            throw Error(
+              `Could not find 'x-eov-operation-handler' with id ${oId} in module '${modulePath}'. Make sure operation '${oId}' defined in your API spec exists as a handler function in '${modulePath}'.`,
+            );
+          }
+          return tmpModules[modulePath][oId];
+        }
+      }
+    }
 
     if (options.validateResponses === true) {
       options.validateResponses = {
@@ -240,43 +280,12 @@ export class OpenApiValidator {
     app: Application | Router,
     context: OpenApiContext,
   ): void {
-    const tmpModules = {};
-
     for (const route of context.routes) {
-      const { expressRoute, method, schema } = route;
-      const oId = schema['x-eov-operation-id'] || schema['operationId'];
-      const baseName = schema['x-eov-operation-handler'];
-      if (oId && !baseName) {
-        throw Error(
-          `found x-eov-operation-id for route ${method} - ${expressRoute}]. x-eov-operation-handler required.`,
-        );
-      }
-      if (!oId && baseName) {
-        throw Error(
-          `found x-eov-operation-handler for route [${method} - ${expressRoute}]. operationId or x-eov-operation-id required.`,
-        );
-      }
-      if (
-        oId &&
-        baseName &&
-        typeof this.options.operationHandlers === 'string'
-      ) {
-        const modulePath = path.join(this.options.operationHandlers, baseName);
-        if (!tmpModules[modulePath]) {
-          tmpModules[modulePath] = require(modulePath);
-          if (!tmpModules[modulePath][oId]) {
-            // if oId is not found only module, try the module's default export
-            tmpModules[modulePath] = tmpModules[modulePath].default;
-          }
-        }
-        const fn = tmpModules[modulePath][oId];
-        if (!tmpModules[modulePath][oId]) {
-          throw Error(
-            `Could not find 'x-eov-operation-handler' with id ${oId} in module '${modulePath}'. Make sure operation '${oId}' defined in your API spec exists as a handler function in '${modulePath}'.`,
-          );
-        }
-        app[method.toLowerCase()](expressRoute, fn);
-      }
+      const { method, expressRoute } = route;
+
+      const fn = this.options.operationResolver(this.options.operationHandlers, route);
+      
+      app[method.toLowerCase()](expressRoute, fn);
     }
   }
 

@@ -62,6 +62,7 @@ export interface OpenApiValidatorOpts {
     mode: 'bundle' | 'dereference';
   };
   operationHandlers?: false | string;
+  operationResolver?: Function;
   validateFormats?: false | 'fast' | 'full';
 }
 
