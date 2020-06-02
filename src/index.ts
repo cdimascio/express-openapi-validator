@@ -16,6 +16,8 @@ import {
 import { deprecationWarning } from './middlewares/util';
 import * as path from 'path';
 import { BasePath } from './framework/base.path';
+import { defaultResolver } from './resolvers';
+import { OperationHandlerOptions } from './framework/types'
 
 export {
   InternalServerError,
@@ -42,47 +44,22 @@ export class OpenApiValidator {
     if (options.validateSecurity == null) options.validateSecurity = true;
     if (options.fileUploader == null) options.fileUploader = {};
     if (options.$refParser == null) options.$refParser = { mode: 'bundle' };
-    if (options.operationHandlers == null) options.operationHandlers = false;
     if (options.validateFormats == null) options.validateFormats = 'fast';
-
-    if (options.operationResolver == null) {
-      options.operationResolver = (handlersPath: false | string, route: RouteMetadata) => {
-        const tmpModules = {};
-        const { expressRoute, method, schema } = route;
-        const oId = schema['x-eov-operation-id'] || schema['operationId'];
-        const baseName = schema['x-eov-operation-handler'];
-        if (oId && !baseName) {
-          throw Error(
-            `found x-eov-operation-id for route ${method} - ${expressRoute}]. x-eov-operation-handler required.`,
-          );
-        }
-        if (!oId && baseName) {
-          throw Error(
-            `found x-eov-operation-handler for route [${method} - ${expressRoute}]. operationId or x-eov-operation-id required.`,
-          );
-        }
-        if (
-          oId &&
-          baseName &&
-          typeof handlersPath === 'string'
-        ) {
-          const modulePath = path.join(handlersPath, baseName);
-          if (!tmpModules[modulePath]) {
-            tmpModules[modulePath] = require(modulePath);
-            if (!tmpModules[modulePath][oId]) {
-              // if oId is not found only module, try the module's default export
-              tmpModules[modulePath] = tmpModules[modulePath].default;
-            }
-          }
-          if (!tmpModules[modulePath][oId]) {
-            throw Error(
-              `Could not find 'x-eov-operation-handler' with id ${oId} in module '${modulePath}'. Make sure operation '${oId}' defined in your API spec exists as a handler function in '${modulePath}'.`,
-            );
-          }
-          return tmpModules[modulePath][oId];
-        }
+  
+    if (typeof options.operationHandlers === 'string') {
+      /** 
+       * Internally, we want to convert this to a value typed OperationHandlerOptions.
+       * In this way, we can treat the value as such when we go to install (rather than
+       * re-interpreting it over and over).
+       */
+      options.operationHandlers = {
+        basePath: options.operationHandlers,
+        resolver: defaultResolver
       }
-    }
+    } else if (typeof options.operationHandlers !== 'object') {
+      // This covers cases where operationHandlers is null, undefined or false.
+      options.operationHandlers = false
+    }      
 
     if (options.validateResponses === true) {
       options.validateResponses = {
@@ -283,9 +260,16 @@ export class OpenApiValidator {
     for (const route of context.routes) {
       const { method, expressRoute } = route;
 
-      const fn = this.options.operationResolver(this.options.operationHandlers, route);
-      
-      app[method.toLowerCase()](expressRoute, fn);
+      /**
+       * This if-statement is here to "narrow" the type of options.operationHanlders
+       * to OperationHandlerOptions (down from string | false | OperationHandlerOptions)
+       * At this point of execution it _should_ be impossible for this to NOT be the correct 
+       * type as we re-assign during construction to verify this.
+       */
+      if (this.isOperationHandlerOptions(this.options.operationHandlers)) {
+        const { basePath, resolver } = this.options.operationHandlers
+        app[method.toLowerCase()](expressRoute, resolver(basePath, route));
+      } 
     }
   }
 
@@ -353,6 +337,14 @@ export class OpenApiValidator {
     if (options.multerOpts) {
       options.fileUploader = options.multerOpts;
       delete options.multerOpts;
+    }
+  }
+
+  private isOperationHandlerOptions(value: false | string | OperationHandlerOptions): value is OperationHandlerOptions {
+    if ((value as OperationHandlerOptions).resolver) {
+      return true
+    } else {
+      return false
     }
   }
 }
