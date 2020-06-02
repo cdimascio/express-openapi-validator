@@ -25,21 +25,23 @@ app.use('/spec', express.static(apiSpec));
 new OpenApiValidator({
   apiSpec,
   validateResponses: true, // default false
-  // 3. Provide the path to the controllers directory
-  operationHandlers: path.join(__dirname, 'routes'), // default false,
-  // 4. Provide a function responsible for resolving an Express RequestHandler 
-  //    function from the current OpenAPI Route object.
-  operationResolver: function (basePath, route) {
-    [controller, method] = route.schema['operationId'].split('.')
+  operationHandlers: {
+    // 3. Provide the path to the controllers directory
+    basePath: path.join(__dirname, 'routes'),
+    // 4. Provide a function responsible for resolving an Express RequestHandler 
+    //    function from the current OpenAPI Route object.
+    resolver: function (basePath, route) {
+      [controller, method] = route.schema['operationId'].split('.')
 
-    const modulePath = path.join(basePath, controller);
-    const handler = require(modulePath)
+      const modulePath = path.join(basePath, controller);
+      const handler = require(modulePath)
 
-    if (handler[method] === undefined) {
-      throw new Error(`Couldn't find a [${method}] function in ${modulePath} when trying to route [${route.method} ${route.expressRoute}].`)
+      if (handler[method] === undefined) {
+        throw new Error(`Couldn't find a [${method}] function in ${modulePath} when trying to route [${route.method} ${route.expressRoute}].`)
+      }
+
+      return handler[method]
     }
-
-    return handler[method]
   }
 })
   .install(app)
