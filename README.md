@@ -301,19 +301,19 @@ By default, when you configure `operationHandlers` to be the base path to your o
 
 If you ever want _FULL_ control over how that resolution happens (e.g. you want to use your own extended attributes or simply rely on `operationId`), then here's how you can accomplish that following an example where our `operationId` becomes a template that follows `{module}.{function}`.
 
-- First, specifiy the `operationHandlers` option to be an object with a `basePath` and `resolver` propeties.
+- First, specifiy the `operationHandlers` option to be an object with a `basePath` and `resolver` properties. `basePath` is the path to where all your handler files are located. `resolver` is a function that **MUST** return an Express `RequestHandler` given `basePath` and `route` (which gives you access to the OpenAPI schema for a specific Operation)
 
 ```javascript
 new OpenApiValidator({
   apiSpec,
   operationHandlers: {
     basePath: path.join(__dirname, 'routes'),
-    resolver: (handlersPath, route) => {
+    resolver: (basePath, route) => {
       // Pluck controller and function names from operationId
       const [controllerName, functionName] = route.schema['operationId'].split('.')
 
       // Get path to module and attempt to require it
-      const modulePath = path.join(handlersPath, controllerName);
+      const modulePath = path.join(basePath, controllerName);
       const handler = require(modulePath)
 
       // Simplistic error checking to make sure the function actually exists
@@ -335,6 +335,9 @@ new OpenApiValidator({
 ```yaml
 /pets:
   get:
+    # This means our resolver will look for a file named "pets.js" at our 
+    # configured base path and will return an export named "list" from 
+    # that module as the Express RequestHandler.
     operationId: pets.list
 ```
 
