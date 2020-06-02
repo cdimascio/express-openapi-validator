@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const http = require('http');
-const { OpenApiValidator } = require('express-openapi-validator');
+const { OpenApiValidator, resolvers } = require('express-openapi-validator');
 
 const port = 3000;
 const app = express();
@@ -30,18 +30,7 @@ new OpenApiValidator({
     basePath: path.join(__dirname, 'routes'),
     // 4. Provide a function responsible for resolving an Express RequestHandler 
     //    function from the current OpenAPI Route object.
-    resolver: function (basePath, route) {
-      [controller, method] = route.schema['operationId'].split('.')
-
-      const modulePath = path.join(basePath, controller);
-      const handler = require(modulePath)
-
-      if (handler[method] === undefined) {
-        throw new Error(`Couldn't find a [${method}] function in ${modulePath} when trying to route [${route.method} ${route.expressRoute}].`)
-      }
-
-      return handler[method]
-    }
+    resolver: resolvers.modulePathResolver
   }
 })
   .install(app)

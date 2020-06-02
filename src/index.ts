@@ -30,6 +30,8 @@ export {
   Forbidden,
 } from './framework/types';
 
+export * as resolvers from './resolvers'
+
 export class OpenApiValidator {
   private readonly options: OpenApiValidatorOpts;
 
