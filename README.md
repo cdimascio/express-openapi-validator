@@ -295,6 +295,58 @@ module.exports = {
 };
 ```
 
+## [Example Express API Server: with custom operation resolver](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/5-custom-operation-resolver)
+
+By default, when you configure `operationHandlers` to be the base path to your operation handler files, we use `operationId`, `x-eov-operation-id` and `x-eov-operation-handler` to determine what request handler should be used during routing. 
+
+If you ever want _FULL_ control over how that resolution happens (e.g. you want to use your own extended attributes or simply rely on `operationId`), then here's how you can accomplish that following an example where our `operationId` becomes a template that follows `{module}.{function}`.
+
+- First, specifiy the `operationHandlers` option to be an object with a `basePath` and `resolver` propeties.
+
+```javascript
+new OpenApiValidator({
+  apiSpec,
+  operationHandlers: {
+    basePath: path.join(__dirname, 'routes'),
+    resolver: (handlersPath, route) => {
+      // Pluck controller and function names from operationId
+      const [controllerName, functionName] = route.schema['operationId'].split('.')
+
+      // Get path to module and attempt to require it
+      const modulePath = path.join(handlersPath, controllerName);
+      const handler = require(modulePath)
+
+      // Simplistic error checking to make sure the function actually exists
+      // on the handler module
+      if (handler[functionName] === undefined) {
+        throw new Error(
+          `Could not find a [${functionName}] function in ${modulePath} when trying to route [${route.method} ${route.expressRoute}].`
+        )
+      }
+
+      // Finally return our function
+      return handler[functionName]
+    }
+});
+```
+
+- Next, use `operationId` to specify the id of opeartion handler to invoke.
+
+```yaml
+/pets:
+  get:
+    operationId: pets.list
+```
+
+- Finally, create the express handler module e.g. `routes/pets.js`
+
+```javascript
+module.exports = {
+  // the express handler implementation for the pets collection
+  list: (req, res) => res.json(/* ... */),
+};
+```
+
 ## API Validation Response Examples
 
 #### Validates a query parameter with a value constraint
