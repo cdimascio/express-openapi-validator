@@ -14,7 +14,6 @@ paths:
     get:
       description: |
         ping then pong!
-      # use operationId, (x-eov-operation-id is optional. it can be used in place of operationId or to override it)
       operationId: ping.ping 
       responses:
         '200':
@@ -167,7 +166,6 @@ paths:
         content:
           multipart/form-data:
             schema:
-              # $ref: '#/components/schemas/NewPhoto'
               type: object
               required:
                 - file
