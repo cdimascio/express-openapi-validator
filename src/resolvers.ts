@@ -38,3 +38,18 @@ export function defaultResolver(handlersPath: string, route: RouteMetadata): Req
     return tmpModules[modulePath][oId];
   }
 }
+
+export function modulePathResolver(handlersPath: string, route: RouteMetadata): RequestHandler {
+  const [controller, method] = route.schema['operationId'].split('.')
+
+  const modulePath = path.join(handlersPath, controller);
+  const handler = require(modulePath)
+
+  if (handler[method] === undefined) {
+    throw new Error(
+      `Could not find a [${method}] function in ${modulePath} when trying to route [${route.method} ${route.expressRoute}].`
+    )
+  }
+
+  return handler[method]
+}
