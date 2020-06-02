@@ -5,13 +5,15 @@ import { OpenApiValidator } from '../src';
 import * as resolvers from '../src/resolvers';
 
 describe('operation handler', () => {
+  let defaultNumberOfRoutes = null;
+
   it('should not install handlers when nothing provided', async () => {
     const apiSpec = path.join(__dirname, 'resources/eov-operations.yaml');
     const app = express();
 
     const oam = new OpenApiValidator({ 
       apiSpec
-    })
+    });
     
     oam.installSync(app);
 
@@ -19,7 +21,7 @@ describe('operation handler', () => {
       .to.have.property('options')
       .to.deep.include({ operationHandlers: false });
     
-    expect(app._router.stack.length).to.equal(6)
+    defaultNumberOfRoutes = app._router.stack.length
   })
 
   it('should use the default handler when string provided', async () => {
@@ -40,7 +42,7 @@ describe('operation handler', () => {
         resolver: resolvers.defaultResolver
       }});
     
-    expect(app._router.stack.length).to.be.greaterThan(6)
+    expect(app._router.stack.length).to.be.greaterThan(defaultNumberOfRoutes)
   });
 
   it('can use a custom operation resolver', async () => {
@@ -63,6 +65,6 @@ describe('operation handler', () => {
       .to.have.property('options')
       .to.deep.include({ operationHandlers: handler});
     
-    expect(app._router.stack.length).to.be.greaterThan(6)
+    expect(app._router.stack.length).to.be.greaterThan(defaultNumberOfRoutes)
   });
 });
