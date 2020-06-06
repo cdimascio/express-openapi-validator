@@ -10,6 +10,11 @@ servers:
 paths:
   /request_bodies_ref:
     post:
+      parameters:
+        - name: bad_body
+          in: query
+          schema:
+            type: boolean
       requestBody:
         $ref: '#/components/requestBodies/TestBody'
       responses:
@@ -37,7 +42,6 @@ paths:
             '*/*':
               schema:
                 type: string
-
         '400':
           description: Bad Request
 
