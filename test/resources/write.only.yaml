@@ -15,6 +15,11 @@ paths:
     post:
       description: create products
       operationId: createProductsInline
+      parameters: 
+        - name: exclude_write_only
+          in: query
+          schema:
+            type: boolean
       requestBody:
         required: true
         content:
@@ -45,6 +50,11 @@ paths:
     post:
       description: create products
       operationId: createProductsNested
+      parameters: 
+        - name: exclude_write_only
+          in: query
+          schema:
+            type: boolean
       requestBody:
         required: true
         content:
