@@ -165,8 +165,8 @@ export class RequestValidator {
   }
 
   private processQueryParam(query, schema, whiteList: string[] = []) {
-    if (!schema.properties) return;
-    const knownQueryParams = new Set(Object.keys(schema.properties));
+    const keys = schema.properties ? Object.keys(schema.properties) : [];
+    const knownQueryParams = new Set(keys);
     whiteList.forEach((item) => knownQueryParams.add(item));
     const queryParams = Object.keys(query);
     const allowedEmpty = schema.allowEmptyValue;

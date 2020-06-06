@@ -15,6 +15,11 @@ paths:
     post:
       description: get user
       operationId: getUser
+      parameters:
+        - name: include_id
+          in: query
+          schema:
+            type: boolean
       requestBody:
         required: true
         content:
@@ -44,6 +49,11 @@ paths:
     post:
       description: get user
       operationId: getUser
+      parameters:
+        - name: include_id
+          in: query
+          schema:
+            type: boolean
       requestBody:
         required: true
         content:

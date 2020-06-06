@@ -69,7 +69,12 @@ paths:
       responses:
         '200':
           description: success
-
+  /no_query_params: 
+    get:
+      description: test no query parameters
+      responses:
+        '200':
+          description: pet response
   /pets:
     get:
       description: |
