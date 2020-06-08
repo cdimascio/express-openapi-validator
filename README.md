@@ -610,9 +610,9 @@ Defines how the validator should behave if an unknown or custom format is encoun
 
 ### ▪️ operationHandlers (optional)
 
-Defines the base directory for operation handlers. This is used in conjunction with express-openapi-validator's OpenAPI vendor extensions, `x-eov-operation-id` and x-eov-operation-handler.
+Defines the base directory for operation handlers. This is used in conjunction with express-openapi-validator's OpenAPI vendor extensions, `x-eov-operation-id`, `x-eov-operation-handler` and OpenAPI's `operationId`.
 
-If you want to change how modules are resolved e.g. use dot separated operation ids e.g. `path.to.module.func`, you may optionally add a custom resovler  `resolver`. See [example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/5-eov-operations) 
+Additionally, if you want to change how modules are resolved e.g. use dot deliminted operation ids e.g. `path.to.module.myFunction`, you may optionally add a custom `resolver`. See [documentation and example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/5-eov-operations) 
 
 - `string` - the base directory containing operation handlers
 - `false` - (default) disable auto wired operation handlers
