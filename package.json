@@ -7,12 +7,14 @@
     "compile": "rm -rf dist/ && tsc",
     "compile:windows": "rmdir dist /s /q & tsc",
     "test": "TS_NODE_FILES=true mocha -r source-map-support/register -r ts-node/register  --files --recursive test/**/*.spec.ts",
+    "test:debug": "TS_NODE_FILES=true mocha -r source-map-support/register -r ts-node/register --inspect-brk --files --recursive test/**/*.spec.ts",
     "test:windows": "set TS_NODE_FILES=true & mocha -r source-map-support/register -r ts-node/register  --files --recursive test/**/*.spec.ts",
     "test:coverage": "TS_NODE_FILES=true nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
     "test:coverage:windows": "set TS_NODE_FILES=true & nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
     "coveralls": "cat coverage/lcov.info | coveralls -v",
     "codacy": "cat coverage/lcov.info | codacy-coverage",
     "test:reset": "rm -rf node_modules && npm i && npm run compile && npm t"
+
   },
   "repository": {
     "url": "https://github.com/cdimascio/express-openapi-validator"

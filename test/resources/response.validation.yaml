@@ -14,12 +14,18 @@ info:
 servers:
   - url: /v1
 paths:
+  /ref_response_body:
+    get:
+      operationId: refResponseBody
+      responses:
+        '200':
+          $ref: '#/components/responses/ResponseBody'
   /empty_response:
     description: get empty response
     summary: get empty response
     get:
       description: get empty response
-      operationId: get empty resp
+      operationId: getEmptyResponse
       parameters:
         - name: mode
           in: query
@@ -146,8 +152,8 @@ paths:
     post:
       description: Get todos
       operationId: getTodos
-      security:
-        - bearerAuth: []
+      # security:
+      #   - bearerAuth: []
       responses:
         '200':
           description: no additional props
@@ -157,6 +163,14 @@ paths:
                 $ref: '#/components/schemas/NoAdditionalProps'
 
 components:
+  responses:
+    ResponseBody:
+      description: Sample response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Human'
+
   schemas:
     Object:
       type: object

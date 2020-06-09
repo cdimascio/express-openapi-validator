@@ -39,7 +39,7 @@ function createAjv(
     ajv.removeKeyword('readOnly');
     ajv.addKeyword('readOnly', {
       modifying: true,
-      compile: sch => {
+      compile: (sch) => {
         if (sch) {
           return function validate(data, path, obj, propName) {
             const isValid = !(sch === true && data != null);
@@ -65,7 +65,7 @@ function createAjv(
     ajv.removeKeyword('writeOnly');
     ajv.addKeyword('writeOnly', {
       modifying: true,
-      compile: sch => {
+      compile: (sch) => {
         if (sch) {
           return function validate(data, path, obj, propName) {
             const isValid = !(sch === true && data != null);
