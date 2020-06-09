@@ -229,7 +229,14 @@ export class ResponseValidator {
     };
 
     const responseSchemas = {};
-    for (const [name, response] of <any[]>Object.entries(responses)) {
+    for (const [name, resp] of <any[]>Object.entries(responses)) {
+      let tmpResponse = resp;
+      if (tmpResponse.$ref) {
+        // resolve response
+        const id = tmpResponse.$ref.replace(/^.+\//i, '');
+        tmpResponse = this.spec.components?.responses?.[id];
+      }
+      const response = tmpResponse;
       const types = validationTypes(response);
 
       for (const mediaTypeToValidate of types) {
