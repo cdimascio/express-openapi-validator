@@ -18,7 +18,10 @@ describe(packageJson.name, () => {
         validateResponses: true,
       },
       3005,
-      app => {
+      (app) => {
+        app.get(`${app.basePath}/ref_response_body`, (req, res) => {
+          return res.json({ id: 213, name: 'name', kids: [] });
+        });
         app.get(`${app.basePath}/empty_response`, (req, res) => {
           return res.end();
         });
@@ -61,6 +64,7 @@ describe(packageJson.name, () => {
           res.json(req.body);
         });
         app.use((err, req, res, next) => {
+          console.error(err);
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
@@ -75,27 +79,31 @@ describe(packageJson.name, () => {
     app.server.close();
   });
 
+  it('should return 200 on valid responses 200 $ref', async () =>
+    request(app)
+      .get(`${app.basePath}/ref_response_body`)
+      .expect(200)
+      .then((r: any) => {
+        expect(r.body.id).to.be.a('number').that.equals(213);
+      }));
+
   it('should fail if response field has a value of incorrect type', async () =>
     request(app)
       .get(`${app.basePath}/pets?mode=bad_type`)
       .expect(500)
       .then((r: any) => {
         expect(r.body.message).to.contain('should be integer');
-        expect(r.body)
-          .to.have.property('code')
-          .that.equals(500);
+        expect(r.body).to.have.property('code').that.equals(500);
       }));
 
- // TODO add test for allOf - when allOf is used an array value passes when object is expected
+  // TODO add test for allOf - when allOf is used an array value passes when object is expected
   it('should fail if response is array when expecting object', async () =>
     request(app)
       .get(`${app.basePath}/object`)
       .expect(500)
       .then((r: any) => {
         expect(r.body.message).to.contain('should be object');
-        expect(r.body)
-          .to.have.property('code')
-          .that.equals(500);
+        expect(r.body).to.have.property('code').that.equals(500);
       }));
 
   // TODO fix me - fails for response and request validation what allOf is in use
@@ -106,9 +114,7 @@ describe(packageJson.name, () => {
       .expect(400)
       .then((r: any) => {
         expect(r.body.message).to.contain('should be object');
-        expect(r.body)
-          .to.have.property('code')
-          .that.equals(500);
+        expect(r.body).to.have.property('code').that.equals(500);
       }));
 
   it('should fail if response is response is empty object', async () =>
@@ -118,9 +124,7 @@ describe(packageJson.name, () => {
       .then((r: any) => {
         console.log(r.body);
         expect(r.body.message).to.contain('should be array');
-        expect(r.body)
-          .to.have.property('code')
-          .that.equals(500);
+        expect(r.body).to.have.property('code').that.equals(500);
       }));
 
   it('should fail if response is response is empty', async () =>
@@ -129,15 +133,11 @@ describe(packageJson.name, () => {
       .expect(500)
       .then((r: any) => {
         expect(r.body.message).to.contain('body required');
-        expect(r.body)
-          .to.have.property('code')
-          .that.equals(500);
+        expect(r.body).to.have.property('code').that.equals(500);
       }));
 
   it('should return 200 for endpoints that return empty response', async () =>
-    request(app)
-      .get(`${app.basePath}/empty_response`)
-      .expect(200));
+    request(app).get(`${app.basePath}/empty_response`).expect(200));
 
   it('should fail if additional properties are provided when set false', async () =>
     request(app)
@@ -184,9 +184,7 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/pets?mode=check_null`)
       .expect(200)
       .then((r: any) => {
-        expect(r.body)
-          .is.an('array')
-          .with.length(3);
+        expect(r.body).is.an('array').with.length(3);
         expect(r.body[0].bought_at).equal(null);
         expect(r.body[1].bought_at).equal(today.toISOString());
         expect(r.body[2].bought_at).to.be.undefined;
@@ -197,8 +195,6 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/users`)
       .expect(200)
       .then((r: any) => {
-        expect(r.body)
-          .is.an('array')
-          .with.length(3);
+        expect(r.body).is.an('array').with.length(3);
       }));
 });
