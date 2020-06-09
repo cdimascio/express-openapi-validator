@@ -232,7 +232,7 @@ export class ResponseValidator {
     for (const [name, resp] of <any[]>Object.entries(responses)) {
       let tmpResponse = resp;
       if (tmpResponse.$ref) {
-        // resolve response
+        // resolve top level response $ref
         const id = tmpResponse.$ref.replace(/^.+\//i, '');
         tmpResponse = this.spec.components?.responses?.[id];
       }
