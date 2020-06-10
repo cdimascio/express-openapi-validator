@@ -1113,6 +1113,16 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
 
+## Community articles, blogs, and tutorials
+
+We are looking for community content.
+
+Have you written an article, blog, or tutorial using express-openapi-validator?
+
+Please post your links [here](https://github.com/cdimascio/express-openapi-validator/issues/316)
+
+We plan to make all provided links available in a usable form.
+
 ## License
 
 [MIT](LICENSE)
