@@ -1115,13 +1115,13 @@ This project follows the [all-contributors](https://github.com/all-contributors/
 
 ## Community articles, blogs, and tutorials
 
-We are looking for community content.
+*Seeking content creators...*
 
-Have you written an article, blog, or tutorial using express-openapi-validator?
+Have you written an article, blog, or tutorial that uses `express-openapi-validator`?
 
 Please post your links [here](https://github.com/cdimascio/express-openapi-validator/issues/316)
 
-We plan to make all provided links available in a usable form.
+We plan to publicize a variety of links here.
 
 ## License
 
