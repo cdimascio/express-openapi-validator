@@ -236,6 +236,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "mdwheele",
+      "name": "Dustin Wheeler",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/2453394?v=4",
+      "profile": "https://mdwheele.github.io",
+      "contributions": [
+        "code",
+        "doc",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
