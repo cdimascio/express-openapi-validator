@@ -12,7 +12,9 @@ export function applyOpenApiMetadata(
   openApiContext: OpenApiContext,
 ): OpenApiRequestHandler {
   return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
-    if (openApiContext.shouldIgnoreRoute(req.path)) {
+    // note base path is empty when path is fully qualified i.e. req.path.startsWith('') 
+    const path = req.path.startsWith(req.baseUrl) ? req.path : `${req.baseUrl}/${req.path}`
+    if (openApiContext.shouldIgnoreRoute(path)) {
       return next();
     }
     const matched = lookupRoute(req);
@@ -25,7 +27,7 @@ export function applyOpenApiMetadata(
         schema: schema,
       };
       req.params = pathParams;
-    } else if (openApiContext.isManagedRoute(req.path)) {
+    } else if (openApiContext.isManagedRoute(path)) {
       req.openapi = {};
     }
     next();
