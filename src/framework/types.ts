@@ -47,6 +47,11 @@ export type ValidateSecurityOpts = {
   handlers?: SecurityHandlers;
 };
 
+export type OperationHandlerOptions = {
+  basePath: string,
+  resolver: Function
+}
+
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
   validateResponses?: boolean | ValidateResponseOpts;
@@ -61,7 +66,7 @@ export interface OpenApiValidatorOpts {
   $refParser?: {
     mode: 'bundle' | 'dereference';
   };
-  operationHandlers?: false | string;
+  operationHandlers?: false | string | OperationHandlerOptions;
   validateFormats?: false | 'fast' | 'full';
 }
 

@@ -489,7 +489,7 @@ new OpenApiValidator(options).install({
       }
     }
   },
-  operationHandlers: false | 'operations/base/path',
+  operationHandlers: false | 'operations/base/path' | { ... },
   ignorePaths: /.*\/pets$/,
   unknownFormats: ['phone-number', 'uuid'],
   fileUploader: { ... } | true | false,
@@ -610,11 +610,26 @@ Defines how the validator should behave if an unknown or custom format is encoun
 
 ### ▪️ operationHandlers (optional)
 
-Defines the base directory for operation handlers. This is used in conjunction with express-openapi-validator's OpenAPI vendor extensions.
+Defines the base directory for operation handlers. This is used in conjunction with express-openapi-validator's OpenAPI vendor extensions, `x-eov-operation-id`, `x-eov-operation-handler` and OpenAPI's `operationId`.
+
+Additionally, if you want to change how modules are resolved e.g. use dot deliminted operation ids e.g. `path.to.module.myFunction`, you may optionally add a custom `resolver`. See [documentation and example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/5-eov-operations) 
 
 - `string` - the base directory containing operation handlers
 - `false` - (default) disable auto wired operation handlers
+- `{ ... }` - specifies a base directory and optionally a custom resolver
 
+  **handlers:**
+
+  For example:
+
+  ```javascript
+  operationHandlers: {
+    basePath: __dirname,
+    resolver: function (modulePath, route): express.RequestHandler {
+      ///...
+    }
+  }
+  ```
 ```
 operationHandlers: 'operations/base/path'
 ```
