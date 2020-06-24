@@ -1,0 +1,49 @@
+openapi: 3.0.0
+info:
+  title: Manual Handling
+  description: API documentation for manual handling.
+  version: 0.1.9
+servers:
+  - url: /
+    description: Self
+  - url: http://localhost:3010
+    description: local
+  - url: https://mhcore.quinoid.in
+    description: Development server
+paths:
+  /api/v1/meeting/{meetingId}:
+    get:
+      description: Get meeting details by meeting id
+      summary: Get meeting details by meeting id
+      tags:
+        - Meeting
+      parameters:
+        - $ref: '#/components/parameters/MeetingId'
+        # - name: meetingId
+        #   in: path
+        #   required: true
+        #   description: Meeting id
+        #   schema:
+        #     $ref: '#/components/parameters/MeetingId'
+      responses:
+        '200':
+          description: Meeting token obtained successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/parameters/MeetingId'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    MeetingId:
+      name: meetingId
+      description: Meeting id of the session
+      required: true
+      in: path
+      example: 01701deb-34cb-46c2-972d-6eeea3850342
+      schema:
+        type: string
