@@ -33,7 +33,7 @@ export function normalizeParameter(
   } else {
     schema = parameter.schema 
   }
-  if (!schema) {
+  if (!schema && parameter.content) {
     const contentType = Object.keys(parameter.content)[0];
     schema = parameter.content?.[contentType]?.schema;
   }
@@ -52,7 +52,7 @@ export function dereferenceSchema(ajv: Ajv, ref: string) {
   if (derefSchema?.['$ref']) {
     return dereferenceSchema(ajv, '');
   }
-  return derefSchema.schema;
+  return derefSchema?.schema;
 }
 
 function is$Ref(
