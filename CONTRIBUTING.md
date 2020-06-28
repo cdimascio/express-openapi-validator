@@ -67,4 +67,13 @@ We're happy to help!
 
 **A:** You cannot directly create a branch in this repo. Instead [Create a Pull Request](#create-a-pull-request)
 
+
+## Misc 
+If you are not a project, you may ignore this section
+
+### Generate Change Log
+
+npm install -g conventional-changelog-cli
+$ conventional-changelog -p express-openapi-validator -i CHANGELOG.md -s
+
 ## Thanks!
