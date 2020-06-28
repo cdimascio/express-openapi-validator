@@ -270,7 +270,7 @@ export class ResponseValidator {
     for (const [code, contentTypeSchemas] of Object.entries(responseSchemas)) {
       for (const contentType of Object.keys(contentTypeSchemas)) {
         const schema = contentTypeSchemas[contentType];
-
+        schema.paths = this.spec.paths; // add paths for resolution via file types
         validators[code] = {
           ...validators[code],
           [contentType]: this.ajv.compile(<object>schema),
