@@ -73,7 +73,11 @@ If you are not a project, you may ignore this section
 
 ### Generate Change Log
 
+Run the following each time a release is cut.
+
+```shell
 npm install -g conventional-changelog-cli
 $ conventional-changelog -p express-openapi-validator -i CHANGELOG.md -s
+```
 
 ## Thanks!
