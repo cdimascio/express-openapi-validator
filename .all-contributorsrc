@@ -247,6 +247,15 @@
         "doc",
         "test"
       ]
+    },
+    {
+      "login": "tmcarmichael",
+      "name": "Thomas Carmichael",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/23545336?v=4",
+      "profile": "https://tmcarmichael.com",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
