@@ -39,7 +39,7 @@ new OpenApiValidator({
     });
 
     app.post('/v1/pets', function(req, res, next) {
-      res.json(pets.add({ ...req.body }));
+      res.json(pets.create({ ...req.body }));
     });
 
     app.get('/v1/pets/:id', function(req, res, next) {
