@@ -14,7 +14,7 @@ paths:
     get:
       description: |
         ping then pong!
-      # use operationId, (x-eov-operation-id is optional. it can be used in place of operationId or to override it)
+      # operationId is used in /ping path (x-eov-operation-id is optional). x-eov-operation-id can be used in place of operationId. If both x-eov-operation-id and operationId are present, x-eov-operation-id will override operationId.
       operationId: ping 
       x-eov-operation-handler: routes/ping 
       responses:
@@ -35,7 +35,7 @@ paths:
     get:
       description: |
         Returns all pets
-      operationId: findPets
+      # x-eov-operation-id is specified as well as operationId. This allows for backwards compatibility with code generator tools that rely on operationId in the OpenAPI spec.
       x-eov-operation-id: pets#list
       x-eov-operation-handler: routes/pets
       parameters:
