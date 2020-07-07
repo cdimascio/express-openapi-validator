@@ -247,6 +247,15 @@
         "doc",
         "test"
       ]
+    },
+    {
+      "login": "Jakesterwars",
+      "name": "Jakesterwars",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/27702288?v=4",
+      "profile": "https://github.com/Jakesterwars",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
