@@ -1,0 +1,35 @@
+openapi: 3.0.1
+info:
+  title: Formats
+  version: 1.0.0
+servers:
+- url: /v1
+paths:
+  /persons:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        200:
+          description: Invalid ID supplied
+
+ 
+components:
+  schemas:
+    Person:
+      required:
+      - id
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        hypertext:
+          type: string
+          format: hypertext
+          example: "<p>Hello. I am..."
