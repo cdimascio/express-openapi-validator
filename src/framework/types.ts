@@ -31,6 +31,11 @@ export type SecurityHandlers = {
   ) => boolean | Promise<boolean>;
 };
 
+export interface MultipartOpts extends ajv.Options
+{
+  multerOpts: any;
+}
+
 export interface RequestValidatorOptions
   extends ajv.Options,
     ValidateRequestOpts {}
