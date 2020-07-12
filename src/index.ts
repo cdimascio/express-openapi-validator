@@ -3,7 +3,11 @@ import * as _uniq from 'lodash.uniq';
 import * as middlewares from './middlewares';
 import { Application, Response, NextFunction, Router } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
-import { OpenApiSpecLoader, Spec, RouteMetadata } from './framework/openapi.spec.loader';
+import {
+  OpenApiSpecLoader,
+  Spec,
+  RouteMetadata,
+} from './framework/openapi.spec.loader';
 import {
   OpenApiValidatorOpts,
   ValidateRequestOpts,
@@ -17,7 +21,7 @@ import { deprecationWarning } from './middlewares/util';
 import * as path from 'path';
 import { BasePath } from './framework/base.path';
 import { defaultResolver } from './resolvers';
-import { OperationHandlerOptions } from './framework/types'
+import { OperationHandlerOptions } from './framework/types';
 
 export {
   InternalServerError,
@@ -30,7 +34,7 @@ export {
   Forbidden,
 } from './framework/types';
 
-export * as resolvers from './resolvers'
+export * as resolvers from './resolvers';
 
 export class OpenApiValidator {
   private readonly options: OpenApiValidatorOpts;
@@ -47,21 +51,21 @@ export class OpenApiValidator {
     if (options.fileUploader == null) options.fileUploader = {};
     if (options.$refParser == null) options.$refParser = { mode: 'bundle' };
     if (options.validateFormats == null) options.validateFormats = 'fast';
-  
+
     if (typeof options.operationHandlers === 'string') {
-      /** 
+      /**
        * Internally, we want to convert this to a value typed OperationHandlerOptions.
        * In this way, we can treat the value as such when we go to install (rather than
        * re-interpreting it over and over).
        */
       options.operationHandlers = {
         basePath: options.operationHandlers,
-        resolver: defaultResolver
-      }
+        resolver: defaultResolver,
+      };
     } else if (typeof options.operationHandlers !== 'object') {
       // This covers cases where operationHandlers is null, undefined or false.
-      options.operationHandlers = false
-    }      
+      options.operationHandlers = false;
+    }
 
     if (options.validateResponses === true) {
       options.validateResponses = {
@@ -187,7 +191,13 @@ export class OpenApiValidator {
     app: Application | Router,
     context: OpenApiContext,
   ): void {
-    app.use(middlewares.multipart(context, this.options.fileUploader));
+    xcontext;
+    app.use(
+      middlewares.multipart(context, {
+        multerOpts: this.options.fileUploader,
+        unknownFormats: this.options.unknownFormats,
+      }),
+    );
   }
 
   private installSecurityMiddleware(
@@ -265,13 +275,13 @@ export class OpenApiValidator {
       /**
        * This if-statement is here to "narrow" the type of options.operationHanlders
        * to OperationHandlerOptions (down from string | false | OperationHandlerOptions)
-       * At this point of execution it _should_ be impossible for this to NOT be the correct 
+       * At this point of execution it _should_ be impossible for this to NOT be the correct
        * type as we re-assign during construction to verify this.
        */
       if (this.isOperationHandlerOptions(this.options.operationHandlers)) {
-        const { basePath, resolver } = this.options.operationHandlers
+        const { basePath, resolver } = this.options.operationHandlers;
         app[method.toLowerCase()](expressRoute, resolver(basePath, route));
-      } 
+      }
     }
   }
 
@@ -342,11 +352,13 @@ export class OpenApiValidator {
     }
   }
 
-  private isOperationHandlerOptions(value: false | string | OperationHandlerOptions): value is OperationHandlerOptions {
+  private isOperationHandlerOptions(
+    value: false | string | OperationHandlerOptions,
+  ): value is OperationHandlerOptions {
     if ((value as OperationHandlerOptions).resolver) {
-      return true
+      return true;
     } else {
-      return false
+      return false;
     }
   }
 }
