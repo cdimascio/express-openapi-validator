@@ -191,7 +191,6 @@ export class OpenApiValidator {
     app: Application | Router,
     context: OpenApiContext,
   ): void {
-    xcontext;
     app.use(
       middlewares.multipart(context, {
         multerOpts: this.options.fileUploader,
