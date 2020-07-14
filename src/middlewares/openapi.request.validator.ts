@@ -109,6 +109,8 @@ export class RequestValidator {
       (<SchemaObject>body).required && !isBodyBinary ? ['body'] : [];
     // $schema: "http://json-schema.org/draft-04/schema#",
     const schema = {
+      paths: this.apiDoc.paths,
+      components: this.apiDoc.components,
       required: ['query', 'headers', 'params'].concat(required),
       properties,
     };
