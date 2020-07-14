@@ -1,0 +1,96 @@
+openapi: 3.0.0
+info:
+  title: EMS
+  description: Spec for EMS API
+  version: 1.0.0
+servers:
+  - url: /api/v1.0
+paths:
+  /queries:
+    get:
+      summary: Returns all queries
+      operationId: getQueries
+      parameters:
+        - name: offset
+          in: query
+          required: false
+          description: The record index to start returning (e.g. 1 = second record)
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: An array of query objects
+          content:
+            'application/json':
+              schema:
+                $ref: 'schemas/queries.yaml'
+        '500':
+          description: Server error
+    # post:
+    #   summary: Create a new query
+    #   operationId: createQuery
+    #   requestBody:
+    #     description: A JSON object describing a query
+    #     required: true
+    #     content:
+    #       'application/json':
+    #         schema:
+    #           $ref: 'schemas/queryrequest.yaml'
+    #   responses:
+    #     '201':
+    #       description: The created query object
+    #       content:
+    #         'application/json':
+    #           schema:
+    #             $ref: 'schemas/queryresponse.yaml'
+    #     '404':
+    #       description: Query not found
+    #     '500':
+    #       description: Server error
+    post:
+      summary: Create a new query
+      operationId: createQuery
+      requestBody:
+        $ref: '#/components/requestBodies/QueryBody'
+      responses:
+        '201':
+          description: The created query object
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/queryresponse.yaml'
+        '404':
+          description: Query not found
+        '500':
+          description: Server error
+    put:
+      summary: Update queries in bulk
+      operationId: updateQueryBulk
+      requestBody:
+        $ref: '#/components/requestBodies/QueriesBody'
+      responses:
+        '200':
+          description: An array of updated query objects
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/queries.yaml'
+        '500':
+          description: Server error
+
+components:
+  requestBodies:
+    QueryBody:
+      description: A JSON object describing a query request
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: 'schemas/queryrequest.yaml'
+    QueriesBody:
+      description: An array of JSON objects describing query requests
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: 'schemas/queryrequest.yaml'
