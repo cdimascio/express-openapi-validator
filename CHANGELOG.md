@@ -1,3 +1,12 @@
+## <small>3.16.7 (2020-07-17)</small>
+
+* Bump lodash from 4.17.15 to 4.17.19 ([5377136](https://github.com/cdimascio/express-openapi-validator/commit/5377136))
+* increment patch version ([0bcd0cc](https://github.com/cdimascio/express-openapi-validator/commit/0bcd0cc))
+* update changelog ([5684768](https://github.com/cdimascio/express-openapi-validator/commit/5684768))
+* fix: package.json & package-lock.json to reduce vulnerabilities ([48d32a5](https://github.com/cdimascio/express-openapi-validator/commit/48d32a5))
+
+
+
 ## <small>3.16.6 (2020-07-14)</small>
 
 * (fix) #310 - router - undefined path should return 404 ([b41cc5c](https://github.com/cdimascio/express-openapi-validator/commit/b41cc5c)), closes [#310](https://github.com/cdimascio/express-openapi-validator/issues/310)
