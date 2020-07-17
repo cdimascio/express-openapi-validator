@@ -77,7 +77,7 @@ Run the following each time a release is cut.
 
 ```shell
 npm install -g conventional-changelog-cli
-$ conventional-changelog -p express-openapi-validator -i CHANGELOG.md -s
+conventional-changelog -p express-openapi-validator -i CHANGELOG.md -s
 ```
 
 ## Thanks!
