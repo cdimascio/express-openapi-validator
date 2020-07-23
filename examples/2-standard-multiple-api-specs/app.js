@@ -9,7 +9,6 @@ async function main() {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.text());
   app.use(bodyParser.json());
-  app.use(express.static(path.join(__dirname, 'public')));
 
   const versions = [1, 2];
 

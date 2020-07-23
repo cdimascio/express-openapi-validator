@@ -85,7 +85,6 @@ See the complete [source code](https://github.com/cdimascio/express-openapi-vali
 ```javascript
 const express = require('express');
 const path = require('path');
-const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const http = require('http');
@@ -101,8 +100,6 @@ app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(logger('dev'));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
 // 3. (optionally) Serve the OpenAPI spec
 const spec = path.join(__dirname, 'example.yaml');
@@ -215,7 +212,6 @@ Below are some code snippets:
 ```javascript
 const express = require('express');
 const path = require('path');
-const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const http = require('http');
@@ -231,8 +227,6 @@ app.use(bodyParser.text());
 app.use(bodyParser.json());
 
 app.use(logger('dev'));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/spec', express.static(apiSpec));
 
@@ -954,7 +948,6 @@ async function main() {
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.text());
   app.use(bodyParser.json());
-  app.use(express.static(path.join(__dirname, 'public')));
 
   const versions = [1, 2];
 
