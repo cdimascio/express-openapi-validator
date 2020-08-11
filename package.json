@@ -34,7 +34,7 @@
     "ajv": "^6.12.3",
     "content-type": "^1.0.4",
     "js-yaml": "^3.14.0",
-    "json-schema-ref-parser": "^9.0.3",
+    "json-schema-ref-parser": "^9.0.5",
     "lodash.merge": "^4.6.2",
     "lodash.uniq": "^4.5.0",
     "lodash.zipobject": "^4.1.3",
