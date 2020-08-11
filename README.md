@@ -176,7 +176,7 @@ new OpenApiValidator({
 });
 ```
 
-- Next, use the `x-eov-operation-id` OpenAPI vendor extension or `operationId` to specify the id of opeartion handler to invoke.
+- Next, use the `x-eov-operation-id` OpenAPI vendor extension or `operationId` to specify the id of operation handler to invoke.
 
 ```yaml
 /ping:
