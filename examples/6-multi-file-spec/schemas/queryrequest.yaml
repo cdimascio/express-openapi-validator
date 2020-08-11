@@ -1,0 +1,10 @@
+type: object
+properties:
+  id:
+    type: integer
+    nullable: true
+  title:
+    type: string
+  folder:
+    type: string
+    nullable: true
