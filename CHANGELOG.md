@@ -1,3 +1,24 @@
+## <small>3.16.9 (2020-08-11)</small>
+
+* Bump lodash from 4.17.15 to 4.17.19 in /examples/4-eov-operations-babel ([f627bd0](https://github.com/cdimascio/express-openapi-validator/commit/f627bd0))
+* fix response validation memory leak ([4b2cdf1](https://github.com/cdimascio/express-openapi-validator/commit/4b2cdf1))
+* fix typo in readme ([2285aa6](https://github.com/cdimascio/express-openapi-validator/commit/2285aa6))
+* increment patch version ([201ec1c](https://github.com/cdimascio/express-openapi-validator/commit/201ec1c))
+* increment patch version ([e762acf](https://github.com/cdimascio/express-openapi-validator/commit/e762acf))
+* multi file spec example ([b662d51](https://github.com/cdimascio/express-openapi-validator/commit/b662d51))
+* removed unused dependency cookie-parser in examples and in readme, as well as exposing none existing ([3a11f19](https://github.com/cdimascio/express-openapi-validator/commit/3a11f19))
+* update README ([6476ec9](https://github.com/cdimascio/express-openapi-validator/commit/6476ec9))
+* docs: update .all-contributorsrc [skip ci] ([6cdf535](https://github.com/cdimascio/express-openapi-validator/commit/6cdf535))
+* docs: update .all-contributorsrc [skip ci] ([d16b737](https://github.com/cdimascio/express-openapi-validator/commit/d16b737))
+* docs: update README.md [skip ci] ([b243db3](https://github.com/cdimascio/express-openapi-validator/commit/b243db3))
+* docs: update README.md [skip ci] ([9c7ae91](https://github.com/cdimascio/express-openapi-validator/commit/9c7ae91))
+* fix: upgrade json-schema-ref-parser from 9.0.1 to 9.0.2 ([0705ed6](https://github.com/cdimascio/express-openapi-validator/commit/0705ed6))
+* fix: upgrade json-schema-ref-parser from 9.0.2 to 9.0.3 ([a0cb36c](https://github.com/cdimascio/express-openapi-validator/commit/a0cb36c))
+* fix: upgrade json-schema-ref-parser from 9.0.3 to 9.0.5 ([9e8c6c6](https://github.com/cdimascio/express-openapi-validator/commit/9e8c6c6))
+* fix: upgrade ono from 7.1.2 to 7.1.3 ([cd6a764](https://github.com/cdimascio/express-openapi-validator/commit/cd6a764))
+
+
+
 ## <small>3.16.7 (2020-07-17)</small>
 
 * Bump lodash from 4.17.15 to 4.17.19 ([5377136](https://github.com/cdimascio/express-openapi-validator/commit/5377136))
