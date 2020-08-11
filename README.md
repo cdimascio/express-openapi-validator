@@ -1118,6 +1118,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/Jakesterwars"><img src="https://avatars1.githubusercontent.com/u/27702288?v=4" width="100px;" alt=""/><br /><sub><b>Jakesterwars</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=Jakesterwars" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/xtrycatchx"><img src="https://avatars2.githubusercontent.com/u/1135580?v=4" width="100px;" alt=""/><br /><sub><b>xtrycatchx</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=xtrycatchx" title="Code">💻</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/codinggosu"><img src="https://avatars0.githubusercontent.com/u/16798331?v=4" width="100px;" alt=""/><br /><sub><b>Lee Dong Joo</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=codinggosu" title="Documentation">📖</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-enable -->
