@@ -18,31 +18,31 @@ app.use(logger('dev'));
 
 app.use('/spec', express.static(apiSpec));
 
-//  2. Install the OpenApiValidator on your express app
-new OpenApiValidator({
-  apiSpec,
-  validateResponses: true, // default false
-  operationHandlers: {
-    // 3. Provide the path to the controllers directory
-    basePath: path.join(__dirname, 'routes'),
-    // 4. Provide a function responsible for resolving an Express RequestHandler 
-    //    function from the current OpenAPI Route object.
-    resolver: resolvers.modulePathResolver
-  }
-})
-  .install(app)
-  .then(() => {
-    // 5. Create a custom error handler
-    app.use((err, req, res, next) => {
-      // format errors
-      res.status(err.status || 500).json({
-        message: err.message,
-        errors: err.errors,
-      });
-    });
+//  2. Install the OpenApiValidator middleware
+app.use(
+  OpenApiValidator.middleware(app, {
+    apiSpec,
+    validateResponses: true, // default false
+    operationHandlers: {
+      // 3. Provide the path to the controllers directory
+      basePath: path.join(__dirname, 'routes'),
+      // 4. Provide a function responsible for resolving an Express RequestHandler
+      //    function from the current OpenAPI Route object.
+      resolver: resolvers.modulePathResolver,
+    },
+  }),
+);
 
-    http.createServer(app).listen(port);
-    console.log(`Listening on port ${port}`);
+// 5. Create a custom error handler
+app.use((err, req, res, next) => {
+  // format errors
+  res.status(err.status || 500).json({
+    message: err.message,
+    errors: err.errors,
   });
+});
+
+http.createServer(app).listen(port);
+console.log(`Listening on port ${port}`);
 
 module.exports = app;

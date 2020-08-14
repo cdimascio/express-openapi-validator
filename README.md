@@ -40,12 +40,14 @@ In version 2.x.x, the `install` method was executed synchronously, in 3.x it's e
 
 1. Install the openapi validator
 
-```javascript
-await new OpenApiValidator({
-  apiSpec: './test/resources/openapi.yaml',
-  validateRequests: true, // (default)
-  validateResponses: true, // false by default
-}).install(app);
+````javascript
+app.use(
+  OpenApiValidator.middleware(app, {
+    apiSpec: './test/resources/openapi.yaml',
+    validateRequests: true, // (default)
+    validateResponses: true, // false by default
+  }),
+);
 ```
 
 2. Register an error handler
@@ -58,7 +60,7 @@ app.use((err, req, res, next) => {
     errors: err.errors,
   });
 });
-```
+````
 
 _**Note:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
 
@@ -91,7 +93,7 @@ const http = require('http');
 const app = express();
 
 // 1. Import the express-openapi-validator library
-const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
+const { OpenApiValidator } = require('express-openapi-validator';
 
 // 2. Set up body parsers for the request body types you expect
 //    Must be specified prior to endpoints in 5.
@@ -106,57 +108,59 @@ const spec = path.join(__dirname, 'example.yaml');
 app.use('/spec', express.static(spec));
 
 // 4. Install the OpenApiValidator onto your express app
-new OpenApiValidator({
-  apiSpec: './example.yaml',
-  validateResponses: true, // <-- to validate responses
-  // unknownFormats: ['my-format'] // <-- to provide custom formats
-})
-  .install(app)
-  .then(() => {
-    // 5. Define routes using Express
-    app.get('/v1/pets', function(req, res, next) {
-      res.json([
-        { id: 1, name: 'max' },
-        { id: 2, name: 'mini' },
-      ]);
-    });
+app.use(
+  OpenApiValidator.middleware(
+    app, // <-- the Express Application or Router
+    {
+      apiSpec: './api.yaml',
+      validateResponses: true, // <-- to validate responses
+      // unknownFormats: ['my-format'] // <-- to provide custom formats
+    }
+  ),
+);
 
-    app.post('/v1/pets', function(req, res, next) {
-      res.json({ name: 'sparky' });
-    });
+// 5. Define routes using Express
+app.get('/v1/pets', function (req, res, next) {
+  res.json([
+    { id: 1, type: 'cat', name: 'max' },
+    { id: 2, type: 'cat', name: 'mini' },
+  ]);
+});
 
-    app.get('/v1/pets/:id', function(req, res, next) {
-      res.json({ id: req.params.id, name: 'sparky' });
-    });
+app.post('/v1/pets', function (req, res, next) {
+  res.json({ name: 'sparky', type: 'dog' });
+});
 
-    // 5a. Define route(s) to upload file(s)
-    app.post('/v1/pets/:id/photos', function(req, res, next) {
-      // files are found in req.files
-      // non-file multipart params can be found as such: req.body['my-param']
+app.get('/v1/pets/:id', function (req, res, next) {
+  res.json({ id: req.params.id, type: 'dog', name: 'sparky' });
+});
 
-      res.json({
-        files_metadata: req.files.map(f => ({
-          originalname: f.originalname,
-          encoding: f.encoding,
-          mimetype: f.mimetype,
-          // Buffer of file conents
-          buffer: f.buffer,
-        })),
-      });
-    });
-
-    // 6. Create an Express error handler
-    app.use((err, req, res, next) => {
-      // 7. Customize errors
-      console.error(err); // dump error to console for debug
-      res.status(err.status || 500).json({
-        message: err.message,
-        errors: err.errors,
-      });
-    });
-
-    http.createServer(app).listen(3000);
+// 5a. Define route(s) to upload file(s)
+app.post('/v1/pets/:id/photos', function (req, res, next) {
+  // files are found in req.files
+  // non-file multipart params can be found as such: req.body['my-param']
+  res.json({
+    files_metadata: req.files.map((f) => ({
+      originalname: f.originalname,
+      encoding: f.encoding,
+      mimetype: f.mimetype,
+      // Buffer of file conents
+      buffer: f.buffer,
+    })),
   });
+});
+
+// 6. Create an Express error handler
+app.use((err, req, res, next) => {
+  // 7. Customize errors
+  console.error(err); // dump error to console for debug
+  res.status(err.status || 500).json({
+    message: err.message,
+    errors: err.errors,
+  });
+});
+
+http.createServer(app).listen(3000);
 ```
 
 ## [Example Express API Server: with operationHandlers](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/3-eov-operations)
@@ -170,10 +174,10 @@ Use express-openapi-validator's OpenAPI `x-eov-operation-*` vendor extensions. S
 - First, specifiy the `operationHandlers` option to set the base directory that contains your operation handler files.
 
 ```javascript
-new OpenApiValidator({
+app.use(OpenApiValidator.middleware(app, {
   apiSpec,
   operationHandlers: path.join(__dirname),
-});
+}));
 ```
 
 - Next, use the `x-eov-operation-id` OpenAPI vendor extension or `operationId` to specify the id of operation handler to invoke.
@@ -231,29 +235,28 @@ app.use(logger('dev'));
 app.use('/spec', express.static(apiSpec));
 
 //  2. Install the OpenApiValidator on your express app
-new OpenApiValidator({
+app.use(OpenApiValidator.middleware(app, {
   apiSpec,
   validateResponses: true, // default false
   // 3. Provide the base path to the operation handlers directory
   operationHandlers: path.join(__dirname), // default false
-})
-  .install(app)
-  .then(() => {
-    // 4. Woah sweet! With auto-wired operation handlers, I don't have to declare my routes!
-    //    See api.yaml for x-eov-* vendor extensions
+}));
 
-    // 5. Create a custom error handler
-    app.use((err, req, res, next) => {
-      // format errors
-      res.status(err.status || 500).json({
-        message: err.message,
-        errors: err.errors,
-      });
-    });
+// 4. Woah sweet! With auto-wired operation handlers, I don't have to declare my routes!
+//    See api.yaml for x-eov-* vendor extensions
 
-    http.createServer(app).listen(port);
-    console.log(`Listening on port ${port}`);
+// 5. Create a custom error handler
+app.use((err, req, res, next) => {
+  // format errors
+  res.status(err.status || 500).json({
+    message: err.message,
+    errors: err.errors,
   });
+});
+
+http.createServer(app).listen(port);
+console.log(`Listening on port ${port}`);
+
 
 module.exports = app;
 ```
@@ -450,29 +453,29 @@ express-openapi-validator returns the following error codes depending on the sit
 
 #### Request validation (validateRequests=true)
 
-|status|when|
-|--|--|
-|`400` (bad request)|a validation error is encountered|
-|`401` (unauthorized)|a security / authentication errors is encountered e.g. missing api-key, Authorization header, etc|
-|`404` (not found)|a path is not found i.e. not declared in the API spec|
-|`405` (method not allowed)|a path is declared in the API spec, but a no schema is provided for the method|
+| status                     | when                                                                                              |
+| -------------------------- | ------------------------------------------------------------------------------------------------- |
+| `400` (bad request)        | a validation error is encountered                                                                 |
+| `401` (unauthorized)       | a security / authentication errors is encountered e.g. missing api-key, Authorization header, etc |
+| `404` (not found)          | a path is not found i.e. not declared in the API spec                                             |
+| `405` (method not allowed) | a path is declared in the API spec, but a no schema is provided for the method                    |
 
 #### Response validation (validateResponses=true)
 
-|status|when|
-|--|--|
-|`500` (internal server error)|any error is encountered by the validator|
+| status                        | when                                      |
+| ----------------------------- | ----------------------------------------- |
+| `500` (internal server error) | any error is encountered by the validator |
 
 ## Advanced Usage
 
-### OpenApiValidator Options
+### OpenApiValidator Middleware Options
 
 express-openapi validator provides a good deal of flexibility via its options.
 
 Options are provided via the options object. Options take the following form:
 
 ```javascript
-new OpenApiValidator(options).install({
+OpenApiValidator.middleware(app, /* Express Application or Router */ {
   apiSpec: './openapi.yaml',
   validateRequests: true,
   validateResponses: true,
@@ -607,7 +610,7 @@ Defines how the validator should behave if an unknown or custom format is encoun
 
 Defines the base directory for operation handlers. This is used in conjunction with express-openapi-validator's OpenAPI vendor extensions, `x-eov-operation-id`, `x-eov-operation-handler` and OpenAPI's `operationId`. See [example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/3-eov-operations).
 
-Additionally, if you want to change how modules are resolved e.g. use dot deliminted operation ids e.g. `path.to.module.myFunction`, you may optionally add a custom `resolver`. See [documentation and example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/5-custom-operation-resolver) 
+Additionally, if you want to change how modules are resolved e.g. use dot deliminted operation ids e.g. `path.to.module.myFunction`, you may optionally add a custom `resolver`. See [documentation and example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/5-custom-operation-resolver)
 
 - `string` - the base directory containing operation handlers
 - `false` - (default) disable auto wired operation handlers
@@ -625,6 +628,7 @@ Additionally, if you want to change how modules are resolved e.g. use dot delimi
     }
   }
   ```
+
 ```
 operationHandlers: 'operations/base/path'
 ```
@@ -698,7 +702,6 @@ Specifies the options to passthrough to multer. express-openapi-validator uses m
 Determines whether the validator should coerce value types to match the type defined in the OpenAPI spec.
 
 - `true` (**default**) - coerce scalar data types.
-- `false` - no type coercion.
 - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
 ### ▪️ \$refParser.mode (optional)
@@ -852,84 +855,6 @@ components:
 See [OpenAPI 3](https://swagger.io/docs/specification/authentication/) authentication for `securityScheme` and `security` documentation
 See [examples](https://github.com/cdimascio/express-openapi-validator/blob/security/test/security.spec.ts#L17) from unit tests
 
-## Other Usage Options
-
-In addition to async/await, express-openapi-validator may be used with promises, callbacks, or synchronously.
-
-_**Note:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
-
-#### Promise
-
-```javascript
-new OpenApiValidator({
-  apiSpec: './test/resources/openapi.yaml',
-  validateRequests: true, // (default)
-  validateResponses: true, // false by default
-})
-  .install(app)
-  .then(app => {
-    // define your routes
-
-    // register an error handler
-    app.use((err, req, res, next) => {
-      res.status(err.status || 500).json({
-        message: err.message,
-        errors: err.errors,
-      });
-    });
-  });
-```
-
-#### Callback
-
-```javascript
-new OpenApiValidator({
-  apiSpec: './test/resources/openapi.yaml',
-  validateRequests: true, // (default)
-  validateResponses: true, // false by default
-}).install(app, (err, _) => {
-  // define your routes
-
-  // register an error handler
-  app.use((err, req, res, next) => {
-    res.status(err.status || 500).json({
-      message: err.message,
-      errors: err.errors,
-    });
-  });
-});
-```
-
-#### Synchronous
-
-_Note syncrhonous mode makes use of the [`deasync`](https://github.com/abbr/deasync) module. Some users have experienced issues using deasync with some versions of node. We recommend using the asynchronous method._
-
-**Q:** What does it mean to use the validator 'synchronously'?
-
-**A:** The installation of the validator is handled synchronously; this includes the initial parse and `$ref` resolution of the OpenAPI 3 spec. Note that all validation is executed _**a**synchronously_ i.e. request, response, and security validation. Use `installSync(app)` instead of `install(app)` to install the validator in a blocking manner.
-
-1. Install the openapi validator
-
-```javascript
-new OpenApiValidator({
-  apiSpec: './test/resources/openapi.yaml',
-  validateRequests: true, // (default)
-  validateResponses: true, // false by default
-}).installSync(app);
-```
-
-2. Register an error handler
-
-```javascript
-app.use((err, req, res, next) => {
-  // format error
-  res.status(err.status || 500).json({
-    message: err.message,
-    errors: err.errors,
-  });
-});
-```
-
 ## Example: Multiple Validators and API specs
 
 It may be useful to serve multiple APIs with separate specs via single service. An exampe might be an API that serves both `v1` and `v2` from the samee service. The sample code below show how one might accomplish this.
@@ -943,34 +868,37 @@ const bodyParser = require('body-parser');
 const http = require('http');
 const { OpenApiValidator } = require('express-openapi-validator');
 
-async function main() {
-  app = express();
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.text());
-  app.use(bodyParser.json());
+app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.text());
+app.use(bodyParser.json());
 
-  const versions = [1, 2];
+const versions = [1, 2];
 
-  for (const v of versions) {
-    const apiSpec = path.join(__dirname, `api.v${v}.yaml`);
-    await new OpenApiValidator({
+for (const v of versions) {
+  const apiSpec = path.join(__dirname, `api.v${v}.yaml`);
+  app.use(
+    OpenApiValidator.middleware(app, {
       apiSpec,
-    }).install(app);
+    }),
+  );
 
-    routes(app, v);
-  }
-
-  http.createServer(app).listen(3000);
-  console.log('Listening on port 3000');
+  routes(app, v);
 }
 
-async function routes(app, v) {
+http.createServer(app).listen(3000);
+console.log('Listening on port 3000');
+
+function routes(app, v) {
   if (v === 1) routesV1(app);
   if (v === 2) routesV2(app);
 }
 
-async function routesV1(app) {
+function routesV1(app) {
   const v = '/v1';
+  app.post(`${v}/pets`, (req, res, next) => {
+    res.json({ ...req.body });
+  });
   app.get(`${v}/pets`, (req, res, next) => {
     res.json([
       {
@@ -980,9 +908,7 @@ async function routesV1(app) {
       },
     ]);
   });
-  app.post(`${v}/pets`, (req, res, next) =>
-    res.json({ ...req.body });
-  });
+
   app.use((err, req, res, next) => {
     // format error
     res.status(err.status || 500).json({
@@ -992,7 +918,7 @@ async function routesV1(app) {
   });
 }
 
-async function routesV2(app) {
+function routesV2(app) {
   const v = '/v2';
   app.get(`${v}/pets`, (req, res, next) => {
     res.json([
@@ -1006,6 +932,7 @@ async function routesV2(app) {
   app.post(`${v}/pets`, (req, res, next) => {
     res.json({ ...req.body });
   });
+
   app.use((err, req, res, next) => {
     // format error
     res.status(err.status || 500).json({
@@ -1015,7 +942,6 @@ async function routesV2(app) {
   });
 }
 
-main();
 module.exports = app;
 ```
 
@@ -1028,10 +954,6 @@ module.exports = app;
 **Q**: What happened to the `multerOpts` property?
 
 **A**: In v3, `multerOpts` have been replaced by `fileUploader`. In order to use the v3 `fileUploader`, move your multer options to `fileUploader` No other change is required. Note that the v2 `multerOpts` property is supported in v3, but deprecated
-
-**Q:** Can I use a top level await?
-
-**A:** Top-level await is currently a stage 3 proposal, however it can be used today with [babel](https://babeljs.io/docs/en/babel-plugin-syntax-top-level-await)
 
 **Q:** I can disallow unknown query parameters with `allowUnknownQueryParameters: false`. How can disallow unknown body parameters?
 
@@ -1061,16 +983,12 @@ const OpenApiValidator = require('express-openapi-validator').OpenApiValidator
 
 app.use('/', swaggerUi.serve, swaggerUi.setup(documentation))
 
-new OpenApiValidator({
+app.use(OpenApiValidator.middleware(app, {
   apiSpec, // api spec JSON object
   //... other options
   }
-}).install(app)
+}))
 ```
-
-**Q:** I see `deasync` is installed as an optional dependency. How is deasync used?
-
-**A:** `deasync` is an optional dependency installed. If you install it, it is dynamically loaded if and only if you explicitly call `validator.installSync(app)`. If you don't, it will not be loaded or used.
 
 ## Contributors ✨
 
@@ -1125,13 +1043,14 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
 
 ## Community articles, blogs, and tutorials
 
-*Seeking content creators...*
+_Seeking content creators..._
 
 Have you written an article, blog, or tutorial that uses `express-openapi-validator`?
 

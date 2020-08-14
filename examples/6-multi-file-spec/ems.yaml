@@ -4,7 +4,7 @@ info:
   description: Spec for EMS API
   version: 1.0.0
 servers:
-  - url: /api/v1.0
+  - url: /v1
 paths:
   /queries:
     get:

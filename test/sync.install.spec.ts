@@ -14,9 +14,8 @@ describe(packageJson.name, () => {
       // Set up the express app
       const apiSpec = path.join('test', 'resources', 'openapi.yaml');
       app = express();
-      new OpenApiValidator({
-        apiSpec,
-      }).installSync(app);
+
+      app.use(OpenApiValidator.middleware(app, { apiSpec }));
       app.get('/v1/pets', (req, res) => res.json({ name: 'max' }));
       app.use((err, req, res, next) => {
         // format error
@@ -43,7 +42,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`/v1/pets`)
       .expect(400)
-      .then(r => {
+      .then((r) => {
         console.log(r.body.errors[0].message);
         expect(r.body).has.property('errors');
         expect(r.body.errors[0].message).to.equal(

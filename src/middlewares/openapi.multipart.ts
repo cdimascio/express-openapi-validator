@@ -11,7 +11,6 @@ import {
   MultipartOpts,
 } from '../framework/types';
 import { MulterError } from 'multer';
-import ajv = require('ajv');
 
 const multer = require('multer');
 
