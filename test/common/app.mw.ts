@@ -4,7 +4,7 @@ import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as logger from 'morgan';
 
-import { OpenApiValidator } from '../../src';
+import * as OpenApiValidator from '../../src';
 import { startServer, routes } from './app.common';
 import { OpenApiValidatorOpts } from '../../src/framework/types';
 

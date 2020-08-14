@@ -31,10 +31,30 @@ export {
 import * as res from './resolvers';
 export const resolvers = res;
 
-export class OpenApiValidator {
-  private readonly options: OpenApiValidatorOpts;
+export function middleware(
+  app: Application | Router,
+  options: OpenApiValidatorOpts,
+) {
+  const oav = new OpenApiValidator(options);
+  exports.middleware._oav = oav; // for testing
+  const pspec = new OpenApiSpecLoader({
+    apiDoc: options.apiSpec,
+    $refParser: options.$refParser,
+  })
+    .load()
+    .then((spec) => {
+      const context = new OpenApiContext(spec, oav.options.ignorePaths);
+      oav.installPathParams(app, context);
+      oav.installOperationHandlers(app, context);
+      return spec;
+    });
+  return oav.installMiddleware(pspec);
+}
 
-  private constructor(options: OpenApiValidatorOpts) {
+class OpenApiValidator {
+  readonly options: OpenApiValidatorOpts;
+
+  constructor(options: OpenApiValidatorOpts) {
     this.validateOptions(options);
     this.normalizeOptions(options);
 
@@ -81,35 +101,16 @@ export class OpenApiValidator {
     this.options = options;
   }
 
-  public static middleware(
-    app: Application | Router,
-    options: OpenApiValidatorOpts,
-  ) {
-    const oav = new OpenApiValidator(options);
-    const pspec = new OpenApiSpecLoader({
-      apiDoc: options.apiSpec,
-      $refParser: options.$refParser,
-    })
-      .load()
-      .then(spec => {
-        const context = new OpenApiContext(spec, oav.options.ignorePaths);
-        oav.installPathParams(app, context);
-        oav.installOperationHandlers(app, context);
-        return spec;
-      });
-    return oav.installMiddleware(pspec);
-  }
-
-  private installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
+  installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
     const middlewares = [];
     const pContext = spec.then(
-      spec => new OpenApiContext(spec, this.options.ignorePaths),
+      (spec) => new OpenApiContext(spec, this.options.ignorePaths),
     );
 
     // metadata middleware
     middlewares.push((req, res, next) =>
       pContext
-        .then(context => this.metadataMiddlware(context)(req, res, next))
+        .then((context) => this.metadataMiddlware(context)(req, res, next))
         .catch(next),
     );
 
@@ -117,14 +118,14 @@ export class OpenApiValidator {
       // multipart middleware
       middlewares.push((req, res, next) =>
         pContext
-          .then(context => this.multipartMiddleware(context)(req, res, next))
+          .then((context) => this.multipartMiddleware(context)(req, res, next))
           .catch(next),
       );
     }
 
     middlewares.push((req, res, next) =>
       pContext
-        .then(context => {
+        .then((context) => {
           const components = context.apiDoc.components;
           if (this.options.validateSecurity && components?.securitySchemes) {
             return this.securityMiddleware(context)(req, res, next);
@@ -138,7 +139,7 @@ export class OpenApiValidator {
     if (this.options.validateRequests) {
       middlewares.push((req, res, next) => {
         return pContext
-          .then(context =>
+          .then((context) =>
             this.requestValidationMiddleware(context)(req, res, next),
           )
           .catch(next);
@@ -148,7 +149,7 @@ export class OpenApiValidator {
     if (this.options.validateResponses) {
       middlewares.push((req, res, next) =>
         pContext
-          .then(context =>
+          .then((context) =>
             this.responseValidationMiddleware(context)(req, res, next),
           )
           .catch(next),
@@ -157,10 +158,7 @@ export class OpenApiValidator {
     return middlewares;
   }
 
-  private installPathParams(
-    app: Application | Router,
-    context: OpenApiContext,
-  ): void {
+  installPathParams(app: Application | Router, context: OpenApiContext): void {
     const pathParams: string[] = [];
     for (const route of context.routes) {
       if (route.pathParams.length > 0) {
@@ -249,7 +247,7 @@ export class OpenApiValidator {
     }).validate();
   }
 
-  private installOperationHandlers(
+  installOperationHandlers(
     app: Application | Router,
     context: OpenApiContext,
   ): void {

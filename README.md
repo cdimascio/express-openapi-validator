@@ -36,11 +36,15 @@ In version 2.x.x, the `install` method was executed synchronously, in 3.x it's e
 
 [🦋express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) may be used asynchronously ([promises](#promise), [async/await](#asyncawait), [callbacks](#callback)) or [synchronously](#synchronous). See a complete [example](#example-express-api-server).
 
-#### Async/Await
-
 1. Install the openapi validator
 
-````javascript
+```javascript
+const OpenApiValidator = require('express-openapi-validator');
+```
+
+2. Install the middleware
+
+```javascript
 app.use(
   OpenApiValidator.middleware(app, {
     apiSpec: './test/resources/openapi.yaml',
@@ -50,7 +54,7 @@ app.use(
 );
 ```
 
-2. Register an error handler
+3. Register an error handler
 
 ```javascript
 app.use((err, req, res, next) => {
@@ -60,7 +64,7 @@ app.use((err, req, res, next) => {
     errors: err.errors,
   });
 });
-````
+```
 
 _**Note:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
 
@@ -93,7 +97,7 @@ const http = require('http');
 const app = express();
 
 // 1. Import the express-openapi-validator library
-const { OpenApiValidator } = require('express-openapi-validator';
+const OpenApiValidator = require('express-openapi-validator';
 
 // 2. Set up body parsers for the request body types you expect
 //    Must be specified prior to endpoints in 5.
@@ -174,10 +178,12 @@ Use express-openapi-validator's OpenAPI `x-eov-operation-*` vendor extensions. S
 - First, specifiy the `operationHandlers` option to set the base directory that contains your operation handler files.
 
 ```javascript
-app.use(OpenApiValidator.middleware(app, {
-  apiSpec,
-  operationHandlers: path.join(__dirname),
-}));
+app.use(
+  OpenApiValidator.middleware(app, {
+    apiSpec,
+    operationHandlers: path.join(__dirname),
+  }),
+);
 ```
 
 - Next, use the `x-eov-operation-id` OpenAPI vendor extension or `operationId` to specify the id of operation handler to invoke.
@@ -219,7 +225,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const http = require('http');
-const { OpenApiValidator } = require('express-openapi-validator');
+const OpenApiValidator = require('express-openapi-validator');
 
 const port = 3000;
 const app = express();
@@ -235,12 +241,14 @@ app.use(logger('dev'));
 app.use('/spec', express.static(apiSpec));
 
 //  2. Install the OpenApiValidator on your express app
-app.use(OpenApiValidator.middleware(app, {
-  apiSpec,
-  validateResponses: true, // default false
-  // 3. Provide the base path to the operation handlers directory
-  operationHandlers: path.join(__dirname), // default false
-}));
+app.use(
+  OpenApiValidator.middleware(app, {
+    apiSpec,
+    validateResponses: true, // default false
+    // 3. Provide the base path to the operation handlers directory
+    operationHandlers: path.join(__dirname), // default false
+  }),
+);
 
 // 4. Woah sweet! With auto-wired operation handlers, I don't have to declare my routes!
 //    See api.yaml for x-eov-* vendor extensions
@@ -256,7 +264,6 @@ app.use((err, req, res, next) => {
 
 http.createServer(app).listen(port);
 console.log(`Listening on port ${port}`);
-
 
 module.exports = app;
 ```
@@ -866,7 +873,7 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const http = require('http');
-const { OpenApiValidator } = require('express-openapi-validator');
+const OpenApiValidator = require('express-openapi-validator');
 
 app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -977,7 +984,7 @@ properties:
 
 ```javascript
 const swaggerUi = require('swagger-ui-express')
-const OpenApiValidator = require('express-openapi-validator').OpenApiValidator
+const OpenApiValidator = require('express-openapi-validator')
 
 ...
 

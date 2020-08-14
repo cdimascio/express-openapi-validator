@@ -3,7 +3,10 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const http = require('http');
-const { OpenApiValidator, resolvers } = require('express-openapi-validator');
+const {
+  middleware: openApiMiddleware,
+  resolvers,
+} = require('express-openapi-validator');
 
 const port = 3000;
 const app = express();
@@ -20,7 +23,7 @@ app.use('/spec', express.static(apiSpec));
 
 //  2. Install the OpenApiValidator middleware
 app.use(
-  OpenApiValidator.middleware(app, {
+  openApiMiddleware(app, {
     apiSpec,
     validateResponses: true, // default false
     operationHandlers: {
