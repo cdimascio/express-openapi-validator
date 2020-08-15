@@ -25,7 +25,7 @@
 ## Install
 
 ```shell
-npm i express-openapi-validator
+npm i express-openapi-validator@4.0.0-alpha.1
 ```
 
 #### Upgrading from v2.x.x
