@@ -34,8 +34,6 @@ In v4.x.x, the validator is installed as standard express middleware using `app.
 
 ## Usage
 
-
-
 1. Require/import the openapi validator
 
 ```javascript
@@ -47,7 +45,7 @@ const OpenApiValidator = require('express-openapi-validator');
 ```javascript
 app.use(
   OpenApiValidator.middleware({
-    apiSpec: './test/resources/openapi.yaml',
+    apiSpec: './openapi.yaml',
     validateRequests: true, // (default)
     validateResponses: true, // false by default
   }),
