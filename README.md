@@ -27,8 +27,6 @@
 
 It's implemented as standard express middleware. Please provide your feedback [here](https://github.com/cdimascio/express-openapi-validator/pull/351).
 
-Try it
-
 ```shell
 npm i express-openapi-validator@4.0.0-alpha.1
 ```
