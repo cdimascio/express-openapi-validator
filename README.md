@@ -28,15 +28,15 @@
 npm i express-openapi-validator@4.0.0-alpha.1
 ```
 
-#### Upgrading from v2.x.x
+#### Upgrading from v3.x.x
 
-In version 2.x.x, the `install` method was executed synchronously, in 3.x it's executed asynchronously. To get v2 behavior in v3, use the `installSync` method. See the [synchronous](#synchronous) section for details.
+In v4.x.x, the validator is installed as standard express middleware using `app.use(...) and/or router.use(...)` ([example](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md#Example-Express-API-Server)). This differs from the v3.x.x the installation which required the `install` method(s). The `install` methods no longer exist in v4.
 
 ## Usage
 
-[🦋express-openapi-validator](https://github.com/cdimascio/express-openapi-validator) may be used asynchronously ([promises](#promise), [async/await](#asyncawait), [callbacks](#callback)) or [synchronously](#synchronous). See a complete [example](#example-express-api-server).
 
-1. Install the openapi validator
+
+1. Require/import the openapi validator
 
 ```javascript
 const OpenApiValidator = require('express-openapi-validator');
@@ -69,8 +69,6 @@ app.use((err, req, res, next) => {
 _**Note:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
 
 ## Usage (options)
-
-See examples using [promises](#promise) and [callbacks](#callback). Or use it [synchronously](#synchronous)
 
 See [Advanced Usage](#Advanced-Usage) options to:
 
