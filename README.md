@@ -28,9 +28,9 @@
 npm i express-openapi-validator
 ```
 
-### 📢 `4.0.0-alpha.1` available!
+### 📢 [`4.0.0-alpha.1` available!](https://github.com/cdimascio/express-openapi-validator/tree/v4)
 
-It's implemented as standard express middleware!
+It's implemented as standard express middleware! Please provide feedback [here](https://github.com/cdimascio/express-openapi-validator/pull/351)!
 
 ```shell
 npm i express-openapi-validator@4.0.0-alpha.1
@@ -38,7 +38,7 @@ npm i express-openapi-validator@4.0.0-alpha.1
 
 - See [Usage and Documentation for 4.0.0-alpha.1](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md)
 - See [Examples for 4.0.0-alpha.1](https://github.com/cdimascio/express-openapi-validator/tree/v4/examples)
-- Please submit any issues encountered. Thanks!
+- Please provide [feedback](https://github.com/cdimascio/express-openapi-validator/pull/351) and submit any [issues](https://github.com/cdimascio/express-openapi-validator/issues) encountered. Thanks!
 
 ## Usage
 
