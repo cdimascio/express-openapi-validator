@@ -28,7 +28,9 @@
 npm i express-openapi-validator
 ```
 
-### 📢 Try `4.0.0-alpha.1`. It's implemented as standard express middleware!
+### 📢 `4.0.0-alpha.1` available!
+
+It's implemented as standard express middleware!
 
 ```shell
 npm i express-openapi-validator@4.0.0-alpha.1
@@ -120,28 +122,28 @@ new OpenApiValidator({
   .install(app)
   .then(() => {
     // 5. Define routes using Express
-    app.get('/v1/pets', function(req, res, next) {
+    app.get('/v1/pets', function (req, res, next) {
       res.json([
         { id: 1, name: 'max' },
         { id: 2, name: 'mini' },
       ]);
     });
 
-    app.post('/v1/pets', function(req, res, next) {
+    app.post('/v1/pets', function (req, res, next) {
       res.json({ name: 'sparky' });
     });
 
-    app.get('/v1/pets/:id', function(req, res, next) {
+    app.get('/v1/pets/:id', function (req, res, next) {
       res.json({ id: req.params.id, name: 'sparky' });
     });
 
     // 5a. Define route(s) to upload file(s)
-    app.post('/v1/pets/:id/photos', function(req, res, next) {
+    app.post('/v1/pets/:id/photos', function (req, res, next) {
       // files are found in req.files
       // non-file multipart params can be found as such: req.body['my-param']
 
       res.json({
-        files_metadata: req.files.map(f => ({
+        files_metadata: req.files.map((f) => ({
           originalname: f.originalname,
           encoding: f.encoding,
           mimetype: f.mimetype,
@@ -456,18 +458,18 @@ express-openapi-validator returns the following error codes depending on the sit
 
 #### Request validation (validateRequests=true)
 
-|status|when|
-|--|--|
-|`400` (bad request)|a validation error is encountered|
-|`401` (unauthorized)|a security / authentication errors is encountered e.g. missing api-key, Authorization header, etc|
-|`404` (not found)|a path is not found i.e. not declared in the API spec|
-|`405` (method not allowed)|a path is declared in the API spec, but a no schema is provided for the method|
+| status                     | when                                                                                              |
+| -------------------------- | ------------------------------------------------------------------------------------------------- |
+| `400` (bad request)        | a validation error is encountered                                                                 |
+| `401` (unauthorized)       | a security / authentication errors is encountered e.g. missing api-key, Authorization header, etc |
+| `404` (not found)          | a path is not found i.e. not declared in the API spec                                             |
+| `405` (method not allowed) | a path is declared in the API spec, but a no schema is provided for the method                    |
 
 #### Response validation (validateResponses=true)
 
-|status|when|
-|--|--|
-|`500` (internal server error)|any error is encountered by the validator|
+| status                        | when                                      |
+| ----------------------------- | ----------------------------------------- |
+| `500` (internal server error) | any error is encountered by the validator |
 
 ## Advanced Usage
 
@@ -613,7 +615,7 @@ Defines how the validator should behave if an unknown or custom format is encoun
 
 Defines the base directory for operation handlers. This is used in conjunction with express-openapi-validator's OpenAPI vendor extensions, `x-eov-operation-id`, `x-eov-operation-handler` and OpenAPI's `operationId`. See [example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/3-eov-operations).
 
-Additionally, if you want to change how modules are resolved e.g. use dot deliminted operation ids e.g. `path.to.module.myFunction`, you may optionally add a custom `resolver`. See [documentation and example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/5-custom-operation-resolver) 
+Additionally, if you want to change how modules are resolved e.g. use dot deliminted operation ids e.g. `path.to.module.myFunction`, you may optionally add a custom `resolver`. See [documentation and example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/5-custom-operation-resolver)
 
 - `string` - the base directory containing operation handlers
 - `false` - (default) disable auto wired operation handlers
@@ -631,6 +633,7 @@ Additionally, if you want to change how modules are resolved e.g. use dot delimi
     }
   }
   ```
+
 ```
 operationHandlers: 'operations/base/path'
 ```
@@ -873,7 +876,7 @@ new OpenApiValidator({
   validateResponses: true, // false by default
 })
   .install(app)
-  .then(app => {
+  .then((app) => {
     // define your routes
 
     // register an error handler
@@ -1135,13 +1138,14 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
 
 ## Community articles, blogs, and tutorials
 
-*Seeking content creators...*
+_Seeking content creators..._
 
 Have you written an article, blog, or tutorial that uses `express-openapi-validator`?
 
