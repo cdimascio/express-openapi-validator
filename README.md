@@ -36,7 +36,7 @@ It's implemented as standard express middleware!
 npm i express-openapi-validator@4.0.0-alpha.1
 ```
 
-- See [Usage and Documentation for 4.0.0-alpha.1](https://github.com/cdimascio/express-openapi-validator/tree/v4)
+- See [Usage and Documentation for 4.0.0-alpha.1](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md)
 - See [Examples for 4.0.0-alpha.1](https://github.com/cdimascio/express-openapi-validator/tree/v4/examples)
 - Please submit any issues encountered. Thanks!
 
