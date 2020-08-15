@@ -28,9 +28,15 @@
 npm i express-openapi-validator
 ```
 
-#### Upgrading from v2.x.x
+### 📢 Try `4.0.0-alpha.1`. It's implemented as standard express middleware!
 
-In version 2.x.x, the `install` method was executed synchronously, in 3.x it's executed asynchronously. To get v2 behavior in v3, use the `installSync` method. See the [synchronous](#synchronous) section for details.
+```shell
+npm i express-openapi-validator@4.0.0-alpha.1
+```
+
+- See [Usage and Documentation for 4.0.0-alpha.1](https://github.com/cdimascio/express-openapi-validator/tree/v4)
+- See [Examples for 4.0.0-alpha.1](https://github.com/cdimascio/express-openapi-validator/tree/v4/examples)
+- Please submit any issues encountered. Thanks!
 
 ## Usage
 
@@ -1036,6 +1042,10 @@ module.exports = app;
 **Q:** I can disallow unknown query parameters with `allowUnknownQueryParameters: false`. How can disallow unknown body parameters?
 
 **A:** Add `additionalProperties: false` when [describing](https://swagger.io/docs/specification/data-models/keywords/) e.g a `requestBody` to ensure that additional properties are not allowed. For example:
+
+**Q:** I upgraded from from v2 to v3 and validation no longer works. How do I fix it?
+
+**A**: In version 2.x.x, the `install` method was executed synchronously, in 3.x it's executed asynchronously. To get v2 behavior in v3, use the `installSync` method. See the [synchronous](#synchronous) section for details.
 
 ```yaml
 Pet:
