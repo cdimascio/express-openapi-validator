@@ -21,7 +21,7 @@ app.use('/spec', express.static(apiSpec));
 
 //  2. Install the OpenApiValidator on your express app
 app.use(
-  OpenApiValidator.middleware(app, {
+  OpenApiValidator.middleware({
     apiSpec,
     validateResponses: true, // default false
   }),

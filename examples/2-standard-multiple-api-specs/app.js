@@ -14,7 +14,7 @@ const versions = [1, 2];
 for (const v of versions) {
   const apiSpec = path.join(__dirname, `api.v${v}.yaml`);
   app.use(
-    OpenApiValidator.middleware(app, {
+    OpenApiValidator.middleware({
       apiSpec,
     }),
   );

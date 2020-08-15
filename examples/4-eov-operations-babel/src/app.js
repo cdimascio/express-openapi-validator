@@ -20,7 +20,7 @@ app.use('/spec', express.static(apiSpec));
 
 // 2. Install the OpenApiValidator middleware
 app.use(
-  OpenApiValidator.middleware(app, {
+  OpenApiValidator.middleware({
     apiSpec,
     validateResponses: true, // default false
     // 3. Provide the path to the controllers directory

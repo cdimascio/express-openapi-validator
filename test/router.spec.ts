@@ -11,7 +11,7 @@ describe('security.defaults', () => {
   before(async () => {
     const router = express.Router();
     router.use(
-      OpenApiValidator.middleware(router, {
+      OpenApiValidator.middleware({
         apiSpec: {
           openapi: '3.0.0',
           info: { version: '1.0.0', title: 'test bug OpenApiValidator' },

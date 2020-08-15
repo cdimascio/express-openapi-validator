@@ -19,12 +19,14 @@ app.use(logger('dev'));
 app.use('/spec', express.static(apiSpec));
 
 //  2. Install the OpenApiValidator on your express app
-app.use(OpenApiValidator.middleware(app, {
-  apiSpec,
-  validateResponses: true, // default false
-  // 3. Provide the base path to the operation handlers directory
-  operationHandlers: path.join(__dirname), // default false
-}));
+app.use(
+  OpenApiValidator.middleware({
+    apiSpec,
+    validateResponses: true, // default false
+    // 3. Provide the base path to the operation handlers directory
+    operationHandlers: path.join(__dirname), // default false
+  }),
+);
 
 // 4. Woah sweet! With auto-wired operation handlers, I don't have to declare my routes!
 //    See api.yaml for x-eov-* vendor extensions
@@ -40,6 +42,5 @@ app.use((err, req, res, next) => {
 
 http.createServer(app).listen(port);
 console.log(`Listening on port ${port}`);
-
 
 module.exports = app;

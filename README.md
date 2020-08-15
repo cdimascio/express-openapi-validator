@@ -46,7 +46,7 @@ const OpenApiValidator = require('express-openapi-validator');
 
 ```javascript
 app.use(
-  OpenApiValidator.middleware(app, {
+  OpenApiValidator.middleware({
     apiSpec: './test/resources/openapi.yaml',
     validateRequests: true, // (default)
     validateResponses: true, // false by default
@@ -113,9 +113,7 @@ app.use('/spec', express.static(spec));
 
 // 4. Install the OpenApiValidator onto your express app
 app.use(
-  OpenApiValidator.middleware(
-    app, // <-- the Express Application or Router
-    {
+  OpenApiValidator.middleware({
       apiSpec: './api.yaml',
       validateResponses: true, // <-- to validate responses
       // unknownFormats: ['my-format'] // <-- to provide custom formats
@@ -179,7 +177,7 @@ Use express-openapi-validator's OpenAPI `x-eov-operation-*` vendor extensions. S
 
 ```javascript
 app.use(
-  OpenApiValidator.middleware(app, {
+  OpenApiValidator.middleware({
     apiSpec,
     operationHandlers: path.join(__dirname),
   }),
@@ -242,7 +240,7 @@ app.use('/spec', express.static(apiSpec));
 
 //  2. Install the OpenApiValidator on your express app
 app.use(
-  OpenApiValidator.middleware(app, {
+  OpenApiValidator.middleware({
     apiSpec,
     validateResponses: true, // default false
     // 3. Provide the base path to the operation handlers directory
@@ -482,7 +480,7 @@ express-openapi validator provides a good deal of flexibility via its options.
 Options are provided via the options object. Options take the following form:
 
 ```javascript
-OpenApiValidator.middleware(app, /* Express Application or Router */ {
+OpenApiValidator.middleware({
   apiSpec: './openapi.yaml',
   validateRequests: true,
   validateResponses: true,
@@ -885,7 +883,7 @@ const versions = [1, 2];
 for (const v of versions) {
   const apiSpec = path.join(__dirname, `api.v${v}.yaml`);
   app.use(
-    OpenApiValidator.middleware(app, {
+    OpenApiValidator.middleware({
       apiSpec,
     }),
   );
@@ -990,7 +988,7 @@ const OpenApiValidator = require('express-openapi-validator')
 
 app.use('/', swaggerUi.serve, swaggerUi.setup(documentation))
 
-app.use(OpenApiValidator.middleware(app, {
+app.use(OpenApiValidator.middleware({
   apiSpec, // api spec JSON object
   //... other options
   }

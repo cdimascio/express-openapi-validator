@@ -31,24 +31,39 @@ export {
 import * as res from './resolvers';
 export const resolvers = res;
 
-export function middleware(
-  app: Application | Router,
-  options: OpenApiValidatorOpts,
-) {
+export function middleware(options: OpenApiValidatorOpts) {
+  const chainMiddleware = (handlers, req, res, next) => {
+    let n = next;
+    for (let i = handlers.length - 1; i >= 0; i--) {
+      const c = handlers[i];
+      const nxt = n;
+      n = (err) => {
+        if (err) return next(err);
+        else c(req, res, nxt);
+      };
+    }
+    n();
+  };
+
   const oav = new OpenApiValidator(options);
+
   exports.middleware._oav = oav; // for testing
+
   const pspec = new OpenApiSpecLoader({
     apiDoc: options.apiSpec,
     $refParser: options.$refParser,
-  })
-    .load()
-    .then((spec) => {
+  }).load();
+
+  return (req, res, next) => {
+    pspec.then((spec) => {
       const context = new OpenApiContext(spec, oav.options.ignorePaths);
-      oav.installPathParams(app, context);
-      oav.installOperationHandlers(app, context);
+      oav.installPathParams(req.route || req.app, context);
+      oav.installOperationHandlers(req.route || req.app, context);
       return spec;
     });
-  return oav.installMiddleware(pspec);
+
+    chainMiddleware(oav.installMiddleware(pspec), req, res, next);
+  };
 }
 
 class OpenApiValidator {

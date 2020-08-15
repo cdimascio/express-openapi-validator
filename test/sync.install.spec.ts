@@ -15,7 +15,7 @@ describe(packageJson.name, () => {
       const apiSpec = path.join('test', 'resources', 'openapi.yaml');
       app = express();
 
-      app.use(OpenApiValidator.middleware(app, { apiSpec }));
+      app.use(OpenApiValidator.middleware({ apiSpec }));
       app.get('/v1/pets', (req, res) => res.json({ name: 'max' }));
       app.use((err, req, res, next) => {
         // format error

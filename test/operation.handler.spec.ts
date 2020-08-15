@@ -12,7 +12,7 @@ describe('operation handler', () => {
     const app = express();
 
     const mwf = OpenApiValidator.middleware;
-    app.use(mwf(app, { apiSpec }));
+    app.use(mwf({ apiSpec }));
 
     expect((<any>mwf)._oav)
       .to.have.property('options')
@@ -26,7 +26,7 @@ describe('operation handler', () => {
     const app = express();
 
     const mwf = OpenApiValidator.middleware;
-    app.use(mwf(app, { apiSpec }));
+    app.use(mwf({ apiSpec }));
 
     expect((<any>mwf)._oav)
       .to.have.property('options')
@@ -38,7 +38,7 @@ describe('operation handler', () => {
     const app = express();
 
     const mwf = OpenApiValidator.middleware;
-    const oav = mwf(app, {
+    const oav = mwf({
       apiSpec,
       operationHandlers: path.join(__dirname, 'resources'),
     });
@@ -70,7 +70,7 @@ describe('operation handler', () => {
     };
 
     const mwf = OpenApiValidator.middleware;
-    const oav = mwf(app, {
+    const oav = mwf({
       apiSpec,
       operationHandlers: handler,
     });
