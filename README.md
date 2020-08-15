@@ -27,6 +27,8 @@
 
 It's implemented as standard express middleware. Please provide your feedback [here](https://github.com/cdimascio/express-openapi-validator/pull/351).
 
+Try it
+
 ```shell
 npm i express-openapi-validator@4.0.0-alpha.1
 ```
@@ -36,7 +38,7 @@ npm i express-openapi-validator@4.0.0-alpha.1
 - Please provide [feedback](https://github.com/cdimascio/express-openapi-validator/pull/351) and submit any [issues](https://github.com/cdimascio/express-openapi-validator/issues) encountered. Thanks!
 
 
-## Install (v3.x.x stable)
+## Install
 
 ```shell
 npm i express-openapi-validator
