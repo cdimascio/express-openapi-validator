@@ -25,7 +25,7 @@
 
 ### 📢 [`4.0.0-alpha.1` available!](https://github.com/cdimascio/express-openapi-validator/tree/v4) 📢
 
-It's implemented as standard express middleware. Please provide your feedback [here](https://github.com/cdimascio/express-openapi-validator/pull/351).
+It's implemented as standard connect middleware. Please provide your feedback [here](https://github.com/cdimascio/express-openapi-validator/pull/351).
 
 ```shell
 npm i express-openapi-validator@4.0.0-alpha.1
