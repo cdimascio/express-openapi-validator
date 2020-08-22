@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 
-describe('express-openapi-validator', () => {
+describe('empty servers', () => {
   let app = null;
 
   before(async () => {

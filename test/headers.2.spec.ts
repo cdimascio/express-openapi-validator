@@ -12,7 +12,7 @@ describe(packageJson.name, () => {
     app = await createApp(
       { apiSpec },
       3005,
-      app => {
+      (app) => {
         app.use(`${app.basePath}/headers_1`, (req, res) => {
           res.send('headers_1');
         });
@@ -35,7 +35,7 @@ describe(packageJson.name, () => {
     return request(app)
       .get(`${app.basePath}/headers_1`)
       .expect(400)
-      .then(r => {
+      .then((r) => {
         const e = r.body;
         expect(e.message).to.contain(
           'request.headers should have required property ',
@@ -52,7 +52,7 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/headers_1`)
       .set('x-userid', longString)
       .expect(400)
-      .then(r => {
+      .then((r) => {
         const e = r.body;
         expect(e.message).to.contain(
           'should NOT be longer than 255 characters',

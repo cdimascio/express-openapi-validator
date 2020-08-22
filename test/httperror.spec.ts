@@ -13,7 +13,7 @@ import {
 import { HttpError } from '../src/framework/types';
 
 describe(packageJson.name, () => {
-  it('should be an instance of BadRequest', async () => {
+  it('should be an instance of BadRequest', (done) => {
     console.log('Testing instaceof detection of BadRequest');
     const err = {
       path: '.query.domain_id',
@@ -32,9 +32,10 @@ describe(packageJson.name, () => {
         ...err,
       }),
     ).to.be.an.instanceof(BadRequest);
+    done();
   });
 
-  it('should be an instance of InternalServerError', async () => {
+  it('should be an instance of InternalServerError', (done) => {
     console.log('Testing instaceof detection of InternalServerError');
     const err = {
       path: '/error',
@@ -49,9 +50,10 @@ describe(packageJson.name, () => {
         ...err,
       }),
     ).to.be.an.instanceof(InternalServerError);
+    done();
   });
 
-  it('should be an instance of UnsupportedMediaType', async () => {
+  it('should be an instance of UnsupportedMediaType', (done) => {
     console.log('Testing instaceof detection of UnsupportedMediaType');
     const err = {
       path: '/unsupported_media_type',
@@ -66,9 +68,10 @@ describe(packageJson.name, () => {
         ...err,
       }),
     ).to.be.an.instanceof(UnsupportedMediaType);
+    done();
   });
 
-  it('should be an instance of RequestEntityToLarge', async () => {
+  it('should be an instance of RequestEntityToLarge', (done) => {
     console.log('Testing instaceof detection of RequestEntityToLarge');
     const err = {
       path: '/entity_to_large',
@@ -83,9 +86,10 @@ describe(packageJson.name, () => {
         ...err,
       }),
     ).to.be.an.instanceof(RequestEntityToLarge);
+    done();
   });
 
-  it('should be an instance of MethodNotAllowed', async () => {
+  it('should be an instance of MethodNotAllowed', (done) => {
     console.log('Testing instaceof detection of MethodNotAllowed');
     const err = {
       path: '/method_not_allowed',
@@ -98,9 +102,10 @@ describe(packageJson.name, () => {
         ...err,
       }),
     ).to.be.an.instanceof(MethodNotAllowed);
+    done()
   });
 
-  it('should be an instance of NotFound', async () => {
+  it('should be an instance of NotFound', (done) => {
     console.log('Testing instaceof detection of NotFound');
     const err = {
       path: '/not_found',
@@ -113,9 +118,10 @@ describe(packageJson.name, () => {
         ...err,
       }),
     ).to.be.an.instanceof(NotFound);
+    done()
   });
 
-  it('should be an instance of Unauthorized', async () => {
+  it('should be an instance of Unauthorized', (done) => {
     console.log('Testing instaceof detection of Unauthorized');
     const err = {
       path: '/unauthorized',
@@ -128,9 +134,10 @@ describe(packageJson.name, () => {
         ...err,
       }),
     ).to.be.an.instanceof(Unauthorized);
+    done()
   });
 
-  it('should be an instance of Forbidden', async () => {
+  it('should be an instance of Forbidden', (done) => {
     console.log('Testing instaceof detection of Forbidden');
     const err = {
       path: '/forbidden',
@@ -143,5 +150,6 @@ describe(packageJson.name, () => {
         ...err,
       }),
     ).to.be.an.instanceof(Forbidden);
+    done()
   });
 });
