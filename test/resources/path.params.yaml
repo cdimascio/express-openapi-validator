@@ -39,6 +39,23 @@ paths:
             application/json:
               schema:
                 type: object
+  "/users:lookup":
+    get:
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
 components:
   schemas:
     User:
