@@ -3,11 +3,7 @@ import * as _uniq from 'lodash.uniq';
 import * as middlewares from './middlewares';
 import { Application, Response, NextFunction, Router } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
-import {
-  OpenApiSpecLoader,
-  Spec,
-  RouteMetadata,
-} from './framework/openapi.spec.loader';
+import { OpenApiSpecLoader, Spec } from './framework/openapi.spec.loader';
 import {
   OpenApiValidatorOpts,
   ValidateRequestOpts,
@@ -18,8 +14,6 @@ import {
   ValidateSecurityOpts,
 } from './framework/types';
 import { deprecationWarning } from './middlewares/util';
-import * as path from 'path';
-import { BasePath } from './framework/base.path';
 import { defaultResolver } from './resolvers';
 import { OperationHandlerOptions } from './framework/types';
 
@@ -34,7 +28,10 @@ export {
   Forbidden,
 } from './framework/types';
 
-export * as resolvers from './resolvers';
+import * as solvers from './resolvers';
+export const resolvers = {
+  ...solvers,
+};
 
 export class OpenApiValidator {
   private readonly options: OpenApiValidatorOpts;

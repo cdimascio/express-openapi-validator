@@ -36,7 +36,7 @@ describe(packageJson.name, () => {
   });
 
   after(() => {
-    setTimeout(() => process.exit(), 100);
+    setTimeout(() => process.exit(), 1000);
   });
 
   it('should validate /v1/pets and return 400', async () =>
