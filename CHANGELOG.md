@@ -1,3 +1,16 @@
+## <small>3.16.11 (2020-08-23)</small>
+
+* create test and exmaple with colon in path ([9e8e14f](https://github.com/cdimascio/express-openapi-validator/commit/9e8e14f))
+* increment patch version ([5b40ad3](https://github.com/cdimascio/express-openapi-validator/commit/5b40ad3))
+* Update README.md ([5ff7d4a](https://github.com/cdimascio/express-openapi-validator/commit/5ff7d4a))
+* Update README.md ([950bf89](https://github.com/cdimascio/express-openapi-validator/commit/950bf89))
+* Update README.md ([10acc6f](https://github.com/cdimascio/express-openapi-validator/commit/10acc6f))
+* v4.0.0-alpha.1 available ([e87e0a9](https://github.com/cdimascio/express-openapi-validator/commit/e87e0a9))
+* v4.0.0-alpha.1 available ([f6e06a0](https://github.com/cdimascio/express-openapi-validator/commit/f6e06a0))
+* v4.0.0-alpha.1 availalbe ([14faeaf](https://github.com/cdimascio/express-openapi-validator/commit/14faeaf))
+
+
+
 ## <small>3.16.9 (2020-08-11)</small>
 
 * Bump lodash from 4.17.15 to 4.17.19 in /examples/4-eov-operations-babel ([f627bd0](https://github.com/cdimascio/express-openapi-validator/commit/f627bd0))
