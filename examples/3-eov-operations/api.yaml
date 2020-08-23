@@ -15,8 +15,8 @@ paths:
       description: |
         ping then pong!
       # operationId is used in /ping path (x-eov-operation-id is optional). x-eov-operation-id can be used in place of operationId. If both x-eov-operation-id and operationId are present, x-eov-operation-id will override operationId.
-      operationId: ping 
-      x-eov-operation-handler: routes/ping 
+      operationId: ping
+      x-eov-operation-handler: routes/ping
       responses:
         '200':
           description: OK
@@ -198,6 +198,32 @@ paths:
                 properties:
                   success:
                     type: boolean
+
+  "/pets:lookup":
+    get:
+      description: |
+        Returns all pets
+      x-eov-operation-id: pets#list
+      x-eov-operation-handler: routes/pets
+      parameters:
+        - name: type
+          in: query
+          description: maximum number of results to return
+          required: true
+          schema:
+            type: string
+            enum:
+              - dog
+              - cat
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
 
 components:
   schemas:
