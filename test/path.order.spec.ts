@@ -10,7 +10,7 @@ describe(packageJson.name, () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'path.order.yaml');
-    app = await createApp({ apiSpec }, 3005, app =>
+    app = await createApp({ apiSpec }, 3005, (app) =>
       app.use(
         `${app.basePath}`,
         express
@@ -28,9 +28,7 @@ describe(packageJson.name, () => {
   });
 
   it('should match on users test', async () =>
-    request(app)
-      .get(`${app.basePath}/users/test`)
-      .expect(200));
+    request(app).get(`${app.basePath}/users/test`).expect(200));
 
   it('static routes should be matched before dynamic routes', async () =>
     request(app)
