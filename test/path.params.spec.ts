@@ -67,7 +67,7 @@ describe('path params', () => {
         expect(r.body.ids).to.deep.equal(['aa', 'bb', 'cc']);
       }));
 
-  it("should handle :'s in path parameters", async () =>
+  it("should handle :'s in path parameters", async () => {
     request(app)
       .get(`${app.basePath}/users:lookup`)
       .query({ name: 'carmine' })
@@ -75,7 +75,7 @@ describe('path params', () => {
       .then((r) => {
         expect(r.body).to.be.an('array');
         expect(r.body[0].id).to.equal('carmine');
-      }));
+      });
   
     request(app)
       .get(`${app.basePath}/users:noSuchEndpoint`)
@@ -86,4 +86,5 @@ describe('path params', () => {
         expect(e[0].message).to.equal('not found');
         expect(e[0].path).to.equal(`${app.basePath}/users:noSuchEndpoint`);
       });
+   });
 });
