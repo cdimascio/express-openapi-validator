@@ -76,4 +76,14 @@ describe('path params', () => {
         expect(r.body).to.be.an('array');
         expect(r.body[0].id).to.equal('carmine');
       }));
+  
+    request(app)
+      .get(`${app.basePath}/users:noSuchEndpoint`)
+      .query({ name: 'carmine' })
+      .expect(404)
+      .then(r => {
+        const e = r.body.errors;
+        expect(e[0].message).to.equal('not found');
+        expect(e[0].path).to.equal(`${app.basePath}/users:noSuchEndpoint`);
+      }));
 });
