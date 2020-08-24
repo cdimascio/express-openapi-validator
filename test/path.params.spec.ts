@@ -85,5 +85,5 @@ describe('path params', () => {
         const e = r.body.errors;
         expect(e[0].message).to.equal('not found');
         expect(e[0].path).to.equal(`${app.basePath}/users:noSuchEndpoint`);
-      }));
+      });
 });
