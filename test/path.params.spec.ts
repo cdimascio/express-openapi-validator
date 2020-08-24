@@ -68,7 +68,7 @@ describe('path params', () => {
       }));
 
   it("should handle :'s in path parameters", async () => {
-    request(app)
+    await request(app)
       .get(`${app.basePath}/users:lookup`)
       .query({ name: 'carmine' })
       .expect(200)
@@ -77,7 +77,7 @@ describe('path params', () => {
         expect(r.body[0].id).to.equal('carmine');
       });
   
-    request(app)
+    await request(app)
       .get(`${app.basePath}/users:noSuchEndpoint`)
       .query({ name: 'carmine' })
       .expect(404)
