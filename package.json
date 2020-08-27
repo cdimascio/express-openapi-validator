@@ -6,7 +6,7 @@
   "scripts": {
     "compile": "rm -rf dist/ && tsc",
     "compile:windows": "rmdir dist /s /q & tsc",
-    "test": "TS_NODE_FILES=true mocha -r source-map-support/register -r ts-node/register  --files --recursive test/**/**/*.spec.ts",
+    "test": "TS_NODE_FILES=true mocha -r source-map-support/register -r ts-node/register  --files --recursive test/**/*.spec.ts",
     "test:debug": "TS_NODE_FILES=true mocha -r source-map-support/register -r ts-node/register --inspect-brk --files --recursive test/**/*.spec.ts",
     "test:windows": "set TS_NODE_FILES=true & mocha -r source-map-support/register -r ts-node/register  --files --recursive test/**/*.spec.ts",
     "test:coverage": "TS_NODE_FILES=true nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",

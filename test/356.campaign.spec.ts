@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as express from 'express';
 import * as request from 'supertest';
-import { createApp } from '../common/app';
-import * as packageJson from '../../package.json';
+import { createApp } from './common/app';
+import * as packageJson from '../package.json';
 import { expect } from 'chai';
 
 describe(packageJson.name, () => {
