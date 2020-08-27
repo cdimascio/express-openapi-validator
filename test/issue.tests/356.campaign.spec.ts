@@ -3,6 +3,7 @@ import * as express from 'express';
 import * as request from 'supertest';
 import { createApp } from '../common/app';
 import * as packageJson from '../../package.json';
+import { expect } from 'chai';
 
 describe(packageJson.name, () => {
   let app = null;
@@ -30,7 +31,8 @@ describe(packageJson.name, () => {
     app.server.close();
   });
 
-  it('create campaign should return 201', async () => request(app)
+  it('create campaign should return 201', async () =>
+    request(app)
       .post(`/campaign`)
       .send({
         name: 'test',
@@ -38,6 +40,21 @@ describe(packageJson.name, () => {
         startDate: '2020-08-25T20:37:33.117Z',
         endDate: '2020-08-25T20:37:33.117Z',
       })
-      .expect(201)
-  );
+      .expect(201));
+
+  it('create campaign should return 400', async () =>
+    request(app)
+      .post(`/campaign`)
+      .send({
+        campaign: {
+          name: 'test',
+          description: 'description',
+          startDate: '2020-08-25T20:37:33.117Z',
+          endDate: '2020-08-25T20:37:33.117Z',
+        },
+      })
+      .expect(400)
+      .then((r) => {
+        expect(r.body.message).to.include('name');
+      }));
 });
