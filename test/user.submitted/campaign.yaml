@@ -1,0 +1,71 @@
+openapi: 3.0.2
+servers:
+  - url: /
+info:
+  description: Campaign API
+  version: 0.0.1
+  title: Campaign API
+paths:
+  /campaign:
+    post:
+      summary: Create campaign
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCampaign'
+      responses:
+        '201':
+          description: Campaign successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignResponse'
+components:
+  schemas:
+    CampaignResponse:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - startDate
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updateAt:
+          type: string
+          format: date-time
+    CreateCampaign:
+      type: object
+      required:
+        - name
+        - description
+        - startDate
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
