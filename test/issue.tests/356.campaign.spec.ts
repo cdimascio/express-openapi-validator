@@ -30,9 +30,7 @@ describe(packageJson.name, () => {
     app.server.close();
   });
 
-  it('create campaign should return 201', async () => {
-    console.log(`campaign`);
-    return request(app)
+  it('create campaign should return 201', async () => request(app)
       .post(`/campaign`)
       .send({
         name: 'test',
@@ -40,6 +38,6 @@ describe(packageJson.name, () => {
         startDate: '2020-08-25T20:37:33.117Z',
         endDate: '2020-08-25T20:37:33.117Z',
       })
-      .expect(201);
-  });
+      .expect(201)
+  );
 });
