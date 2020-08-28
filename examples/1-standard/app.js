@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-const logger = require('morgan');
 const http = require('http');
 const { Pets } = require('./services');
 const { OpenApiValidator } = require('express-openapi-validator');
@@ -15,8 +14,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.text());
 app.use(bodyParser.json());
 
-app.use(logger('dev'));
-
+// Optionally serve the API spec
 app.use('/spec', express.static(apiSpec));
 
 //  2. Install the OpenApiValidator on your express app
