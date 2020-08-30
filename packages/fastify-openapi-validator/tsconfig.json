@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "target": "es2020",
-    "lib": ["es2020", "dom"],
+    "target": "es2017",
+    "lib": ["es2017", "dom"],
     "module": "commonjs",
     "outDir": "dist",
     "sourceMap": true,
@@ -10,5 +10,5 @@
     "typeRoots": ["./node_modules/@types", "./typings"]
   },
   "exclude": ["node_modules"],
-  "include": ["**/*.ts"]
+  "include": ["index.ts"]
 }
