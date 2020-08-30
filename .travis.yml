@@ -12,6 +12,10 @@ install:
   - npm i
   - lerna bootstrap
 script:
+  - lerna -v
+  - tsc -v
+  - which lerna
+  - which tsc
   - lerna run compile
   # - lerna run test:coverage --scope express-openapi-validator
   # - cd packages/express-openapi-validator
