@@ -1,14 +1,8 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "declaration": true,
-    "target": "es2017",
-    "lib": ["es2017", "dom"],
-    "module": "commonjs",
     "outDir": "dist",
-    "sourceMap": true,
-    "resolveJsonModule": true,
     "typeRoots": ["./node_modules/@types", "./typings"]
   },
-  "exclude": ["node_modules"],
   "include": ["index.ts"]
 }

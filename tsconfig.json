@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+      "declaration": true,
+      "target": "es2017",
+      "lib": ["es2017", "dom"],
+      "module": "commonjs",
+      "outDir": "dist",
+      "sourceMap": true,
+      "resolveJsonModule": true,
+    },
+    "exclude": ["node_modules"],
+    "include": [
+      "typings/**/*.d.ts",
+      "src/**/*.ts",
+      "src/framework/modded.express.mung.ts"
+    ]
+  }
+  
