@@ -7,7 +7,7 @@
     "url": "https://github.com/cdimascio/express-openapi-validator"
   },
   "scripts": {
-    "compile-with-dev": "lerna run compile-with-dev"
+    "compile": "lerna run compile"
   },
   "keywords": [
     "openapi",

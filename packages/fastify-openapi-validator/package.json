@@ -4,8 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "compile": "rm -rf dist/ && tsc -p ./",
-    "compile-with-dev": "npm i --only=dev && npm run compile",
+    "compile": "rm -rf dist/ && tsc",
     "compile:windows": "rmdir dist /s /q & tsc"
   },
   "keywords": [
