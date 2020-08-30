@@ -16,7 +16,7 @@ script:
   - tsc -v
   - which lerna
   - which tsc
-  - lerna run compile
+  - lerna run compile-with-dev
   # - lerna run test:coverage --scope express-openapi-validator
   # - cd packages/express-openapi-validator
   # - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run coveralls; fi'
