@@ -14,6 +14,7 @@ jest
 .codacy.yaml
 .coverall.yml
 CODE_OF_CONDUCT.md
+TODO.md
 CONTRIBUTING.md
 /uploads
 /greenkeeper.json
@@ -32,3 +33,4 @@ TODO.md
 _config.yml
 .all-contributorsrc
 .gitignore
+.gitpod.yaml
