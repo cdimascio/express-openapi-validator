@@ -23,6 +23,8 @@
   "author": "Carmine DiMascio <cdimascio@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "lerna": "^3.22.1"
+    "lerna": "^3.22.1",
+    "tsc": "^1.20150623.0",
+    "typescript": "^4.0.2"
   }
 }
