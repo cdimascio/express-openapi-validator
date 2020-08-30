@@ -4,7 +4,6 @@
       "target": "es2017",
       "lib": ["es2017", "dom"],
       "module": "commonjs",
-      "outDir": "dist",
       "sourceMap": true,
       "resolveJsonModule": true,
     },
