@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "compile": "rm -rf dist/ && tsc -p tsconfig.json",
+    "compile": "rm -rf dist/ && tsc -p ./",
     "compile:windows": "rmdir dist /s /q & tsc"
   },
   "keywords": [
