@@ -10,8 +10,8 @@ before_install:
   - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then unzip secrets.zip; fi'
 install:
   - npm i
-  - cd packages/express-openapi-validator && npm i --only=dev
-  - cd ../fastify-openapi-validator && npm i --only=dev
+  - cd packages/express-openapi-validator && npm i --only=dev && node_modules/.bin/tsc -v 
+  - cd ../fastify-openapi-validator && npm i --only=dev && node_modules/.bin/tsc -v 
   - cd ../.. && lerna bootstrap
 script:
   - lerna -v
