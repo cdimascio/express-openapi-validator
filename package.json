@@ -1,6 +1,24 @@
 {
   "name": "root",
   "private": true,
+  "version": "4.0.0-alpha.2",
+  "description": "Automatically validate API requests and responses with OpenAPI 3 and Express or Fastify.",
+  "repository": {
+    "url": "https://github.com/cdimascio/express-openapi-validator"
+  },
+  "keywords": [
+    "openapi",
+    "openapi 3",
+    "expressjs",
+    "express",
+    "fastify",
+    "request validation",
+    "response validation",
+    "middleware",
+    "nodejs"
+  ],
+  "author": "Carmine DiMascio <cdimascio@gmail.com>",
+  "license": "MIT",
   "devDependencies": {
     "lerna": "^3.22.1"
   }
