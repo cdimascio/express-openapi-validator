@@ -1,9 +1,9 @@
 sudo: required
 language: node_js
 node_js:
-  - "14"
-  - "12"
-  - "10"
+  - '14'
+  - '12'
+  - '10'
 before_install:
   - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then openssl aes-256-cbc -K $encrypted_deba340dfe89_key -iv $encrypted_deba340dfe89_iv
     -in secrets.zip.enc -out secrets.zip -d; fi'
@@ -14,6 +14,7 @@ install:
 script:
   - lerna run compile
   - lerna run test:coverage --scope express-openapi-validator
+  - cd packages/express-openapi-validator
   - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run coveralls; fi'
   - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run codacy; fi'
   - cd ../..
