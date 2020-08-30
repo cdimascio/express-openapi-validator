@@ -42,12 +42,9 @@ export function pathname(req: Request) {
 }
 
 export function query(req) {
-  console.log(req.url);
-  console.log('url', url.parse(req.url));
+  console.log('call special query');
   const q = url.parse(req.url).query;
-  console.log('q', q);
-  const qo = { ...qs.parse(q) }
-  console.log('query', qo);
+  const qo = { ...qs.parse(q) };
   return req.query || qo;
 }
 
@@ -59,7 +56,7 @@ export function query(req) {
 export function augmentAjvErrors(
   errors: Ajv.ErrorObject[] = [],
 ): Ajv.ErrorObject[] {
-  errors.forEach(e => {
+  errors.forEach((e) => {
     if (e.keyword === 'enum') {
       const params: any = e.params;
       const allowedEnumValues = params?.allowedValues;
@@ -76,7 +73,7 @@ export function ajvErrorsToValidatorError(
 ): ValidationError {
   return {
     status,
-    errors: errors.map(e => {
+    errors: errors.map((e) => {
       const params: any = e.params;
       const required =
         params?.missingProperty && e.dataPath + '.' + params.missingProperty;

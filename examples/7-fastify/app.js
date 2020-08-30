@@ -8,7 +8,7 @@ module.exports = async function (fastify, opts) {
   // Place here your custom code!
   fastify.register(
     openapiValidator,
-    { hidePoweredBy: { setTo: 'PHP 4.2.0' } } // TODO pass options to validator
+    { /* TODO handle OAV options */ } // TODO pass options to validator
   )
 
   // Do not touch the following lines

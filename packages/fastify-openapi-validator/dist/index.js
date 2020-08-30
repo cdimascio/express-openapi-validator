@@ -7,9 +7,9 @@ module.exports = fp(function (app, options, next) {
         validateResponses: false,
     });
     app.addHook('onRequest', function (req, reply, next) {
-        console.log(req);
         const r = Object.assign({}, req.raw);
         r.query = req.query;
+        r.path = req.path;
         r.params = req.params;
         r.originalUrl = req.url;
         r.headers = req.headers;

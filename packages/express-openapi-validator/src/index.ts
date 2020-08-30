@@ -37,7 +37,7 @@ export function middleware(options: OpenApiValidatorOpts) {
     for (let i = handlers.length - 1; i >= 0; i--) {
       const c = handlers[i];
       const nxt = n;
-      n = err => {
+      n = (err) => {
         if (err) return next(err);
         else c(req, res, nxt);
       };
@@ -55,9 +55,10 @@ export function middleware(options: OpenApiValidatorOpts) {
   }).load();
 
   return (req, res, next) => {
-    pspec.then(spec => {
+    pspec.then((spec) => {
       const context = new OpenApiContext(spec, oav.options.ignorePaths);
       if (req.route || req.app) {
+        console.log('---====== app', req.app, 'route', req.route);
         oav.installPathParams(req.route || req.app, context);
         oav.installOperationHandlers(req.route || req.app, context);
       }
@@ -121,13 +122,13 @@ class OpenApiValidator {
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
     const middlewares = [];
     const pContext = spec.then(
-      spec => new OpenApiContext(spec, this.options.ignorePaths),
+      (spec) => new OpenApiContext(spec, this.options.ignorePaths),
     );
 
     // metadata middleware
     middlewares.push((req, res, next) =>
       pContext
-        .then(context => this.metadataMiddlware(context)(req, res, next))
+        .then((context) => this.metadataMiddlware(context)(req, res, next))
         .catch(next),
     );
 
@@ -135,14 +136,14 @@ class OpenApiValidator {
       // multipart middleware
       middlewares.push((req, res, next) =>
         pContext
-          .then(context => this.multipartMiddleware(context)(req, res, next))
+          .then((context) => this.multipartMiddleware(context)(req, res, next))
           .catch(next),
       );
     }
 
     middlewares.push((req, res, next) =>
       pContext
-        .then(context => {
+        .then((context) => {
           const components = context.apiDoc.components;
           if (this.options.validateSecurity && components?.securitySchemes) {
             return this.securityMiddleware(context)(req, res, next);
@@ -156,7 +157,7 @@ class OpenApiValidator {
     if (this.options.validateRequests) {
       middlewares.push((req, res, next) => {
         return pContext
-          .then(context =>
+          .then((context) =>
             this.requestValidationMiddleware(context)(req, res, next),
           )
           .catch(next);
@@ -166,7 +167,7 @@ class OpenApiValidator {
     if (this.options.validateResponses) {
       middlewares.push((req, res, next) =>
         pContext
-          .then(context =>
+          .then((context) =>
             this.responseValidationMiddleware(context)(req, res, next),
           )
           .catch(next),
