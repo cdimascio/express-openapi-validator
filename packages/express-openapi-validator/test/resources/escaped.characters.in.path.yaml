@@ -1,0 +1,35 @@
+openapi: '3.0.0'
+info:
+  description: "Some escaped characters in $ref"
+  version: "1.0.0"
+  title: "Source Code"
+  license:
+    name: "GPL-3.0-or-later"
+    url: "https://choosealicense.com/licenses/gpl-3.0/"
+
+servers:
+  - url: /v1/
+
+paths:
+  /auth/login:
+    $ref: 'sub_files/paths/auth.yaml#/paths/~1auth~1login'
+  /auth/register:
+    $ref: 'sub_files/paths/auth.yaml#/paths/~1auth~1register'
+
+# Needed since https://github.com/cdimascio/express-openapi-validator/pull/189 is not merged yet
+components:
+  schemas:
+    ErrorObject:
+      type: object
+      properties:
+        message:
+          type: string
+          description: The main error message ( for example "Bad Request", "Unauthorized", etc. )
+        errors:
+          type: array
+          items:
+            type: object
+            description: Explanation about an error
+      required:
+        - message
+        - errors

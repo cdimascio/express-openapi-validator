@@ -1,0 +1,97 @@
+openapi: '3.0.2'
+info:
+  version: 1.0.0
+  title: security top level
+  description: security top level
+
+servers:
+  - url: /v1/
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /api_key:
+    get:
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: unauthorized
+
+  /api_key_or_anonymous:
+    get:
+      security:
+        - ApiKeyAuth: []
+        - {}
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: unauthorized
+
+  /api_query_key:
+    get:
+      security:
+        - ApiKeyQueryAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: unauthorized
+
+  /api_query_keys:
+    get:
+      security:
+        - ApiKeyQueryAuth: []
+      parameters: 
+        - name: param1
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: unauthorized
+
+  /bearer:
+    get:
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: unauthorized
+
+  /anonymous:
+    get:
+      security: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: unauthorized
+
+  /anonymous_2:
+    get:
+      security:
+        - {}
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: unauthorized
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+    ApiKeyQueryAuth:
+      type: apiKey
+      in: query
+      name: APIKey
+    BearerAuth:
+      type: http
+      scheme: bearer

@@ -1,0 +1,48 @@
+openapi: "3.0.0"
+info:
+  title: "Test for allOf"
+  version: "1"
+servers:
+  - url: /v1/
+paths:
+  /users/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /multi_users/{ids}:
+    get:
+      summary: Deletes Features given a number of uuids.
+      parameters:
+        - in: path
+          name: ids
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+          style: simple
+      responses:
+        "200":
+          description: Features were successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: "string"

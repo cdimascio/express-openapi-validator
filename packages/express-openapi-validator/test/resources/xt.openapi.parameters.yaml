@@ -1,0 +1,9 @@
+parameters:
+  id:
+    name: id
+    in: path
+    description: ID of pet to fetch
+    required: true
+    schema:
+      type: integer
+      format: int64

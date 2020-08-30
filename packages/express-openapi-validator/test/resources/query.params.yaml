@@ -1,0 +1,159 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  description: A sample API that uses a petstore as an example to demonstrate features in the OpenAPI 3.0 specification
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: Swagger API Team
+    email: apiteam@swagger.io
+    url: http://swagger.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: /v1/
+  - url: http://{name}.swagger.io:{port}/{version}
+    variables:
+      name:
+        default: petstore
+        enum:
+          - petstore
+          - storeofpets
+      port:
+        enum:
+          - '443'
+          - '8443'
+        default: '443'
+      version:
+        default: v1
+        enum:
+          - v1
+paths:
+  /no_reserved:
+    get:
+      parameters:
+        - name: value
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: success
+  /allow_reserved:
+    get:
+      parameters:
+       -  name: value
+          in: query
+          required: true
+          schema:
+            type: string
+          allowReserved: true
+      responses:
+        '200':
+          description: success
+
+  /allow_reserved/array_explode:
+    get:
+      parameters:
+       -  name: value
+          in: query
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+          explode: true
+          allowReserved: true
+      responses:
+        '200':
+          description: success
+  /no_query_params: 
+    get:
+      description: test no query parameters
+      responses:
+        '200':
+          description: pet response
+  /pets:
+    get:
+      description: |
+        Returns all pets from the system that the user has access tp
+      parameters:
+        - $ref: '#/components/parameters/name'
+        - name: tags
+          in: query
+          description: tags to filter by
+          required: false
+          style: form
+          schema:
+            type: array
+            items:
+              type: string
+          # allowReserved: true
+        - name: limit
+          in: query
+          description: maximum number of results to return
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 5
+        - name: breed
+          in: query
+          description: maximum number of results to return
+          required: true
+          schema:
+            type: string
+            enum:
+              - german_shepherd
+              - golden_retreiver
+        - $ref: '#/components/parameters/owner_name'
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+components:
+  parameters:
+    name:
+      name: name
+      in: query
+      description: name
+      required: true
+      schema:
+        type: string
+      allowEmptyValue: true
+    owner_name:
+      name: owner_name
+      in: query
+      description: owner's name
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    NewPet:
+      additionalProperties: false
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          nullable: true
+        tag:
+          type: string
+
+    Pet:
+      allOf:
+        - $ref: '#/components/schemas/NewPet'
+        - required:
+            - id
+          properties:
+            id:
+              type: integer
+              format: int64
