@@ -58,7 +58,6 @@ export function middleware(options: OpenApiValidatorOpts) {
     pspec.then((spec) => {
       const context = new OpenApiContext(spec, oav.options.ignorePaths);
       if (req.route || req.app) {
-        console.log('---====== app', req.app, 'route', req.route);
         oav.installPathParams(req.route || req.app, context);
         oav.installOperationHandlers(req.route || req.app, context);
       }
