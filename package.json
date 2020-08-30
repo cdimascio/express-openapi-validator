@@ -6,6 +6,9 @@
   "repository": {
     "url": "https://github.com/cdimascio/express-openapi-validator"
   },
+  "scripts": {
+    "compile": "lerna run compile"
+  },
   "keywords": [
     "openapi",
     "openapi 3",
