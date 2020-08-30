@@ -7,7 +7,15 @@
     "compile": "rm -rf dist/ && tsc",
     "compile:windows": "rmdir dist /s /q & tsc"
   },
-  "keywords": [],
+  "keywords": [
+    "openapi",
+    "openapi 3",
+    "request validation",
+    "response validation",
+    "fastify",
+    "middleware",
+    "nodejs"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
