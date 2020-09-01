@@ -6,10 +6,10 @@ import * as logger from 'morgan';
 
 import * as OpenApiValidator from '../../src';
 import { startServer, routes } from './app.common';
-import { OpenApiValidatorOpts } from '../../src/framework/types';
+import { ExpressOpenApiValidatorOpts } from '../../src/framework/types';
 
 export async function createApp(
-  opts?: OpenApiValidatorOpts,
+  opts?: ExpressOpenApiValidatorOpts,
   port = 3000,
   customRoutes = (app) => {},
   useRoutes = true,
