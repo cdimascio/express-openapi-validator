@@ -5,6 +5,7 @@ import { Application, Response, NextFunction, Router } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
 import { OpenApiSpecLoader, Spec } from './framework/openapi.spec.loader';
 import {
+  ExpressOpenApiValidatorOpts,
   OpenApiValidatorOpts,
   ValidateRequestOpts,
   ValidateResponseOpts,
@@ -18,6 +19,8 @@ import { defaultResolver } from './resolvers';
 import { OperationHandlerOptions } from './framework/types';
 
 export {
+  ExpressOpenApiValidatorOpts,
+  OpenApiValidatorOpts,
   InternalServerError,
   UnsupportedMediaType,
   RequestEntityToLarge,
@@ -31,7 +34,7 @@ export {
 import * as res from './resolvers';
 export const resolvers = res;
 
-export function middleware(options: OpenApiValidatorOpts) {
+export function middleware(options: ExpressOpenApiValidatorOpts) {
   const chainMiddleware = (handlers, req, res, next) => {
     let n = next;
     for (let i = handlers.length - 1; i >= 0; i--) {
@@ -69,9 +72,9 @@ export function middleware(options: OpenApiValidatorOpts) {
 }
 
 class OpenApiValidator {
-  readonly options: OpenApiValidatorOpts;
+  readonly options: ExpressOpenApiValidatorOpts;
 
-  constructor(options: OpenApiValidatorOpts) {
+  constructor(options: ExpressOpenApiValidatorOpts) {
     this.validateOptions(options);
     this.normalizeOptions(options);
 
@@ -287,37 +290,16 @@ class OpenApiValidator {
   private validateOptions(options: OpenApiValidatorOpts): void {
     if (!options.apiSpec) throw ono('apiSpec required');
 
-    const securityHandlers = options.securityHandlers;
+    const securityHandlers = (<any>options).securityHandlers;
     if (securityHandlers != null) {
-      if (
-        typeof securityHandlers !== 'object' ||
-        Array.isArray(securityHandlers)
-      ) {
-        throw ono('securityHandlers must be an object or undefined');
-      }
-      deprecationWarning(
-        'securityHandlers is deprecated. Use validateSecurities.handlers instead.',
-      );
-    }
-
-    if (options.securityHandlers && options.validateSecurity) {
       throw ono(
-        'securityHandlers and validateSecurity may not be used together. Use validateSecurities.handlers to specify handlers.',
+        'securityHandlers is not supported. Use validateSecurities.handlers instead.',
       );
     }
 
-    const multerOpts = options.multerOpts;
+    const multerOpts = (<any>options).multerOpts;
     if (multerOpts != null) {
-      if (typeof multerOpts !== 'object' || Array.isArray(multerOpts)) {
-        throw ono('multerOpts must be an object or undefined');
-      }
-      deprecationWarning('multerOpts is deprecated. Use fileUploader instead.');
-    }
-
-    if (options.multerOpts && options.fileUploader) {
-      throw ono(
-        'multerOpts and fileUploader may not be used together. Use fileUploader to specify upload options.',
-      );
+      throw ono('multerOpts is not supported. Use fileUploader instead.');
     }
 
     const unknownFormats = options.unknownFormats;
@@ -339,16 +321,6 @@ class OpenApiValidator {
 
   private normalizeOptions(options: OpenApiValidatorOpts): void {
     // Modify the request
-    if (options.securityHandlers) {
-      options.validateSecurity = {
-        handlers: options.securityHandlers,
-      };
-      delete options.securityHandlers;
-    }
-    if (options.multerOpts) {
-      options.fileUploader = options.multerOpts;
-      delete options.multerOpts;
-    }
   }
 
   private isOperationHandlerOptions(

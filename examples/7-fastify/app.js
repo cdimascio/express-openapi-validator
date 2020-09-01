@@ -2,14 +2,18 @@
 
 const path = require('path');
 const AutoLoad = require('fastify-autoload');
-const openapiValidator = require('fastify-openapi-validator')
+const openapiValidator = require('fastify-openapi-validator');
 
 module.exports = async function (fastify, opts) {
   // Place here your custom code!
   fastify.register(
     openapiValidator,
-    { /* TODO handle OAV options */ } // TODO pass options to validator
-  )
+    {
+      apiSpec: './openapi.yml',
+      validateRequests: true, // (default)
+      validateResponses: true, // false by default
+    } // TODO pass options to validator
+  );
 
   // Do not touch the following lines
 

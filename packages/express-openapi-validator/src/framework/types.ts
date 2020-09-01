@@ -59,20 +59,21 @@ export type OperationHandlerOptions = {
 
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
-  validateResponses?: boolean | ValidateResponseOpts;
   validateRequests?: boolean | ValidateRequestOpts;
   validateSecurity?: boolean | ValidateSecurityOpts;
   ignorePaths?: RegExp;
-  securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
   unknownFormats?: true | string[] | 'ignore';
-  fileUploader?: boolean | multer.Options;
-  multerOpts?: multer.Options;
   $refParser?: {
     mode: 'bundle' | 'dereference';
   };
-  operationHandlers?: false | string | OperationHandlerOptions;
   validateFormats?: false | 'fast' | 'full';
+  fileUploader?: boolean | multer.Options;
+}
+
+export interface ExpressOpenApiValidatorOpts extends OpenApiValidatorOpts {
+  validateResponses?: boolean | ValidateResponseOpts;
+  operationHandlers?: false | string | OperationHandlerOptions;
 }
 
 export namespace OpenAPIV3 {

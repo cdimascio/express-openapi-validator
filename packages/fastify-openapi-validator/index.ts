@@ -1,13 +1,10 @@
+import { middleware } from 'express-openapi-validator';
+import type { OpenApiValidatorOpts } from 'express-openapi-validator'
 const fp = require('fastify-plugin');
-const { middleware } = require('express-openapi-validator');
 
 module.exports = fp(
-  function(app, options, next) {
-    const oavmw = middleware({
-      apiSpec: './openapi.yml',
-      validateRequests: true, // (default)
-      validateResponses: false, // false by default
-    });
+  function(app, options: OpenApiValidatorOpts, next) {
+    const oavmw = middleware(options);
 
     app.addHook('onRequest', function(req, reply, next) {
       const r = { ...req.raw };
