@@ -22,29 +22,23 @@
 
 [![GitHub stars](https://img.shields.io/github/stars/cdimascio/express-openapi-validator.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/cdimascio/express-openapi-validator/stargazers/) [![Twitter URL](https://img.shields.io/twitter/url/https/github.com/cdimascio/express-openapi-validator.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20express-openapi-validator%20by%20%40CarmineDiMascio%20https%3A%2F%2Fgithub.com%2Fcdimascio%2Fexpress-openapi-validator%20%F0%9F%91%8D)
 
-## Install
-
-```shell
-npm i express-openapi-validator@4.0.0-alpha.1
-```
-
 #### Upgrading from v3.x.x
 
-In v4.x.x, the validator is installed as standard express middleware using `app.use(...) and/or router.use(...)` ([example](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md#Example-Express-API-Server)). This differs from the v3.x.x the installation which required the `install` method(s). The `install` methods no longer exist in v4.
+In v4.x.x, the validator is installed as standard connect middleware using `app.use(...) and/or router.use(...)` ([example](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md#Example-Express-API-Server)). This differs from the v3.x.x the installation which required the `install` method(s). The `install` methods no longer exist in v4.
 
 ## Usage
 
 1. Require/import the openapi validator
 
 ```javascript
-const OpenApiValidator = require('express-openapi-validator');
+const openapiValidator = require('express-openapi-validator');
 ```
 
 2. Install the middleware
 
 ```javascript
 app.use(
-  OpenApiValidator.middleware({
+  openapiValidator({
     apiSpec: './openapi.yaml',
     validateRequests: true, // (default)
     validateResponses: true, // false by default
@@ -64,7 +58,7 @@ app.use((err, req, res, next) => {
 });
 ```
 
-_**Note:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
+_**Important Note:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
 
 ## Usage (options)
 
@@ -88,12 +82,11 @@ See the complete [source code](https://github.com/cdimascio/express-openapi-vali
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
-const logger = require('morgan');
 const http = require('http');
 const app = express();
 
 // 1. Import the express-openapi-validator library
-const OpenApiValidator = require('express-openapi-validator';
+const { OpenApiValidator } = require('express-openapi-validator');
 
 // 2. Set up body parsers for the request body types you expect
 //    Must be specified prior to endpoints in 5.
@@ -101,10 +94,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(logger('dev'));
-
 // 3. (optionally) Serve the OpenAPI spec
-const spec = path.join(__dirname, 'example.yaml');
+const spec = path.join(__dirname, 'api.yaml');
 app.use('/spec', express.static(spec));
 
 // 4. Install the OpenApiValidator onto your express app
@@ -959,6 +950,10 @@ module.exports = app;
 **Q:** I can disallow unknown query parameters with `allowUnknownQueryParameters: false`. How can disallow unknown body parameters?
 
 **A:** Add `additionalProperties: false` when [describing](https://swagger.io/docs/specification/data-models/keywords/) e.g a `requestBody` to ensure that additional properties are not allowed. For example:
+
+**Q:** I upgraded from from v2 to v3 and validation no longer works. How do I fix it?
+
+**A**: In version 2.x.x, the `install` method was executed synchronously, in 3.x it's executed asynchronously. To get v2 behavior in v3, use the `installSync` method. See the [synchronous](#synchronous) section for details.
 
 ```yaml
 Pet:

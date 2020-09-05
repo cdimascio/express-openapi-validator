@@ -13,11 +13,9 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express-openapi-validator": "file:../../",
-    "morgan": "^1.10.0"
+    "express-openapi-validator": "file:../../"
   },
   "devDependencies": {
-    "nodemon": "^2.0.4",
-    "prettier": "^2.1.1"
+    "nodemon": "^2.0.4"
   }
 }
