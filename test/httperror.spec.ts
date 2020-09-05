@@ -50,7 +50,7 @@ describe(packageJson.name, () => {
       path: '/unsupported_media_type',
       message: 'unsupported media type application/json',
     };
-    expect(new UnsupportedMediaType(err)).to.be.an.instanceof(
+    expect(new error.UnsupportedMediaType(err)).to.be.an.instanceof(
       error.UnsupportedMediaType,
     );
     expect(
