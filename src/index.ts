@@ -17,7 +17,7 @@ import { deprecationWarning } from './middlewares/util';
 import { defaultResolver } from './resolvers';
 import { OperationHandlerOptions } from './framework/types';
 
-export {
+import {
   InternalServerError,
   UnsupportedMediaType,
   RequestEntityToLarge,
@@ -29,9 +29,22 @@ export {
 } from './framework/types';
 
 import * as res from './resolvers';
-export const resolvers = res;
 
-export function middleware(options: OpenApiValidatorOpts) {
+export default openapiValidator
+export const resolvers = res;
+export const middleware = openapiValidator
+export const error = {
+  InternalServerError,
+  UnsupportedMediaType,
+  RequestEntityToLarge,
+  BadRequest,
+  MethodNotAllowed,
+  NotFound,
+  Unauthorized,
+  Forbidden,
+}
+
+function openapiValidator(options: OpenApiValidatorOpts) {
   const chainMiddleware = (handlers, req, res, next) => {
     let n = next;
     for (let i = handlers.length - 1; i >= 0; i--) {

@@ -1,15 +1,6 @@
 import { expect } from 'chai';
 import * as packageJson from '../package.json';
-import {
-  InternalServerError,
-  UnsupportedMediaType,
-  RequestEntityToLarge,
-  BadRequest,
-  MethodNotAllowed,
-  NotFound,
-  Unauthorized,
-  Forbidden,
-} from '../src';
+import { error } from '../src';
 import { HttpError } from '../src/framework/types';
 
 describe(packageJson.name, () => {
@@ -25,13 +16,13 @@ describe(packageJson.name, () => {
         },
       ],
     };
-    expect(new BadRequest(err)).to.be.an.instanceof(BadRequest);
+    expect(new error.BadRequest(err)).to.be.an.instanceof(error.BadRequest);
     expect(
       HttpError.create({
         status: 400,
         ...err,
       }),
-    ).to.be.an.instanceof(BadRequest);
+    ).to.be.an.instanceof(error.BadRequest);
     done();
   });
 
@@ -41,15 +32,15 @@ describe(packageJson.name, () => {
       path: '/error',
       message: 'Expected Internal Server Error',
     };
-    expect(new InternalServerError(err)).to.be.an.instanceof(
-      InternalServerError,
+    expect(new error.InternalServerError(err)).to.be.an.instanceof(
+      error.InternalServerError,
     );
     expect(
       HttpError.create({
         status: 500,
         ...err,
       }),
-    ).to.be.an.instanceof(InternalServerError);
+    ).to.be.an.instanceof(error.InternalServerError);
     done();
   });
 
@@ -60,14 +51,14 @@ describe(packageJson.name, () => {
       message: 'unsupported media type application/json',
     };
     expect(new UnsupportedMediaType(err)).to.be.an.instanceof(
-      UnsupportedMediaType,
+      error.UnsupportedMediaType,
     );
     expect(
       HttpError.create({
         status: 415,
         ...err,
       }),
-    ).to.be.an.instanceof(UnsupportedMediaType);
+    ).to.be.an.instanceof(error.UnsupportedMediaType);
     done();
   });
 
@@ -77,15 +68,15 @@ describe(packageJson.name, () => {
       path: '/entity_to_large',
       message: 'request qntity too large',
     };
-    expect(new RequestEntityToLarge(err)).to.be.an.instanceof(
-      RequestEntityToLarge,
+    expect(new error.RequestEntityToLarge(err)).to.be.an.instanceof(
+      error.RequestEntityToLarge,
     );
     expect(
       HttpError.create({
         status: 413,
         ...err,
       }),
-    ).to.be.an.instanceof(RequestEntityToLarge);
+    ).to.be.an.instanceof(error.RequestEntityToLarge);
     done();
   });
 
@@ -95,14 +86,14 @@ describe(packageJson.name, () => {
       path: '/method_not_allowed',
       message: 'POST method not allowed',
     };
-    expect(new MethodNotAllowed(err)).to.be.an.instanceof(MethodNotAllowed);
+    expect(new error.MethodNotAllowed(err)).to.be.an.instanceof(error.MethodNotAllowed);
     expect(
       HttpError.create({
         status: 405,
         ...err,
       }),
-    ).to.be.an.instanceof(MethodNotAllowed);
-    done()
+    ).to.be.an.instanceof(error.MethodNotAllowed);
+    done();
   });
 
   it('should be an instance of NotFound', (done) => {
@@ -111,14 +102,14 @@ describe(packageJson.name, () => {
       path: '/not_found',
       message: 'not found',
     };
-    expect(new NotFound(err)).to.be.an.instanceof(NotFound);
+    expect(new error.NotFound(err)).to.be.an.instanceof(error.NotFound);
     expect(
       HttpError.create({
         status: 404,
         ...err,
       }),
-    ).to.be.an.instanceof(NotFound);
-    done()
+    ).to.be.an.instanceof(error.NotFound);
+    done();
   });
 
   it('should be an instance of Unauthorized', (done) => {
@@ -127,14 +118,14 @@ describe(packageJson.name, () => {
       path: '/unauthorized',
       message: 'unauthorized',
     };
-    expect(new Unauthorized(err)).to.be.an.instanceof(Unauthorized);
+    expect(new error.Unauthorized(err)).to.be.an.instanceof(error.Unauthorized);
     expect(
       HttpError.create({
         status: 401,
         ...err,
       }),
-    ).to.be.an.instanceof(Unauthorized);
-    done()
+    ).to.be.an.instanceof(error.Unauthorized);
+    done();
   });
 
   it('should be an instance of Forbidden', (done) => {
@@ -143,13 +134,13 @@ describe(packageJson.name, () => {
       path: '/forbidden',
       message: 'forbidden',
     };
-    expect(new Forbidden(err)).to.be.an.instanceof(Forbidden);
+    expect(new error.Forbidden(err)).to.be.an.instanceof(error.Forbidden);
     expect(
       HttpError.create({
         status: 403,
         ...err,
       }),
-    ).to.be.an.instanceof(Forbidden);
-    done()
+    ).to.be.an.instanceof(error.Forbidden);
+    done();
   });
 });
