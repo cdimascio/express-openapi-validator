@@ -4,20 +4,20 @@ import * as jsyaml from 'js-yaml';
 import { expect } from 'chai';
 import { ResponseValidator } from '../src/middlewares/openapi.response.validator';
 import * as packageJson from '../package.json';
-import { OpenAPIV3 } from '../src/framework/types';
+import { OpenAPIV3, OpenApiRequest } from '../src/framework/types';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 const apiSpec = jsyaml.safeLoad(fs.readFileSync(apiSpecPath, 'utf8'));
-
+const fakeReq: OpenApiRequest = <any>{
+  method: 'GET',
+  headers: { 'content-type': 'application/json' },
+  openapi: { expressRoute: '/api/test' },
+};
 describe(packageJson.name, () => {
   it('should validate the using default (in this case the error object)', async () => {
     const v = new ResponseValidator(apiSpec);
     const responses = petsResponseSchema();
-    const validators = v._getOrBuildValidator(
-      null,
-      responses,
-      'application/json',
-    );
+    const validators = v._getOrBuildValidator(fakeReq, responses);
 
     try {
       expect(
@@ -26,6 +26,7 @@ describe(packageJson.name, () => {
           body: { message: 'some error message', code: 400 },
           statusCode: 400,
           path: '/some-path',
+          accepts: [],
         }),
       ).to.not.exist;
     } catch (e) {
@@ -36,11 +37,7 @@ describe(packageJson.name, () => {
   it('should throw error when default response is invalid', async () => {
     const v = new ResponseValidator(apiSpec);
     const responses = petsResponseSchema();
-    const validators = v._getOrBuildValidator(
-      null,
-      responses,
-      'application/json',
-    );
+    const validators = v._getOrBuildValidator(fakeReq, responses);
 
     try {
       const message = { note: 'bad message type' };
@@ -51,6 +48,7 @@ describe(packageJson.name, () => {
           body: { message, code },
           statusCode: code,
           path: '/some-path',
+          accepts: [],
         }),
       ).to.not.exist;
     } catch (e) {
@@ -63,11 +61,7 @@ describe(packageJson.name, () => {
   it('should return an error if field type is invalid', async () => {
     const v = new ResponseValidator(apiSpec);
     const responses = petsResponseSchema();
-    const validators = v._getOrBuildValidator(
-      null,
-      responses,
-      'application/json',
-    );
+    const validators = v._getOrBuildValidator(fakeReq, responses);
 
     try {
       v._validate({
@@ -75,6 +69,7 @@ describe(packageJson.name, () => {
         body: [{ id: 'bad-id', name: 'test', tag: 'tag' }],
         statusCode: 200,
         path: '/some-path',
+        accepts: [],
       });
     } catch (e) {
       expect(e).to.be.not.null;
@@ -88,6 +83,7 @@ describe(packageJson.name, () => {
         body: { id: 1, name: 'test', tag: 'tag' },
         statusCode: 200,
         path: '/some-path',
+        accepts: [],
       });
     } catch (e) {
       expect(e).to.be.not.null;
@@ -100,6 +96,7 @@ describe(packageJson.name, () => {
         body: [{ id: 1, name: [], tag: 'tag' }],
         statusCode: 200,
         path: '/some-path',
+        accepts: [],
       });
     } catch (e) {
       expect(e).to.be.not.null;
