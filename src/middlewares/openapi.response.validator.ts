@@ -6,13 +6,13 @@ import {
   augmentAjvErrors,
   ContentType,
   ajvErrorsToValidatorError,
+  findResponseContent,
 } from './util';
 import {
   OpenAPIV3,
   OpenApiRequest,
   OpenApiRequestMetadata,
   InternalServerError,
-  ValidationError,
 } from '../framework/types';
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
@@ -22,7 +22,7 @@ interface ValidateResult {
   body: object;
   statusCode: number;
   path: string;
-  contentType?: string;
+  accepts: string[];
 }
 export class ResponseValidator {
   private ajv: ajv.Ajv;
@@ -45,24 +45,24 @@ export class ResponseValidator {
         const openapi = <OpenApiRequestMetadata>req.openapi;
         const responses = openapi.schema?.responses;
 
-        const contentTypeMeta = ContentType.from(req);
-        const contentType =
-          (contentTypeMeta.contentType?.indexOf('multipart') > -1
-            ? contentTypeMeta.equivalents()[0]
-            : contentTypeMeta.contentType) ?? 'not_provided';
-        const validators = this._getOrBuildValidator(
-          req,
-          responses,
-          contentType,
-        );
-        const statusCode = res.statusCode;
+        const validators = this._getOrBuildValidator(req, responses);
         const path = req.originalUrl;
+        const statusCode = res.statusCode;
+        const contentType = res.getHeaders()['content-type'];
+        const accept = req.headers['accept'];
+        // ir response has a content type use it, else use accept headers
+        const accepts: [string] = contentType
+          ? [contentType]
+          : accept
+          ? accept.split(',').map((h) => h.trim())
+          : [];
+
         return this._validate({
           validators,
           body,
           statusCode,
           path,
-          contentType,
+          accepts, // return 406 if not acceptable
         });
       }
       return body;
@@ -74,12 +74,13 @@ export class ResponseValidator {
   public _getOrBuildValidator(
     req: OpenApiRequest,
     responses: OpenAPIV3.ResponsesObject,
-    contentType: string,
   ): { [key: string]: ajv.ValidateFunction } {
-    if (!req) {
-      // use !req is only possible in unit tests
-      return this.buildValidators(responses);
-    }
+    // get the request content type - used only to build the cache key
+    const contentTypeMeta = ContentType.from(req);
+    const contentType =
+      (contentTypeMeta.contentType?.indexOf('multipart') > -1
+        ? contentTypeMeta.equivalents()[0]
+        : contentTypeMeta.contentType) ?? 'not_provided';
 
     const openapi = <OpenApiRequestMetadata>req.openapi;
     const key = `${req.method}-${openapi.expressRoute}-${contentType}`;
@@ -98,57 +99,40 @@ export class ResponseValidator {
     body,
     statusCode,
     path,
-    contentType,
+    accepts, // optional
   }: ValidateResult): void {
-    // find the validator for the 'status code' e.g 200, 2XX or 'default'
-    let validator;
-    const status = statusCode;
-    if (status) {
-      const statusXX = status.toString()[0] + 'XX';
-      let svalidator;
-      if (status in validators) {
-        svalidator = validators[status];
-      } else if (statusXX in validators) {
-        svalidator = validators[statusXX];
-      } else if (validators.default) {
-        svalidator = validators.default;
-      } else {
-        throw new InternalServerError({
-          path: path,
-          message: `no schema defined for status code '${status}' in the openapi spec`,
-        });
-      }
-
-      validator = svalidator[contentType];
-
-      if (!validator) {
-        // wildcard support
-        for (const validatorContentType of Object.keys(svalidator)
-          .sort()
-          .reverse()) {
-          if (validatorContentType === '*/*') {
-            validator = svalidator[validatorContentType];
-            break;
-          }
-
-          if (RegExp(/^[a-z]+\/\*$/).test(validatorContentType)) {
-            // wildcard of type application/*
-            const [type] = validatorContentType.split('/', 1);
-
-            if (new RegExp(`^${type}\/.+$`).test(contentType)) {
-              validator = svalidator[validatorContentType];
-              break;
-            }
-          }
-        }
-      }
-
-      if (!validator) validator = svalidator[Object.keys(svalidator)[0]]; // take first for backwards compatibility
+    const status = statusCode ?? 'default';
+    const statusXX = status.toString()[0] + 'XX';
+    let svalidator;
+    if (status in validators) {
+      svalidator = validators[status];
+    } else if (statusXX in validators) {
+      svalidator = validators[statusXX];
+    } else if (validators.default) {
+      svalidator = validators.default;
+    } else {
+      throw new InternalServerError({
+        path: path,
+        message: `no schema defined for status code '${status}' in the openapi spec`,
+      });
     }
 
+    const validatorContentTypes = Object.keys(svalidator);
+    const contentType =
+      findResponseContent(accepts, validatorContentTypes) ||
+      validatorContentTypes[0]; // take first contentType, if none found
+
+    if (!contentType) {
+      // not contentType inferred, assume valid
+      console.warn('no contentType found');
+      return;
+    }
+
+    const validator = svalidator[contentType];
+
     if (!validator) {
+      // no validator found, assume valid
       console.warn('no validator found');
-      // assume valid
       return;
     }
 
