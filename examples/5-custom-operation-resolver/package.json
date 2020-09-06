@@ -1,6 +1,6 @@
 {
   "name": "5-customer-operation-resolver",
-  "version": "4.0.0-alpha.2",
+  "version": "4.0.0-alpha.4",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -14,7 +14,7 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express-openapi-validator": "^4.0.0-alpha.2",
+    "express-openapi-validator": "^4.0.0-alpha.4",
     "morgan": "^1.10.0"
   },
   "devDependencies": {

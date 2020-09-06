@@ -1,6 +1,6 @@
 {
   "name": "fastify-openapi-validator",
-  "version": "4.0.0-alpha.2",
+  "version": "4.0.0-alpha.4",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -19,7 +19,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express-openapi-validator": "^4.0.0-alpha.2",
+    "express-openapi-validator": "^4.0.0-alpha.4",
     "fastify-plugin": "^2.3.3"
   },
   "devDependencies": {
