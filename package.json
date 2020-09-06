@@ -31,7 +31,7 @@
   "author": "Carmine DiMascio <cdimascio@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "ajv": "^6.12.3",
+    "ajv": "^6.12.4",
     "content-type": "^1.0.4",
     "js-yaml": "^3.14.0",
     "json-schema-ref-parser": "^9.0.6",
