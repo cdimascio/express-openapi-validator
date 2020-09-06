@@ -13,22 +13,45 @@ See something that needs fixing? Got an idea for a new feature? Contribute!
    git clone <forked-repo>
    ```
 
-2. Install the dependencies
+2. Install the dependencies for each package in the mono repo
 
    ```shell
    # From the project directory, run
-   npm i
+   npm i lerna -g
+   lerna bootstrap
    ```
+3a. Compile sources for each package in the mono repo
+
+```shell
+   lerna run compile
+```
+
+3b. Compile sources a single package
+
+```shell
+   cd packages express-openapi-validator
+   npm run compile
+```
    
 Be [Create a Pull Request](#create-a-pull-request) once you've written you code.
 
 ## Run the tests
 
-3. Run the tests
+1a. Run all tests in the mono repo
 
    ```shell
-   npm test
+    # compile any changes
+   lerna run compile
+   lerna run test --scope express-openapi-validator
    ```
+
+1b. Run tests in one package
+
+   ```shell
+   cd packages express-openapi-validator
+   npm t
+   ```
+
 
 ## Develop
 
