@@ -26,6 +26,12 @@
 
 In v4.x.x, the validator is installed as standard connect middleware using `app.use(...) and/or router.use(...)` ([example](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md#Example-Express-API-Server)). This differs from the v3.x.x the installation which required the `install` method(s). The `install` methods no longer exist in v4.
 
+## Install 
+
+```shell
+npm install express-openapi-validator@4.0.0-alpha.5
+```
+
 ## Usage
 
 1. Require/import the openapi validator
