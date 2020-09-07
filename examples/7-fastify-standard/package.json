@@ -8,8 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "start": "fastify start -l info app.js",
-    "dev": "fastify start -w -l info -P app.js"
+    "start": "fastify start -l info server.js",
+    "dev": "fastify start -w -l info -P server.js"
   },
   "keywords": [],
   "author": "",

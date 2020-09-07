@@ -48,9 +48,10 @@ export function pathname(req: Request) {
 }
 
 export function query(req) {
+  if (req.query) return req.query;
   const q = url.parse(req.url).query;
   const qo = { ...qs.parse(q) };
-  return req.query || qo;
+  return qo;
 }
 
 /**

@@ -160,6 +160,8 @@ export class OpenApiValidator {
   }
 
   installPathParams(app: Application | Router, context: OpenApiContext): void {
+    if (!app) return;
+
     const pathParams: string[] = [];
     for (const route of context.routes) {
       if (route.pathParams.length > 0) {
