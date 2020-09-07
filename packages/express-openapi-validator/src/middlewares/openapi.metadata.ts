@@ -2,7 +2,7 @@ import * as _zipObject from 'lodash.zipobject';
 import { pathToRegexp } from 'path-to-regexp';
 import { Response, NextFunction } from 'express';
 import { OpenApiContext } from '../framework/openapi.context';
-import { pathname } from './util'
+import { pathname } from './util';
 import {
   OpenApiRequest,
   OpenApiRequestHandler,
@@ -13,8 +13,9 @@ export function applyOpenApiMetadata(
   openApiContext: OpenApiContext,
 ): OpenApiRequestHandler {
   return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
-    // note base path is empty when path is fully qualified i.e. req.path.startsWith('') 
-    const path = pathname(req)
+    // note base path is empty when path is fully qualified i.e. req.path.startsWith('')
+
+    const path = pathname(req);
     if (openApiContext.shouldIgnoreRoute(path)) {
       return next();
     }
@@ -54,7 +55,7 @@ export function applyOpenApiMetadata(
       const matchedRoute = regexp.exec(path);
 
       if (matchedRoute) {
-        const paramKeys = keys.map(k => k.name);
+        const paramKeys = keys.map((k) => k.name);
         const paramsVals = matchedRoute.slice(1).map(decodeURIComponent);
         const pathParams = _zipObject(paramKeys, paramsVals);
 

@@ -24,8 +24,9 @@ app.use(
   OpenApiValidator.middleware({
     apiSpec,
     validateResponses: true, // default false
-  }),
+  })
 );
+
 const pets = new Pets();
 // 3. Add routes
 app.get('/v1/ping', function (req, res, next) {
@@ -45,9 +46,7 @@ app.delete('/v1/pets/:id', function (req, res, next) {
 
 app.get('/v1/pets/:id', function (req, res, next) {
   const pet = pets.findById(req.params.id);
-  return pet
-    ? res.json({ pet })
-    : res.status(404).json({ message: 'not found' });
+  return pet ? res.json(pet) : res.status(404).json({ message: 'not found' });
 });
 
 // 3a. Add a route upload file(s)

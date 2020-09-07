@@ -48,7 +48,6 @@ export function pathname(req: Request) {
 }
 
 export function query(req) {
-  console.log('call special query');
   const q = url.parse(req.url).query;
   const qo = { ...qs.parse(q) };
   return req.query || qo;

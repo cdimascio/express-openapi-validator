@@ -15,7 +15,7 @@ module.exports = fp(
       r.headers = req.headers;
       r.cookies = req.cookies; // requires fastify-cookie
 
-      oavmw(r, reply.raw, next);
+      // oavmw(r, reply.raw, next);
     });
 
     next();
