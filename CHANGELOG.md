@@ -1,3 +1,21 @@
+## <small>3.16.14 (2020-09-07)</small>
+
+* #356 test ([7a28d51](https://github.com/cdimascio/express-openapi-validator/commit/7a28d51)), closes [#356](https://github.com/cdimascio/express-openapi-validator/issues/356)
+* add #356 test ([98ad9d8](https://github.com/cdimascio/express-openapi-validator/commit/98ad9d8)), closes [#356](https://github.com/cdimascio/express-openapi-validator/issues/356)
+* add test ([29a07d7](https://github.com/cdimascio/express-openapi-validator/commit/29a07d7))
+* fix response type inference ([10fd39b](https://github.com/cdimascio/express-openapi-validator/commit/10fd39b))
+* Handle readOnly + required when Content-Type includes charset ([94ae6d6](https://github.com/cdimascio/express-openapi-validator/commit/94ae6d6))
+* increment patch version ([7c2d005](https://github.com/cdimascio/express-openapi-validator/commit/7c2d005))
+* increment patch version ([0ca4d75](https://github.com/cdimascio/express-openapi-validator/commit/0ca4d75))
+* relocate tests ([ffc2029](https://github.com/cdimascio/express-openapi-validator/commit/ffc2029))
+* remove morgan ([41fa857](https://github.com/cdimascio/express-openapi-validator/commit/41fa857))
+* test for #356 ([25263c9](https://github.com/cdimascio/express-openapi-validator/commit/25263c9)), closes [#356](https://github.com/cdimascio/express-openapi-validator/issues/356)
+* update patch version ([daed6d4](https://github.com/cdimascio/express-openapi-validator/commit/daed6d4))
+* update README ([079ae72](https://github.com/cdimascio/express-openapi-validator/commit/079ae72))
+* Update README.md ([644cfb6](https://github.com/cdimascio/express-openapi-validator/commit/644cfb6))
+
+
+
 ## <small>3.16.11 (2020-08-23)</small>
 
 * create test and exmaple with colon in path ([9e8e14f](https://github.com/cdimascio/express-openapi-validator/commit/9e8e14f))
