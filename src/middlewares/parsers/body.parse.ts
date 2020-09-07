@@ -75,7 +75,7 @@ export class BodySchemaParser {
         throw new UnsupportedMediaType({ path: path, message: msg });
       }
 
-      const schema = this.cleanseContentSchema(contentType, requestBody);
+      const schema = this.cleanseContentSchema(content);
 
       return schema ?? content.schema ?? {};
     }
@@ -83,23 +83,18 @@ export class BodySchemaParser {
   }
 
   private cleanseContentSchema(
-    contentType: ContentType,
-    requestBody: OpenAPIV3.RequestBodyObject,
+    content: OpenAPIV3.MediaTypeObject
   ): BodySchema {
-    const bodyContentSchema =
-      requestBody.content[contentType.withoutBoundary] &&
-      requestBody.content[contentType.withoutBoundary].schema;
-
-    let bodyContentRefSchema = null;
-    if (bodyContentSchema && '$ref' in bodyContentSchema) {
-      const resolved = this.ajv.getSchema(bodyContentSchema.$ref);
+    let contentRefSchema = null;
+    if (content.schema && '$ref' in content.schema) {
+      const resolved = this.ajv.getSchema(content.schema.$ref);
       const schema = <OpenAPIV3.SchemaObject>resolved?.schema;
-      bodyContentRefSchema = schema?.properties ? { ...schema } : null;
+      contentRefSchema = schema?.properties ? { ...schema } : null;
     }
     // handle readonly / required request body refs
     // don't need to copy schema if validator gets its own copy of the api spec
-    // currently all middlware i.e. req and res validators share the spec
-    const schema = bodyContentRefSchema || bodyContentSchema;
+    // currently all middleware i.e. req and res validators share the spec
+    const schema = contentRefSchema || content.schema;
     if (schema && schema.properties) {
       Object.keys(schema.properties).forEach((prop) => {
         const propertyValue = schema.properties[prop];
