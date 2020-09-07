@@ -23,16 +23,16 @@
 [![GitHub stars](https://img.shields.io/github/stars/cdimascio/express-openapi-validator.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/cdimascio/express-openapi-validator/stargazers/) [![Twitter URL](https://img.shields.io/twitter/url/https/github.com/cdimascio/express-openapi-validator.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20express-openapi-validator%20by%20%40CarmineDiMascio%20https%3A%2F%2Fgithub.com%2Fcdimascio%2Fexpress-openapi-validator%20%F0%9F%91%8D)
 
 
-### 📢 [`4.0.0-alpha.1` available!](https://github.com/cdimascio/express-openapi-validator/tree/v4) 📢
+### 📢 [`4.0.0-alpha.5` available!](https://github.com/cdimascio/express-openapi-validator/tree/v4) 📢
 
 Installs as standard connect middleware. Please provide your feedback [here](https://github.com/cdimascio/express-openapi-validator/pull/351).
 
 ```shell
-npm i express-openapi-validator@4.0.0-alpha.1
+npm i express-openapi-validator@4.0.0-alpha.5
 ```
 
-- See [Usage and Documentation for 4.0.0-alpha.1](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md)
-- See [Examples for 4.0.0-alpha.1](https://github.com/cdimascio/express-openapi-validator/tree/v4/examples)
+- See [Usage and Documentation for 4.0.0-alpha.5](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md)
+- See [Examples for 4.0.0-alpha.5](https://github.com/cdimascio/express-openapi-validator/tree/v4/examples)
 - Please provide [feedback](https://github.com/cdimascio/express-openapi-validator/pull/351) and submit any [issues](https://github.com/cdimascio/express-openapi-validator/issues) encountered. Thanks!
 
 
