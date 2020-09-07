@@ -177,6 +177,24 @@ describe(packageJson.name, () => {
         expect(r.body).to.have.property('username');
       }));
 
+  it('should pass validation if required read only properties to be missing from request (with charset)', async () =>
+    request(app)
+      .post(`${app.basePath}/user_inlined`)
+      .set('content-type', 'application/json; charset=utf-8')
+      .query({
+        include_id: true,
+      })
+      .send({
+        username: 'test',
+      })
+      .expect(200)
+      .then(r => {
+        expect(r.body)
+          .to.be.an('object')
+          .with.property('id');
+        expect(r.body).to.have.property('username');
+      }));
+
   it('should fail validation if required read only properties is missing from the response', async () =>
     request(app)
       .post(`${app.basePath}/user`)
