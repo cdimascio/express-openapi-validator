@@ -146,12 +146,13 @@ export class OpenApiValidator {
     }
 
     if (this.options.operationHandlers) {
-      const p = pContext.then((context) =>
-        this.installOperationHandlers(context),
-      );
-      middlewares.push((req, res, next) =>
-        p.then((router) => router(req, res, next)).catch(next),
-      );
+      let router: Router = null;
+      middlewares.push((req, res, next) => {
+        if (router) return router(req, res, next);
+        pContext
+          .then((context) => router = this.installOperationHandlers(req.baseUrl, context))
+          .then((router) => router(req, res, next)).catch(next)
+      });
     }
 
     return middlewares;
@@ -246,10 +247,9 @@ export class OpenApiValidator {
     }).validate();
   }
 
-  installOperationHandlers(context: OpenApiContext): Router {
+  installOperationHandlers(baseUrl: string, context: OpenApiContext): Router {
     const router = express.Router({ mergeParams: true });
 
-    // install path params on router
     this.installPathParams(router, context);
 
     for (const route of context.routes) {
@@ -263,7 +263,10 @@ export class OpenApiValidator {
        */
       if (this.isOperationHandlerOptions(this.options.operationHandlers)) {
         const { basePath, resolver } = this.options.operationHandlers;
-        router[method.toLowerCase()](expressRoute, resolver(basePath, route));
+        const path = expressRoute.indexOf(baseUrl) === 0 
+          ? expressRoute.substring(baseUrl.length) 
+          : expressRoute;
+        router[method.toLowerCase()](path, resolver(basePath, route));
       }
     }
     return router;
