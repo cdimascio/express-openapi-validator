@@ -90,7 +90,14 @@ export class OpenApiValidator {
     middlewares.push((req, res, next) =>
       pContext
         .then((context) => {
-          if (!inited) this.installPathParams(req.route || req.app, context);
+          if (!inited){
+            // Would be nice to pass the current Router object here if the route
+            // is attach to a Router and not the app. 
+            // Doing so would enable path params to be type coerced when provided to 
+            // the final middleware. 
+            // Unfortunately, it is not possible to get the current Router from a handler function
+            this.installPathParams(req.app, context);
+          }
           next();
         })
         .catch(next),
@@ -150,8 +157,9 @@ export class OpenApiValidator {
       middlewares.push((req, res, next) => {
         if (router) return router(req, res, next);
         pContext
-          .then((context) => router = this.installOperationHandlers(req.baseUrl, context))
-          .then((router) => router(req, res, next)).catch(next)
+          .then((context) => (router = this.installOperationHandlers(req.baseUrl, context)))
+          .then((router) => router(req, res, next))
+          .catch(next);
       });
     }
 
@@ -263,9 +271,10 @@ export class OpenApiValidator {
        */
       if (this.isOperationHandlerOptions(this.options.operationHandlers)) {
         const { basePath, resolver } = this.options.operationHandlers;
-        const path = expressRoute.indexOf(baseUrl) === 0 
-          ? expressRoute.substring(baseUrl.length) 
-          : expressRoute;
+        const path =
+          expressRoute.indexOf(baseUrl) === 0
+            ? expressRoute.substring(baseUrl.length)
+            : expressRoute;
         router[method.toLowerCase()](path, resolver(basePath, route));
       }
     }
