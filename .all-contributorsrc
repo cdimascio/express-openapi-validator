@@ -283,6 +283,16 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "dchekanov",
+      "name": "Dmitry Chekanov",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/45722?v=4",
+      "profile": "http://dmitrychekanov.com",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
