@@ -276,7 +276,7 @@ export class OpenApiValidator {
        */
       if (this.isOperationHandlerOptions(this.options.operationHandlers)) {
         const { basePath, resolver } = this.options.operationHandlers;
-        app[method.toLowerCase()](expressRoute, resolver(basePath, route));
+        app[method.toLowerCase()](expressRoute, resolver(basePath, route, context.apiDoc));
       }
     }
   }
