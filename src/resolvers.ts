@@ -1,8 +1,9 @@
 import * as path from 'path';
 import { RequestHandler } from "express";
 import { RouteMetadata } from "./framework/openapi.spec.loader";
+import { OpenAPIV3 } from "./framework/types"
 
-export function defaultResolver(handlersPath: string, route: RouteMetadata): RequestHandler {
+export function defaultResolver(handlersPath: string, route: RouteMetadata, apiDoc: OpenAPIV3.Document): RequestHandler {
   const tmpModules = {};
   const { expressRoute, method, schema } = route;
   const oId = schema['x-eov-operation-id'] || schema['operationId'];
@@ -39,7 +40,7 @@ export function defaultResolver(handlersPath: string, route: RouteMetadata): Req
   }
 }
 
-export function modulePathResolver(handlersPath: string, route: RouteMetadata): RequestHandler {
+export function modulePathResolver(handlersPath: string, route: RouteMetadata, apiDoc: OpenAPIV3.Document): RequestHandler {
   const [controller, method] = route.schema['operationId'].split('.')
 
   const modulePath = path.join(handlersPath, controller);
