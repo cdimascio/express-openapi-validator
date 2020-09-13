@@ -1,3 +1,32 @@
+## 3.17.0 (2020-09-13)
+
+* #356 test ([7a28d51](https://github.com/cdimascio/express-openapi-validator/commit/7a28d51)), closes [#356](https://github.com/cdimascio/express-openapi-validator/issues/356)
+* add #356 test ([98ad9d8](https://github.com/cdimascio/express-openapi-validator/commit/98ad9d8)), closes [#356](https://github.com/cdimascio/express-openapi-validator/issues/356)
+* add test ([29a07d7](https://github.com/cdimascio/express-openapi-validator/commit/29a07d7))
+* fix response type inference ([10fd39b](https://github.com/cdimascio/express-openapi-validator/commit/10fd39b))
+* Handle readOnly + required when Content-Type includes charset ([94ae6d6](https://github.com/cdimascio/express-openapi-validator/commit/94ae6d6))
+* increment minor version ([bc53f90](https://github.com/cdimascio/express-openapi-validator/commit/bc53f90))
+* increment minor version ([8fb04b0](https://github.com/cdimascio/express-openapi-validator/commit/8fb04b0))
+* increment patch version ([7c2d005](https://github.com/cdimascio/express-openapi-validator/commit/7c2d005))
+* increment patch version ([0ca4d75](https://github.com/cdimascio/express-openapi-validator/commit/0ca4d75))
+* Introduce apiDoc as a param for operation resolver ([3074a1d](https://github.com/cdimascio/express-openapi-validator/commit/3074a1d))
+* relocate tests ([ffc2029](https://github.com/cdimascio/express-openapi-validator/commit/ffc2029))
+* remove morgan ([41fa857](https://github.com/cdimascio/express-openapi-validator/commit/41fa857))
+* test for #356 ([25263c9](https://github.com/cdimascio/express-openapi-validator/commit/25263c9)), closes [#356](https://github.com/cdimascio/express-openapi-validator/issues/356)
+* update changelog ([38f3dad](https://github.com/cdimascio/express-openapi-validator/commit/38f3dad))
+* update ignores ([4c36693](https://github.com/cdimascio/express-openapi-validator/commit/4c36693))
+* update patch version ([daed6d4](https://github.com/cdimascio/express-openapi-validator/commit/daed6d4))
+* update README ([079ae72](https://github.com/cdimascio/express-openapi-validator/commit/079ae72))
+* Update README.md ([31dfb96](https://github.com/cdimascio/express-openapi-validator/commit/31dfb96))
+* Update README.md ([5fcc585](https://github.com/cdimascio/express-openapi-validator/commit/5fcc585))
+* Update README.md ([102f11e](https://github.com/cdimascio/express-openapi-validator/commit/102f11e))
+* Update README.md ([bd54814](https://github.com/cdimascio/express-openapi-validator/commit/bd54814))
+* Update README.md ([644cfb6](https://github.com/cdimascio/express-openapi-validator/commit/644cfb6))
+* docs: update .all-contributorsrc [skip ci] ([abed06a](https://github.com/cdimascio/express-openapi-validator/commit/abed06a))
+* docs: update README.md [skip ci] ([bf34b4f](https://github.com/cdimascio/express-openapi-validator/commit/bf34b4f))
+
+
+
 ## <small>3.16.14 (2020-09-07)</small>
 
 * #356 test ([7a28d51](https://github.com/cdimascio/express-openapi-validator/commit/7a28d51)), closes [#356](https://github.com/cdimascio/express-openapi-validator/issues/356)
