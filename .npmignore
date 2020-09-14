@@ -16,7 +16,7 @@ _config.yml
 .nycrc
 .prettierrc.json
 .travis.yml
-CHANGELOG.md
+/CHANGELOG.md
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 a_reference
