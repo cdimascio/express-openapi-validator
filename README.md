@@ -29,7 +29,7 @@ In v4.x.x, the validator is installed as standard connect middleware using `app.
 ## Install 
 
 ```shell
-npm install express-openapi-validator@4.0.0-alpha.6
+npm install express-openapi-validator@4.0.0-alpha.7
 ```
 
 ## Usage
