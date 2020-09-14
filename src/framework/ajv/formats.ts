@@ -5,7 +5,9 @@ const maxInt64 = 2 ** 63 - 1;
 const minInt64 = (-2) ** 63;
 
 const maxFloat = (2 - 2 ** -23) * 2 ** 127;
-const minFloat = 2 ** -126;
+const minPosFloat = 2 ** -126;
+const minFloat = -1 * maxFloat;
+const maxNegFloat = -1 * minPosFloat;
 
 const alwaysTrue = () => true;
 const base64regExp = /^[A-Za-z0-9+/]*(=|==)?$/;
@@ -20,7 +22,7 @@ export const formats = {
     type: 'number',
   },
   float: {
-    validate: i => typeof i === 'number' && (i <= maxFloat && i >= minFloat),
+    validate: i => typeof i === 'number' && (i === 0 || (i <= maxFloat && i >= minPosFloat) || (i >= minFloat && i <= maxNegFloat)),
     type: 'number',
   },
   double: {
