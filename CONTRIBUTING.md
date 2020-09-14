@@ -2,7 +2,7 @@
 
 Contributors are welcome!
 
-See something that needs fixing? Got an idea for a new feature? Contribute a [Pull Request](#pull_request)!
+See something that needs fixing? Got an idea for a new feature? Contribute a [Pull Request](#Create-a-Pull-Request)!
 
 ## Easy path to contribution
 Click the Gitpod badge to setup a ready to code dev env in the cloud.
