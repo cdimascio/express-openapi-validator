@@ -3,6 +3,7 @@ import { RequestHandler } from 'express';
 import { RouteMetadata } from './framework/openapi.spec.loader';
 import { OpenAPIV3 } from './framework/types';
 
+const cache = {};
 export function defaultResolver(
   handlersPath: string,
   route: RouteMetadata,
