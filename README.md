@@ -28,11 +28,11 @@
 Installs as standard connect middleware. Please provide your feedback [here](https://github.com/cdimascio/express-openapi-validator/pull/351).
 
 ```shell
-npm i express-openapi-validator@4.0.0-alpha.6
+npm i express-openapi-validator@4.0.0-alpha.7
 ```
 
-- See [Usage and Documentation for 4.0.0-alpha.6](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md)
-- See [Examples for 4.0.0-alpha.6](https://github.com/cdimascio/express-openapi-validator/tree/v4/examples)
+- See [Usage and Documentation for 4.0.0-alpha.7](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md)
+- See [Examples for 4.0.0-alpha.7](https://github.com/cdimascio/express-openapi-validator/tree/v4/examples)
 - Please provide [feedback](https://github.com/cdimascio/express-openapi-validator/pull/351) and submit any [issues](https://github.com/cdimascio/express-openapi-validator/issues) encountered. Thanks!
 
 
