@@ -1133,6 +1133,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/codinggosu"><img src="https://avatars0.githubusercontent.com/u/16798331?v=4" width="100px;" alt=""/><br /><sub><b>Lee Dong Joo</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=codinggosu" title="Documentation">📖</a></td>
     <td align="center"><a href="http://dmitrychekanov.com"><img src="https://avatars3.githubusercontent.com/u/45722?v=4" width="100px;" alt=""/><br /><sub><b>Dmitry Chekanov</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=dchekanov" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=dchekanov" title="Tests">⚠️</a></td>
+    <td align="center"><a href="http://dystopian.dev"><img src="https://avatars2.githubusercontent.com/u/12427840?v=4" width="100px;" alt=""/><br /><sub><b>Redhart Azul</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=dystopiandev" title="Code">💻</a></td>
   </tr>
 </table>
 
