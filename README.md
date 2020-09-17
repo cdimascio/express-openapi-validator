@@ -22,10 +22,6 @@
 
 [![GitHub stars](https://img.shields.io/github/stars/cdimascio/express-openapi-validator.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/cdimascio/express-openapi-validator/stargazers/) [![Twitter URL](https://img.shields.io/twitter/url/https/github.com/cdimascio/express-openapi-validator.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20express-openapi-validator%20by%20%40CarmineDiMascio%20https%3A%2F%2Fgithub.com%2Fcdimascio%2Fexpress-openapi-validator%20%F0%9F%91%8D)
 
-#### Upgrading from v3.x.x
-
-In v4.x.x, the validator is installed as standard connect middleware using `app.use(...) and/or router.use(...)` ([example](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md#Example-Express-API-Server)). This differs from the v3.x.x the installation which required the `install` method(s). The `install` methods no longer exist in v4.
-
 ## Install 
 
 ```shell
@@ -65,6 +61,11 @@ app.use((err, req, res, next) => {
 ```
 
 _**Important Note:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
+
+## Upgrading from 3.x
+
+In v4.x.x, the validator is installed as standard connect middleware using `app.use(...) and/or router.use(...)` ([example](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md#Example-Express-API-Server)). This differs from the v3.x.x the installation which required the `install` method(s). The `install` methods no longer exist in v4.
+
 
 ## Usage (options)
 
