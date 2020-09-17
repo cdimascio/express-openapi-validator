@@ -993,6 +993,12 @@ app.use(OpenApiValidator.middleware({
 }))
 ```
 
+**Q:** I have a handler function defined on an `express.Router`. If i call `req.params` each param value has type `string`. If i define same handler function on an `express.Application`, each value in `req.params` is already coerced to the type declare in my spec. Why not coerce theseF values on an `express.Router`?
+
+**A:** First, it's important to note that this behavior does not impact validation. The validator will validate against the type defined in your spec.
+
+In order to modify the `req.params`, express requires that a param handler be registered e.g. `app.param(...)` or `router.param(...)`. Since `app` is available to middleware functions, the validator registers an `app.param` handler to coerce and modify the values of `req.params` to their declared types. Unfortunately, express does not provide a means to determine the current router from a middleware function, hence the validator is unable to register the same param handler on an express router. Ultimately, this means if your handler function is defined on `app`, the values of `req.params` will be coerced to their declared types. If your handler function is declare on an `express.Router`,  the values of `req.params` values will be of type `string` (You must coerce them e.g. `parseInt(req.params.id)`).
+
 ## Contributors ✨
 
 Contributions welcome! Here's how to [contribute](CONTRIBUTING.md).
