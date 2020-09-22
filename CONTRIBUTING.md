@@ -2,9 +2,16 @@
 
 Contributors are welcome!
 
-See something that needs fixing? Got an idea for a new feature? Contribute!
+See something that needs fixing? Got an idea for a new feature? Contribute a [Pull Request](#Create-a-Pull-Request)!
 
-## Prerequisites / Setup
+## Easy path to contribution
+Click the Gitpod badge to setup a ready to code dev env in the cloud.
+
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/cdimascio/express-openapi-validator)
+
+## Standard path to contribution
+
+### Prerequisites / Setup
 
 1. Fork the repo
 

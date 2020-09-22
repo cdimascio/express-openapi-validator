@@ -1,6 +1,6 @@
 # 🦋 express-openapi-validator
 
-[![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) [![](https://img.shields.io/npm/v/express-openapi-validator/alpha.svg)](https://github.com/cdimascio/express-openapi-validator/tree/v4) [![](https://img.shields.io/npm/dm/express-openapi-validator?color=blue)](https://www.npmjs.com/package/express-openapi-validator) [![All Contributors](https://img.shields.io/badge/all_contributors-28-darkcyan.svg?style=flat)](#contributors) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1570a06f609345ddb237114bbd6ceed7)](https://www.codacy.com/manual/cdimascio/express-openapi-validator?utm_source=github.com&utm_medium=referral&utm_content=cdimascio/express-openapi-validator&utm_campaign=Badge_Grade) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/cdimascio/express-openapi-validator) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
+[![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) [![](https://img.shields.io/npm/v/express-openapi-validator/beta.svg)](https://github.com/cdimascio/express-openapi-validator/tree/v4) [![](https://img.shields.io/npm/dm/express-openapi-validator?color=blue)](https://www.npmjs.com/package/express-openapi-validator) [![All Contributors](https://img.shields.io/badge/all_contributors-28-darkcyan.svg?style=flat)](#contributors) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1570a06f609345ddb237114bbd6ceed7)](https://www.codacy.com/manual/cdimascio/express-openapi-validator?utm_source=github.com&utm_medium=referral&utm_content=cdimascio/express-openapi-validator&utm_campaign=Badge_Grade) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/cdimascio/express-openapi-validator) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
 
 **An OpenApi validator for ExpressJS** that automatically validates **API** _**requests**_ and _**responses**_ using an **OpenAPI 3** specification.
 
@@ -23,16 +23,16 @@
 [![GitHub stars](https://img.shields.io/github/stars/cdimascio/express-openapi-validator.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/cdimascio/express-openapi-validator/stargazers/) [![Twitter URL](https://img.shields.io/twitter/url/https/github.com/cdimascio/express-openapi-validator.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20express-openapi-validator%20by%20%40CarmineDiMascio%20https%3A%2F%2Fgithub.com%2Fcdimascio%2Fexpress-openapi-validator%20%F0%9F%91%8D)
 
 
-### 📢 [`4.0.0-alpha.6` available!](https://github.com/cdimascio/express-openapi-validator/tree/v4) 📢
+### 📢 [`4.0.0-beta.1` available!](https://github.com/cdimascio/express-openapi-validator/tree/v4) 📢
 
 Installs as standard connect middleware. Please provide your feedback [here](https://github.com/cdimascio/express-openapi-validator/pull/351).
 
 ```shell
-npm i express-openapi-validator@4.0.0-alpha.7
+npm i express-openapi-validator@4.0.0-beta.1
 ```
 
-- See [Usage and Documentation for 4.0.0-alpha.7](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md)
-- See [Examples for 4.0.0-alpha.7](https://github.com/cdimascio/express-openapi-validator/tree/v4/examples)
+- See [Usage and Documentation for 4.0.0-beta.1](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md)
+- See [Examples for 4.0.0-beta.1](https://github.com/cdimascio/express-openapi-validator/tree/v4/examples)
 - Please provide [feedback](https://github.com/cdimascio/express-openapi-validator/pull/351) and submit any [issues](https://github.com/cdimascio/express-openapi-validator/issues) encountered. Thanks!
 
 
@@ -1133,6 +1133,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/codinggosu"><img src="https://avatars0.githubusercontent.com/u/16798331?v=4" width="100px;" alt=""/><br /><sub><b>Lee Dong Joo</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=codinggosu" title="Documentation">📖</a></td>
     <td align="center"><a href="http://dmitrychekanov.com"><img src="https://avatars3.githubusercontent.com/u/45722?v=4" width="100px;" alt=""/><br /><sub><b>Dmitry Chekanov</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=dchekanov" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=dchekanov" title="Tests">⚠️</a></td>
+    <td align="center"><a href="http://dystopian.dev"><img src="https://avatars2.githubusercontent.com/u/12427840?v=4" width="100px;" alt=""/><br /><sub><b>Redhart Azul</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=dystopiandev" title="Code">💻</a></td>
   </tr>
 </table>
 
