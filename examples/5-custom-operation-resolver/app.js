@@ -27,7 +27,7 @@ new OpenApiValidator({
     basePath: path.join(__dirname, 'routes'),
     // 4. Provide a function responsible for resolving an Express RequestHandler 
     //    function from the current OpenAPI Route object.
-    resolver: resolvers.modulePathResolver
+    resolver: resolvers.exampleResolver
   }
 })
   .install(app)

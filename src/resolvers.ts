@@ -2,6 +2,7 @@ import * as path from 'path';
 import { RequestHandler } from "express";
 import { RouteMetadata } from "./framework/openapi.spec.loader";
 import { OpenAPIV3 } from "./framework/types"
+const deref = require('json-schema-deref-sync');
 
 export function defaultResolver(handlersPath: string, route: RouteMetadata, apiDoc: OpenAPIV3.Document): RequestHandler {
   const tmpModules = {};
@@ -53,4 +54,30 @@ export function modulePathResolver(handlersPath: string, route: RouteMetadata, a
   }
 
   return handler[method]
+}
+
+export function exampleResolver(handlersPath: string, route: RouteMetadata, apiDoc: OpenAPIV3.Document): RequestHandler {
+  const environment = process.env.NODE_ENV;
+  try {
+    return modulePathResolver(handlersPath, route, apiDoc);
+  } catch (err) {
+    if(environment === 'development') {
+
+      const dereferencedSchema = deref({route, ...apiDoc});
+      const responses = dereferencedSchema.route.schema.responses;
+
+      return (req, res) => {
+        const responseCodeRequested = req.header('X-EOV-Response')!==undefined ? req.header('X-EOV-Response'):Object.keys(responses)[0];
+        const responseRequested: OpenAPIV3.ResponseObject = responses[responseCodeRequested] as OpenAPIV3.ResponseObject;
+        const responseRequestedContent: OpenAPIV3.MediaTypeObject = responseRequested.content;
+        const responseContentType = undefined!==req.header('Accept') && req.header('Accept') !== '*/*' 
+          ? req.header('Accept'):Object.keys(responseRequestedContent)[0];
+        const responseSchema : OpenAPIV3.SchemaObject = responseRequestedContent[responseContentType].schema;
+        if(responseSchema.example){
+          res.status(Number(responseCodeRequested)).send(responseSchema.example);
+        }
+      }
+    }
+    throw err;
+  }
 }
