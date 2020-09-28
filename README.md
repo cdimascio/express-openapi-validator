@@ -25,7 +25,7 @@
 ## Install 
 
 ```shell
-npm install express-openapi-validator@4.0.0-beta.2
+npm install express-openapi-validator
 ```
 
 ## Usage
