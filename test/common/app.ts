@@ -4,7 +4,7 @@ import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as logger from 'morgan';
 
-import openapiValidator from '../../src';
+import * as OpenApiValidator  from '../../src';
 import { startServer, routes } from './app.common';
 import { OpenApiValidatorOpts } from '../../src/framework/types';
 
@@ -29,7 +29,7 @@ export async function createApp(
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
 
-  app.use(openapiValidator(opts));
+  app.use(OpenApiValidator.middleware(opts));
 
   if (useRoutes) {
     // register common routes
