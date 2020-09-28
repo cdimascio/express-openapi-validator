@@ -7,11 +7,6 @@
 * Update README.md ([5eead77](https://github.com/cdimascio/express-openapi-validator/commit/5eead77))
 * v4.0.0 ([8406c12](https://github.com/cdimascio/express-openapi-validator/commit/8406c12))
 
-
-
-<<<<<<< HEAD:CHANGELOG.md
-## 4.0.0-alpha.6 (2020-09-13)
-=======
 ## <small>3.17.2 (2020-09-22)</small>
 
 * (fix) #367 - handle negative floats ([a7e5d4d](https://github.com/cdimascio/express-openapi-validator/commit/a7e5d4d)), closes [#367](https://github.com/cdimascio/express-openapi-validator/issues/367)
