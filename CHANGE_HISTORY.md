@@ -1,3 +1,14 @@
+## <small>4.0.2 (2020-09-28)</small>
+
+* implement as standard connect  middleware (#351) ([b806dd4](https://github.com/cdimascio/express-openapi-validator/commit/b806dd4)), closes [#351](https://github.com/cdimascio/express-openapi-validator/issues/351) [#369](https://github.com/cdimascio/express-openapi-validator/issues/369)
+* increment patch version ([5284ad3](https://github.com/cdimascio/express-openapi-validator/commit/5284ad3))
+* increment patch version ([574457c](https://github.com/cdimascio/express-openapi-validator/commit/574457c))
+* update README ([dfe11bf](https://github.com/cdimascio/express-openapi-validator/commit/dfe11bf))
+* Update README.md ([5eead77](https://github.com/cdimascio/express-openapi-validator/commit/5eead77))
+* v4.0.0 ([8406c12](https://github.com/cdimascio/express-openapi-validator/commit/8406c12))
+
+
+
 <<<<<<< HEAD:CHANGELOG.md
 ## 4.0.0-alpha.6 (2020-09-13)
 =======
