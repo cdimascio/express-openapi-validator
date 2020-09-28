@@ -31,8 +31,7 @@ export type SecurityHandlers = {
   ) => boolean | Promise<boolean>;
 };
 
-export interface MultipartOpts extends ajv.Options
-{
+export interface MultipartOpts extends ajv.Options {
   multerOpts: any;
 }
 
@@ -53,9 +52,9 @@ export type ValidateSecurityOpts = {
 };
 
 export type OperationHandlerOptions = {
-  basePath: string,
-  resolver: Function
-}
+  basePath: string;
+  resolver: Function;
+};
 
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
@@ -518,6 +517,7 @@ export class HttpError extends Error implements ValidationError {
     | RequestEntityToLarge
     | BadRequest
     | MethodNotAllowed
+    | NotAcceptable
     | NotFound
     | Unauthorized
     | Forbidden {
@@ -532,6 +532,8 @@ export class HttpError extends Error implements ValidationError {
         return new NotFound(err);
       case 405:
         return new MethodNotAllowed(err);
+      case 406:
+        return new NotAcceptable(err);
       case 413:
         return new RequestEntityToLarge(err);
       case 415:
@@ -553,6 +555,21 @@ export class NotFound extends HttpError {
       path: err.path,
       message: err.message,
       name: 'Not Found',
+    });
+  }
+}
+
+export class NotAcceptable extends HttpError {
+  constructor(err: {
+    path: string;
+    message?: string;
+    overrideStatus?: number;
+  }) {
+    super({
+      status: err.overrideStatus || 406,
+      path: err.path,
+      name: 'Not Acceptable',
+      message: err.message,
     });
   }
 }

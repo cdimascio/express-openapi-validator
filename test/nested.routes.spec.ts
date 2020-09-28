@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+
 describe(packageJson.name, () => {
   let app = null;
 

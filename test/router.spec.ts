@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { OpenApiValidator } from '../src';
+import * as OpenApiValidator from '../src';
 
 describe('security.defaults', () => {
   let app = express();
@@ -10,16 +10,18 @@ describe('security.defaults', () => {
 
   before(async () => {
     const router = express.Router();
-    await new OpenApiValidator({
-      apiSpec: {
-        openapi: '3.0.0',
-        info: { version: '1.0.0', title: 'test bug OpenApiValidator' },
-        servers: [{ url: 'http://localhost:8080/api/' }],
-        paths: {
-          '/': { get: { responses: { 200: { description: 'home api' } } } },
+    router.use(
+      OpenApiValidator.middleware({
+        apiSpec: {
+          openapi: '3.0.0',
+          info: { version: '1.0.0', title: 'test bug OpenApiValidator' },
+          servers: [{ url: 'http://localhost:8080/api/' }],
+          paths: {
+            '/': { get: { responses: { 200: { description: 'home api' } } } },
+          },
         },
-      },
-    }).install(router);
+      }),
+    );
 
     router.get('/', (req, res) => res.status(200).send('home api\n'));
     router.get('/notDefined', (req, res) =>

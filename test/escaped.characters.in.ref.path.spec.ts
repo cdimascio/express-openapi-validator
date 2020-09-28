@@ -2,9 +2,8 @@ import * as path from 'path';
 import * as express from 'express';
 import * as request from 'supertest';
 import { createApp } from './common/app';
-import * as packageJson from '../package.json';
 
-describe(packageJson.name, () => {
+describe('when escaped characters are in path', () => {
   let app = null;
 
   before(async () => {

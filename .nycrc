@@ -10,7 +10,9 @@
       "src/index.ts"
     ],
     "exclude": [
-      "test/*"
+      "**/*.d.ts",
+      "test/*",
+      "src/resolvers.ts"
     ],
     "ignore-class-method": "methodToIgnore",
     "reporter": [
@@ -22,8 +24,5 @@
     "extension": [
       ".ts",
       ".tsx"
-    ],
-    "exclude": [
-      "**/*.d.ts"
     ]
 }
