@@ -149,7 +149,7 @@ export class RequestValidator {
           }
         : undefined;
 
-      const valid = validator({ ...req, cookies });
+      const valid = validator({ query: {}, ...req, cookies });
       if (valid) {
         next();
       } else {

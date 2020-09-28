@@ -5,7 +5,7 @@ example using express-openapi-validator with custom operation resolver
 ## Install
 
 ```shell
-npm i && npm run deps
+npm run deps && npm i
 ```
 
 ## Run

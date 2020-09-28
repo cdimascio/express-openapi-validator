@@ -11,7 +11,7 @@ describe(packageJson.name, () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'coercion.yaml');
-    app = await createApp({ apiSpec }, 3005, app =>
+    app = await createApp({ apiSpec }, 3005, (app) =>
       app.use(
         `${app.basePath}/coercion`,
         express
@@ -34,7 +34,7 @@ describe(packageJson.name, () => {
         is_cat: 'true',
       })
       .expect(200)
-      .then(r => {
+      .then((r) => {
         expect(r.body.is_cat).to.be.a('boolean');
         expect(r.body.is_cat).to.be.equal(true);
       }));
@@ -47,7 +47,7 @@ describe(packageJson.name, () => {
         is_cat: true,
       })
       .expect(200)
-      .then(r => {
+      .then((r) => {
         expect(r.body.is_cat).to.be.a('boolean');
         expect(r.body.is_cat).to.be.equal(true);
       }));
@@ -60,7 +60,7 @@ describe(packageJson.name, () => {
         is_cat: true,
       })
       .expect(200)
-      .then(r => {
+      .then((r) => {
         expect(r.body.is_cat).to.be.a('string');
         expect(r.body.is_cat).to.be.equal('true');
       }));

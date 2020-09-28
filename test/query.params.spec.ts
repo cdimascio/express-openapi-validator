@@ -51,6 +51,14 @@ describe(packageJson.name, () => {
         expect(r.body.errors).to.be.an('array');
       }));
 
+  it('should return 200 if no query params are supplied', async () =>
+    request(app)
+      .get(`${app.basePath}/no_query_params`)
+      .expect(200)
+      .then((r) => {
+        expect(r.body.complete).to.equal(true);
+      }));
+
   it('should fail if unknown query param is specified', async () =>
     request(app)
       .get(`${app.basePath}/pets`)

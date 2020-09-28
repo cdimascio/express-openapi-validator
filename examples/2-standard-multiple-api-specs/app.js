@@ -2,35 +2,35 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const http = require('http');
-const { OpenApiValidator } = require('express-openapi-validator');
+const OpenApiValidator = require('express-openapi-validator');
 
-async function main() {
-  app = express();
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.text());
-  app.use(bodyParser.json());
+app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.text());
+app.use(bodyParser.json());
 
-  const versions = [1, 2];
+const versions = [1, 2];
 
-  for (const v of versions) {
-    const apiSpec = path.join(__dirname, `api.v${v}.yaml`);
-    await new OpenApiValidator({
+for (const v of versions) {
+  const apiSpec = path.join(__dirname, `api.v${v}.yaml`);
+  app.use(
+    OpenApiValidator.middleware({
       apiSpec,
-    }).install(app);
+    }),
+  );
 
-    routes(app, v);
-  }
-
-  http.createServer(app).listen(3000);
-  console.log('Listening on port 3000');
+  routes(app, v);
 }
 
-async function routes(app, v) {
+http.createServer(app).listen(3000);
+console.log('Listening on port 3000');
+
+function routes(app, v) {
   if (v === 1) routesV1(app);
   if (v === 2) routesV2(app);
 }
 
-async function routesV1(app) {
+function routesV1(app) {
   const v = '/v1';
   app.post(`${v}/pets`, (req, res, next) => {
     res.json({ ...req.body });
@@ -54,7 +54,7 @@ async function routesV1(app) {
   });
 }
 
-async function routesV2(app) {
+function routesV2(app) {
   const v = '/v2';
   app.get(`${v}/pets`, (req, res, next) => {
     res.json([
@@ -78,5 +78,4 @@ async function routesV2(app) {
   });
 }
 
-main();
 module.exports = app;

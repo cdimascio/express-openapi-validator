@@ -5,7 +5,7 @@ multi file spec example with express-openapi-validator
 ## Install
 
 ```shell
-npm i && npm run deps
+npm run deps && npm i
 ```
 
 ## Run
