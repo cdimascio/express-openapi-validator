@@ -33,14 +33,14 @@ npm install express-openapi-validator@4.0.0-beta.2
 1. Require/import the openapi validator
 
 ```javascript
-const openapiValidator = require('express-openapi-validator');
+const OpenApiValidator = require('express-openapi-validator');
 ```
 
 2. Install the middleware
 
 ```javascript
 app.use(
-  openapiValidator({
+  OpenApiValidator.middleware({
     apiSpec: './openapi.yaml',
     validateRequests: true, // (default)
     validateResponses: true, // false by default
@@ -60,7 +60,7 @@ app.use((err, req, res, next) => {
 });
 ```
 
-_**Important Note:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
+_**Important:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
 
 ## Upgrading from 3.x
 
@@ -93,7 +93,7 @@ const http = require('http');
 const app = express();
 
 // 1. Import the express-openapi-validator library
-const { OpenApiValidator } = require('express-openapi-validator');
+const OpenApiValidator = require('express-openapi-validator');
 
 // 2. Set up body parsers for the request body types you expect
 //    Must be specified prior to endpoints in 5.
@@ -107,7 +107,7 @@ app.use('/spec', express.static(spec));
 
 // 4. Install the OpenApiValidator onto your express app
 app.use(
-  OpenApiValidator.middleware({
+OpenApiValidator.middleware({
       apiSpec: './api.yaml',
       validateResponses: true, // <-- to validate responses
       // unknownFormats: ['my-format'] // <-- to provide custom formats
