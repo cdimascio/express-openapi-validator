@@ -13,7 +13,7 @@ import {
   Forbidden,
 } from './framework/types';
 
-export default openapiValidator;
+// export default openapiValidator;
 export const resolvers = res;
 export const middleware = openapiValidator;
 export const error = {
