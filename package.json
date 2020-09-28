@@ -1,6 +1,6 @@
 {
   "name": "express-openapi-validator",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Automatically validate API requests and responses with OpenAPI 3 and Express.",
   "main": "dist/index.js",
   "scripts": {
@@ -13,8 +13,7 @@
     "test:coverage:windows": "set TS_NODE_FILES=true & nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
     "coveralls": "cat coverage/lcov.info | coveralls -v",
     "codacy": "cat coverage/lcov.info | codacy-coverage",
-    "test:reset": "rm -rf node_modules && npm i && npm run compile && npm t",
-    "publish": "mv README.md README.md.sav && npm publish && mv README.md.sav README.md"
+    "test:reset": "rm -rf node_modules && npm i && npm run compile && npm t"
   },
   "repository": {
     "url": "https://github.com/cdimascio/express-openapi-validator"
