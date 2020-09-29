@@ -85,7 +85,6 @@ paths:
           in: query
           description: tags to filter by
           required: false
-          style: form
           schema:
             type: array
             items:

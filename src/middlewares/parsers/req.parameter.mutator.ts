@@ -33,6 +33,13 @@ const REQUEST_FIELDS = {
   cookie: 'cookies',
 };
 
+const DEFAULT_STYLE = {
+  query: 'form',
+  path: 'simple',
+  header: 'simple',
+  cookie: 'form'
+}
+
 type Schema = ReferenceObject | SchemaObject;
 type Parameter = ReferenceObject | ParameterObject;
 
@@ -74,7 +81,8 @@ export class RequestParameterMutator {
       const { name, schema } = normalizeParameter(this.ajv, parameter);
 
       const { type } = <SchemaObject>schema;
-      const { style, explode } = parameter;
+      const { explode } = parameter;
+      const style = parameter.style || DEFAULT_STYLE[parameter.in];
       const i = req.originalUrl.indexOf('?');
       const queryString = req.originalUrl.substr(i + 1);
 
@@ -94,8 +102,13 @@ export class RequestParameterMutator {
           this.parseJsonAndMutateRequest(req, parameter.in, name);
         }
       } else if (type === 'array' && !explode) {
-        const delimiter = ARRAY_DELIMITER[parameter.style];
-        this.validateArrayDelimiter(delimiter, parameter);
+        const delimiter = ARRAY_DELIMITER[style];
+        if (!delimiter) {
+          throw new BadRequest({
+            path: `.query.${parameter.name}`,
+            message: `Parameter '${parameter.name}' has incorrect style '${parameter.style}'`
+          });
+        }
         this.parseJsonArrayAndMutateRequest(req, parameter.in, name, delimiter);
       } else if (type === 'array' && explode) {
         this.explodeJsonArrayAndMutateRequest(req, parameter.in, name);
@@ -276,19 +289,6 @@ export class RequestParameterMutator {
       );
     };
     return schemaHasObject(schema);
-  }
-
-  private validateArrayDelimiter(
-    delimiter: string,
-    parameter: ParameterObject,
-  ): void {
-    if (!delimiter) {
-      const message = `Parameter 'style' has incorrect value '${parameter.style}' for [${parameter.name}]`;
-      throw new BadRequest({
-        path: `.query.${parameter.name}`,
-        message: message,
-      });
-    }
   }
 
   private validateReservedCharacters(
