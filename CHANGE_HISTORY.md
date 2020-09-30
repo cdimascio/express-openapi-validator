@@ -1,3 +1,11 @@
+## <small>4.0.4 (2020-09-30)</small>
+
+* (chore) increment minor version ([ca449f5](https://github.com/cdimascio/express-openapi-validator/commit/ca449f5))
+* update changelog ([f32db81](https://github.com/cdimascio/express-openapi-validator/commit/f32db81))
+* docs: add joodie as a contributor (#379) ([b169179](https://github.com/cdimascio/express-openapi-validator/commit/b169179)), closes [#379](https://github.com/cdimascio/express-openapi-validator/issues/379)
+
+
+
 ## <small>4.0.3 (2020-09-30)</small>
 
 * increment patch version ([7a60453](https://github.com/cdimascio/express-openapi-validator/commit/7a60453))
