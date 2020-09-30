@@ -20,7 +20,7 @@ export class BasePath {
     let urlPath = this.findUrlPath(server.url);
     if (/{\w+}/.test(urlPath)) {
       // has variable that we need to check out
-      urlPath = urlPath.replace(/{(\w+)}/g, (substring, p1) => `:${p1}`);
+      urlPath = urlPath.replace(/{(\w+)}/g, (substring, p1) => `:${p1}(.*)`);
     }
     this.path = urlPath;
     for (const variable in server.variables) {
