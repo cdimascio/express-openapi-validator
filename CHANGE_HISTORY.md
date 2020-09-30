@@ -1,3 +1,11 @@
+## <small>4.0.3 (2020-09-30)</small>
+
+* increment patch version ([7a60453](https://github.com/cdimascio/express-openapi-validator/commit/7a60453))
+* remove deasync references (#378) ([f57ee23](https://github.com/cdimascio/express-openapi-validator/commit/f57ee23)), closes [#378](https://github.com/cdimascio/express-openapi-validator/issues/378)
+* Update CHANGE_HISTORY.md ([9034a61](https://github.com/cdimascio/express-openapi-validator/commit/9034a61))
+
+
+
 ## <small>4.0.2 (2020-09-28)</small>
 
 * implement as standard connect  middleware (#351) ([b806dd4](https://github.com/cdimascio/express-openapi-validator/commit/b806dd4)), closes [#351](https://github.com/cdimascio/express-openapi-validator/issues/351) [#369](https://github.com/cdimascio/express-openapi-validator/issues/369)
