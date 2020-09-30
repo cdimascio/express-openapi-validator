@@ -1,19 +1,10 @@
 import { expect } from 'chai';
 import * as packageJson from '../package.json';
-import {
-  InternalServerError,
-  UnsupportedMediaType,
-  RequestEntityToLarge,
-  BadRequest,
-  MethodNotAllowed,
-  NotFound,
-  Unauthorized,
-  Forbidden,
-} from '../src';
+import { error } from '../src';
 import { HttpError } from '../src/framework/types';
 
 describe(packageJson.name, () => {
-  it('should be an instance of BadRequest', async () => {
+  it('should be an instance of BadRequest', (done) => {
     console.log('Testing instaceof detection of BadRequest');
     const err = {
       path: '.query.domain_id',
@@ -25,123 +16,131 @@ describe(packageJson.name, () => {
         },
       ],
     };
-    expect(new BadRequest(err)).to.be.an.instanceof(BadRequest);
+    expect(new error.BadRequest(err)).to.be.an.instanceof(error.BadRequest);
     expect(
       HttpError.create({
         status: 400,
         ...err,
       }),
-    ).to.be.an.instanceof(BadRequest);
+    ).to.be.an.instanceof(error.BadRequest);
+    done();
   });
 
-  it('should be an instance of InternalServerError', async () => {
+  it('should be an instance of InternalServerError', (done) => {
     console.log('Testing instaceof detection of InternalServerError');
     const err = {
       path: '/error',
       message: 'Expected Internal Server Error',
     };
-    expect(new InternalServerError(err)).to.be.an.instanceof(
-      InternalServerError,
+    expect(new error.InternalServerError(err)).to.be.an.instanceof(
+      error.InternalServerError,
     );
     expect(
       HttpError.create({
         status: 500,
         ...err,
       }),
-    ).to.be.an.instanceof(InternalServerError);
+    ).to.be.an.instanceof(error.InternalServerError);
+    done();
   });
 
-  it('should be an instance of UnsupportedMediaType', async () => {
+  it('should be an instance of UnsupportedMediaType', (done) => {
     console.log('Testing instaceof detection of UnsupportedMediaType');
     const err = {
       path: '/unsupported_media_type',
       message: 'unsupported media type application/json',
     };
-    expect(new UnsupportedMediaType(err)).to.be.an.instanceof(
-      UnsupportedMediaType,
+    expect(new error.UnsupportedMediaType(err)).to.be.an.instanceof(
+      error.UnsupportedMediaType,
     );
     expect(
       HttpError.create({
         status: 415,
         ...err,
       }),
-    ).to.be.an.instanceof(UnsupportedMediaType);
+    ).to.be.an.instanceof(error.UnsupportedMediaType);
+    done();
   });
 
-  it('should be an instance of RequestEntityToLarge', async () => {
+  it('should be an instance of RequestEntityToLarge', (done) => {
     console.log('Testing instaceof detection of RequestEntityToLarge');
     const err = {
       path: '/entity_to_large',
       message: 'request qntity too large',
     };
-    expect(new RequestEntityToLarge(err)).to.be.an.instanceof(
-      RequestEntityToLarge,
+    expect(new error.RequestEntityToLarge(err)).to.be.an.instanceof(
+      error.RequestEntityToLarge,
     );
     expect(
       HttpError.create({
         status: 413,
         ...err,
       }),
-    ).to.be.an.instanceof(RequestEntityToLarge);
+    ).to.be.an.instanceof(error.RequestEntityToLarge);
+    done();
   });
 
-  it('should be an instance of MethodNotAllowed', async () => {
+  it('should be an instance of MethodNotAllowed', (done) => {
     console.log('Testing instaceof detection of MethodNotAllowed');
     const err = {
       path: '/method_not_allowed',
       message: 'POST method not allowed',
     };
-    expect(new MethodNotAllowed(err)).to.be.an.instanceof(MethodNotAllowed);
+    expect(new error.MethodNotAllowed(err)).to.be.an.instanceof(error.MethodNotAllowed);
     expect(
       HttpError.create({
         status: 405,
         ...err,
       }),
-    ).to.be.an.instanceof(MethodNotAllowed);
+    ).to.be.an.instanceof(error.MethodNotAllowed);
+    done();
   });
 
-  it('should be an instance of NotFound', async () => {
+  it('should be an instance of NotFound', (done) => {
     console.log('Testing instaceof detection of NotFound');
     const err = {
       path: '/not_found',
       message: 'not found',
     };
-    expect(new NotFound(err)).to.be.an.instanceof(NotFound);
+    expect(new error.NotFound(err)).to.be.an.instanceof(error.NotFound);
     expect(
       HttpError.create({
         status: 404,
         ...err,
       }),
-    ).to.be.an.instanceof(NotFound);
+    ).to.be.an.instanceof(error.NotFound);
+    done();
   });
 
-  it('should be an instance of Unauthorized', async () => {
+  it('should be an instance of Unauthorized', (done) => {
     console.log('Testing instaceof detection of Unauthorized');
     const err = {
       path: '/unauthorized',
       message: 'unauthorized',
     };
-    expect(new Unauthorized(err)).to.be.an.instanceof(Unauthorized);
+    expect(new error.Unauthorized(err)).to.be.an.instanceof(error.Unauthorized);
     expect(
       HttpError.create({
         status: 401,
         ...err,
       }),
-    ).to.be.an.instanceof(Unauthorized);
+    ).to.be.an.instanceof(error.Unauthorized);
+    done();
   });
 
-  it('should be an instance of Forbidden', async () => {
+  it('should be an instance of Forbidden', (done) => {
     console.log('Testing instaceof detection of Forbidden');
     const err = {
       path: '/forbidden',
       message: 'forbidden',
     };
-    expect(new Forbidden(err)).to.be.an.instanceof(Forbidden);
+    expect(new error.Forbidden(err)).to.be.an.instanceof(error.Forbidden);
     expect(
       HttpError.create({
         status: 403,
         ...err,
       }),
-    ).to.be.an.instanceof(Forbidden);
+    ).to.be.an.instanceof(error.Forbidden);
+    done();
   });
 });

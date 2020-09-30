@@ -1,3 +1,28 @@
+## <small>4.0.4 (2020-09-30)</small>
+
+* (chore) increment minor version ([ca449f5](https://github.com/cdimascio/express-openapi-validator/commit/ca449f5))
+* update changelog ([f32db81](https://github.com/cdimascio/express-openapi-validator/commit/f32db81))
+* docs: add joodie as a contributor (#379) ([b169179](https://github.com/cdimascio/express-openapi-validator/commit/b169179)), closes [#379](https://github.com/cdimascio/express-openapi-validator/issues/379)
+
+
+
+## <small>4.0.3 (2020-09-30)</small>
+
+* increment patch version ([7a60453](https://github.com/cdimascio/express-openapi-validator/commit/7a60453))
+* remove deasync references (#378) ([f57ee23](https://github.com/cdimascio/express-openapi-validator/commit/f57ee23)), closes [#378](https://github.com/cdimascio/express-openapi-validator/issues/378)
+* Update CHANGE_HISTORY.md ([9034a61](https://github.com/cdimascio/express-openapi-validator/commit/9034a61))
+
+
+
+## <small>4.0.2 (2020-09-28)</small>
+
+* implement as standard connect  middleware (#351) ([b806dd4](https://github.com/cdimascio/express-openapi-validator/commit/b806dd4)), closes [#351](https://github.com/cdimascio/express-openapi-validator/issues/351) [#369](https://github.com/cdimascio/express-openapi-validator/issues/369)
+* increment patch version ([5284ad3](https://github.com/cdimascio/express-openapi-validator/commit/5284ad3))
+* increment patch version ([574457c](https://github.com/cdimascio/express-openapi-validator/commit/574457c))
+* update README ([dfe11bf](https://github.com/cdimascio/express-openapi-validator/commit/dfe11bf))
+* Update README.md ([5eead77](https://github.com/cdimascio/express-openapi-validator/commit/5eead77))
+* v4.0.0 ([8406c12](https://github.com/cdimascio/express-openapi-validator/commit/8406c12))
+
 ## <small>3.17.2 (2020-09-22)</small>
 
 * (fix) #367 - handle negative floats ([a7e5d4d](https://github.com/cdimascio/express-openapi-validator/commit/a7e5d4d)), closes [#367](https://github.com/cdimascio/express-openapi-validator/issues/367)
@@ -41,6 +66,7 @@
 
 
 ## 3.17.0 (2020-09-13)
+>>>>>>> master:CHANGE_HISTORY.md
 
 * #356 test ([7a28d51](https://github.com/cdimascio/express-openapi-validator/commit/7a28d51)), closes [#356](https://github.com/cdimascio/express-openapi-validator/issues/356)
 * add #356 test ([98ad9d8](https://github.com/cdimascio/express-openapi-validator/commit/98ad9d8)), closes [#356](https://github.com/cdimascio/express-openapi-validator/issues/356)
@@ -70,6 +96,7 @@
 
 
 ## <small>3.16.14 (2020-09-07)</small>
+>>>>>>> master
 
 * #356 test ([7a28d51](https://github.com/cdimascio/express-openapi-validator/commit/7a28d51)), closes [#356](https://github.com/cdimascio/express-openapi-validator/issues/356)
 * add #356 test ([98ad9d8](https://github.com/cdimascio/express-openapi-validator/commit/98ad9d8)), closes [#356](https://github.com/cdimascio/express-openapi-validator/issues/356)

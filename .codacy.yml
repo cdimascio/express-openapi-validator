@@ -3,3 +3,4 @@ exclude_paths:
   - 'test/*'
   - '**.md'
   - src/framework/modded.express.mung.ts
+  - src/resolvers.ts

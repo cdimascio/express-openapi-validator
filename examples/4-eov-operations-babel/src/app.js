@@ -3,7 +3,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 const http = require('http');
-const { OpenApiValidator } = require('express-openapi-validator');
+const OpenApiValidator = require('express-openapi-validator');
 
 const port = 3000;
 const app = express();
@@ -18,26 +18,26 @@ app.use(logger('dev'));
 
 app.use('/spec', express.static(apiSpec));
 
-//  2. Install the OpenApiValidator on your express app
-new OpenApiValidator({
-  apiSpec,
-  validateResponses: true, // default false
-  // 3. Provide the path to the controllers directory
-  operationHandlers: path.join(__dirname), // default false
-})
-  .install(app)
-  .then(() => {
-    // 4. Create a custom error handler
-    app.use((err, req, res, next) => {
-      // format errors
-      res.status(err.status || 500).json({
-        message: err.message,
-        errors: err.errors,
-      });
-    });
+// 2. Install the OpenApiValidator middleware
+app.use(
+  OpenApiValidator.middleware({
+    apiSpec,
+    validateResponses: true, // default false
+    // 3. Provide the path to the controllers directory
+    operationHandlers: path.join(__dirname), // default false
+  }),
+);
 
-    http.createServer(app).listen(port);
-    console.log(`Listening on port ${port}`);
+// 3. Install an error handler
+app.use((err, req, res, next) => {
+  // format errors
+  res.status(err.status || 500).json({
+    message: err.message,
+    errors: err.errors,
   });
+});
+
+http.createServer(app).listen(port);
+console.log(`Listening on port ${port}`);
 
 module.exports = app;
