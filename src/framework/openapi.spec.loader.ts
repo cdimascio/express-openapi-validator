@@ -43,33 +43,6 @@ export class OpenApiSpecLoader {
     return this.discoverRoutes();
   }
 
-  public loadSync(): Spec {
-    const discoverRoutesSync = () => {
-      let savedError,
-        savedResult: Spec,
-        done = false;
-      const discoverRoutes = require('util').callbackify(
-        this.discoverRoutes.bind(this),
-      );
-      // const discoverRoutes: any = this.discoverRoutes.bind(this);
-      discoverRoutes((error, result) => {
-        savedError = error;
-        savedResult = result;
-        done = true;
-      });
-
-      // Deasync should be used here any nowhere else!
-      // it is an optional peer dep
-      // Only necessary for those looking to use a blocking
-      // intial openapi parse to resolve json-schema-refs
-      require('deasync').loopWhile(() => !done);
-
-      if (savedError) throw savedError;
-      return savedResult;
-    };
-    return discoverRoutesSync();
-  }
-
   private async discoverRoutes(): Promise<DiscoveredRoutes> {
     const routes: RouteMetadata[] = [];
     const toExpressParams = this.toExpressParams;
