@@ -54,8 +54,8 @@ export class ResponseValidator {
         const accepts: [string] = contentType
           ? [contentType]
           : accept
-          ? accept.split(',').map((h) => h.trim())
-          : [];
+            ? accept.split(',').map((h) => h.trim())
+            : [];
 
         return this._validate({
           validators,
@@ -136,7 +136,7 @@ export class ResponseValidator {
       return;
     }
 
-    if (!body) {
+    if (body === undefined || body === null) {
       throw new InternalServerError({
         path: '.response',
         message: 'response body required.',
