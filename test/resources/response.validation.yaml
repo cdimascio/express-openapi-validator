@@ -34,6 +34,22 @@ paths:
       responses:
         '200':
           description: empty
+  /boolean:
+    description: get boolean responses
+    get:
+      operationId: boolean
+      parameters:
+        - name: value
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: boolean
+          content:
+            application/json:
+              schema:
+                type: boolean
   /object:
     description: endpoints for pets
     summary: endpoints for pets

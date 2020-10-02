@@ -25,6 +25,9 @@ describe(packageJson.name, () => {
         app.get(`${app.basePath}/empty_response`, (req, res) => {
           return res.end();
         });
+        app.get(`${app.basePath}/boolean`, (req, res) => {
+          return res.json(req.query.value);
+        })
         app.get(`${app.basePath}/object`, (req, res) => {
           return res.json([
             { id: 1, name: 'name', tag: 'tag', bought_at: null },
@@ -196,5 +199,21 @@ describe(packageJson.name, () => {
       .expect(200)
       .then((r: any) => {
         expect(r.body).is.an('array').with.length(3);
+      }));
+
+  it('should be able to return `true` as the response body', async () =>
+    request(app)
+      .get(`${app.basePath}/boolean?value=true`)
+      .expect(200)
+      .then((r: any) => {
+        expect(r.body).to.equal(true);
+      }));
+
+  it('should be able to return `false` as the response body', async () =>
+    request(app)
+      .get(`${app.basePath}/boolean?value=false`)
+      .expect(200)
+      .then((r: any) => {
+        expect(r.body).to.equal(false);
       }));
 });
