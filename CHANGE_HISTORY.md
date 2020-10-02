@@ -1,3 +1,13 @@
+## <small>4.0.7 (2020-10-02)</small>
+
+* fix v4 performance ([04c7d3f](https://github.com/cdimascio/express-openapi-validator/commit/04c7d3f))
+* increment patch version ([4fe112f](https://github.com/cdimascio/express-openapi-validator/commit/4fe112f))
+* increment patch version ([7183b1a](https://github.com/cdimascio/express-openapi-validator/commit/7183b1a))
+* update change history ([2be70de](https://github.com/cdimascio/express-openapi-validator/commit/2be70de))
+* update changelog ([684837f](https://github.com/cdimascio/express-openapi-validator/commit/684837f))
+
+
+
 ## <small>4.0.6 (2020-10-02)</small>
 
 * Allow JSON Response to Return Boolean `false` Value (#383) ([dec510e](https://github.com/cdimascio/express-openapi-validator/commit/dec510e)), closes [#383](https://github.com/cdimascio/express-openapi-validator/issues/383)
