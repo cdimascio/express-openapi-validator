@@ -1,3 +1,16 @@
+## <small>4.0.6 (2020-10-02)</small>
+
+* Allow JSON Response to Return Boolean `false` Value (#383) ([dec510e](https://github.com/cdimascio/express-openapi-validator/commit/dec510e)), closes [#383](https://github.com/cdimascio/express-openapi-validator/issues/383)
+* fix #380: allow any string to be servers variables (#381) ([b0c2a0c](https://github.com/cdimascio/express-openapi-validator/commit/b0c2a0c)), closes [#380](https://github.com/cdimascio/express-openapi-validator/issues/380) [#381](https://github.com/cdimascio/express-openapi-validator/issues/381)
+* increment patch version ([7183b1a](https://github.com/cdimascio/express-openapi-validator/commit/7183b1a))
+* increment patch version ([3cfde6b](https://github.com/cdimascio/express-openapi-validator/commit/3cfde6b))
+* update changelog ([684837f](https://github.com/cdimascio/express-openapi-validator/commit/684837f))
+* Update README.md ([080ae7a](https://github.com/cdimascio/express-openapi-validator/commit/080ae7a))
+* docs: add DomParfitt as a contributor (#385) ([33e33e3](https://github.com/cdimascio/express-openapi-validator/commit/33e33e3)), closes [#385](https://github.com/cdimascio/express-openapi-validator/issues/385)
+* docs: add xg1990 as a contributor (#386) ([73b5362](https://github.com/cdimascio/express-openapi-validator/commit/73b5362)), closes [#386](https://github.com/cdimascio/express-openapi-validator/issues/386)
+
+
+
 ## <small>4.0.5 (2020-10-02)</small>
 
 * Allow JSON Response to Return Boolean `false` Value (#383) ([dec510e](https://github.com/cdimascio/express-openapi-validator/commit/dec510e)), closes [#383](https://github.com/cdimascio/express-openapi-validator/issues/383)
