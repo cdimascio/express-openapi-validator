@@ -322,6 +322,15 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "xg1990",
+      "name": "xg1990",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1443518?v=4",
+      "profile": "http://xuguang.info",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
