@@ -90,13 +90,14 @@ export class OpenApiValidator {
     middlewares.push((req, res, next) =>
       pContext
         .then((context) => {
-          if (!inited){
+          if (!inited) {
             // Would be nice to pass the current Router object here if the route
-            // is attach to a Router and not the app. 
-            // Doing so would enable path params to be type coerced when provided to 
-            // the final middleware. 
+            // is attach to a Router and not the app.
+            // Doing so would enable path params to be type coerced when provided to
+            // the final middleware.
             // Unfortunately, it is not possible to get the current Router from a handler function
             this.installPathParams(req.app, context);
+            inited = true;
           }
           next();
         })
@@ -104,27 +105,38 @@ export class OpenApiValidator {
     );
 
     // metadata middleware
+    let metamw;
     middlewares.push((req, res, next) =>
       pContext
-        .then((context) => this.metadataMiddlware(context)(req, res, next))
+        .then((context) => {
+          metamw = metamw || this.metadataMiddlware(context);
+          return metamw(req, res, next);
+        })
         .catch(next),
     );
 
     if (this.options.fileUploader) {
       // multipart middleware
+      let fumw;
       middlewares.push((req, res, next) =>
         pContext
-          .then((context) => this.multipartMiddleware(context)(req, res, next))
+          .then((context) => {
+            fumw = fumw || this.multipartMiddleware(context);
+            return fumw(req, res, next);
+          })
           .catch(next),
       );
     }
 
+    // security middlware
+    let scmw;
     middlewares.push((req, res, next) =>
       pContext
         .then((context) => {
           const components = context.apiDoc.components;
           if (this.options.validateSecurity && components?.securitySchemes) {
-            return this.securityMiddleware(context)(req, res, next);
+            scmw = scmw || this.securityMiddleware(context);
+            return scmw(req, res, next);
           } else {
             next();
           }
@@ -132,26 +144,33 @@ export class OpenApiValidator {
         .catch(next),
     );
 
+    // request middlweare
     if (this.options.validateRequests) {
+      let reqmw;
       middlewares.push((req, res, next) => {
         return pContext
-          .then((context) =>
-            this.requestValidationMiddleware(context)(req, res, next),
-          )
+          .then((context) => {
+            reqmw = reqmw || this.requestValidationMiddleware(context);
+            return reqmw(req, res, next);
+          })
           .catch(next);
       });
     }
 
+    // response middleware
     if (this.options.validateResponses) {
+      let resmw;
       middlewares.push((req, res, next) =>
         pContext
-          .then((context) =>
-            this.responseValidationMiddleware(context)(req, res, next),
-          )
+          .then((context) => {
+            resmw = resmw || this.responseValidationMiddleware(context);
+            return resmw(req, res, next);
+          })
           .catch(next),
       );
     }
 
+    // op handler middleware
     if (this.options.operationHandlers) {
       let router: Router = null;
       middlewares.push((req, res, next) => {
