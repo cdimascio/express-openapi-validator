@@ -32,6 +32,7 @@ export class RequestValidator {
   private middlewareCache: { [key: string]: RequestHandler } = {};
   private apiDoc: OpenAPIV3.Document;
   private ajv: Ajv;
+  private ajvBody: Ajv;
   private requestOpts: ValidateRequestOpts = {};
 
   constructor(
@@ -43,6 +44,7 @@ export class RequestValidator {
     this.requestOpts.allowUnknownQueryParameters =
       options.allowUnknownQueryParameters;
     this.ajv = createRequestAjv(apiDoc, options);
+    this.ajvBody = createRequestAjv(apiDoc, { ...options, coerceTypes: false });
   }
 
   public validate(
@@ -94,16 +96,17 @@ export class RequestValidator {
   ): RequestHandler {
     const apiDoc = this.apiDoc;
     const schemaParser = new ParametersSchemaParser(this.ajv, apiDoc);
-    const bodySchemaParser = new BodySchemaParser(this.ajv, apiDoc);
+    const bodySchemaParser = new BodySchemaParser(this.ajvBody, apiDoc);
     const parameters = schemaParser.parse(path, reqSchema.parameters);
     const securityQueryParam = Security.queryParam(apiDoc, reqSchema);
     const body = bodySchemaParser.parse(path, reqSchema, contentType);
 
     const isBodyBinary = body?.['format'] === 'binary';
-    const properties: ValidationSchema = {
-      ...parameters,
-      body: isBodyBinary ? {} : body,
-    };
+    const bodyProps = isBodyBinary ? {} : body;
+    // const properties: ValidationSchema = {
+    //   ...parameters,
+    //   body: isBodyBinary ? {} : body,
+    // };
     // TODO throw 400 if missing a required binary body
     const required =
       (<SchemaObject>body).required && !isBodyBinary ? ['body'] : [];
@@ -111,11 +114,25 @@ export class RequestValidator {
     const schema = {
       paths: this.apiDoc.paths,
       components: this.apiDoc.components,
-      required: ['query', 'headers', 'params'].concat(required),
-      properties,
+      required: ['query', 'headers', 'params'], //.concat(required),
+      properties: { ...parameters, body: {} },
     };
 
+    const bodySchema = {
+      paths: this.apiDoc.paths,
+      components: this.apiDoc.components,
+      properties: {
+        query: {},
+        headers: {},
+        params: {},
+        cookies: {},
+        body: bodyProps,
+      },
+    };
+    if (required) (<any>bodySchema).required = ['body'];
+
     const validator = this.ajv.compile(schema);
+    const validatorBody = this.ajvBody.compile(bodySchema);
 
     return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
       const openapi = <OpenApiRequestMetadata>req.openapi;
@@ -125,6 +142,7 @@ export class RequestValidator {
         req.params = openapi.pathParams ?? req.params;
       }
 
+      const properties = { ...parameters, body: bodyProps };
       const mutator = new RequestParameterMutator(
         this.ajv,
         apiDoc,
@@ -150,10 +168,22 @@ export class RequestValidator {
         : undefined;
 
       const valid = validator({ query: {}, ...req, cookies });
-      if (valid) {
+      const validBody =
+        validatorBody === null
+          ? true
+          : validatorBody({ query: {}, ...req, cookies });
+
+      if (valid !== validBody) {
+        console.log('********DIFFERENT', req.path, req.method, req.body);
+        console.log('prev', valid, validator.errors);
+        console.log('next', validBody, validatorBody?.errors);
+      }
+      if (valid && validBody) {
         next();
       } else {
-        const errors = augmentAjvErrors([...(validator.errors ?? [])]);
+        const errors = augmentAjvErrors(
+          [].concat(validator.errors ?? []).concat(validatorBody.errors ?? []),
+        );
         const err = ajvErrorsToValidatorError(400, errors);
         const message = this.ajv.errorsText(errors, { dataVar: 'request' });
         const error: BadRequest = new BadRequest({

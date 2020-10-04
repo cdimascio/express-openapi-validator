@@ -33,7 +33,6 @@ const REQUEST_FIELDS = {
 };
 
 type Schema = ReferenceObject | SchemaObject;
-type Parameter = ReferenceObject | ParameterObject;
 
 /**
  * A class top parse and mutate the incoming request parameters according to the openapi spec.
