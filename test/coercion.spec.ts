@@ -39,7 +39,7 @@ describe(packageJson.name, () => {
         expect(r.body.message).to.contain('is_cat should be boolean');
       }));
 
-  it('should return 400 when age is passed as but typed as number', async () =>
+  it('should return 400 when age is passed as string, number is expected', async () =>
     request(app)
       .post(`${app.basePath}/coercion/pets`)
       .send({
