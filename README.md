@@ -696,7 +696,7 @@ Specifies the options to passthrough to multer. express-openapi-validator uses m
   }
   ```
 
-### ▪️ coerceTypes (optional)
+### ▪️ coerceTypes (optional) - _deprecated_
 
 Determines whether the validator should coerce value types to match the type defined in the OpenAPI spec.
 

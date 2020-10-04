@@ -176,7 +176,10 @@ export class OpenApiValidator {
       middlewares.push((req, res, next) => {
         if (router) return router(req, res, next);
         pContext
-          .then((context) => (router = this.installOperationHandlers(req.baseUrl, context)))
+          .then(
+            (context) =>
+              (router = this.installOperationHandlers(req.baseUrl, context)),
+          )
           .then((router) => router(req, res, next))
           .catch(next);
       });
@@ -308,6 +311,9 @@ export class OpenApiValidator {
       throw ono(
         'securityHandlers is not supported. Use validateSecurities.handlers instead.',
       );
+    }
+    if (options.coerceTypes) {
+      console.warn('coerceTypes is deprecated.');
     }
 
     const multerOpts = (<any>options).multerOpts;

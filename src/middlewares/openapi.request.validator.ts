@@ -1,4 +1,4 @@
-import { Ajv } from 'ajv';
+import { Ajv, ValidateFunction } from 'ajv';
 import { createRequestAjv } from '../framework/ajv';
 import {
   ContentType,
@@ -7,7 +7,6 @@ import {
 } from './util';
 import { NextFunction, RequestHandler, Response } from 'express';
 import {
-  ValidationSchema,
   OpenAPIV3,
   OpenApiRequest,
   RequestValidatorOptions,
@@ -16,6 +15,9 @@ import {
   NotFound,
   MethodNotAllowed,
   BadRequest,
+  ParametersSchema,
+  BodySchema,
+  ValidationSchema,
 } from '../framework/types';
 import { BodySchemaParser } from './parsers/body.parse';
 import { ParametersSchemaParser } from './parsers/schema.parse';
@@ -32,6 +34,7 @@ export class RequestValidator {
   private middlewareCache: { [key: string]: RequestHandler } = {};
   private apiDoc: OpenAPIV3.Document;
   private ajv: Ajv;
+  private ajvBody: Ajv;
   private requestOpts: ValidateRequestOpts = {};
 
   constructor(
@@ -43,6 +46,7 @@ export class RequestValidator {
     this.requestOpts.allowUnknownQueryParameters =
       options.allowUnknownQueryParameters;
     this.ajv = createRequestAjv(apiDoc, options);
+    this.ajvBody = createRequestAjv(apiDoc, { ...options, coerceTypes: false });
   }
 
   public validate(
@@ -94,28 +98,14 @@ export class RequestValidator {
   ): RequestHandler {
     const apiDoc = this.apiDoc;
     const schemaParser = new ParametersSchemaParser(this.ajv, apiDoc);
-    const bodySchemaParser = new BodySchemaParser(this.ajv, apiDoc);
+    const bodySchemaParser = new BodySchemaParser(this.ajvBody, apiDoc);
     const parameters = schemaParser.parse(path, reqSchema.parameters);
     const securityQueryParam = Security.queryParam(apiDoc, reqSchema);
     const body = bodySchemaParser.parse(path, reqSchema, contentType);
-
-    const isBodyBinary = body?.['format'] === 'binary';
-    const properties: ValidationSchema = {
-      ...parameters,
-      body: isBodyBinary ? {} : body,
-    };
-    // TODO throw 400 if missing a required binary body
-    const required =
-      (<SchemaObject>body).required && !isBodyBinary ? ['body'] : [];
-    // $schema: "http://json-schema.org/draft-04/schema#",
-    const schema = {
-      paths: this.apiDoc.paths,
-      components: this.apiDoc.components,
-      required: ['query', 'headers', 'params'].concat(required),
-      properties,
-    };
-
-    const validator = this.ajv.compile(schema);
+    const validator = new Validator(this.apiDoc, parameters, body, {
+      general: this.ajv,
+      body: this.ajvBody,
+    });
 
     return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
       const openapi = <OpenApiRequestMetadata>req.openapi;
@@ -125,11 +115,12 @@ export class RequestValidator {
         req.params = openapi.pathParams ?? req.params;
       }
 
+      const schemaPoperties = validator.allSchemaProperties;
       const mutator = new RequestParameterMutator(
         this.ajv,
         apiDoc,
         path,
-        properties,
+        schemaPoperties,
       );
 
       mutator.modifyRequest(req);
@@ -137,7 +128,7 @@ export class RequestValidator {
       if (!this.requestOpts.allowUnknownQueryParameters) {
         this.processQueryParam(
           req.query,
-          schema.properties.query,
+          schemaPoperties.query,
           securityQueryParam,
         );
       }
@@ -149,11 +140,18 @@ export class RequestValidator {
           }
         : undefined;
 
-      const valid = validator({ query: {}, ...req, cookies });
-      if (valid) {
+      const data = { query: {}, ...req, cookies };
+      const valid = validator.validatorGeneral(data);
+      const validBody = validator.validatorBody(data);
+
+      if (valid && validBody) {
         next();
       } else {
-        const errors = augmentAjvErrors([...(validator.errors ?? [])]);
+        const errors = augmentAjvErrors(
+          []
+            .concat(validator.validatorGeneral.errors ?? [])
+            .concat(validator.validatorBody.errors ?? []),
+        );
         const err = ajvErrorsToValidatorError(400, errors);
         const message = this.ajv.errorsText(errors, { dataVar: 'request' });
         const error: BadRequest = new BadRequest({
@@ -188,6 +186,67 @@ export class RequestValidator {
         });
       }
     }
+  }
+}
+
+class Validator {
+  private readonly apiDoc: OpenAPIV3.Document;
+  readonly schemaGeneral: object;
+  readonly schemaBody: object;
+  readonly validatorGeneral: ValidateFunction;
+  readonly validatorBody: ValidateFunction;
+  readonly allSchemaProperties: ValidationSchema;
+
+  constructor(
+    apiDoc: OpenAPIV3.Document,
+    parametersSchema: ParametersSchema,
+    bodySchema: BodySchema,
+    ajv: {
+      general: Ajv;
+      body: Ajv;
+    },
+  ) {
+    this.apiDoc = apiDoc;
+    this.schemaGeneral = this._schemaGeneral(parametersSchema);
+    this.schemaBody = this._schemaBody(bodySchema);
+    this.allSchemaProperties = {
+      ...(<any>this.schemaGeneral).properties, // query, header, params props
+      body: (<any>this.schemaBody).properties.body, // body props
+    };
+    this.validatorGeneral = ajv.general.compile(this.schemaGeneral);
+    this.validatorBody = ajv.body.compile(this.schemaBody);
+  }
+
+  private _schemaGeneral(parameters: ParametersSchema): object {
+    // $schema: "http://json-schema.org/draft-04/schema#",
+    return {
+      paths: this.apiDoc.paths,
+      components: this.apiDoc.components,
+      required: ['query', 'headers', 'params'],
+      properties: { ...parameters, body: {} },
+    };
+  }
+
+  private _schemaBody(body: BodySchema): object {
+    // $schema: "http://json-schema.org/draft-04/schema#"
+    const isBodyBinary = body?.['format'] === 'binary';
+    const bodyProps = isBodyBinary ? {} : body;
+    const bodySchema = {
+      paths: this.apiDoc.paths,
+      components: this.apiDoc.components,
+      properties: {
+        query: {},
+        headers: {},
+        params: {},
+        cookies: {},
+        body: bodyProps,
+      },
+    };
+    const requireBody = (<SchemaObject>body).required && !isBodyBinary;
+    if (requireBody) {
+      (<any>bodySchema).required = ['body'];
+    }
+    return bodySchema;
   }
 }
 
