@@ -26,17 +26,57 @@ describe(packageJson.name, () => {
     app.server.close();
   });
 
-  it('should coerce is_cat to boolean since it is defined as a boolean in the spec', async () =>
+  it('should return 400 since is_cat is passed as string not boolean', async () =>
     request(app)
       .post(`${app.basePath}/coercion/pets`)
       .send({
         name: 'test',
         is_cat: 'true',
       })
+      .expect(400)
+      .then((r) => {
+        console.log(r.body);
+        expect(r.body.message).to.contain('is_cat should be boolean');
+      }));
+
+  it('should return 400 when age is passed as string, but number is expected', async () =>
+    request(app)
+      .post(`${app.basePath}/coercion/pets`)
+      .send({
+        name: 'test',
+        is_cat: true,
+        age: '13.5',
+      })
+      .expect(400)
+      .then((r) => {
+        expect(r.body.message).to.contain('age should be number');
+      }));
+
+  it('should return 400 when age (number) is null', async () =>
+    request(app)
+      .post(`${app.basePath}/coercion/pets`)
+      .send({
+        name: 'test',
+        is_cat: true,
+        age: null,
+      })
+      .expect(400)
+      .then((r) => {
+        expect(r.body.message).to.contain('age should be number');
+      }));
+
+  it('should return 200 when all are typed correctly', async () =>
+    request(app)
+      .post(`${app.basePath}/coercion/pets`)
+      .send({
+        name: 'test',
+        is_cat: true,
+        age: 13.5,
+      })
       .expect(200)
       .then((r) => {
-        expect(r.body.is_cat).to.be.a('boolean');
-        expect(r.body.is_cat).to.be.equal(true);
+        expect(r.body.age).to.equal(13.5);
+        expect(r.body.is_cat).to.equal(true);
       }));
 
   it('should keep is_cat as boolean', async () =>
@@ -52,16 +92,15 @@ describe(packageJson.name, () => {
         expect(r.body.is_cat).to.be.equal(true);
       }));
 
-  it('should coerce a is_cat from boolean to string since it is defined as such in the spec', async () =>
+  it('should return 400 when is_cat requires string type "true", but boolean specified', async () =>
     request(app)
       .post(`${app.basePath}/coercion/pets_string_boolean`)
       .send({
         name: 'test',
         is_cat: true,
       })
-      .expect(200)
+      .expect(400)
       .then((r) => {
-        expect(r.body.is_cat).to.be.a('string');
-        expect(r.body.is_cat).to.be.equal('true');
+        expect(r.body.message).to.contain('is_cat should be string');
       }));
 });
