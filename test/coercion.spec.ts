@@ -49,7 +49,19 @@ describe(packageJson.name, () => {
       })
       .expect(400)
       .then((r) => {
-        console.log(r.body);
+        expect(r.body.message).to.contain('age should be number');
+      }));
+
+  it('should return 400 when age (number) is null', async () =>
+    request(app)
+      .post(`${app.basePath}/coercion/pets`)
+      .send({
+        name: 'test',
+        is_cat: true,
+        age: null,
+      })
+      .expect(400)
+      .then((r) => {
         expect(r.body.message).to.contain('age should be number');
       }));
 
