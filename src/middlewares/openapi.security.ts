@@ -94,7 +94,7 @@ export function security(
       
       function checkErrors (r, andOp = false) {
         r.forEach((res) => {
-            if (Array.isArray(res) && res.length > 1) {
+            if (Array.isArray(res)) {
                 checkErrors(res, true);
             } else {
                 if (!andOp) {
