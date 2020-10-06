@@ -106,7 +106,7 @@ export function security(
                             firstError = res;
                         }                                
                     }
-                } else {
+                } else if (!firstError) {
                     if (res.success) {
                         success = true;                                
                     } else {
