@@ -91,14 +91,37 @@ export function security(
       // This assumes OR only! i.e. at least one security passed authentication
       let firstError: SecurityHandlerResult = null;
       let success = false;
-      for (const r of results) {
-        if (r.success) {
-          success = true;
-          break;
-        } else if (!firstError) {
-          firstError = r;
-        }
-      }
+      
+      function checkErrors (r, andOp = false) {
+        r.forEach((res) => {
+            if (Array.isArray(res) && res.length > 1) {
+                checkErrors(res, true);
+            } else {
+                if (!andOp) {
+                    if (res.success) {
+                        success = true;
+                        return;
+                    } else {                            
+                        if (!firstError) {
+                            firstError = res;
+                        }                                
+                    }
+                } else {
+                    if (res.success) {
+                        success = true;                                
+                    } else {
+                        success = false;                       
+                        if (!firstError) {
+                            firstError = res;
+                        }
+                        return;                  
+                    }
+                }          
+            }
+        })
+      }            
+      
+      checkErrors(results);
       if (success) {
         next();
       } else {
@@ -138,62 +161,62 @@ class SecuritySchemes {
 
   public async executeHandlers(
     req: OpenApiRequest,
-  ): Promise<SecurityHandlerResult[]> {
+  ): Promise<(SecurityHandlerResult | SecurityHandlerResult[])[]> {
     // use a fallback handler if security handlers is not specified
     // This means if security handlers is specified, the user must define
     // all security handlers
     const fallbackHandler = !this.securityHandlers
       ? defaultSecurityHandler
       : null;
-
     const promises = this.securities.map(async (s) => {
-      try {
-        if (Util.isEmptyObject(s)) {
-          // anonumous security
-          return { success: true };
-        }
-        const securityKey = Object.keys(s)[0];
-        const scheme = this.securitySchemes[securityKey];
-        const handler = this.securityHandlers?.[securityKey] ?? fallbackHandler;
-        const scopesTmp = s[securityKey];
-        const scopes = Array.isArray(scopesTmp) ? scopesTmp : [];
-
-        if (!scheme) {
-          const message = `components.securitySchemes.${securityKey} does not exist`;
-          throw new InternalServerError({ message });
-        }
-        if (!scheme.hasOwnProperty('type')) {
-          const message = `components.securitySchemes.${securityKey} must have property 'type'`;
-          throw new InternalServerError({ message });
-        }
-        if (!handler) {
-          const message = `a security handler for '${securityKey}' does not exist`;
-          throw new InternalServerError({ message });
-        }
-
-        new AuthValidator(req, scheme, scopes).validate();
-
-        // expected handler results are:
-        // - throw exception,
-        // - return true,
-        // - return Promise<true>,
-        // - return false,
-        // - return Promise<false>
-        // everything else should be treated as false
-        const securityScheme = <OpenAPIV3.SecuritySchemeObject>scheme;
-        const success = await handler(req, scopes, securityScheme);
-        if (success === true) {
-          return { success };
-        } else {
-          throw Error();
-        }
-      } catch (e) {
-        return {
-          success: false,
-          status: e.status ?? 401,
-          error: e,
-        };
+      if (Util.isEmptyObject(s)) {
+        // anonumous security
+        return { success: true };
       }
+      return Promise.all(Object.keys(s).map(async (securityKey) => {
+        var _a, _b, _c;
+        try {
+          const scheme = this.securitySchemes[securityKey];
+          const handler = (_b = (_a = this.securityHandlers) === null || _a === void 0 ? void 0 : _a[securityKey]) !== null && _b !== void 0 ? _b : fallbackHandler;
+          const scopesTmp = s[securityKey];
+          const scopes = Array.isArray(scopesTmp) ? scopesTmp : [];
+          if (!scheme) {
+            const message = `components.securitySchemes.${securityKey} does not exist`;
+            throw new InternalServerError({ message });
+          }
+          if (!scheme.hasOwnProperty('type')) {
+            const message = `components.securitySchemes.${securityKey} must have property 'type'`;
+            throw new InternalServerError({ message });
+          }
+          if (!handler) {
+            const message = `a security handler for '${securityKey}' does not exist`;
+            throw new InternalServerError({ message });
+          }
+          new AuthValidator(req, scheme, scopes).validate();
+          // expected handler results are:
+          // - throw exception,
+          // - return true,
+          // - return Promise<true>,
+          // - return false,
+          // - return Promise<false>
+          // everything else should be treated as false
+          const securityScheme = <OpenAPIV3.SecuritySchemeObject>scheme;
+          const success = await handler(req, scopes, securityScheme);
+          if (success === true) {
+            return { success };
+          }
+          else {
+            throw Error();
+          }
+        }
+        catch (e) {
+          return {
+            success: false,
+            status: (_c = e.status) !== null && _c !== void 0 ? _c : 401,
+            error: e,
+          };
+        }
+      }));
     });
     return Promise.all(promises);
   }
