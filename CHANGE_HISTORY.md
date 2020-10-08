@@ -1,3 +1,23 @@
+## 4.2.0 (2020-10-08)
+
+* Create dependabot.yml ([b57116c](https://github.com/cdimascio/express-openapi-validator/commit/b57116c))
+* do not coerce request body property values (#387) ([07af36f](https://github.com/cdimascio/express-openapi-validator/commit/07af36f)), closes [#387](https://github.com/cdimascio/express-openapi-validator/issues/387)
+* fix v4 performance ([04c7d3f](https://github.com/cdimascio/express-openapi-validator/commit/04c7d3f))
+* increment minor version ([1ec3c53](https://github.com/cdimascio/express-openapi-validator/commit/1ec3c53))
+* increment minor version ([fac305d](https://github.com/cdimascio/express-openapi-validator/commit/fac305d))
+* increment patch version ([4fe112f](https://github.com/cdimascio/express-openapi-validator/commit/4fe112f))
+* increment patch version ([7183b1a](https://github.com/cdimascio/express-openapi-validator/commit/7183b1a))
+* remove script ([0bc452c](https://github.com/cdimascio/express-openapi-validator/commit/0bc452c))
+* Response body coercion (#392) ([c8b5fdf](https://github.com/cdimascio/express-openapi-validator/commit/c8b5fdf)), closes [#392](https://github.com/cdimascio/express-openapi-validator/issues/392) [#391](https://github.com/cdimascio/express-openapi-validator/issues/391)
+* update change history ([b330443](https://github.com/cdimascio/express-openapi-validator/commit/b330443))
+* update change history ([2be70de](https://github.com/cdimascio/express-openapi-validator/commit/2be70de))
+* update changelog ([684837f](https://github.com/cdimascio/express-openapi-validator/commit/684837f))
+* update ignores ([d8ab4d9](https://github.com/cdimascio/express-openapi-validator/commit/d8ab4d9))
+* Update README.md ([ff87826](https://github.com/cdimascio/express-openapi-validator/commit/ff87826))
+* fix: upgrade ajv from 6.12.4 to 6.12.5 (#388) ([e615c57](https://github.com/cdimascio/express-openapi-validator/commit/e615c57)), closes [#388](https://github.com/cdimascio/express-openapi-validator/issues/388)
+
+
+
 ## <small>4.0.7 (2020-10-02)</small>
 
 * fix v4 performance ([04c7d3f](https://github.com/cdimascio/express-openapi-validator/commit/04c7d3f))
