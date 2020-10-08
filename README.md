@@ -700,6 +700,8 @@ Specifies the options to passthrough to multer. express-openapi-validator uses m
 
 Determines whether the validator should coerce value types to match the type defined in the OpenAPI spec.
 
+_Applies **only** to path params, query string, headers, and cookies.
+
 - `true` (**default**) - coerce scalar data types.
 - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
 
