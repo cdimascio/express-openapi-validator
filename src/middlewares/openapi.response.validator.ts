@@ -25,7 +25,7 @@ interface ValidateResult {
   accepts: string[];
 }
 export class ResponseValidator {
-  private ajv: ajv.Ajv;
+  private ajvBody: ajv.Ajv;
   private spec: OpenAPIV3.Document;
   private validatorsCache: {
     [key: string]: { [key: string]: ajv.ValidateFunction };
@@ -33,7 +33,11 @@ export class ResponseValidator {
 
   constructor(openApiSpec: OpenAPIV3.Document, options: ajv.Options = {}) {
     this.spec = openApiSpec;
-    this.ajv = createResponseAjv(openApiSpec, options);
+    this.ajvBody = createResponseAjv(openApiSpec, {
+      ...options,
+      coerceTypes: false,
+    });
+
     (<any>mung).onError = (err, req, res, next) => {
       return next(err);
     };
@@ -54,8 +58,8 @@ export class ResponseValidator {
         const accepts: [string] = contentType
           ? [contentType]
           : accept
-            ? accept.split(',').map((h) => h.trim())
-            : [];
+          ? accept.split(',').map((h) => h.trim())
+          : [];
 
         return this._validate({
           validators,
@@ -160,7 +164,7 @@ export class ResponseValidator {
 
     if (!valid) {
       const errors = augmentAjvErrors(validator.errors);
-      const message = this.ajv.errorsText(errors, {
+      const message = this.ajvBody.errorsText(errors, {
         dataVar: '', // responses
       });
       throw new InternalServerError({
@@ -259,7 +263,7 @@ export class ResponseValidator {
         schema.components = this.spec.components; // add components for resolution w/ multi-file
         validators[code] = {
           ...validators[code],
-          [contentType]: this.ajv.compile(<object>schema),
+          [contentType]: this.ajvBody.compile(<object>schema),
         };
       }
     }
