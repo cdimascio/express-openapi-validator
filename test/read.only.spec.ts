@@ -10,7 +10,7 @@ describe(packageJson.name, () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'read.only.yaml');
-    app = await createApp({ apiSpec, validateResponses: true }, 3005, app =>
+    app = await createApp({ apiSpec, validateResponses: true }, 3005, (app) =>
       app
         .post(`${app.basePath}/products`, (req, res) => res.json(req.body))
         .get(`${app.basePath}/products`, (req, res) =>
@@ -42,11 +42,19 @@ describe(packageJson.name, () => {
           const body = req.body;
           body.id = 'test';
           body.created_at = new Date().toISOString();
-          body.reviews = body.reviews.map(r => ({
+          body.reviews = body.reviews.map((r) => ({
             id: 99,
             rating: r.rating ?? 2,
           }));
           res.json(body);
+        })
+        .post(`${app.basePath}/readonly_required_allof`, (req, res) => {
+          const json = {
+            name: 'My Name',
+            ...(req.query.include_id ? { id: 'test_id' } : {}),
+          };
+          console.log(json);
+          res.json(json);
         }),
     );
   });
@@ -66,7 +74,7 @@ describe(packageJson.name, () => {
         created_at: new Date().toISOString(),
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         // id is a readonly property and should not be allowed in the request
         expect(body.message).to.contain('id');
@@ -76,10 +84,8 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/products`)
       .expect(200)
-      .then(r => {
-        expect(r.body)
-          .to.be.an('array')
-          .with.length(1);
+      .then((r) => {
+        expect(r.body).to.be.an('array').with.length(1);
       }));
 
   it('should not allow read only inlined properties in requests', async () =>
@@ -93,7 +99,7 @@ describe(packageJson.name, () => {
         created_at: new Date().toUTCString(),
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         // id is a readonly property and should not be allowed in the request
         expect(body.message).to.contain('id');
@@ -114,7 +120,7 @@ describe(packageJson.name, () => {
         },
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         // id is a readonly property and should not be allowed in the request
         expect(body.message).to.contain('id');
@@ -135,7 +141,7 @@ describe(packageJson.name, () => {
         ],
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         // id is a readonly property and should not be allowed in the request
         expect(body.message).to.contain('request.body.reviews[0].id');
@@ -152,10 +158,8 @@ describe(packageJson.name, () => {
         username: 'test',
       })
       .expect(200)
-      .then(r => {
-        expect(r.body)
-          .to.be.an('object')
-          .with.property('id');
+      .then((r) => {
+        expect(r.body).to.be.an('object').with.property('id');
         expect(r.body).to.have.property('username');
       }));
 
@@ -170,10 +174,8 @@ describe(packageJson.name, () => {
         username: 'test',
       })
       .expect(200)
-      .then(r => {
-        expect(r.body)
-          .to.be.an('object')
-          .with.property('id');
+      .then((r) => {
+        expect(r.body).to.be.an('object').with.property('id');
         expect(r.body).to.have.property('username');
       }));
 
@@ -188,10 +190,8 @@ describe(packageJson.name, () => {
         username: 'test',
       })
       .expect(200)
-      .then(r => {
-        expect(r.body)
-          .to.be.an('object')
-          .with.property('id');
+      .then((r) => {
+        expect(r.body).to.be.an('object').with.property('id');
         expect(r.body).to.have.property('username');
       }));
 
@@ -203,9 +203,28 @@ describe(packageJson.name, () => {
         username: 'test',
       })
       .expect(500)
-      .then(r => {
+      .then((r) => {
         expect(r.body.errors[0])
           .to.have.property('message')
           .equals("should have required property 'id'");
+      }));
+
+  it('should require readonly required property in response', async () =>
+    request(app)
+      .post(`${app.basePath}/readonly_required_allof`)
+      .query({ include_id: true })
+      .send({ optional: 'test' })
+      .set('content-type', 'application/json')
+      .expect(200));
+
+  it('should return 500 if readonly required property is missing from response', async () =>
+    request(app)
+      .post(`${app.basePath}/readonly_required_allof`)
+      .query({ include_id: false })
+      .send({ optional: 'test' })
+      .set('content-type', 'application/json')
+      .expect(500)
+      .then((r) => {
+        expect(r.body.message).includes("should have required property 'id'");
       }));
 });
