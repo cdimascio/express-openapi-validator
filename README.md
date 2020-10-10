@@ -696,15 +696,6 @@ Specifies the options to passthrough to multer. express-openapi-validator uses m
   }
   ```
 
-### ▪️ coerceTypes (optional) - _deprecated_
-
-Determines whether the validator should coerce value types to match the type defined in the OpenAPI spec.
-
-_Applies **only** to path params, query string, headers, and cookies.
-
-- `true` (**default**) - coerce scalar data types.
-- `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
-
 ### ▪️ \$refParser.mode (optional)
 
 Determines how JSON schema references are resolved by the internal [json-schema-ref-parser](https://github.com/APIDevTools/json-schema-ref-parser). Generally, the default mode, `bundle` is sufficient, however if you use [escape characters in \$refs](https://swagger.io/docs/specification/using-ref/), `dereference` is necessary.
@@ -721,6 +712,15 @@ $refParser: {
   mode: 'bundle';
 }
 ```
+
+### ▪️ coerceTypes (optional) - _deprecated_
+
+Determines whether the validator should coerce value types to match the those defined in the OpenAPI spec. This option applies **only** to path params, query strings, headers, and cookies. _It is **highly unlikley** that will want to disable this. As such this option is deprecated and will be removed in the next major version_
+
+
+- `true` (**default**) - coerce scalar data types.
+- `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
+
 
 ## The Base URL
 
