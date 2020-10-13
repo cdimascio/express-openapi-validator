@@ -71,9 +71,9 @@ export class OpenApiSpecLoader {
               }
               const openApiRoute = `${bp}${path}`;
               const expressRoute = `${openApiRoute}`
-                .split('/')
+                .split(':')
                 .map(toExpressParams)
-                .join('/');
+                .join('\\:');
 
               routes.push({
                 basePath: bp,
