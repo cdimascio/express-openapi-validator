@@ -68,11 +68,15 @@ export class BodySchemaParser {
       }
 
       if (!content) {
-        const msg =
-          contentType.contentType === 'not_provided'
-            ? 'media type not specified'
-            : `unsupported media type ${contentType.contentType}`;
-        throw new UnsupportedMediaType({ path: path, message: msg });
+        if (contentType.contentType !== undefined) {
+          const msg =
+            contentType.contentType === 'not_provided'
+              ? 'media type not specified'
+              : `unsupported media type ${contentType.contentType}`;
+          throw new UnsupportedMediaType({ path: path, message: msg });
+        } else {
+          content = {};
+        }
       }
 
       const schema = this.cleanseContentSchema(content);

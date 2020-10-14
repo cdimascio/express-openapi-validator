@@ -1,0 +1,23 @@
+openapi: 3.0.2
+servers:
+  - url: /
+info:
+  description: Optional requestBody API
+  version: 0.0.1
+  title: Optional requestBody API
+paths:
+  /documents:
+    post:
+      summary: Create a document
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Document successfully created
+          content:
+            application/json:
+              schema:
+                type: object
