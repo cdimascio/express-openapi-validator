@@ -1,3 +1,14 @@
+## <small>4.2.1 (2020-10-14)</small>
+
+* add readonly required test using allOf ([cbd6292](https://github.com/cdimascio/express-openapi-validator/commit/cbd6292))
+* increment patch version ([2231fde](https://github.com/cdimascio/express-openapi-validator/commit/2231fde))
+* update change history ([cae389c](https://github.com/cdimascio/express-openapi-validator/commit/cae389c))
+* Update README.md ([8e9678d](https://github.com/cdimascio/express-openapi-validator/commit/8e9678d))
+* docs: add ownagedj as a contributor (#399) ([1a8779f](https://github.com/cdimascio/express-openapi-validator/commit/1a8779f)), closes [#399](https://github.com/cdimascio/express-openapi-validator/issues/399)
+* fix: optional requestBody handling / add tests (#398) ([5b3d32a](https://github.com/cdimascio/express-openapi-validator/commit/5b3d32a)), closes [#398](https://github.com/cdimascio/express-openapi-validator/issues/398)
+
+
+
 ## 4.2.0 (2020-10-08)
 
 * Create dependabot.yml ([b57116c](https://github.com/cdimascio/express-openapi-validator/commit/b57116c))
