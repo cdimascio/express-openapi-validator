@@ -331,6 +331,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ownagedj",
+      "name": "ownagedj",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/5887702?v=4",
+      "profile": "https://github.com/ownagedj",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
