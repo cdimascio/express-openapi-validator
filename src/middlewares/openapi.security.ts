@@ -86,46 +86,54 @@ export function security(
         securityHandlers,
         securities,
       ).executeHandlers(req);
-
+      console.log(results);
+      
       // TODO handle AND'd and OR'd security
       // This assumes OR only! i.e. at least one security passed authentication
-      let firstError: SecurityHandlerResult = null;
+      let firstError: SecurityHandlerResult = null;      
       let success = false;
       
-      function checkErrors (r, andOp = false) {
-        r.forEach((res) => {
-            if (Array.isArray(res)) {
-                checkErrors(res, true);
-            } else {
-                if (!andOp) {
-                    if (res.success) {
-                        success = true;
-                        return;
-                    } else {                            
-                        if (!firstError) {
-                            firstError = res;
-                        }                                
-                    }
-                } else if (!firstError) {
-                    if (res.success) {
-                        success = true;                                
-                    } else {
-                        success = false;                       
-                        if (!firstError) {
-                            firstError = res;
-                        }
-                        return;                  
-                    }
-                }          
+      function checkErrorWithOr(res) {
+        return res.forEach(r => {
+            if (r.success) {
+                success = true;
+            } else if (!firstError) {
+                firstError = r;
             }
         })
-      }            
-      
-      checkErrors(results);
+      }
+
+      function checkErrorsWithAnd(res) {
+          let allSuccess = false;
+          
+          res.forEach(r => {
+              if (!r.success) {
+                  allSuccess = false;                        
+                  if (!firstError) {                            
+                      firstError = r;                                                        
+                  }                        
+              } else if (!firstError) {
+                  allSuccess = true;
+              }                    
+          })
+          console.log('allSuccess', allSuccess);
+          if (allSuccess) {
+              success = true;
+          }
+      }
+
+      results.forEach(result => {
+          if (Array.isArray(result) && result.length > 1) {                    
+              checkErrorsWithAnd(result);
+          } else {                    
+              checkErrorWithOr(result);
+          }
+      });
+
       if (success) {
-        next();
+          next();                
       } else {
-        throw firstError;
+          throw firstError;
       }
     } catch (e) {
       const message = e?.error?.message || 'unauthorized';
@@ -171,7 +179,7 @@ class SecuritySchemes {
     const promises = this.securities.map(async (s) => {
       if (Util.isEmptyObject(s)) {
         // anonumous security
-        return { success: true };
+        return [{ success: true }];
       }
       return Promise.all(Object.keys(s).map(async (securityKey) => {
         var _a, _b, _c;
