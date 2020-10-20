@@ -85,8 +85,7 @@ export function security(
         securitySchemes,
         securityHandlers,
         securities,
-      ).executeHandlers(req);
-      console.log(results);
+      ).executeHandlers(req);      
       
       // TODO handle AND'd and OR'd security
       // This assumes OR only! i.e. at least one security passed authentication
@@ -116,7 +115,7 @@ export function security(
                   allSuccess = true;
               }                    
           })
-          console.log('allSuccess', allSuccess);
+          
           if (allSuccess) {
               success = true;
           }
