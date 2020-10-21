@@ -1056,6 +1056,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://xuguang.info"><img src="https://avatars1.githubusercontent.com/u/1443518?v=4" width="100px;" alt=""/><br /><sub><b>xg1990</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=xg1990" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/ownagedj"><img src="https://avatars2.githubusercontent.com/u/5887702?v=4" width="100px;" alt=""/><br /><sub><b>ownagedj</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=ownagedj" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=ownagedj" title="Tests">⚠️</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/dprgarner"><img src="https://avatars2.githubusercontent.com/u/11389185?v=4" width="100px;" alt=""/><br /><sub><b>David Garner</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=dprgarner" title="Code">💻</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-enable -->
