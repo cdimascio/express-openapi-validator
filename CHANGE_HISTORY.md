@@ -1,3 +1,15 @@
+## <small>4.2.2 (2020-10-22)</small>
+
+* fixes #402 500 on empty body for undeclared content-type (#406) ([e10d863](https://github.com/cdimascio/express-openapi-validator/commit/e10d863)), closes [#402](https://github.com/cdimascio/express-openapi-validator/issues/402) [#406](https://github.com/cdimascio/express-openapi-validator/issues/406) [#402](https://github.com/cdimascio/express-openapi-validator/issues/402)
+* increment patch version ([658cd37](https://github.com/cdimascio/express-openapi-validator/commit/658cd37))
+* Move @types/multer to dependencies (#401) ([9f1c3d2](https://github.com/cdimascio/express-openapi-validator/commit/9f1c3d2)), closes [#401](https://github.com/cdimascio/express-openapi-validator/issues/401)
+* update chagne log ([915888c](https://github.com/cdimascio/express-openapi-validator/commit/915888c))
+* fix: upgrade express-openapi-validator from 4.0.2 to 4.0.4 (#405) ([b90ddc1](https://github.com/cdimascio/express-openapi-validator/commit/b90ddc1)), closes [#405](https://github.com/cdimascio/express-openapi-validator/issues/405)
+* fix: upgrade path-to-regexp from 6.1.0 to 6.2.0 (#404) ([a0df028](https://github.com/cdimascio/express-openapi-validator/commit/a0df028)), closes [#404](https://github.com/cdimascio/express-openapi-validator/issues/404)
+* docs: add dprgarner as a contributor (#403) ([260a6ba](https://github.com/cdimascio/express-openapi-validator/commit/260a6ba)), closes [#403](https://github.com/cdimascio/express-openapi-validator/issues/403)
+
+
+
 ## <small>4.2.1 (2020-10-14)</small>
 
 * add readonly required test using allOf ([cbd6292](https://github.com/cdimascio/express-openapi-validator/commit/cbd6292))
