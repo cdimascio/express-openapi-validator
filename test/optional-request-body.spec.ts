@@ -15,7 +15,7 @@ describe(packageJson.name, () => {
         express.Router().post(`/documents`, (req, res) =>
           res.status(201).json({
             id: 123,
-            name: req.body ? req.body.name : ''
+            name: req.body ? req.body.name : '',
           }),
         ),
       ),
@@ -29,6 +29,7 @@ describe(packageJson.name, () => {
   it('create document should return 201', async () =>
     request(app)
       .post(`/documents`)
+      .set('Content-Type', 'application/json')
       .expect(201));
 
   it('return 415', async () =>
