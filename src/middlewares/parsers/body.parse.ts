@@ -68,17 +68,12 @@ export class BodySchemaParser {
       }
 
       if (!content) {
-        if (contentType.contentType !== undefined) {
-          const msg =
-            contentType.contentType === 'not_provided'
-              ? 'media type not specified'
-              : `unsupported media type ${contentType.contentType}`;
-          throw new UnsupportedMediaType({ path: path, message: msg });
-        } else {
-          content = {};
-        }
+        const msg =
+          contentType.contentType === 'not_provided'
+            ? 'media type not specified'
+            : `unsupported media type ${contentType.contentType}`;
+        throw new UnsupportedMediaType({ path: path, message: msg });
       }
-
       const schema = this.cleanseContentSchema(content);
 
       return schema ?? content.schema ?? {};
@@ -86,9 +81,7 @@ export class BodySchemaParser {
     return {};
   }
 
-  private cleanseContentSchema(
-    content: OpenAPIV3.MediaTypeObject
-  ): BodySchema {
+  private cleanseContentSchema(content: OpenAPIV3.MediaTypeObject): BodySchema {
     let contentRefSchema = null;
     if (content.schema && '$ref' in content.schema) {
       const resolved = this.ajv.getSchema(content.schema.$ref);
