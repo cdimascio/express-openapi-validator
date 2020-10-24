@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "target": "es2017",
-    "lib": ["es6", "dom"],
+    "target": "es2020",
+    "lib": ["es2020", "dom"],
     "module": "commonjs",
+    "moduleResolution": "node",
     "outDir": "dist",
     "sourceMap": true,
     "resolveJsonModule": true,
