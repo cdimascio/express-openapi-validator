@@ -33,9 +33,6 @@ describe('security.handlers', () => {
       `${basePath}`,
       express
         .Router()
-        .get('/apikey_and_bearer_or_basic', (req, res) =>
-          res.json({ logged_in: true }),
-        )
         .get(`/api_key`, (req, res) => res.json({ logged_in: true }))
         .get(`/bearer`, (req, res) => res.json({ logged_in: true }))
         .get(`/basic`, (req, res) => res.json({ logged_in: true }))
