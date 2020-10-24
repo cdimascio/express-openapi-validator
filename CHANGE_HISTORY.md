@@ -1,3 +1,17 @@
+## 4.3.0 (2020-10-24)
+
+* add node 15 build and test (#411) ([63da476](https://github.com/cdimascio/express-openapi-validator/commit/63da476)), closes [#411](https://github.com/cdimascio/express-openapi-validator/issues/411)
+* implement and/or logic in security validator (#393) ([683c54b](https://github.com/cdimascio/express-openapi-validator/commit/683c54b)), closes [#393](https://github.com/cdimascio/express-openapi-validator/issues/393)
+* update change history ([448ab53](https://github.com/cdimascio/express-openapi-validator/commit/448ab53))
+* v4.3.0 ([cf22ab9](https://github.com/cdimascio/express-openapi-validator/commit/cf22ab9))
+* docs: add balazssoltesz as a contributor (#412) ([894d342](https://github.com/cdimascio/express-openapi-validator/commit/894d342)), closes [#412](https://github.com/cdimascio/express-openapi-validator/issues/412)
+* fix: upgrade express-openapi-validator from 4.0.2 to 4.0.4 (#408) ([c61841d](https://github.com/cdimascio/express-openapi-validator/commit/c61841d)), closes [#408](https://github.com/cdimascio/express-openapi-validator/issues/408)
+* fix: upgrade express-openapi-validator from 4.0.2 to 4.0.4 (#409) ([77ecda9](https://github.com/cdimascio/express-openapi-validator/commit/77ecda9)), closes [#409](https://github.com/cdimascio/express-openapi-validator/issues/409)
+* fix: upgrade express-openapi-validator from 4.0.4 to 4.0.7 (#410) ([b98b965](https://github.com/cdimascio/express-openapi-validator/commit/b98b965)), closes [#410](https://github.com/cdimascio/express-openapi-validator/issues/410)
+* chore: change history ([f6d6842](https://github.com/cdimascio/express-openapi-validator/commit/f6d6842))
+
+
+
 ## <small>4.2.3 (2020-10-22)</small>
 
 * chore: increment patch version ([a74c884](https://github.com/cdimascio/express-openapi-validator/commit/a74c884))
