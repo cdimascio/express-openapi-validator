@@ -115,7 +115,6 @@ describe('security.handlers', () => {
       .expect(401)
       .then((r) => {
         const body = r.body;
-        console.log(body);
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
         expect(body.errors[0].message).to.equals('unauthorized');
@@ -376,6 +375,74 @@ describe('security.handlers', () => {
     return request(app)
       .get(`${basePath}/api_key_or_anonymous`)
       .set('x-api-key', 'XXX')
+      .expect(200);
+  });
+});
+
+describe('when securities declare: (apikey && bearer) || basic', () => {
+  let app = null;
+  let basePath = null;
+  const eovConf: OpenApiValidatorOpts = {
+    apiSpec: path.join('test', 'resources', 'security.yaml'),
+  };
+  before(async () => {
+    app = await createApp(eovConf, 3005);
+    basePath = app.basePath;
+
+    app.use(
+      `${basePath}`,
+      express
+        .Router()
+        .get('/apikey_and_bearer_or_basic', (req, res) =>
+          res.json({ logged_in: true }),
+        ),
+    );
+  });
+
+  after(() => {
+    app.server.close();
+  });
+
+  it('should return 401 if not X-Api-Key is missing', async () =>
+    request(app)
+      .get(`${basePath}/apikey_and_bearer_or_basic`)
+      .set('Authorization', 'Bearer XXXX') // Bearer
+      .expect(401)
+      .then((r) => {
+        const body = r.body;
+        expect(body.errors).to.be.an('array');
+        expect(body.errors).to.have.length(1);
+        expect(body.message).to.include("'X-API-Key' header required");
+      }));
+
+  it('should return 401 if Bearer token is missing', async () => {
+    eovConf.validateSecurity = true;
+    return request(app)
+      .get(`${basePath}/apikey_and_bearer_or_basic`)
+      .set('X-Api-Key', 'XXX') // api key
+      .expect(401)
+      .then((r) => {
+        const body = r.body;
+        expect(body.errors).to.be.an('array');
+        expect(body.errors).to.have.length(1);
+        expect(body.message).to.include('Authorization header required');
+      });
+  });
+
+  it('should return 200 when X-Api-Key and Bearer token are present', async () => {
+    eovConf.validateSecurity = true;
+    return request(app)
+      .get(`${basePath}/apikey_and_bearer_or_basic`)
+      .set('Authorization', 'Bearer XXXX') // Bearer
+      .set('X-Api-Key', 'XXX') // api key
+      .expect(200);
+  });
+
+  it('should return 200 when Basic auth is present', async () => {
+    eovConf.validateSecurity = true;
+    return request(app)
+      .get(`${basePath}/apikey_and_bearer_or_basic`)
+      .set('Authorization', 'Basic XXXX')
       .expect(200);
   });
 });

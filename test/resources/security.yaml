@@ -8,6 +8,18 @@ servers:
   - url: /v1/
 
 paths:
+  /apikey_and_bearer_or_basic:
+    get:
+      security:
+        - ApiKeyAuth: []
+          BearerAuth: []
+        - BasicAuth: []
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: unauthorized
+
   /no_security:
     get:
       responses:
