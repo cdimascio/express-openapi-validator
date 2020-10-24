@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "target": "ES2018",
-    "lib": ["ES2018"],
+    "target": "ES6",
+    "lib": ["ES2020"],
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "dist",
