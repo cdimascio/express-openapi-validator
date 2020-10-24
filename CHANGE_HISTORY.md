@@ -1,3 +1,11 @@
+## <small>4.2.3 (2020-10-22)</small>
+
+* chore: increment patch version ([a74c884](https://github.com/cdimascio/express-openapi-validator/commit/a74c884))
+* chore: update dev deps (#407) ([a8c0da7](https://github.com/cdimascio/express-openapi-validator/commit/a8c0da7)), closes [#407](https://github.com/cdimascio/express-openapi-validator/issues/407)
+* update change history ([cc432d9](https://github.com/cdimascio/express-openapi-validator/commit/cc432d9))
+
+
+
 ## <small>4.2.2 (2020-10-22)</small>
 
 * fixes #402 500 on empty body for undeclared content-type (#406) ([e10d863](https://github.com/cdimascio/express-openapi-validator/commit/e10d863)), closes [#402](https://github.com/cdimascio/express-openapi-validator/issues/402) [#406](https://github.com/cdimascio/express-openapi-validator/issues/406) [#402](https://github.com/cdimascio/express-openapi-validator/issues/402)
