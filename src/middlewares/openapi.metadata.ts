@@ -21,7 +21,7 @@ export function applyOpenApiMetadata(
     if (openApiContext.shouldIgnoreRoute(path)) {
       return next();
     }
-    const matched = lookupRoute(req);ata
+    const matched = lookupRoute(req);
     if (matched) {
       const { expressRoute, openApiRoute, pathParams, schema } = matched;
       req.openapi = {
