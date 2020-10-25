@@ -139,6 +139,17 @@ describe(packageJson.name, () => {
         expect(body).to.have.property('testProperty');
       }));
 
+  it('should return 400 if array is passed (instead of object) and the array includes an object that meets requirements', async () =>
+    request(app)
+      .post(`${app.basePath}/request_bodies_ref`)
+      .send([
+        {
+          testProperty: 'abc',
+        },
+      ])
+      .expect(400)
+      .then((r) => expect(r.body.message).to.include('should be object')));
+
   it('should return 200 if a json suffex is used for content-type', async () =>
     request(app)
       .post(`${app.basePath}/request_bodies_ref`)

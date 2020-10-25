@@ -55,4 +55,11 @@ describe(packageJson.name, () => {
         const e = r.body;
         expect(e.message).to.contain("required property 'name'");
       }));
+
+  // it('should fail if array is sent when object expected', async () =>
+  //   request(app)
+  //     .post(`${app.basePath}/all_of`)
+  //     .send([{ id: 1, name: 'jim' }])
+  //     .expect(400)
+  //     .then((r: any) => expect(r.body.message).to.contain('should be object')));
 });

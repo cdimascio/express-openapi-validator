@@ -27,14 +27,16 @@ describe(packageJson.name, () => {
         });
         app.get(`${app.basePath}/boolean`, (req, res) => {
           return res.json(req.query.value);
-        })
+        });
         app.get(`${app.basePath}/object`, (req, res) => {
           return res.json([
             { id: 1, name: 'name', tag: 'tag', bought_at: null },
           ]);
         });
         app.post(`${app.basePath}/object`, (req, res) => {
-          return res.json(req.body);
+          return req.query.mode === 'array'
+            ? res.json([req.body])
+            : res.json(req.body);
         });
         app.get(`${app.basePath}/users`, (req, res) => {
           const json = ['user1', 'user2', 'user3'];
@@ -109,23 +111,27 @@ describe(packageJson.name, () => {
         expect(r.body).to.have.property('code').that.equals(500);
       }));
 
-  // TODO fix me - fails for response and request validation what allOf is in use
-  it.skip('should fail if request is array when expecting object', async () =>
+  it.skip('should fail if response expects object (using allOf), but got array', async () =>
     request(app)
-      .post(`${app.basePath}/object`)
-      .send([{ id: 1, name: 'name', tag: 'tag', bought_at: null }])
-      .expect(400)
+      .post(`${app.basePath}/object?mode=array`)
+      .send({ id: 1, name: 'fido' })
+      .expect(500)
       .then((r: any) => {
         expect(r.body.message).to.contain('should be object');
         expect(r.body).to.have.property('code').that.equals(500);
       }));
 
-  it('should fail if response is response is empty object', async () =>
+  it('should return 200 if returns expect object (using allOf) with type object', async () =>
+    request(app)
+      .post(`${app.basePath}/object`)
+      .send({ id: 1, name: 'fido' })
+      .expect(200));
+
+  it('should fail if response is empty object', async () =>
     request(app)
       .get(`${app.basePath}/pets?mode=empty_object`)
       .expect(500)
       .then((r: any) => {
-        console.log(r.body);
         expect(r.body.message).to.contain('should be array');
         expect(r.body).to.have.property('code').that.equals(500);
       }));
