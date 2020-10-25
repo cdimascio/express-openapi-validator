@@ -7,6 +7,10 @@ import {
   UnsupportedMediaType,
 } from '../../framework/types';
 
+type SchemaObject = OpenAPIV3.SchemaObject;
+type ReferenceObject = OpenAPIV3.ReferenceObject;
+type Schema = ReferenceObject | SchemaObject;
+
 export class BodySchemaParser {
   private _apiDoc: OpenAPIV3.Document;
   private ajv: Ajv;
@@ -81,31 +85,45 @@ export class BodySchemaParser {
     return {};
   }
 
+  // TODO cache this traversal - better yet do it on startup
   private cleanseContentSchema(content: OpenAPIV3.MediaTypeObject): BodySchema {
-    let contentRefSchema = null;
-    if (content.schema && '$ref' in content.schema) {
-      const resolved = this.ajv.getSchema(content.schema.$ref);
-      const schema = <OpenAPIV3.SchemaObject>resolved?.schema;
-      contentRefSchema = schema?.properties ? { ...schema } : null;
-    }
-    // handle readonly / required request body refs
-    // don't need to copy schema if validator gets its own copy of the api spec
-    // currently all middleware i.e. req and res validators share the spec
-    const schema = contentRefSchema || content.schema;
-    if (schema && schema.properties) {
-      Object.keys(schema.properties).forEach((prop) => {
-        const propertyValue = schema.properties[prop];
-        const required = schema.required;
-        if (propertyValue.readOnly && required) {
-          const index = required.indexOf(prop);
-          if (index > -1) {
-            schema.required = required
-              .slice(0, index)
-              .concat(required.slice(index + 1));
-          }
+    // remove required if readonly
+    const removeRequiredForReadOnly = (prop, schema) => {
+      const propertyValue = schema.properties[prop];
+      const required = schema.required;
+      if (propertyValue.readOnly && required) {
+        const index = required.indexOf(prop);
+        if (index > -1) {
+          schema.required = required
+            .slice(0, index)
+            .concat(required.slice(index + 1));
         }
-      });
-      return schema;
+      }
     }
+    // traverse schema
+    this.traverse(content.schema, removeRequiredForReadOnly)
+    return content.schema;
+  }
+
+  private traverse(schema: Schema, f: (p, s) => void) {
+    const schemaObj = schema.hasOwnProperty('$ref')
+      ? <SchemaObject>this.ajv.getSchema(schema['$ref'])?.schema
+      : <SchemaObject>schema
+
+    if (schemaObj.allOf) {
+      schemaObj.allOf.forEach(s => this.traverse(s, f));
+    } else if (schemaObj.oneOf) {
+      schemaObj.oneOf.forEach(s => this.traverse(s, f));
+    } else if (schemaObj.anyOf) {
+      schemaObj.anyOf.forEach(s => this.traverse(s, f));
+    } else if (schemaObj.properties) {
+      // other types of properties to handle?
+      Object.keys(schemaObj.properties).forEach((prop) => {
+        f(prop, schemaObj)
+      })
+    } else {
+      console.log('Yikes, nothing to do?', schema)
+    }
+
   }
 }

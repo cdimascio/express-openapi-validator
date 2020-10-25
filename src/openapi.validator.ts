@@ -1,6 +1,7 @@
 import ono from 'ono';
 import * as express from 'express';
 import * as _uniq from 'lodash.uniq';
+import * as cloneDeep from 'lodash.clonedeep';
 import * as middlewares from './middlewares';
 import { Application, Response, NextFunction, Router } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
@@ -81,15 +82,21 @@ export class OpenApiValidator {
 
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
     const middlewares: OpenApiRequestHandler[] = [];
-    const pContext = spec.then(
-      (spec) => new OpenApiContext(spec, this.options.ignorePaths),
-    );
+    const pContext = spec.then((spec) => {
+      const contexts = [new OpenApiContext(spec, this.options.ignorePaths)];
+      if (!!this.options.validateResponses) {
+        contexts.push(
+          new OpenApiContext(cloneDeep(spec), this.options.ignorePaths),
+        );
+      }
+      return contexts;
+    });
 
     let inited = false;
     // install path params
     middlewares.push((req, res, next) =>
       pContext
-        .then((context) => {
+        .then(([context]) => {
           if (!inited) {
             // Would be nice to pass the current Router object here if the route
             // is attach to a Router and not the app.
@@ -108,7 +115,7 @@ export class OpenApiValidator {
     let metamw;
     middlewares.push((req, res, next) =>
       pContext
-        .then((context) => {
+        .then(([context]) => {
           metamw = metamw || this.metadataMiddlware(context);
           return metamw(req, res, next);
         })
@@ -120,7 +127,7 @@ export class OpenApiValidator {
       let fumw;
       middlewares.push((req, res, next) =>
         pContext
-          .then((context) => {
+          .then(([context]) => {
             fumw = fumw || this.multipartMiddleware(context);
             return fumw(req, res, next);
           })
@@ -132,7 +139,7 @@ export class OpenApiValidator {
     let scmw;
     middlewares.push((req, res, next) =>
       pContext
-        .then((context) => {
+        .then(([context]) => {
           const components = context.apiDoc.components;
           if (this.options.validateSecurity && components?.securitySchemes) {
             scmw = scmw || this.securityMiddleware(context);
@@ -149,7 +156,7 @@ export class OpenApiValidator {
       let reqmw;
       middlewares.push((req, res, next) => {
         return pContext
-          .then((context) => {
+          .then(([context]) => {
             reqmw = reqmw || this.requestValidationMiddleware(context);
             return reqmw(req, res, next);
           })
@@ -162,7 +169,7 @@ export class OpenApiValidator {
       let resmw;
       middlewares.push((req, res, next) =>
         pContext
-          .then((context) => {
+          .then(([_, context]) => {
             resmw = resmw || this.responseValidationMiddleware(context);
             return resmw(req, res, next);
           })
@@ -177,7 +184,7 @@ export class OpenApiValidator {
         if (router) return router(req, res, next);
         pContext
           .then(
-            (context) =>
+            ([context]) =>
               (router = this.installOperationHandlers(req.baseUrl, context)),
           )
           .then((router) => router(req, res, next))
@@ -220,7 +227,11 @@ export class OpenApiValidator {
   }
 
   private metadataMiddlware(context: OpenApiContext) {
-    return middlewares.applyOpenApiMetadata(context);
+    return middlewares.applyOpenApiMetadata(
+      context,
+      // instructs metadata to create a schema copy for response
+      !!this.options.validateResponses,
+    );
   }
 
   private multipartMiddleware(context: OpenApiContext) {

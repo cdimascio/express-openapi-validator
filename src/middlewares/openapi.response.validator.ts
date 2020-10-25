@@ -47,7 +47,8 @@ export class ResponseValidator {
     return mung.json((body, req, res) => {
       if (req.openapi) {
         const openapi = <OpenApiRequestMetadata>req.openapi;
-        const responses = openapi.schema?.responses;
+        // instead of openapi.schema, use openapi._schema.res to get the response copy
+        const responses: OpenAPIV3.ResponsesObject = (<any>openapi)._schema?._res?.responses;
 
         const validators = this._getOrBuildValidator(req, responses);
         const path = req.originalUrl;
