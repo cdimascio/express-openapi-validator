@@ -12,11 +12,11 @@ export interface Spec {
 }
 
 export interface RouteMetadata {
+  basePath: string;
   expressRoute: string;
   openApiRoute: string;
   method: string;
   pathParams: string[];
-  schema: OpenAPIV3.OperationObject;
 }
 
 interface DiscoveredRoutes {
@@ -57,19 +57,14 @@ export class OpenApiSpecLoader {
           const bp = bpa.replace(/\/$/, '');
           for (const [path, methods] of Object.entries(apiDoc.paths)) {
             for (const [method, schema] of Object.entries(methods)) {
-              if (method.startsWith('x-') || ['parameters', 'summary', 'description'].includes(method)) {
+              if (
+                method.startsWith('x-') ||
+                ['parameters', 'summary', 'description'].includes(method)
+              ) {
                 continue;
               }
-              const schemaParameters = new Set();
-              (schema.parameters ?? []).forEach(parameter =>
-                schemaParameters.add(parameter),
-              );
-              (methods.parameters ?? []).forEach(parameter =>
-                schemaParameters.add(parameter),
-              );
-              schema.parameters = Array.from(schemaParameters);
               const pathParams = new Set<string>();
-              for (const param of schema.parameters) {
+              for (const param of schema.parameters ?? []) {
                 if (param.in === 'path') {
                   pathParams.add(param.name);
                 }
@@ -81,11 +76,11 @@ export class OpenApiSpecLoader {
                 .join('/');
 
               routes.push({
+                basePath: bp,
                 expressRoute,
                 openApiRoute,
                 method: method.toUpperCase(),
                 pathParams: Array.from(pathParams),
-                schema,
               });
             }
           }

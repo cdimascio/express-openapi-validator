@@ -7,11 +7,8 @@ import {
   NotFound,
   MethodNotAllowed,
   InternalServerError,
-  Unauthorized,
-  Forbidden,
   HttpError,
 } from '../framework/types';
-import { OpenApiContext } from '../framework/openapi.context';
 
 const defaultSecurityHandler = (
   req: Express.Request,
@@ -28,7 +25,7 @@ interface SecurityHandlerResult {
   error?: string;
 }
 export function security(
-  context: OpenApiContext,
+  apiDoc: OpenAPIV3.Document,
   securityHandlers: SecurityHandlers,
 ): OpenApiRequestHandler {
   return async (req, res, next) => {
@@ -65,7 +62,7 @@ export function security(
 
     // use the local security object or fallbac to api doc's security or undefined
     const securities: OpenAPIV3.SecurityRequirementObject[] =
-      openapi.schema.security ?? context.apiDoc.security;
+      openapi.schema.security ?? apiDoc.security;
 
     const path: string = openapi.openApiRoute;
 
@@ -73,7 +70,7 @@ export function security(
       return next();
     }
 
-    const securitySchemes = context.apiDoc.components?.securitySchemes;
+    const securitySchemes = apiDoc.components?.securitySchemes;
 
     if (!securitySchemes) {
       const message = `security referenced at path ${path}, but not defined in 'components.securitySchemes'`;

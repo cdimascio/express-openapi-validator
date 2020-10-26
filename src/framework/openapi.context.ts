@@ -56,13 +56,17 @@ export class OpenApiContext {
   // side-effecting builds express/openapi route maps
   private buildRouteMaps(routes: RouteMetadata[]): void {
     for (const route of routes) {
-      const routeMethods = this.expressRouteMap[route.expressRoute];
+      const { basePath, expressRoute, openApiRoute, method } = route;
+      const routeMethods = this.expressRouteMap[expressRoute];
+      const pathKey = openApiRoute.substring(basePath.length);
+      const schema = this.apiDoc.paths[pathKey][method.toLowerCase()];
       if (routeMethods) {
-        routeMethods[route.method] = route.schema;
+        routeMethods[route.method] = schema;
       } else {
-        const { schema, openApiRoute, expressRoute } = route;
+        const { basePath, openApiRoute, expressRoute } = route;
         const routeMethod = { [route.method]: schema };
         const routeDetails = {
+          basePath,
           _openApiRoute: openApiRoute,
           _expressRoute: expressRoute,
           ...routeMethod,
