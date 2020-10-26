@@ -57,16 +57,17 @@ export class RequestSchemaPreprocessor {
 
     if (parameters.length === 0) return;
 
-    const v = pathItem[pathItemKey];
+    let v = pathItem[pathItemKey];
     if (v === parameters) return;
     const ref = v?.parameters?.$ref;
 
-    const operationParameters = <
-      Array<OpenAPIV3.ParameterObject | OpenAPIV3.ReferenceObject>
-    >(ref ? this.ajv.getSchema(ref)?.schema : v.parameters);
+    const op = ref && this.ajv.getSchema(ref)?.schema;
+    if (op)
+      v = op;
+    v.parameters = v.parameters || [];
 
     for (const param of parameters) {
-      operationParameters.push(param);
+      v.parameters.push(param);
     }
   }
 
