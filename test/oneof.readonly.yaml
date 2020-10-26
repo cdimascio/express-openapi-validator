@@ -6,7 +6,7 @@ info:
 servers:
   - url: /v1
 paths:
-  '/orders':
+  /any_of:
     post:
       requestBody:
         content:
@@ -20,6 +20,24 @@ paths:
                   mapping:
                     A: '#/components/schemas/subA'
                     B: '#/components/schemas/subB'
+      responses:
+          200:
+            description: successful operation
+
+  /one_of:
+    post:
+      requestBody:
+        content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/subC'
+                  - $ref: '#/components/schemas/subD'
+                discriminator:
+                  propertyName: type
+                  mapping:
+                    A: '#/components/schemas/subC'
+                    B: '#/components/schemas/subD'
       responses:
           200:
             description: successful operation
@@ -42,29 +60,35 @@ components:
     subA:
       allOf:
         - $ref: '#/components/schemas/common'
-        # - type: object
-        #   properties:
-        #     id:
-        #       readOnly: true
-        #       type: string
-        #     type:
-        #       type: string
-        #       enum: [A, B]          
-        #   required:
-        #     - id
-        #     - type  
 
     subB:
       allOf:
         - $ref: '#/components/schemas/common'
-        # - type: object
-        #   properties:
-        #     id:
-        #       readOnly: true
-        #       type: string
-        #     type:
-        #       type: string
-        #       enum: [A, B]          
-        #   required:
-        #     - id
-        #     - type  
+
+    subC:
+      allOf:
+        - type: object
+          properties:
+            id:
+              readOnly: true
+              type: string
+            type:
+              type: string
+              enum: [C, D]          
+          required:
+            - id
+            - type  
+
+    subD:
+      allOf:
+        - type: object
+          properties:
+            id:
+              readOnly: true
+              type: string
+            type:
+              type: string
+              enum: [C, D]          
+          required:
+            - id
+            - type  

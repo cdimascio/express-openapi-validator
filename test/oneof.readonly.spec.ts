@@ -2,8 +2,9 @@ import * as path from 'path';
 import * as express from 'express';
 import * as request from 'supertest';
 import { createApp } from './common/app';
+import { expect } from 'chai';
 
-describe('one.of readonly', () => {
+describe.only('one.of readonly', () => {
   let app = null;
 
   before(async () => {
@@ -13,7 +14,10 @@ describe('one.of readonly', () => {
       app.use(
         express
           .Router()
-          .post(`${app.basePath}/orders`, (req, res) =>
+          .post(`${app.basePath}/any_of`, (req, res) =>
+            res.status(200).json({ success: true }),
+          )
+          .post(`${app.basePath}/one_of`, (req, res) =>
             res.status(200).json({ success: true }),
           ),
       ),
@@ -24,10 +28,28 @@ describe('one.of readonly', () => {
     app.server.close();
   });
 
-  it('post type (without readonly id) should pass', async () =>
+  it('post type anyOf (without readonly id) should pass', async () =>
     request(app)
-      .post(`${app.basePath}/orders`)
+      .post(`${app.basePath}/any_of`)
       .send({ type: 'A' })
+      .set('Content-Type', 'application/json')
+      .expect(200));
+
+  it('post type oneOf (without readonly id) should pass', async () =>
+    request(app)
+      .post(`${app.basePath}/one_of`)
+      .send({ type: 'A' })
+      .set('Content-Type', 'application/json')
+      .expect(400)
+      .then((r) => {
+        const error = r.body;
+        expect(error.message).to.include('to one of the allowed values: C, D');
+      }));
+
+  it('post type oneOf (without readonly id) should pass', async () =>
+    request(app)
+      .post(`${app.basePath}/one_of`)
+      .send({ type: 'C' })
       .set('Content-Type', 'application/json')
       .expect(200));
 });
