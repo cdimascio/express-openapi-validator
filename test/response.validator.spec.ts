@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs';
+import * as cloneDeep from 'lodash.clonedeep';
 import * as jsyaml from 'js-yaml';
 import { expect } from 'chai';
 import { ResponseValidator } from '../src/middlewares/openapi.response.validator';
@@ -15,7 +16,7 @@ const fakeReq: OpenApiRequest = <any>{
 };
 describe(packageJson.name, () => {
   it('should validate the using default (in this case the error object)', async () => {
-    const v = new ResponseValidator(apiSpec);
+    const v = new ResponseValidator(cloneDeep(apiSpec));
     const responses = petsResponseSchema();
     const validators = v._getOrBuildValidator(fakeReq, responses);
 

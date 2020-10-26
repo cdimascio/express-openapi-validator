@@ -1,6 +1,7 @@
 import ono from 'ono';
 import * as express from 'express';
 import * as _uniq from 'lodash.uniq';
+import * as cloneDeep from 'lodash.clonedeep';
 import * as middlewares from './middlewares';
 import { Application, Response, NextFunction, Router } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
@@ -13,9 +14,11 @@ import {
   OpenApiRequestHandler,
   OpenApiRequestMetadata,
   ValidateSecurityOpts,
+  OpenAPIV3,
 } from './framework/types';
 import { defaultResolver } from './resolvers';
 import { OperationHandlerOptions } from './framework/types';
+import { RequestSchemaPreprocessor } from './middlewares/parsers/request.schema.preprocessor';
 
 export {
   OpenApiValidatorOpts,
@@ -81,15 +84,30 @@ export class OpenApiValidator {
 
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
     const middlewares: OpenApiRequestHandler[] = [];
-    const pContext = spec.then(
-      (spec) => new OpenApiContext(spec, this.options.ignorePaths),
-    );
+    const pContext = spec.then((spec) => {
+      const responseApiDoc = this.options.validateResponses
+        ? cloneDeep(spec.apiDoc)
+        : null;
+      new RequestSchemaPreprocessor(spec.apiDoc, {
+        nullable: true,
+        coerceTypes: this.options.coerceTypes,
+        removeAdditional: false,
+        useDefaults: true,
+        unknownFormats: this.options.unknownFormats,
+        format: this.options.validateFormats,
+      }).preProcess();
+
+      return {
+        context: new OpenApiContext(spec, this.options.ignorePaths),
+        responseApiDoc,
+      };
+    });
 
     let inited = false;
     // install path params
     middlewares.push((req, res, next) =>
       pContext
-        .then((context) => {
+        .then(({ context }) => {
           if (!inited) {
             // Would be nice to pass the current Router object here if the route
             // is attach to a Router and not the app.
@@ -108,8 +126,8 @@ export class OpenApiValidator {
     let metamw;
     middlewares.push((req, res, next) =>
       pContext
-        .then((context) => {
-          metamw = metamw || this.metadataMiddlware(context);
+        .then(({ context, responseApiDoc }) => {
+          metamw = metamw || this.metadataMiddlware(context, responseApiDoc);
           return metamw(req, res, next);
         })
         .catch(next),
@@ -120,8 +138,8 @@ export class OpenApiValidator {
       let fumw;
       middlewares.push((req, res, next) =>
         pContext
-          .then((context) => {
-            fumw = fumw || this.multipartMiddleware(context);
+          .then(({ context: { apiDoc } }) => {
+            fumw = fumw || this.multipartMiddleware(apiDoc);
             return fumw(req, res, next);
           })
           .catch(next),
@@ -132,10 +150,10 @@ export class OpenApiValidator {
     let scmw;
     middlewares.push((req, res, next) =>
       pContext
-        .then((context) => {
-          const components = context.apiDoc.components;
+        .then(({ context: { apiDoc } }) => {
+          const components = apiDoc.components;
           if (this.options.validateSecurity && components?.securitySchemes) {
-            scmw = scmw || this.securityMiddleware(context);
+            scmw = scmw || this.securityMiddleware(apiDoc);
             return scmw(req, res, next);
           } else {
             next();
@@ -149,8 +167,8 @@ export class OpenApiValidator {
       let reqmw;
       middlewares.push((req, res, next) => {
         return pContext
-          .then((context) => {
-            reqmw = reqmw || this.requestValidationMiddleware(context);
+          .then(({ context: { apiDoc } }) => {
+            reqmw = reqmw || this.requestValidationMiddleware(apiDoc);
             return reqmw(req, res, next);
           })
           .catch(next);
@@ -162,8 +180,8 @@ export class OpenApiValidator {
       let resmw;
       middlewares.push((req, res, next) =>
         pContext
-          .then((context) => {
-            resmw = resmw || this.responseValidationMiddleware(context);
+          .then(({ responseApiDoc }) => {
+            resmw = resmw || this.responseValidationMiddleware(responseApiDoc);
             return resmw(req, res, next);
           })
           .catch(next),
@@ -177,7 +195,7 @@ export class OpenApiValidator {
         if (router) return router(req, res, next);
         pContext
           .then(
-            (context) =>
+            ({ context }) =>
               (router = this.installOperationHandlers(req.baseUrl, context)),
           )
           .then((router) => router(req, res, next))
@@ -219,25 +237,28 @@ export class OpenApiValidator {
     }
   }
 
-  private metadataMiddlware(context: OpenApiContext) {
-    return middlewares.applyOpenApiMetadata(context);
+  private metadataMiddlware(
+    context: OpenApiContext,
+    responseApiDoc: OpenAPIV3.Document,
+  ) {
+    return middlewares.applyOpenApiMetadata(context, responseApiDoc);
   }
 
-  private multipartMiddleware(context: OpenApiContext) {
-    return middlewares.multipart(context, {
+  private multipartMiddleware(apiDoc: OpenAPIV3.Document) {
+    return middlewares.multipart(apiDoc, {
       multerOpts: this.options.fileUploader,
       unknownFormats: this.options.unknownFormats,
     });
   }
 
-  private securityMiddleware(context: OpenApiContext) {
+  private securityMiddleware(apiDoc: OpenAPIV3.Document) {
     const securityHandlers = (<ValidateSecurityOpts>(
       this.options.validateSecurity
     ))?.handlers;
-    return middlewares.security(context, securityHandlers);
+    return middlewares.security(apiDoc, securityHandlers);
   }
 
-  private requestValidationMiddleware(context: OpenApiContext) {
+  private requestValidationMiddleware(apiDoc: OpenAPIV3.Document) {
     const {
       coerceTypes,
       unknownFormats,
@@ -247,7 +268,7 @@ export class OpenApiValidator {
     const { allowUnknownQueryParameters } = <ValidateRequestOpts>(
       validateRequests
     );
-    const requestValidator = new middlewares.RequestValidator(context.apiDoc, {
+    const requestValidator = new middlewares.RequestValidator(apiDoc, {
       nullable: true,
       coerceTypes,
       removeAdditional: false,
@@ -259,7 +280,7 @@ export class OpenApiValidator {
     return (req, res, next) => requestValidator.validate(req, res, next);
   }
 
-  private responseValidationMiddleware(context: OpenApiContext) {
+  private responseValidationMiddleware(apiDoc: OpenAPIV3.Document) {
     const {
       coerceTypes,
       unknownFormats,
@@ -268,7 +289,7 @@ export class OpenApiValidator {
     } = this.options;
     const { removeAdditional } = <ValidateResponseOpts>validateResponses;
 
-    return new middlewares.ResponseValidator(context.apiDoc, {
+    return new middlewares.ResponseValidator(apiDoc, {
       nullable: true,
       coerceTypes,
       removeAdditional,
