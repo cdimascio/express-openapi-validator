@@ -1,3 +1,12 @@
+## <small>4.3.1 (2020-10-26)</small>
+
+* chore: change history ([d1ebf76](https://github.com/cdimascio/express-openapi-validator/commit/d1ebf76))
+* chore: increment patch version ([d2ccff2](https://github.com/cdimascio/express-openapi-validator/commit/d2ccff2)), closes [#400](https://github.com/cdimascio/express-openapi-validator/issues/400) [#389](https://github.com/cdimascio/express-openapi-validator/issues/389)
+* (fix) #400 readOnly does not work together with polymorphic oneOf. (#414) ([da55514](https://github.com/cdimascio/express-openapi-validator/commit/da55514)), closes [#400](https://github.com/cdimascio/express-openapi-validator/issues/400) [#414](https://github.com/cdimascio/express-openapi-validator/issues/414) [#400](https://github.com/cdimascio/express-openapi-validator/issues/400)
+* add/fix tests for request/response allOf ([80e84a3](https://github.com/cdimascio/express-openapi-validator/commit/80e84a3))
+
+
+
 ## 4.3.0 (2020-10-24)
 
 * add node 15 build and test (#411) ([63da476](https://github.com/cdimascio/express-openapi-validator/commit/63da476)), closes [#411](https://github.com/cdimascio/express-openapi-validator/issues/411)
