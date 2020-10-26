@@ -59,7 +59,7 @@ export class RequestSchemaPreprocessor {
 
     const v = pathItem[pathItemKey];
     if (v === parameters) return;
-    const ref = v?.parmeters?.$ref;
+    const ref = v?.parameters?.$ref;
 
     const operationParameters = <
       Array<OpenAPIV3.ParameterObject | OpenAPIV3.ReferenceObject>
