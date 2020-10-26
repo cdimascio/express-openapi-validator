@@ -360,6 +360,15 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "krizzje",
+      "name": "Christiaan Nieuwlaat",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/3034281?v=4",
+      "profile": "http://www.christiaannieuwlaat.nl",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
