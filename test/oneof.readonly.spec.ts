@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { createApp } from './common/app';
 import { expect } from 'chai';
 
-describe.only('one.of readonly', () => {
+describe('one.of readonly', () => {
   let app = null;
 
   before(async () => {
