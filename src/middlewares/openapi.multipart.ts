@@ -15,11 +15,11 @@ import { MulterError } from 'multer';
 const multer = require('multer');
 
 export function multipart(
-  context: OpenApiContext,
+  apiDoc: OpenAPIV3.Document,
   options: MultipartOpts,
 ): OpenApiRequestHandler {
   const mult = multer(options.multerOpts);
-  const Ajv = createRequestAjv(context.apiDoc, {
+  const Ajv = createRequestAjv(apiDoc, {
     unknownFormats: options.unknownFormats,
   });
   return (req, res, next) => {

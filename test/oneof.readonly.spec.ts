@@ -29,5 +29,5 @@ describe('one.of readonly', () => {
       .post(`${app.basePath}/orders`)
       .send({ type: 'A' })
       .set('Content-Type', 'application/json')
-      .expect(200))
+      .expect(200));
 });

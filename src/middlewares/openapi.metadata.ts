@@ -7,11 +7,12 @@ import {
   OpenApiRequest,
   OpenApiRequestHandler,
   OpenApiRequestMetadata,
+  OpenAPIV3,
 } from '../framework/types';
 
 export function applyOpenApiMetadata(
   openApiContext: OpenApiContext,
-  validateResponses: boolean,
+  responseApiDoc: OpenAPIV3.Document,
 ): OpenApiRequestHandler {
   return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
     // note base path is empty when path is fully qualified i.e. req.path.startsWith('')
@@ -31,18 +32,9 @@ export function applyOpenApiMetadata(
         schema: schema,
       };
       req.params = pathParams;
-
-      if (validateResponses) {
-        // when validating responses, add a copy of the schema for response validation
-        // why? options like 'readOnly' may remove required properties from the schema
-        // for example,
-        //  if a request param is readOnly and required, required should be removed for the request, but it 
-        //  but it should be removed from the response
-        //  in order to handle this, we need two copies (when response validation is active)
-        const openapi = <any>req.openapi;
-        openapi._schema = {
-          _res: deepCopy(schema),
-        };
+      if (responseApiDoc) {
+        // add the response schema if validating responses
+        (<any>req.openapi)._responseSchema = (<any>matched)._responseSchema;
       }
     } else if (openApiContext.isManagedRoute(path)) {
       req.openapi = {};
@@ -55,9 +47,11 @@ export function applyOpenApiMetadata(
     const method = req.method;
     const routeEntries = Object.entries(openApiContext.expressRouteMap);
     for (const [expressRoute, methods] of routeEntries) {
-      const schema = methods[method];
       const routePair = openApiContext.routePair(expressRoute);
       const openApiRoute = routePair.openApiRoute;
+      const pathKey = openApiRoute.substring((<any>methods).basePath.length);
+      const schema = openApiContext.apiDoc.paths[pathKey][method.toLowerCase()];
+      const _schema = responseApiDoc?.paths[pathKey][method.toLowerCase()];
 
       const keys = [];
       const strict = !!req.app.enabled('strict routing');
@@ -74,14 +68,14 @@ export function applyOpenApiMetadata(
         const paramsVals = matchedRoute.slice(1).map(decodeURIComponent);
         const pathParams = _zipObject(paramKeys, paramsVals);
 
-        return {
+        const r = {
           schema,
-          // schema may or may not contain express and openApi routes,
-          // thus we include them here
           expressRoute,
           openApiRoute,
           pathParams,
         };
+        (<any>r)._responseSchema = _schema;
+        return r;
       }
     }
 

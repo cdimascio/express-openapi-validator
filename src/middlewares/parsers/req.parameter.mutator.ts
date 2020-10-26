@@ -67,7 +67,7 @@ export class RequestParameterMutator {
       url.parse(req.originalUrl).query,
     );
 
-    parameters.forEach((p) => {
+    (parameters || []).forEach((p) => {
       const parameter = dereferenceParameter(this._apiDocs, p);
       const { name, schema } = normalizeParameter(this.ajv, parameter);
 

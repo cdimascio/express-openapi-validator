@@ -10,7 +10,9 @@ export function defaultResolver(
   apiDoc: OpenAPIV3.Document,
 ): RequestHandler {
   const tmpModules = {};
-  const { expressRoute, method, schema } = route;
+  const { basePath, expressRoute, openApiRoute, method } = route;
+  const pathKey = openApiRoute.substring(basePath.length);
+  const schema = apiDoc.paths[pathKey][method.toLowerCase()];
   const oId = schema['x-eov-operation-id'] || schema['operationId'];
   const baseName = schema['x-eov-operation-handler'];
 
@@ -53,7 +55,9 @@ export function modulePathResolver(
   route: RouteMetadata,
   apiDoc: OpenAPIV3.Document,
 ): RequestHandler {
-  const [controller, method] = route.schema['operationId'].split('.');
+  const pathKey = route.openApiRoute.substring(route.basePath.length);
+  const schema = apiDoc.paths[pathKey][route.method.toLowerCase()];
+  const [controller, method] = schema['operationId'].split('.');
 
   const modulePath = path.join(handlersPath, controller);
   const handler = require(modulePath);

@@ -13,13 +13,13 @@ paths:
             application/json:
               schema:
                 anyOf:
-                  - $ref: '#/components/schemas/common'
-                  - $ref: '#/components/schemas/common'
+                  - $ref: '#/components/schemas/subA'
+                  - $ref: '#/components/schemas/subB'
                 discriminator:
                   propertyName: type
                   mapping:
-                    A: '#/components/schemas/common'
-                    B: '#/components/schemas/common'
+                    A: '#/components/schemas/subA'
+                    B: '#/components/schemas/subB'
       responses:
           200:
             description: successful operation
@@ -41,30 +41,30 @@ components:
 
     subA:
       allOf:
-        # - $ref: '#/components/schemas/common'
-        - type: object
-          properties:
-            id:
-              readOnly: true
-              type: string
-            type:
-              type: string
-              enum: [A, B]          
-          required:
-            - id
-            - type  
+        - $ref: '#/components/schemas/common'
+        # - type: object
+        #   properties:
+        #     id:
+        #       readOnly: true
+        #       type: string
+        #     type:
+        #       type: string
+        #       enum: [A, B]          
+        #   required:
+        #     - id
+        #     - type  
 
     subB:
       allOf:
-        # - $ref: '#/components/schemas/common'
-        - type: object
-          properties:
-            id:
-              readOnly: true
-              type: string
-            type:
-              type: string
-              enum: [A, B]          
-          required:
-            - id
-            - type  
+        - $ref: '#/components/schemas/common'
+        # - type: object
+        #   properties:
+        #     id:
+        #       readOnly: true
+        #       type: string
+        #     type:
+        #       type: string
+        #       enum: [A, B]          
+        #   required:
+        #     - id
+        #     - type  
