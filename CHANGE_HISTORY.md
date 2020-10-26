@@ -1,3 +1,11 @@
+## <small>4.3.2 (2020-10-26)</small>
+
+* chore: increment patch version ([ed7af2b](https://github.com/cdimascio/express-openapi-validator/commit/ed7af2b))
+* chore: update change log ([3b9dd66](https://github.com/cdimascio/express-openapi-validator/commit/3b9dd66))
+* (fix) operation handler default resolver paths undefined ([149c62f](https://github.com/cdimascio/express-openapi-validator/commit/149c62f))
+
+
+
 ## <small>4.3.1 (2020-10-26)</small>
 
 * chore: change history ([d1ebf76](https://github.com/cdimascio/express-openapi-validator/commit/d1ebf76))
