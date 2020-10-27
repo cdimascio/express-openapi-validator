@@ -14,6 +14,9 @@ describe('one.of readonly', () => {
       app.use(
         express
           .Router()
+          .post(`${app.basePath}/any_of_one_required`, (req, res) =>
+            res.status(200).json({ success: true }),
+          )
           .post(`${app.basePath}/any_of`, (req, res) =>
             res.status(200).json({ success: true }),
           )
@@ -45,6 +48,13 @@ describe('one.of readonly', () => {
         const error = r.body;
         expect(error.message).to.include('to one of the allowed values: C, D');
       }));
+
+  it('post type anyof without providing the single required readonly property should pass', async () =>
+    request(app)
+      .post(`${app.basePath}/one_of`)
+      .send({ type: 'C' }) // do not provide id
+      .set('Content-Type', 'application/json')
+      .expect(200));
 
   it('post type oneOf (without readonly id) should pass', async () =>
     request(app)
