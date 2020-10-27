@@ -1,3 +1,12 @@
+## <small>4.3.5 (2020-10-27)</small>
+
+* chore: change history ([7b91562](https://github.com/cdimascio/express-openapi-validator/commit/7b91562))
+* chore: increment patch version ([a9e5317](https://github.com/cdimascio/express-openapi-validator/commit/a9e5317))
+* docs: add aviskase as a contributor (#428) ([1ad3667](https://github.com/cdimascio/express-openapi-validator/commit/1ad3667)), closes [#428](https://github.com/cdimascio/express-openapi-validator/issues/428)
+* (fix) #426 custom resolvers are incompatible with options.apiSpec set to path ([41a03e6](https://github.com/cdimascio/express-openapi-validator/commit/41a03e6)), closes [#426](https://github.com/cdimascio/express-openapi-validator/issues/426)
+
+
+
 ## <small>4.3.4 (2020-10-27)</small>
 
 * chore: increment patch version ([3b3f34f](https://github.com/cdimascio/express-openapi-validator/commit/3b3f34f))
