@@ -379,6 +379,16 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "aviskase",
+      "name": "Yuliya Bagriy",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/3819473?v=4",
+      "profile": "http://aviskase.com",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
