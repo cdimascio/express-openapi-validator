@@ -62,8 +62,7 @@ export class RequestSchemaPreprocessor {
     const ref = v?.parameters?.$ref;
 
     const op = ref && this.ajv.getSchema(ref)?.schema;
-    if (op)
-      v = op;
+    if (op) v = op;
     v.parameters = v.parameters || [];
 
     for (const param of parameters) {
@@ -108,8 +107,6 @@ export class RequestSchemaPreprocessor {
       Object.keys(schemaObj.properties).forEach((prop) => {
         f(prop, schemaObj);
       });
-    } else {
-      console.warn('unhandled schema property: skipping', schema);
     }
   }
 }
