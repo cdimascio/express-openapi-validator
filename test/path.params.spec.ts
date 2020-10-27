@@ -17,7 +17,7 @@ describe('path params', () => {
       },
       3005,
       (app) => {
-        app.get(`${app.basePath}/users/:id?`, (req, res) => {
+        app.get([`${app.basePath}/users/:id?`, `${app.basePath}/users_alt/:id?`], (req, res) => {
           res.json({
             id: req.params.id,
           });
@@ -51,13 +51,21 @@ describe('path params', () => {
     app.server.close();
   });
 
-  it('should url decode path parameters', async () =>
+  it('should url decode path parameters (type level)', async () =>
     request(app)
       .get(`${app.basePath}/users/c%20dimascio`)
       .expect(200)
       .then((r) => {
         expect(r.body.id).to.equal('c dimascio');
       }));
+
+  it('should url decode path parameters (path level)', async () =>
+      request(app)
+        .get(`${app.basePath}/users_alt/c%20dimascio`)
+        .expect(200)
+        .then((r) => {
+          expect(r.body.id).to.equal('c dimascio');
+        }));
 
   it('should handle path parameter with style=simple', async () =>
     request(app)

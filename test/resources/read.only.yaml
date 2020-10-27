@@ -13,8 +13,8 @@ servers:
 paths:
   /user_inlined:
     post:
-      description: get user
-      operationId: getUser
+      description: get user inlined
+      operationId: getUserInlined
       parameters:
         - name: include_id
           in: query
@@ -145,6 +145,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductNested'
+                
+  /readonly_required_allof:
+    post:
+      description: readonly required
+      parameters: 
+        - name: include_id
+          in: query
+          schema:
+            type: boolean
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                optional: 
+                  type: string
+      responses:
+        '200':
+          description: readonly required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
 
 components:
   schemas:
@@ -206,3 +232,22 @@ components:
           type: string
         name:
           type: string
+
+    Item:
+      allOf:
+        - $ref: '#/components/schemas/Id'
+        - $ref: '#/components/schemas/Name'
+    Id:
+      properties:
+        id:
+          type: string
+          readOnly: true
+      required:
+        - id
+
+    Name:
+      properties:
+        name:
+          type: string
+      required:
+        - name

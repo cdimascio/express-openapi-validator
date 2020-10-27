@@ -1,0 +1,131 @@
+openapi: 3.0.0
+info:
+  title: Dummy API
+  description: Dummy API
+  version: "0.1.0"
+servers:
+  - url: /v1
+paths:
+  /any_of_one_required:
+    post:
+      requestBody:
+        content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/subE'
+                  - $ref: '#/components/schemas/subF'
+                discriminator:
+                  propertyName: type
+                  mapping:
+                    A: '#/components/schemas/subE'
+                    B: '#/components/schemas/subF'
+      responses:
+          200:
+            description: successful operation
+  /any_of:
+    post:
+      requestBody:
+        content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/subA'
+                  - $ref: '#/components/schemas/subB'
+                discriminator:
+                  propertyName: type
+                  mapping:
+                    A: '#/components/schemas/subA'
+                    B: '#/components/schemas/subB'
+      responses:
+          200:
+            description: successful operation
+
+  /one_of:
+    post:
+      requestBody:
+        content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/subC'
+                  - $ref: '#/components/schemas/subD'
+                discriminator:
+                  propertyName: type
+                  mapping:
+                    A: '#/components/schemas/subC'
+                    B: '#/components/schemas/subD'
+      responses:
+          200:
+            description: successful operation
+
+components:
+  schemas:
+    common:
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+        type:
+          type: string
+          enum: [A, B]          
+      required:
+        - id
+        - type  
+
+    one_required:
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+        type:
+          type: string
+          enum: [A, B]          
+      required:
+        - id
+
+    subA:
+      allOf:
+        - $ref: '#/components/schemas/common'
+
+    subB:
+      allOf:
+        - $ref: '#/components/schemas/common'
+
+    subC:
+      allOf:
+        - type: object
+          properties:
+            id:
+              readOnly: true
+              type: string
+            type:
+              type: string
+              enum: [C, D]          
+          required:
+            - id
+            - type  
+
+    subD:
+      allOf:
+        - type: object
+          properties:
+            id:
+              readOnly: true
+              type: string
+            type:
+              type: string
+              enum: [C, D]          
+          required:
+            - id
+            - type  
+
+    subE:
+      allOf:
+        - $ref: '#/components/schemas/one_required'
+
+    subF:
+      allOf:
+        - $ref: '#/components/schemas/one_required'

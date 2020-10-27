@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "target": "es2017",
-    "lib": ["es6", "dom"],
+    "target": "ES2017",
+    "lib": ["ES2017"],
     "module": "commonjs",
+    "moduleResolution": "node",
     "outDir": "dist",
     "sourceMap": true,
     "resolveJsonModule": true,

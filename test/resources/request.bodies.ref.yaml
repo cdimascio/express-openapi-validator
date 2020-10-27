@@ -8,6 +8,20 @@ servers:
   - url: /v1/
 
 paths:
+  /415_test:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                id:
+                  type: string
+                
+      responses:
+        '200':
+          description: OK
+
   /request_bodies_ref:
     post:
       parameters:

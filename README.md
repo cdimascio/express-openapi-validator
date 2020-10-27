@@ -1,6 +1,6 @@
 # 🦋 express-openapi-validator
 
-[![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) [![](https://img.shields.io/npm/dm/express-openapi-validator?color=blue)](https://www.npmjs.com/package/express-openapi-validator) [![All Contributors](https://img.shields.io/badge/all_contributors-34-darkcyan.svg?style=flat)](#contributors) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1570a06f609345ddb237114bbd6ceed7)](https://www.codacy.com/manual/cdimascio/express-openapi-validator?utm_source=github.com&utm_medium=referral&utm_content=cdimascio/express-openapi-validator&utm_campaign=Badge_Grade) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/cdimascio/express-openapi-validator) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
+[![](https://travis-ci.org/cdimascio/express-openapi-validator.svg?branch=master)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) [![](https://img.shields.io/npm/dm/express-openapi-validator?color=blue)](https://www.npmjs.com/package/express-openapi-validator) [![All Contributors](https://img.shields.io/badge/all_contributors-38-darkcyan.svg?style=flat)](#contributors) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1570a06f609345ddb237114bbd6ceed7)](https://www.codacy.com/manual/cdimascio/express-openapi-validator?utm_source=github.com&utm_medium=referral&utm_content=cdimascio/express-openapi-validator&utm_campaign=Badge_Grade) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/cdimascio/express-openapi-validator) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
 
 **An OpenApi validator for ExpressJS** that automatically validates **API** _**requests**_ and _**responses**_ using an **OpenAPI 3** specification.
 
@@ -696,13 +696,6 @@ Specifies the options to passthrough to multer. express-openapi-validator uses m
   }
   ```
 
-### ▪️ coerceTypes (optional) - _deprecated_
-
-Determines whether the validator should coerce value types to match the type defined in the OpenAPI spec.
-
-- `true` (**default**) - coerce scalar data types.
-- `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
-
 ### ▪️ \$refParser.mode (optional)
 
 Determines how JSON schema references are resolved by the internal [json-schema-ref-parser](https://github.com/APIDevTools/json-schema-ref-parser). Generally, the default mode, `bundle` is sufficient, however if you use [escape characters in \$refs](https://swagger.io/docs/specification/using-ref/), `dereference` is necessary.
@@ -719,6 +712,15 @@ $refParser: {
   mode: 'bundle';
 }
 ```
+
+### ▪️ coerceTypes (optional) - _deprecated_
+
+Determines whether the validator should coerce value types to match the those defined in the OpenAPI spec. This option applies **only** to path params, query strings, headers, and cookies. _It is **highly unlikley** that will want to disable this. As such this option is deprecated and will be removed in the next major version_
+
+
+- `true` (**default**) - coerce scalar data types.
+- `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
+
 
 ## The Base URL
 
@@ -1052,6 +1054,13 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://zeekat.nl"><img src="https://avatars1.githubusercontent.com/u/24154?v=4" width="100px;" alt=""/><br /><sub><b>Joost Diepenmaat</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=joodie" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=joodie" title="Tests">⚠️</a></td>
     <td align="center"><a href="https://github.com/DomParfitt"><img src="https://avatars2.githubusercontent.com/u/11363907?v=4" width="100px;" alt=""/><br /><sub><b>Dom Parfitt</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=DomParfitt" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=DomParfitt" title="Tests">⚠️</a></td>
     <td align="center"><a href="http://xuguang.info"><img src="https://avatars1.githubusercontent.com/u/1443518?v=4" width="100px;" alt=""/><br /><sub><b>xg1990</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=xg1990" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/ownagedj"><img src="https://avatars2.githubusercontent.com/u/5887702?v=4" width="100px;" alt=""/><br /><sub><b>ownagedj</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=ownagedj" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=ownagedj" title="Tests">⚠️</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/dprgarner"><img src="https://avatars2.githubusercontent.com/u/11389185?v=4" width="100px;" alt=""/><br /><sub><b>David Garner</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=dprgarner" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/balazssoltesz"><img src="https://avatars0.githubusercontent.com/u/52117200?v=4" width="100px;" alt=""/><br /><sub><b>Balazs Soltesz</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=balazssoltesz" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=balazssoltesz" title="Tests">⚠️</a></td>
+    <td align="center"><a href="http://www.christiaannieuwlaat.nl"><img src="https://avatars1.githubusercontent.com/u/3034281?v=4" width="100px;" alt=""/><br /><sub><b>Christiaan Nieuwlaat</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=krizzje" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/ex1st"><img src="https://avatars1.githubusercontent.com/u/7733915?v=4" width="100px;" alt=""/><br /><sub><b>Ilya</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=ex1st" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=ex1st" title="Tests">⚠️</a></td>
   </tr>
 </table>
 

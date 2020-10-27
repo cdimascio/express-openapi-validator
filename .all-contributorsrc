@@ -331,6 +331,54 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ownagedj",
+      "name": "ownagedj",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/5887702?v=4",
+      "profile": "https://github.com/ownagedj",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "dprgarner",
+      "name": "David Garner",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/11389185?v=4",
+      "profile": "https://github.com/dprgarner",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "balazssoltesz",
+      "name": "Balazs Soltesz",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/52117200?v=4",
+      "profile": "https://github.com/balazssoltesz",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "krizzje",
+      "name": "Christiaan Nieuwlaat",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/3034281?v=4",
+      "profile": "http://www.christiaannieuwlaat.nl",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "ex1st",
+      "name": "Ilya",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/7733915?v=4",
+      "profile": "https://github.com/ex1st",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,

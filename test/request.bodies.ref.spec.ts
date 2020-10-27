@@ -17,19 +17,24 @@ describe(packageJson.name, () => {
         unknownFormats: ['phone-number'],
       },
       3005,
-      app => {
+      (app) => {
         // Define new coercion routes
-        app.post(`${app.basePath}/request_bodies_ref`, (req, res) => {
-          if (req.query.bad_body) {
-            const r = req.body;
-            r.unexpected_prop = 'bad';
-            res.json(r);
-          } else if (req.header('accept')) {
-            res.type(req.header('accept')).send(req.body);
-          } else {
-            res.json(req.body);
-          }
-        });
+        app
+          .post(`${app.basePath}/415_test`, (req, res) => ({
+            success: true,
+            ...req,
+          }))
+          .post(`${app.basePath}/request_bodies_ref`, (req, res) => {
+            if (req.query.bad_body) {
+              const r = req.body;
+              r.unexpected_prop = 'bad';
+              res.json(r);
+            } else if (req.header('accept')) {
+              res.type(req.header('accept')).send(req.body);
+            } else {
+              res.json(req.body);
+            }
+          });
       },
       true,
     );
@@ -39,6 +44,15 @@ describe(packageJson.name, () => {
     app.server.close();
   });
 
+  it('should return 415 for undeclared media type', async () =>
+    request(app)
+      .post(`${app.basePath}/415_test`)
+      .set('accept', 'text/plain')
+      .expect(415)
+      .then((r) => {
+        expect(r.body.message).includes('unsupported media type');
+      }));
+
   it('should return 200 if text/plain request body is satisfied', async () => {
     const stringData = 'my string data';
     return request(app)
@@ -47,7 +61,7 @@ describe(packageJson.name, () => {
       .set('accept', 'text/plain')
       .send(stringData)
       .expect(200)
-      .then(r => {
+      .then((r) => {
         expect(r.text).equals(stringData);
       });
   });
@@ -60,8 +74,8 @@ describe(packageJson.name, () => {
       .set('accept', 'text/html')
       .send(stringData)
       .expect(200)
-      .then(r => {
-        expect(r.get('content-type')).to.contain('text/html')
+      .then((r) => {
+        expect(r.get('content-type')).to.contain('text/html');
         expect(r.text).equals(stringData);
       });
   });
@@ -75,9 +89,9 @@ describe(packageJson.name, () => {
         testProperty: 'abc',
       })
       .expect(200)
-      .then(r => {
+      .then((r) => {
         const { body } = r;
-        expect(r.get('content-type')).to.contain('application/ld+json')
+        expect(r.get('content-type')).to.contain('application/ld+json');
         expect(body).to.have.property('testProperty');
       });
   });
@@ -91,10 +105,10 @@ describe(packageJson.name, () => {
         testPropertyTwo: 'abc',
       })
       .expect(200)
-      .then(r => {
+      .then((r) => {
         const { body } = r;
-        expect(r.get('content-type')).to.contain('application/vnd.api+json')
-        expect(r.get('content-type')).to.contain(' type=two')
+        expect(r.get('content-type')).to.contain('application/vnd.api+json');
+        expect(r.get('content-type')).to.contain(' type=two');
         expect(body).to.have.property('testPropertyTwo');
       });
   });
@@ -104,7 +118,7 @@ describe(packageJson.name, () => {
       .post(`${app.basePath}/request_bodies_ref`)
       .send({})
       .expect(400)
-      .then(r => {
+      .then((r) => {
         expect(r.body.errors).to.be.an('array');
         expect(r.body.errors).to.have.length(1);
         const message = r.body.errors[0].message;
@@ -120,10 +134,21 @@ describe(packageJson.name, () => {
         testProperty: 'abc',
       })
       .expect(200)
-      .then(r => {
+      .then((r) => {
         const { body } = r;
         expect(body).to.have.property('testProperty');
       }));
+
+  it('should return 400 if array is passed (instead of object) and the array includes an object that meets requirements', async () =>
+    request(app)
+      .post(`${app.basePath}/request_bodies_ref`)
+      .send([
+        {
+          testProperty: 'abc',
+        },
+      ])
+      .expect(400)
+      .then((r) => expect(r.body.message).to.include('should be object')));
 
   it('should return 200 if a json suffex is used for content-type', async () =>
     request(app)
@@ -134,9 +159,9 @@ describe(packageJson.name, () => {
         testProperty: 'abc',
       })
       .expect(200)
-      .then(r => {
+      .then((r) => {
         const { body } = r;
-        expect(r.get('content-type')).to.contain('application/hal+json')
+        expect(r.get('content-type')).to.contain('application/hal+json');
         expect(body).to.have.property('testProperty');
       }));
 
@@ -150,7 +175,7 @@ describe(packageJson.name, () => {
         testProperty: 'abc',
       })
       .expect(500)
-      .then(r => {
+      .then((r) => {
         const { body } = r;
         expect(body.message).to.include(
           '.response should NOT have additional properties',
@@ -169,11 +194,9 @@ describe(packageJson.name, () => {
         invalidProperty2: 'abc',
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         const errors = r.body.errors;
-        expect(errors)
-          .to.be.an('array')
-          .with.length(2);
+        expect(errors).to.be.an('array').with.length(2);
         expect(errors[0].path).to.equal('.body.invalidProperty');
         expect(errors[0].message).to.equal(
           'should NOT have additional properties',
