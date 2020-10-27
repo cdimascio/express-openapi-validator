@@ -1,3 +1,13 @@
+## <small>4.3.4 (2020-10-27)</small>
+
+* chore: increment patch version ([3b3f34f](https://github.com/cdimascio/express-openapi-validator/commit/3b3f34f))
+* (fix) #415 Cannot read property 'push' of undefined bug (#420) ([e113eed](https://github.com/cdimascio/express-openapi-validator/commit/e113eed)), closes [#415](https://github.com/cdimascio/express-openapi-validator/issues/415) [#420](https://github.com/cdimascio/express-openapi-validator/issues/420)
+* (fix) readonly/required with one required field fails (#421) ([14cf30a](https://github.com/cdimascio/express-openapi-validator/commit/14cf30a)), closes [#421](https://github.com/cdimascio/express-openapi-validator/issues/421) [#400](https://github.com/cdimascio/express-openapi-validator/issues/400)
+* fix: upgrade express-openapi-validator from 4.0.4 to 4.0.7 (#413) ([ca87e20](https://github.com/cdimascio/express-openapi-validator/commit/ca87e20)), closes [#413](https://github.com/cdimascio/express-openapi-validator/issues/413)
+* docs: add ex1st as a contributor (#422) ([b047fd9](https://github.com/cdimascio/express-openapi-validator/commit/b047fd9)), closes [#422](https://github.com/cdimascio/express-openapi-validator/issues/422)
+
+
+
 ## <small>4.3.2 (2020-10-26)</small>
 
 * chore: increment patch version ([ed7af2b](https://github.com/cdimascio/express-openapi-validator/commit/ed7af2b))
