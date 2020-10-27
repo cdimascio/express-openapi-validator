@@ -318,7 +318,7 @@ export class OpenApiValidator {
           expressRoute.indexOf(baseUrl) === 0
             ? expressRoute.substring(baseUrl.length)
             : expressRoute;
-        router[method.toLowerCase()](path, resolver(basePath, route, this.options.apiSpec));
+        router[method.toLowerCase()](path, resolver(basePath, route, context.apiDoc));
       }
     }
     return router;
