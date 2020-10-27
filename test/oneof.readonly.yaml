@@ -6,6 +6,23 @@ info:
 servers:
   - url: /v1
 paths:
+  /any_of_one_required:
+    post:
+      requestBody:
+        content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/subE'
+                  - $ref: '#/components/schemas/subF'
+                discriminator:
+                  propertyName: type
+                  mapping:
+                    A: '#/components/schemas/subE'
+                    B: '#/components/schemas/subF'
+      responses:
+          200:
+            description: successful operation
   /any_of:
     post:
       requestBody:
@@ -57,6 +74,18 @@ components:
         - id
         - type  
 
+    one_required:
+      type: object
+      properties:
+        id:
+          readOnly: true
+          type: string
+        type:
+          type: string
+          enum: [A, B]          
+      required:
+        - id
+
     subA:
       allOf:
         - $ref: '#/components/schemas/common'
@@ -92,3 +121,11 @@ components:
           required:
             - id
             - type  
+
+    subE:
+      allOf:
+        - $ref: '#/components/schemas/one_required'
+
+    subF:
+      allOf:
+        - $ref: '#/components/schemas/one_required'

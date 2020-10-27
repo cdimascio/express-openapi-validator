@@ -82,6 +82,9 @@ export class RequestSchemaPreprocessor {
           schema.required = required
             .slice(0, index)
             .concat(required.slice(index + 1));
+          if (schema.required.length === 0) {
+            delete schema.required;
+          }
         }
       }
     };
