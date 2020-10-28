@@ -108,8 +108,6 @@ export class RequestSchemaPreprocessor {
       Object.keys(schemaObj.properties).forEach((prop) => {
         f(prop, schemaObj);
       });
-    } else {
-      console.warn('unhandled schema property: skipping', schema);
     }
   }
 }
