@@ -1,3 +1,10 @@
+## <small>4.3.6 (2020-10-28)</small>
+
+* chore: increment minor version ([3e00431](https://github.com/cdimascio/express-openapi-validator/commit/3e00431))
+* fix: remove log entry ([3c3c91f](https://github.com/cdimascio/express-openapi-validator/commit/3c3c91f)), closes [#424](https://github.com/cdimascio/express-openapi-validator/issues/424)
+
+
+
 ## <small>4.3.5 (2020-10-27)</small>
 
 * chore: change history ([7b91562](https://github.com/cdimascio/express-openapi-validator/commit/7b91562))
