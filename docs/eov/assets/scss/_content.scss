@@ -1,0 +1,27 @@
+.td-overlay--dark::after {
+  background-color: rgba(64, 63, 76, 0.1) !important;
+}
+
+.navbar-dark .navbar-brand {
+  color: var(--white) !important;
+}
+
+.nav-link {
+  text-shadow: 0px 0px 0px #403f4c !important;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: var(--secondary) !important;
+}
+
+// .td-navbar-cover {
+//   // background: transparent !important;
+//   background: var(--dark) !important;
+// }
+
+// @media (min-width: 768px) {
+//   .td-navbar-cover {
+//     // background: transparent !important;
+//     background: var(--dark) !important;
+//   }
+// }
