@@ -54,11 +54,11 @@ paths:
             application/json:
               schema:
                 type: object
-  "/users:lookup":
+  "/user_lookup:{name}":
     get:
       parameters:
         - name: name
-          in: query
+          in: path
           required: true
           schema:
             type: string
@@ -68,9 +68,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/User"
 components:
   schemas:
     User:
