@@ -389,6 +389,16 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "siimsoni",
+      "name": "Kristjan Siimson",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/1738636?v=4",
+      "profile": "http://ks.priv.no/",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
