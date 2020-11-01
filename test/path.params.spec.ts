@@ -22,12 +22,10 @@ describe('path params', () => {
             id: req.params.id,
           });
         });
-        app.get(`${app.basePath}/users:lookup`, (req, res) => {
-          res.json([
-            {
-              id: req.query.name,
-            },
-          ]);
+        app.get(`${app.basePath}/user_lookup\\::name`, (req, res) => {
+          res.json({
+            id: req.params.name,
+          });
         });
         app.get(`${app.basePath}/multi_users/:ids?`, (req, res) => {
           res.json({
@@ -77,11 +75,9 @@ describe('path params', () => {
 
   it("should handle :'s in path parameters", async () =>
     request(app)
-      .get(`${app.basePath}/users:lookup`)
-      .query({ name: 'carmine' })
+      .get(`${app.basePath}/user_lookup:carmine`)
       .expect(200)
       .then((r) => {
-        expect(r.body).to.be.an('array');
-        expect(r.body[0].id).to.equal('carmine');
+        expect(r.body.id).to.equal('carmine');
       }));
 });
