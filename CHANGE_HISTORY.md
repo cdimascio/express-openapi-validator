@@ -1,3 +1,11 @@
+## <small>4.3.7 (2020-11-01)</small>
+
+* chore: change history ([a3908cd](https://github.com/cdimascio/express-openapi-validator/commit/a3908cd))
+* chore: increment patch version ([a7ee952](https://github.com/cdimascio/express-openapi-validator/commit/a7ee952))
+* Escape colons in path. Fixes #320 ([1e3bd24](https://github.com/cdimascio/express-openapi-validator/commit/1e3bd24)), closes [#320](https://github.com/cdimascio/express-openapi-validator/issues/320)
+
+
+
 ## <small>4.3.6 (2020-10-28)</small>
 
 * chore: increment minor version ([3e00431](https://github.com/cdimascio/express-openapi-validator/commit/3e00431))
