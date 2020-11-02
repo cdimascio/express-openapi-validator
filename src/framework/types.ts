@@ -56,6 +56,12 @@ export type OperationHandlerOptions = {
   resolver: Function;
 };
 
+export type Format = {
+  name: string;
+  type?: 'number' | 'string';
+  validate: (v: any) => boolean;
+};
+
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
   validateResponses?: boolean | ValidateResponseOpts;
@@ -65,6 +71,7 @@ export interface OpenApiValidatorOpts {
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
   unknownFormats?: true | string[] | 'ignore';
+  formats?: Format[];
   fileUploader?: boolean | multer.Options;
   multerOpts?: multer.Options;
   $refParser?: {

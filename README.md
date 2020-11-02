@@ -488,6 +488,11 @@ OpenApiValidator.middleware({
   },
   operationHandlers: false | 'operations/base/path' | { ... },
   ignorePaths: /.*\/pets$/,
+  formats: [{
+    name: 'my-format',
+    type: 'string',
+    validate: v => /^[A-Z]$/.test(v)
+  }],
   unknownFormats: ['phone-number', 'uuid'],
   fileUploader: { ... } | true | false,
   $refParser: {
@@ -582,6 +587,40 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
     }
   }
   ```
+
+### ▪️ formats (optional)
+
+Defines a list of custome formats.
+
+- `[{ ... }]` - array of custom format objects. Each object must have the following properties:
+    - name: string (required) - the format name
+    - validate: (v: any) => boolean (required) - the validation function
+    - type: 'string' | 'number' (optional) - the format's type
+
+e.g.
+
+```javascript
+[
+  {
+    name: 'my-three-digit-format',
+    type: 'number',
+    validate: v => /^\d{3}$/.test(v.toString()) // number with 3 digits
+  },
+  {
+    name: 'my-three-letter-format',
+    type: 'number',
+    validate: v => /^[A-Za-z]{3}$/.test(v) // string with 3 letters
+  },
+]
+```
+
+Then use it in a spec e.g.
+
+```yaml
+  my_property:
+    type: string
+    format: my-three-letter-format'
+```
 
 ### ▪️ validateFormats (optional)
 
