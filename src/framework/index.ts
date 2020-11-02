@@ -129,7 +129,7 @@ export class OpenAPIFramework {
     const basePathsMap: { [key: string]: BasePath } = {};
     for (const server of servers) {
       const basePath = new BasePath(server);
-      basePathsMap[basePath.path] = basePath;
+      basePathsMap[basePath.expressPath] = basePath;
     }
     return Object.keys(basePathsMap).map(key => basePathsMap[key]);
   }
