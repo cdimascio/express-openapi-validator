@@ -478,7 +478,6 @@ OpenApiValidator.middleware({
   apiSpec: './openapi.yaml',
   validateRequests: true,
   validateResponses: true,
-  validateFormats: 'fast',
   validateSecurity: {
     handlers: {
       ApiKeyAuth: (req, scopes, schema) => {
@@ -486,14 +485,15 @@ OpenApiValidator.middleware({
       }
     }
   },
-  operationHandlers: false | 'operations/base/path' | { ... },
-  ignorePaths: /.*\/pets$/,
+  validateFormats: 'fast',
   formats: [{
-    name: 'my-format',
-    type: 'string',
-    validate: v => /^[A-Z]$/.test(v)
+    name: 'my-custom-format',
+    type: 'string' | 'number',
+    validate: (value: any) => boolean,
   }],
   unknownFormats: ['phone-number', 'uuid'],
+  operationHandlers: false | 'operations/base/path' | { ... },
+  ignorePaths: /.*\/pets$/,
   fileUploader: { ... } | true | false,
   $refParser: {
     mode: 'bundle'
@@ -604,12 +604,14 @@ e.g.
   {
     name: 'my-three-digit-format',
     type: 'number',
-    validate: v => /^\d{3}$/.test(v.toString()) // number with 3 digits
+    // validate returns true the number has 3 digits, false otherwise
+    validate: v => /^\d{3}$/.test(v.toString()) 
   },
   {
     name: 'my-three-letter-format',
-    type: 'number',
-    validate: v => /^[A-Za-z]{3}$/.test(v) // string with 3 letters
+    type: 'string',
+    // validate returns true the string has 3 letters, false otherwise
+    validate: v => /^[A-Za-z]{3}$/.test(v)
   },
 ]
 ```
