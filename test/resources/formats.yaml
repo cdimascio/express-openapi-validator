@@ -24,3 +24,36 @@ paths:
         '200':
           description: response
 
+  /formats/1:
+    get:
+      parameters: 
+        - name: string_id
+          in: query
+          schema:
+            type: string
+            format: three-letters
+        - name: number_id
+          in: query
+          schema:
+            type: number
+            format: three-digits
+      responses:
+        '200':
+          description: response
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number_id:
+                  type: number
+                  format: three-digits
+                string_id:
+                  type: string
+                  format: three-letters
+      responses:
+        '200':
+          description: response
+
