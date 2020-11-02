@@ -39,14 +39,15 @@ export class OpenApiValidator {
     this.validateOptions(options);
     this.normalizeOptions(options);
 
-    if (options.unknownFormats == null) options.unknownFormats === true;
     if (options.coerceTypes == null) options.coerceTypes = true;
     if (options.validateRequests == null) options.validateRequests = true;
     if (options.validateResponses == null) options.validateResponses = false;
     if (options.validateSecurity == null) options.validateSecurity = true;
     if (options.fileUploader == null) options.fileUploader = {};
     if (options.$refParser == null) options.$refParser = { mode: 'bundle' };
+    if (options.unknownFormats == null) options.unknownFormats === true;
     if (options.validateFormats == null) options.validateFormats = 'fast';
+    if (options.formats == null) options.formats = [];
 
     if (typeof options.operationHandlers === 'string') {
       /**
@@ -264,6 +265,7 @@ export class OpenApiValidator {
       unknownFormats,
       validateRequests,
       validateFormats,
+      formats,
     } = this.options;
     const { allowUnknownQueryParameters } = <ValidateRequestOpts>(
       validateRequests
@@ -276,6 +278,13 @@ export class OpenApiValidator {
       unknownFormats,
       allowUnknownQueryParameters,
       format: validateFormats,
+      formats: formats.reduce((acc, f) => {
+        acc[f.name] = {
+          type: f.type,
+          validate: f.validate,
+        };
+        return acc;
+      }, {}),
     });
     return (req, res, next) => requestValidator.validate(req, res, next);
   }
@@ -286,6 +295,7 @@ export class OpenApiValidator {
       unknownFormats,
       validateResponses,
       validateFormats,
+      formats,
     } = this.options;
     const { removeAdditional } = <ValidateResponseOpts>validateResponses;
 
@@ -295,6 +305,13 @@ export class OpenApiValidator {
       removeAdditional,
       unknownFormats,
       format: validateFormats,
+      formats: formats.reduce((acc, f) => {
+        acc[f.name] = {
+          type: f.type,
+          valdiate: f.validate,
+        };
+        return acc;
+      }, {}),
     }).validate();
   }
 
@@ -318,7 +335,10 @@ export class OpenApiValidator {
           expressRoute.indexOf(baseUrl) === 0
             ? expressRoute.substring(baseUrl.length)
             : expressRoute;
-        router[method.toLowerCase()](path, resolver(basePath, route, context.apiDoc));
+        router[method.toLowerCase()](
+          path,
+          resolver(basePath, route, context.apiDoc),
+        );
       }
     }
     return router;
