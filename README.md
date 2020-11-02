@@ -600,7 +600,7 @@ Defines a list of custome formats.
 e.g.
 
 ```javascript
-[
+formats: [
   {
     name: 'my-three-digit-format',
     type: 'number',
