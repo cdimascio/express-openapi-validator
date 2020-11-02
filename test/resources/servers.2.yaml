@@ -1,0 +1,29 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: test
+servers:
+  - url: /api/{version}:{name}
+    variables:
+      version:
+        default: v1
+        enum:
+          - v1
+          - v2
+      name:
+        default: petstore
+        enum:
+          - petstore
+          - storeofpets
+paths:
+  /ping:
+    get:
+      parameters: 
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: response

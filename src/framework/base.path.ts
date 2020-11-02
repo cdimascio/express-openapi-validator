@@ -11,18 +11,24 @@ interface ServerUrlValues {
 
 export class BasePath {
   public readonly variables: ServerUrlVariables = {};
-  public readonly path: string = '';
+  public readonly expressPath: string = '';
   private allPaths: string[] = null;
 
   constructor(server: OpenAPIV3.ServerObject) {
     // break the url into parts
     // baseUrl param added to make the parsing of relative paths go well
     let urlPath = this.findUrlPath(server.url);
+    if (/:/.test(urlPath)) {
+      // escape colons as (any at this point) do not signify express route params.
+      // this is an openapi base path, thus route params are wrapped in braces {}, 
+      // not prefixed by colon : (like express route params)
+      urlPath = urlPath.replace(':','\\:')
+    }
     if (/{\w+}/.test(urlPath)) {
       // has variable that we need to check out
       urlPath = urlPath.replace(/{(\w+)}/g, (substring, p1) => `:${p1}(.*)`);
     }
-    this.path = urlPath;
+    this.expressPath = urlPath;
     for (const variable in server.variables) {
       if (server.variables.hasOwnProperty(variable)) {
         const v = server.variables[variable];
@@ -49,7 +55,7 @@ export class BasePath {
   }
 
   public all(): string[] {
-    if (!this.hasVariables()) return [this.path];
+    if (!this.hasVariables()) return [this.expressPath];
     if (this.allPaths) return this.allPaths;
     // TODO performance optimization
     // ignore variables that are not part of path params
@@ -63,7 +69,7 @@ export class BasePath {
     }, []);
 
     const allParamCombos = cartesian(...allParams);
-    const toPath = compile(this.path);
+    const toPath = compile(this.expressPath);
     const paths = new Set<string>();
     for (const combo of allParamCombos) {
       paths.add(toPath(combo));
