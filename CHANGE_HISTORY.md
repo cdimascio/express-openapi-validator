@@ -1,3 +1,17 @@
+## 4.4.0 (2020-11-02)
+
+* chore: increment minor version ([4ff2663](https://github.com/cdimascio/express-openapi-validator/commit/4ff2663))
+* chore: increment patch version ([10de36b](https://github.com/cdimascio/express-openapi-validator/commit/10de36b))
+* docs: add formats doc ([1fd782f](https://github.com/cdimascio/express-openapi-validator/commit/1fd782f))
+* docs: update .all-contributorsrc [skip ci] ([a82c809](https://github.com/cdimascio/express-openapi-validator/commit/a82c809))
+* docs: update README.md [skip ci] ([76fa34e](https://github.com/cdimascio/express-openapi-validator/commit/76fa34e))
+* add comment and modify test name ([dbd519a](https://github.com/cdimascio/express-openapi-validator/commit/dbd519a))
+* Update README.md ([24db4f6](https://github.com/cdimascio/express-openapi-validator/commit/24db4f6))
+* feat: adds support for custom formats ([124afec](https://github.com/cdimascio/express-openapi-validator/commit/124afec)), closes [#210](https://github.com/cdimascio/express-openapi-validator/issues/210)
+* feat: handle colons in servers url ([121cdc6](https://github.com/cdimascio/express-openapi-validator/commit/121cdc6)), closes [#433](https://github.com/cdimascio/express-openapi-validator/issues/433)
+
+
+
 ## <small>4.3.7 (2020-11-01)</small>
 
 * chore: change history ([a3908cd](https://github.com/cdimascio/express-openapi-validator/commit/a3908cd))
