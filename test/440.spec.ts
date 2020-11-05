@@ -1,9 +1,3 @@
-// expressOpenapiValidator.middleware({
-//   apiSpec: apiSpec,
-//   validateRequests: true,
-//   validateResponses: true,
-// });
-
 import * as express from 'express';
 import * as request from 'supertest';
 import { createApp } from './common/app';
@@ -51,7 +45,11 @@ describe(packageJson.name, () => {
         },
       },
     };
-    app = await createApp({ apiSpec }, 3005, (app) =>
+    app = await createApp({
+      apiSpec,
+      alidateRequests: true,
+      validateResponses: true, 
+    }, 3005, (app) =>
       app.use(
         express
           .Router()
