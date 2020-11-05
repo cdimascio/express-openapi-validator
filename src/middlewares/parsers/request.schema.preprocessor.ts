@@ -7,6 +7,16 @@ type SchemaObject = OpenAPIV3.SchemaObject;
 type ReferenceObject = OpenAPIV3.ReferenceObject;
 type Schema = ReferenceObject | SchemaObject;
 
+const httpMethods = new Set([
+  'get',
+  'put',
+  'post',
+  'delete',
+  'options',
+  'head',
+  'patch',
+  'trace',
+]);
 export class RequestSchemaPreprocessor {
   private ajv: Ajv;
   private apiDoc: OpenAPIV3.Document;
@@ -24,8 +34,10 @@ export class RequestSchemaPreprocessor {
         ? <OpenAPIV3.PathItemObject>this.ajv.getSchema(piOrRef.$ref).schema
         : piOrRef;
       for (const pathItemKey of Object.keys(pathItem)) {
-        this.preprocessRequestBody(pathItemKey, pathItem);
-        this.preprocessPathLevelParameters(pathItemKey, pathItem);
+        if (httpMethods.has(pathItemKey)) {
+          this.preprocessRequestBody(pathItemKey, pathItem);
+          this.preprocessPathLevelParameters(pathItemKey, pathItem);
+        }
       }
     });
   }
@@ -62,8 +74,7 @@ export class RequestSchemaPreprocessor {
     const ref = v?.parameters?.$ref;
 
     const op = ref && this.ajv.getSchema(ref)?.schema;
-    if (op)
-      v = op;
+    if (op) v = op;
     v.parameters = v.parameters || [];
 
     for (const param of parameters) {
