@@ -47,7 +47,7 @@ describe(packageJson.name, () => {
     };
     app = await createApp({
       apiSpec,
-      alidateRequests: true,
+      validateRequests: true,
       validateResponses: true, 
     }, 3005, (app) =>
       app.use(
