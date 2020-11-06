@@ -1,3 +1,10 @@
+## <small>4.4.2 (2020-11-06)</small>
+
+* chore: increment patch version ([3df8ed0](https://github.com/cdimascio/express-openapi-validator/commit/3df8ed0))
+* fix: dynamic query params via object additionalProperties: true ([c647ad1](https://github.com/cdimascio/express-openapi-validator/commit/c647ad1)), closes [#445](https://github.com/cdimascio/express-openapi-validator/issues/445)
+
+
+
 ## <small>4.4.1 (2020-11-06)</small>
 
 * chore: increment patch version ([2e8d621](https://github.com/cdimascio/express-openapi-validator/commit/2e8d621))
