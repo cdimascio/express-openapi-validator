@@ -164,8 +164,16 @@ export class RequestValidator {
     };
   }
 
-  private processQueryParam(query, schema, whiteList: string[] = []) {
-    const keys = schema.properties ? Object.keys(schema.properties) : [];
+  private processQueryParam(query: object, schema, whiteList: string[] = []) {
+    const entries = Object.entries(schema.properties ?? {});
+    let keys = [];
+    for (const [key, prop] of entries) {
+      if (prop['type'] === 'object' && prop['additionalProperties']) {
+        // we have an object that allows additional properties
+        return;
+      }
+      keys.push(key);
+    }
     const knownQueryParams = new Set(keys);
     whiteList.forEach((item) => knownQueryParams.add(item));
     const queryParams = Object.keys(query);

@@ -1,0 +1,41 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Test
+  description: A sample API
+servers:
+  - url: /
+paths:
+  /params_with_additional_props:
+    get:
+      parameters:
+        - name: required
+          in: query
+          description: maximum number of results to return
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 20
+        - name: params
+          in: query
+          required: false
+          schema:
+            type: object
+            # If the parameter values are of specific type, e.g. string:
+            # additionalProperties:
+            #   type: string
+            # If the parameter values can be of different types
+            # (e.g. string, number, boolean, ...)
+            additionalProperties: true
+
+          # `style: form` and `explode: true` is the default serialization method
+          # for query parameters, so these keywords can be omitted
+          style: form
+          explode: true
+      responses:
+        '200':
+          description: the response
+
+
