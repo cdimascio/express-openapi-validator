@@ -1,3 +1,16 @@
+## <small>4.4.1 (2020-11-06)</small>
+
+* chore: increment patch version ([2e8d621](https://github.com/cdimascio/express-openapi-validator/commit/2e8d621))
+* chore: update change history ([52cfe01](https://github.com/cdimascio/express-openapi-validator/commit/52cfe01))
+* fix: cannot create property parameters ([43dcfda](https://github.com/cdimascio/express-openapi-validator/commit/43dcfda)), closes [#440](https://github.com/cdimascio/express-openapi-validator/issues/440)
+* fix: explode form param with no properties ([a735884](https://github.com/cdimascio/express-openapi-validator/commit/a735884)), closes [#441](https://github.com/cdimascio/express-openapi-validator/issues/441)
+* fix: upgrade express-openapi-validator from 4.0.7 to 4.2.0 ([3817d93](https://github.com/cdimascio/express-openapi-validator/commit/3817d93))
+* fix test ([21247a2](https://github.com/cdimascio/express-openapi-validator/commit/21247a2))
+* Update 440.spec.ts ([95508cb](https://github.com/cdimascio/express-openapi-validator/commit/95508cb))
+* Update README.md ([a7d9d71](https://github.com/cdimascio/express-openapi-validator/commit/a7d9d71))
+
+
+
 ## 4.4.0 (2020-11-02)
 
 * chore: increment minor version ([4ff2663](https://github.com/cdimascio/express-openapi-validator/commit/4ff2663))
