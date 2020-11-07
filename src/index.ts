@@ -5,9 +5,10 @@ import { OpenApiSpecLoader } from './framework/openapi.spec.loader';
 import {
   InternalServerError,
   UnsupportedMediaType,
-  RequestEntityToLarge,
+  RequestEntityTooLarge,
   BadRequest,
   MethodNotAllowed,
+  NotAcceptable,
   NotFound,
   Unauthorized,
   Forbidden,
@@ -19,9 +20,10 @@ export const middleware = openapiValidator;
 export const error = {
   InternalServerError,
   UnsupportedMediaType,
-  RequestEntityToLarge,
+  RequestEntityTooLarge,
   BadRequest,
   MethodNotAllowed,
+  NotAcceptable,
   NotFound,
   Unauthorized,
   Forbidden,
