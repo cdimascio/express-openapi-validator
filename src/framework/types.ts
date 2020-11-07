@@ -521,7 +521,7 @@ export class HttpError extends Error implements ValidationError {
   }):
     | InternalServerError
     | UnsupportedMediaType
-    | RequestEntityToLarge
+    | RequestEntityTooLarge
     | BadRequest
     | MethodNotAllowed
     | NotAcceptable
@@ -542,7 +542,7 @@ export class HttpError extends Error implements ValidationError {
       case 406:
         return new NotAcceptable(err);
       case 413:
-        return new RequestEntityToLarge(err);
+        return new RequestEntityTooLarge(err);
       case 415:
         return new UnsupportedMediaType(err);
       default:
@@ -613,7 +613,7 @@ export class BadRequest extends HttpError {
   }
 }
 
-export class RequestEntityToLarge extends HttpError {
+export class RequestEntityTooLarge extends HttpError {
   constructor(err: {
     path: string;
     message?: string;

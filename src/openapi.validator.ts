@@ -24,7 +24,7 @@ export {
   OpenApiValidatorOpts,
   InternalServerError,
   UnsupportedMediaType,
-  RequestEntityToLarge,
+  RequestEntityTooLarge,
   BadRequest,
   MethodNotAllowed,
   NotAcceptable,

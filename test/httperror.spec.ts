@@ -62,21 +62,21 @@ describe(packageJson.name, () => {
     done();
   });
 
-  it('should be an instance of RequestEntityToLarge', (done) => {
-    console.log('Testing instaceof detection of RequestEntityToLarge');
+  it('should be an instance of RequestEntityTooLarge', (done) => {
+    console.log('Testing instaceof detection of RequestEntityTooLarge');
     const err = {
-      path: '/entity_to_large',
-      message: 'request qntity too large',
+      path: '/entity_too_large',
+      message: 'request entity too large',
     };
-    expect(new error.RequestEntityToLarge(err)).to.be.an.instanceof(
-      error.RequestEntityToLarge,
+    expect(new error.RequestEntityTooLarge(err)).to.be.an.instanceof(
+      error.RequestEntityTooLarge,
     );
     expect(
       HttpError.create({
         status: 413,
         ...err,
       }),
-    ).to.be.an.instanceof(error.RequestEntityToLarge);
+    ).to.be.an.instanceof(error.RequestEntityTooLarge);
     done();
   });
 

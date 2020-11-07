@@ -125,7 +125,7 @@ function error(req: OpenApiRequest, err: Error): ValidationError {
       message: err.message,
     });
     /*return payload_too_big
-      ? new RequestEntityToLarge({ path: req.path, message: err.message })
+      ? new RequestEntityTooLarge({ path: req.path, message: err.message })
       : !unexpected
       ? new BadRequest({ path: req.path, message: err.message })
       : new InternalServerError({ path: req.path, message: err.message });*/
