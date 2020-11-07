@@ -1,3 +1,14 @@
+## <small>4.4.3 (2020-11-07)</small>
+
+* chore: increment minor version ([c2c1d7f](https://github.com/cdimascio/express-openapi-validator/commit/c2c1d7f))
+* chore: increment patch version ([3df8ed0](https://github.com/cdimascio/express-openapi-validator/commit/3df8ed0))
+* chore: update change history ([7d7a74b](https://github.com/cdimascio/express-openapi-validator/commit/7d7a74b))
+* fix: dynamic query params via object additionalProperties: true ([c647ad1](https://github.com/cdimascio/express-openapi-validator/commit/c647ad1)), closes [#445](https://github.com/cdimascio/express-openapi-validator/issues/445)
+* fix: export 406 and rename 413 (#448) ([0f48f1f](https://github.com/cdimascio/express-openapi-validator/commit/0f48f1f)), closes [#448](https://github.com/cdimascio/express-openapi-validator/issues/448)
+* fix: incorrectly throw required header in node 15 (#449) ([80ca68f](https://github.com/cdimascio/express-openapi-validator/commit/80ca68f)), closes [#449](https://github.com/cdimascio/express-openapi-validator/issues/449) [#447](https://github.com/cdimascio/express-openapi-validator/issues/447)
+
+
+
 ## <small>4.4.2 (2020-11-06)</small>
 
 * chore: increment patch version ([3df8ed0](https://github.com/cdimascio/express-openapi-validator/commit/3df8ed0))
