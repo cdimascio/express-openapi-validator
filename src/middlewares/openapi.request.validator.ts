@@ -140,7 +140,13 @@ export class RequestValidator {
           }
         : undefined;
 
-      const data = { query: {}, ...req, cookies };
+      const data = {
+        query: req.query ?? {}, 
+        headers: req.headers,
+        params: req.params, 
+        cookies,
+        body: req.body,
+      }
       const valid = validator.validatorGeneral(data);
       const validBody = validator.validatorBody(data);
 
