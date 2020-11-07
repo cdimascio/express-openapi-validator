@@ -27,6 +27,7 @@ export {
   RequestEntityToLarge,
   BadRequest,
   MethodNotAllowed,
+  NotAcceptable,
   NotFound,
   Unauthorized,
   Forbidden,
