@@ -399,6 +399,16 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "LEI",
+      "name": "Guillaume",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/4112243?v=4",
+      "profile": "https://github.com/LEI",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
