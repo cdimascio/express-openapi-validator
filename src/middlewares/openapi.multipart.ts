@@ -19,9 +19,7 @@ export function multipart(
   options: MultipartOpts,
 ): OpenApiRequestHandler {
   const mult = multer(options.multerOpts);
-  const Ajv = createRequestAjv(apiDoc, {
-    unknownFormats: options.unknownFormats,
-  });
+  const Ajv = createRequestAjv(apiDoc, { ...options.ajvOpts });
   return (req, res, next) => {
     // TODO check that format: binary (for upload) else do not use multer.any()
     // use multer.none() if no binary parameters exist

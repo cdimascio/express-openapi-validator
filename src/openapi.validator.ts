@@ -85,7 +85,6 @@ export class OpenApiValidator {
   }
 
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
-    const { formats } = this.options;
     const middlewares: OpenApiRequestHandler[] = [];
     const pContext = spec.then((spec) => {
       const responseApiDoc = this.options.validateResponses
@@ -98,7 +97,7 @@ export class OpenApiValidator {
         useDefaults: true,
         unknownFormats: this.options.unknownFormats,
         format: this.options.validateFormats,
-        formats: formats.reduce((acc, f) => {
+        formats: this.options.formats.reduce((acc, f) => {
           acc[f.name] = {
             type: f.type,
             validate: f.validate,
@@ -257,7 +256,17 @@ export class OpenApiValidator {
   private multipartMiddleware(apiDoc: OpenAPIV3.Document) {
     return middlewares.multipart(apiDoc, {
       multerOpts: this.options.fileUploader,
-      unknownFormats: this.options.unknownFormats,
+      ajvOpts: {
+        unknownFormats: this.options.unknownFormats,
+        format: this.options.validateFormats,
+        formats: this.options.formats.reduce((acc, f) => {
+          acc[f.name] = {
+            type: f.type,
+            validate: f.validate,
+          };
+          return acc;
+        }, {}),
+      },
     });
   }
 
