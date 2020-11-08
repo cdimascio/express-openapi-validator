@@ -40,7 +40,6 @@ export class OpenApiValidator {
     this.validateOptions(options);
     this.normalizeOptions(options);
 
-    if (options.coerceTypes == null) options.coerceTypes = true;
     if (options.validateRequests == null) options.validateRequests = true;
     if (options.validateResponses == null) options.validateResponses = false;
     if (options.validateSecurity == null) options.validateSecurity = true;
@@ -68,6 +67,7 @@ export class OpenApiValidator {
     if (options.validateResponses === true) {
       options.validateResponses = {
         removeAdditional: false,
+        coerceTypes: false,
       };
     }
 
@@ -92,7 +92,7 @@ export class OpenApiValidator {
         : null;
       new RequestSchemaPreprocessor(spec.apiDoc, {
         nullable: true,
-        coerceTypes: this.options.coerceTypes,
+        coerceTypes: false,
         removeAdditional: false,
         useDefaults: true,
         unknownFormats: this.options.unknownFormats,
@@ -262,7 +262,6 @@ export class OpenApiValidator {
 
   private requestValidationMiddleware(apiDoc: OpenAPIV3.Document) {
     const {
-      coerceTypes,
       unknownFormats,
       validateRequests,
       validateFormats,
@@ -273,7 +272,6 @@ export class OpenApiValidator {
     );
     const requestValidator = new middlewares.RequestValidator(apiDoc, {
       nullable: true,
-      coerceTypes,
       removeAdditional: false,
       useDefaults: true,
       unknownFormats,
@@ -292,13 +290,14 @@ export class OpenApiValidator {
 
   private responseValidationMiddleware(apiDoc: OpenAPIV3.Document) {
     const {
-      coerceTypes,
       unknownFormats,
       validateResponses,
       validateFormats,
       formats,
     } = this.options;
-    const { removeAdditional } = <ValidateResponseOpts>validateResponses;
+    const { removeAdditional, coerceTypes } = <ValidateResponseOpts>(
+      validateResponses
+    );
 
     return new middlewares.ResponseValidator(apiDoc, {
       nullable: true,
@@ -354,7 +353,18 @@ export class OpenApiValidator {
         'securityHandlers is not supported. Use validateSecurities.handlers instead.',
       );
     }
+
+    const coerceResponseTypes = options?.validateResponses?.['coerceTypes'];
+    if (options.coerceTypes != null && coerceResponseTypes != null) {
+      throw ono(
+        'coerceTypes and validateResponses.coerceTypes are mutually exclusive',
+      );
+    }
+
     if (options.coerceTypes) {
+      if (options?.validateResponses) {
+        options.validateResponses['coerceTypes'] = true;
+      }
       console.warn('coerceTypes is deprecated.');
     }
 

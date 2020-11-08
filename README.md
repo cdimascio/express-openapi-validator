@@ -22,7 +22,7 @@
 
 [![GitHub stars](https://img.shields.io/github/stars/cdimascio/express-openapi-validator.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/cdimascio/express-openapi-validator/stargazers/) [![Twitter URL](https://img.shields.io/twitter/url/https/github.com/cdimascio/express-openapi-validator.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20express-openapi-validator%20by%20%40CarmineDiMascio%20https%3A%2F%2Fgithub.com%2Fcdimascio%2Fexpress-openapi-validator%20%F0%9F%91%8D)
 
-## Install 
+## Install
 
 ```shell
 npm install express-openapi-validator
@@ -66,7 +66,6 @@ _**Important:** Ensure express is configured with all relevant body parsers. Bod
 
 In v4.x.x, the validator is installed as standard connect middleware using `app.use(...) and/or router.use(...)` ([example](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md#Example-Express-API-Server)). This differs from the v3.x.x the installation which required the `install` method(s). The `install` methods no longer exist in v4.
 
-
 ## Usage (options)
 
 See [Advanced Usage](#Advanced-Usage) options to:
@@ -107,12 +106,11 @@ app.use('/spec', express.static(spec));
 
 // 4. Install the OpenApiValidator onto your express app
 app.use(
-OpenApiValidator.middleware({
-      apiSpec: './api.yaml',
-      validateResponses: true, // <-- to validate responses
-      // unknownFormats: ['my-format'] // <-- to provide custom formats
-    }
-  ),
+  OpenApiValidator.middleware({
+    apiSpec: './api.yaml',
+    validateResponses: true, // <-- to validate responses
+    // unknownFormats: ['my-format'] // <-- to provide custom formats
+  }),
 );
 
 // 5. Define routes using Express
@@ -557,6 +555,12 @@ Determines whether the validator should validate responses. Also accepts respons
 
   - `"failing"` - additional properties that fail schema validation are automatically removed from the response.
 
+  **coerceTypes:**
+
+  - `true` - coerce scalar data types.
+  - `false` - (**default**) do not coerce types. (almost always the desired behavior)
+  - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
+
   For example:
 
   ```javascript
@@ -593,9 +597,9 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
 Defines a list of custome formats.
 
 - `[{ ... }]` - array of custom format objects. Each object must have the following properties:
-    - name: string (required) - the format name
-    - validate: (v: any) => boolean (required) - the validation function
-    - type: 'string' | 'number' (optional) - the format's type
+  - name: string (required) - the format name
+  - validate: (v: any) => boolean (required) - the validation function
+  - type: 'string' | 'number' (optional) - the format's type
 
 e.g.
 
@@ -605,23 +609,23 @@ formats: [
     name: 'my-three-digit-format',
     type: 'number',
     // validate returns true the number has 3 digits, false otherwise
-    validate: v => /^\d{3}$/.test(v.toString()) 
+    validate: (v) => /^\d{3}$/.test(v.toString()),
   },
   {
     name: 'my-three-letter-format',
     type: 'string',
     // validate returns true the string has 3 letters, false otherwise
-    validate: v => /^[A-Za-z]{3}$/.test(v)
+    validate: (v) => /^[A-Za-z]{3}$/.test(v),
   },
-]
+];
 ```
 
 Then use it in a spec e.g.
 
 ```yaml
-  my_property:
-    type: string
-    format: my-three-letter-format'
+my_property:
+  type: string
+  format: my-three-letter-format'
 ```
 
 ### ▪️ validateFormats (optional)
@@ -758,10 +762,8 @@ $refParser: {
 
 Determines whether the validator should coerce value types to match the those defined in the OpenAPI spec. This option applies **only** to path params, query strings, headers, and cookies. _It is **highly unlikley** that will want to disable this. As such this option is deprecated and will be removed in the next major version_
 
-
 - `true` (**default**) - coerce scalar data types.
 - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
-
 
 ## The Base URL
 
@@ -1040,7 +1042,7 @@ app.use(OpenApiValidator.middleware({
 
 **A:** First, it's important to note that this behavior does not impact validation. The validator will validate against the type defined in your spec.
 
-In order to modify the `req.params`, express requires that a param handler be registered e.g. `app.param(...)` or `router.param(...)`. Since `app` is available to middleware functions, the validator registers an `app.param` handler to coerce and modify the values of `req.params` to their declared types. Unfortunately, express does not provide a means to determine the current router from a middleware function, hence the validator is unable to register the same param handler on an express router. Ultimately, this means if your handler function is defined on `app`, the values of `req.params` will be coerced to their declared types. If your handler function is declare on an `express.Router`,  the values of `req.params` values will be of type `string` (You must coerce them e.g. `parseInt(req.params.id)`).
+In order to modify the `req.params`, express requires that a param handler be registered e.g. `app.param(...)` or `router.param(...)`. Since `app` is available to middleware functions, the validator registers an `app.param` handler to coerce and modify the values of `req.params` to their declared types. Unfortunately, express does not provide a means to determine the current router from a middleware function, hence the validator is unable to register the same param handler on an express router. Ultimately, this means if your handler function is defined on `app`, the values of `req.params` will be coerced to their declared types. If your handler function is declare on an `express.Router`, the values of `req.params` values will be of type `string` (You must coerce them e.g. `parseInt(req.params.id)`).
 
 ## Contributors ✨
 
@@ -1109,6 +1111,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
