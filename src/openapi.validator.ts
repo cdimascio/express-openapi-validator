@@ -85,6 +85,7 @@ export class OpenApiValidator {
   }
 
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
+    const { formats } = this.options;
     const middlewares: OpenApiRequestHandler[] = [];
     const pContext = spec.then((spec) => {
       const responseApiDoc = this.options.validateResponses
@@ -97,6 +98,13 @@ export class OpenApiValidator {
         useDefaults: true,
         unknownFormats: this.options.unknownFormats,
         format: this.options.validateFormats,
+        formats: formats.reduce((acc, f) => {
+          acc[f.name] = {
+            type: f.type,
+            validate: f.validate,
+          };
+          return acc;
+        }, {}),
       }).preProcess();
 
       return {
