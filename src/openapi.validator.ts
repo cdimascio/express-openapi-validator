@@ -1,4 +1,5 @@
 import ono from 'ono';
+import ajv = require('ajv');
 import * as express from 'express';
 import * as _uniq from 'lodash.uniq';
 import * as cloneDeep from 'lodash.clonedeep';
@@ -15,6 +16,7 @@ import {
   OpenApiRequestMetadata,
   ValidateSecurityOpts,
   OpenAPIV3,
+  RequestValidatorOptions,
 } from './framework/types';
 import { defaultResolver } from './resolvers';
 import { OperationHandlerOptions } from './framework/types';
@@ -35,6 +37,7 @@ export {
 
 export class OpenApiValidator {
   readonly options: OpenApiValidatorOpts;
+  readonly ajvOpts: AjvOptions;
 
   constructor(options: OpenApiValidatorOpts) {
     this.validateOptions(options);
@@ -82,6 +85,7 @@ export class OpenApiValidator {
     }
 
     this.options = options;
+    this.ajvOpts = new AjvOptions(options);
   }
 
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
@@ -90,14 +94,10 @@ export class OpenApiValidator {
       const responseApiDoc = this.options.validateResponses
         ? cloneDeep(spec.apiDoc)
         : null;
-      new RequestSchemaPreprocessor(spec.apiDoc, {
-        nullable: true,
-        coerceTypes: false,
-        removeAdditional: false,
-        useDefaults: true,
-        unknownFormats: this.options.unknownFormats,
-        format: this.options.validateFormats,
-      }).preProcess();
+      new RequestSchemaPreprocessor(
+        spec.apiDoc,
+        this.ajvOpts.preprocessor,
+      ).preProcess();
 
       return {
         context: new OpenApiContext(spec, this.options.ignorePaths),
@@ -249,7 +249,7 @@ export class OpenApiValidator {
   private multipartMiddleware(apiDoc: OpenAPIV3.Document) {
     return middlewares.multipart(apiDoc, {
       multerOpts: this.options.fileUploader,
-      unknownFormats: this.options.unknownFormats,
+      ajvOpts: this.ajvOpts.multipart,
     });
   }
 
@@ -261,58 +261,18 @@ export class OpenApiValidator {
   }
 
   private requestValidationMiddleware(apiDoc: OpenAPIV3.Document) {
-    const {
-      unknownFormats,
-      validateRequests,
-      validateFormats,
-      formats,
-    } = this.options;
-    const { allowUnknownQueryParameters } = <ValidateRequestOpts>(
-      validateRequests
+    const requestValidator = new middlewares.RequestValidator(
+      apiDoc,
+      this.ajvOpts.request,
     );
-    const requestValidator = new middlewares.RequestValidator(apiDoc, {
-      nullable: true,
-      removeAdditional: false,
-      useDefaults: true,
-      unknownFormats,
-      allowUnknownQueryParameters,
-      format: validateFormats,
-      formats: formats.reduce((acc, f) => {
-        acc[f.name] = {
-          type: f.type,
-          validate: f.validate,
-        };
-        return acc;
-      }, {}),
-    });
     return (req, res, next) => requestValidator.validate(req, res, next);
   }
 
   private responseValidationMiddleware(apiDoc: OpenAPIV3.Document) {
-    const {
-      unknownFormats,
-      validateResponses,
-      validateFormats,
-      formats,
-    } = this.options;
-    const { removeAdditional, coerceTypes } = <ValidateResponseOpts>(
-      validateResponses
-    );
-
-    return new middlewares.ResponseValidator(apiDoc, {
-      nullable: true,
-      coerceTypes,
-      removeAdditional,
-      unknownFormats,
-      format: validateFormats,
-      formats: formats.reduce((acc, f) => {
-        acc[f.name] = {
-          type: f.type,
-          valdiate: f.validate,
-        };
-        return acc;
-      }, {}),
-    }).validate();
+    return new middlewares.ResponseValidator(
+      apiDoc,
+      this.ajvOpts.response,
+    ).validate();
   }
 
   installOperationHandlers(baseUrl: string, context: OpenApiContext): Router {
@@ -402,5 +362,60 @@ export class OpenApiValidator {
     } else {
       return false;
     }
+  }
+}
+
+class AjvOptions {
+  private options: OpenApiValidatorOpts;
+  constructor(options: OpenApiValidatorOpts) {
+    this.options = options;
+  }
+  get preprocessor(): ajv.Options {
+    return this.baseOptions();
+  }
+
+  get response(): ajv.Options {
+    const { coerceTypes, removeAdditional } = <ValidateResponseOpts>(
+      this.options.validateResponses
+    );
+    return {
+      ...this.baseOptions(),
+      useDefaults: false,
+      coerceTypes,
+      removeAdditional,
+    };
+  }
+
+  get request(): RequestValidatorOptions {
+    const { allowUnknownQueryParameters } = <ValidateRequestOpts>(
+      this.options.validateRequests
+    );
+    return {
+      ...this.baseOptions(),
+      allowUnknownQueryParameters,
+    };
+  }
+
+  get multipart(): ajv.Options {
+    return this.baseOptions();
+  }
+
+  private baseOptions(): ajv.Options {
+    const { coerceTypes, unknownFormats, validateFormats } = this.options;
+    return {
+      nullable: true,
+      coerceTypes,
+      useDefaults: true,
+      removeAdditional: false,
+      unknownFormats,
+      format: validateFormats,
+      formats: this.options.formats.reduce((acc, f) => {
+        acc[f.name] = {
+          type: f.type,
+          validate: f.validate,
+        };
+        return acc;
+      }, {}),
+    };
   }
 }
