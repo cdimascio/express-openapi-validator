@@ -1,3 +1,12 @@
+## <small>4.4.4 (2020-11-09)</small>
+
+* chore: increment minor version ([1bff079](https://github.com/cdimascio/express-openapi-validator/commit/1bff079))
+* docs: add LEI as a contributor (#450) ([bc30bb6](https://github.com/cdimascio/express-openapi-validator/commit/bc30bb6)), closes [#450](https://github.com/cdimascio/express-openapi-validator/issues/450)
+* docs: add LEI as a contributor (#453) ([e190550](https://github.com/cdimascio/express-openapi-validator/commit/e190550)), closes [#453](https://github.com/cdimascio/express-openapi-validator/issues/453)
+* fix: request schema preprocessor and multipart middleware custom formats (#452) ([cf37281](https://github.com/cdimascio/express-openapi-validator/commit/cf37281)), closes [#452](https://github.com/cdimascio/express-openapi-validator/issues/452)
+
+
+
 ## <small>4.4.3 (2020-11-07)</small>
 
 * chore: increment minor version ([c2c1d7f](https://github.com/cdimascio/express-openapi-validator/commit/c2c1d7f))
