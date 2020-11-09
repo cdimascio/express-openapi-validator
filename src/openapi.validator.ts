@@ -43,7 +43,6 @@ export class OpenApiValidator {
     this.validateOptions(options);
     this.normalizeOptions(options);
 
-    if (options.coerceTypes == null) options.coerceTypes = true;
     if (options.validateRequests == null) options.validateRequests = true;
     if (options.validateResponses == null) options.validateResponses = false;
     if (options.validateSecurity == null) options.validateSecurity = true;
@@ -71,6 +70,7 @@ export class OpenApiValidator {
     if (options.validateResponses === true) {
       options.validateResponses = {
         removeAdditional: false,
+        coerceTypes: false,
       };
     }
 
@@ -313,7 +313,18 @@ export class OpenApiValidator {
         'securityHandlers is not supported. Use validateSecurities.handlers instead.',
       );
     }
+
+    const coerceResponseTypes = options?.validateResponses?.['coerceTypes'];
+    if (options.coerceTypes != null && coerceResponseTypes != null) {
+      throw ono(
+        'coerceTypes and validateResponses.coerceTypes are mutually exclusive',
+      );
+    }
+
     if (options.coerceTypes) {
+      if (options?.validateResponses) {
+        options.validateResponses['coerceTypes'] = true;
+      }
       console.warn('coerceTypes is deprecated.');
     }
 
@@ -364,12 +375,13 @@ class AjvOptions {
   }
 
   get response(): ajv.Options {
-    const { removeAdditional } = <ValidateResponseOpts>(
+    const { coerceTypes, removeAdditional } = <ValidateResponseOpts>(
       this.options.validateResponses
     );
     return {
       ...this.baseOptions(),
       useDefaults: false,
+      coerceTypes,
       removeAdditional,
     };
   }

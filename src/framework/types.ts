@@ -46,6 +46,7 @@ export type ValidateRequestOpts = {
 
 export type ValidateResponseOpts = {
   removeAdditional?: 'failing' | boolean;
+  coerceTypes?: boolean | 'array';
 };
 
 export type ValidateSecurityOpts = {

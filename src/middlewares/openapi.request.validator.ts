@@ -45,7 +45,7 @@ export class RequestValidator {
     this.apiDoc = apiDoc;
     this.requestOpts.allowUnknownQueryParameters =
       options.allowUnknownQueryParameters;
-    this.ajv = createRequestAjv(apiDoc, options);
+    this.ajv = createRequestAjv(apiDoc, { ...options, coerceTypes: true });
     this.ajvBody = createRequestAjv(apiDoc, { ...options, coerceTypes: false });
   }
 
@@ -141,12 +141,12 @@ export class RequestValidator {
         : undefined;
 
       const data = {
-        query: req.query ?? {}, 
+        query: req.query ?? {},
         headers: req.headers,
-        params: req.params, 
+        params: req.params,
         cookies,
         body: req.body,
-      }
+      };
       const valid = validator.validatorGeneral(data);
       const validBody = validator.validatorBody(data);
 
