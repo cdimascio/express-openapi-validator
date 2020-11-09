@@ -1,3 +1,10 @@
+## 4.5.0 (2020-11-09)
+
+* chore: increment minor version ([80de114](https://github.com/cdimascio/express-openapi-validator/commit/80de114))
+* feat: option to enable response body casting (#451) ([f06a2d2](https://github.com/cdimascio/express-openapi-validator/commit/f06a2d2)), closes [#451](https://github.com/cdimascio/express-openapi-validator/issues/451)
+
+
+
 ## <small>4.4.4 (2020-11-09)</small>
 
 * chore: increment minor version ([1bff079](https://github.com/cdimascio/express-openapi-validator/commit/1bff079))
