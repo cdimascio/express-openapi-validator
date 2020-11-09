@@ -33,10 +33,7 @@ export class ResponseValidator {
 
   constructor(openApiSpec: OpenAPIV3.Document, options: ajv.Options = {}) {
     this.spec = openApiSpec;
-    this.ajvBody = createResponseAjv(openApiSpec, {
-      ...options,
-      coerceTypes: false,
-    });
+    this.ajvBody = createResponseAjv(openApiSpec, options);
 
     (<any>mung).onError = (err, req, res, next) => {
       return next(err);
