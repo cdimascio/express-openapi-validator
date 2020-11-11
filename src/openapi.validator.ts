@@ -71,6 +71,7 @@ export class OpenApiValidator {
       options.validateResponses = {
         removeAdditional: false,
         coerceTypes: false,
+        onError: null
       };
     }
 
@@ -272,6 +273,8 @@ export class OpenApiValidator {
     return new middlewares.ResponseValidator(
       apiDoc,
       this.ajvOpts.response,
+      // This has already been converted from boolean if required
+      this.options.validateResponses as ValidateResponseOpts
     ).validate();
   }
 

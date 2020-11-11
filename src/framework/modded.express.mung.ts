@@ -36,9 +36,9 @@ mung.json = function json(fn, options) {
 
       // Run the munger
       try {
-        json = fn(json, req, res);
+        json = fn(json, req, res, next);
       } catch (e) {
-        return mung.onError(e, req, res, next);
+        return mung.onError(e, req, res, next, json);
       }
       if (res.headersSent) return res;
 
