@@ -32,8 +32,9 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        '204':
           description: empty
+          
   /boolean:
     description: get boolean responses
     get:
