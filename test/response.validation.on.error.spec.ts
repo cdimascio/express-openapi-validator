@@ -63,7 +63,8 @@ describe(packageJson.name, () => {
       .then((r: any) => {
         const data = [{ id: 'bad_id', name: 'name', tag: 'tag' }];
         expect(r.body).to.eql(data);
+        expect(onErrorArgs.length).to.equal(2);
         expect(onErrorArgs[0].message).to.equal('.response[0].id should be integer');
-        expect(onErrorArgs[4]).to.eql(data);
+        expect(onErrorArgs[1]).to.eql(data);
       }));
 });

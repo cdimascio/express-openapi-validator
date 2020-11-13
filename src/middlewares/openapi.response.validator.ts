@@ -50,7 +50,7 @@ export class ResponseValidator {
   }
 
   public validate(): RequestHandler {
-    return mung.json((body, req, res, next) => {
+    return mung.json((body, req, res) => {
       if (req.openapi) {
         const openapi = <OpenApiRequestMetadata>req.openapi;
         // instead of openapi.schema, use openapi._responseSchema to get the response copy
@@ -80,7 +80,7 @@ export class ResponseValidator {
         } catch (err) {
           // If a custom error handler was provided, we call that
           if (err instanceof InternalServerError && this.eovOptions.onError) {
-            this.eovOptions.onError(err, req, res, next, body)
+            this.eovOptions.onError(err, body)
           } else {
             // No custom error handler, or something unexpected happen.
             throw err;
