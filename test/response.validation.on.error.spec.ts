@@ -23,7 +23,7 @@ describe(packageJson.name, () => {
       },
       3005,
       app => {
-        app.get(`${app.basePath}/users`, (req, res) => {
+        app.get(`${app.basePath}/users`, (_req, res) => {
           const json = ['user1', 'user2', 'user3'];
           return res.json(json);
         });
@@ -34,10 +34,7 @@ describe(packageJson.name, () => {
           }
           return res.json(json);
         });
-        app.post(`${app.basePath}/no_additional_props`, (req, res) => {
-          res.json(req.body);
-        });
-        app.use((err, req, res, next) => {
+        app.use((err, _req, res, _next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
@@ -49,7 +46,7 @@ describe(packageJson.name, () => {
   });
 
   afterEach(() => {
-    onErrorArgs = false;
+    onErrorArgs = null;
   })
 
   after(() => {
@@ -66,5 +63,14 @@ describe(packageJson.name, () => {
         expect(onErrorArgs.length).to.equal(2);
         expect(onErrorArgs[0].message).to.equal('.response[0].id should be integer');
         expect(onErrorArgs[1]).to.eql(data);
+      }));
+
+  it('custom error handler not invoked on valid response', async () =>
+    request(app)
+      .get(`${app.basePath}/users`)
+      .expect(200)
+      .then((r: any) => {
+        expect(r.body).is.an('array').with.length(3);
+        expect(onErrorArgs).to.equal(null);
       }));
 });
