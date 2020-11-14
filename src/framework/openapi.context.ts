@@ -1,5 +1,6 @@
 import { OpenAPIV3 } from './types';
 import { Spec, RouteMetadata } from './openapi.spec.loader';
+import { Console } from 'console';
 
 
 export interface RoutePair {
@@ -12,9 +13,9 @@ export class OpenApiContext {
   public readonly openApiRouteMap = {};
   public readonly routes: RouteMetadata[] = [];
   private readonly basePaths: string[];
-  private readonly ignorePaths: RegExp;
+  private readonly ignorePaths: RegExp | Function;
 
-  constructor(spec: Spec, ignorePaths: RegExp) {
+  constructor(spec: Spec, ignorePaths: RegExp | Function) {
     this.apiDoc = spec.apiDoc;
     this.basePaths = spec.basePaths;
     this.routes = spec.routes;
@@ -32,7 +33,7 @@ export class OpenApiContext {
   }
 
   public shouldIgnoreRoute(path: string) {
-    return this.ignorePaths?.test(path);
+    return typeof this.ignorePaths === 'function' ? this.ignorePaths(path) : this.ignorePaths?.test(path);
   }
 
   public routePair(route: string): RoutePair {
