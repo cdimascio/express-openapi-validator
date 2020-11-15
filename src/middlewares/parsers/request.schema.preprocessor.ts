@@ -145,28 +145,33 @@ export class RequestSchemaPreprocessor {
       );
     } else if (schemaObj) {
       const ancestor: any = parent;
-      const newSchema = JSON.parse(JSON.stringify(schemaObj));
-      newSchema.properties = {
-        ...(o.properties ?? {}),
-        ...(newSchema.properties ?? {}),
-      };
-      newSchema.required = o.required;
       const option =
         this.findKey(
           ancestor.discriminator?.mapping,
-          (value) => value === schema['$ref'], // TODO what about non-refs, it explodes now
-        ) || this.getKeyFromRef(schema['$ref']); // TODO what about non-refs, it explodes now
-      if (newSchema.required.length === 0) {
-        delete newSchema.required;
+          (value) => value === schema['$ref'],
+        ) || this.getKeyFromRef(schema['$ref']);
+
+      if (option) {
+        const newSchema = JSON.parse(JSON.stringify(schemaObj));
+        newSchema.properties = {
+          ...(o.properties ?? {}),
+          ...(newSchema.properties ?? {}),
+        };
+        newSchema.required = o.required;
+        if (newSchema.required.length === 0) {
+          delete newSchema.required;
+        }
+        ancestor._discriminator ??= {
+          validators: {},
+          options: o.options,
+          property: o.discriminator,
+        };
+        ancestor._discriminator.validators[option] = this.ajv.compile(
+          newSchema,
+        );
       }
-      ancestor._discriminator ??= {
-        validators: {},
-        options: o.options,
-        property: o.discriminator,
-      };
-      ancestor._discriminator.validators[option] = this.ajv.compile(newSchema);
       //reset data
-      o.properties = {}
+      o.properties = {};
       delete o.required;
     }
   }
