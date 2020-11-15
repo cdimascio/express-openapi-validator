@@ -69,7 +69,7 @@ export interface OpenApiValidatorOpts {
   validateResponses?: boolean | ValidateResponseOpts;
   validateRequests?: boolean | ValidateRequestOpts;
   validateSecurity?: boolean | ValidateSecurityOpts;
-  ignorePaths?: RegExp;
+  ignorePaths?: RegExp | Function;
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
   unknownFormats?: true | string[] | 'ignore';
