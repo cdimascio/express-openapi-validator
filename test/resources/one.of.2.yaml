@@ -1,0 +1,128 @@
+openapi: '3.0.3'
+info:
+  version: 1.0.0
+  title: Swagger 
+servers:
+  - url: /v1
+paths:
+  /discriminator_implied:
+    post:
+      description: Creates a new pet in the store.
+      requestBody:
+        description: Pet to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CatObject'
+                - $ref: '#/components/schemas/DogObject'
+              discriminator:
+                propertyName: pet_type
+      responses:
+        '200':
+          description: Updated
+  /pets:
+    post:
+      description: Creates a new pet in the store.
+      requestBody:
+        description: Pet to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CatObject'
+                - $ref: '#/components/schemas/DogObject'
+              discriminator:
+                propertyName: pet_type
+                mapping:
+                  cat: '#/components/schemas/CatObject'
+                  dog: '#/components/schemas/DogObject'
+      responses:
+        '200':
+          description: Updated
+          
+  /pets_all:
+    post:
+      description: Creates a new pet in the store.
+      operationId: createPetAll
+      x-eov-operation-id: pets#create ## overrides operationId
+      x-eov-operation-handler: api/controllers/pets
+      requestBody:
+        description: Pet to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/Cat'
+                - $ref: '#/components/schemas/Dog'
+              discriminator:
+                propertyName: pet_type
+      responses:
+        '200':
+          description: Updated
+
+components:
+  schemas:
+    DogObject:
+      type: object
+      required:
+        - bark
+        - breed
+        - pet_type
+      properties:
+        bark:
+          type: boolean
+        breed:
+          type: string
+          enum: [Dingo, Husky, Retriever, Shepherd]
+        pet_type:
+          type: string
+
+    CatObject:
+      type: object
+      required:
+        - hunts
+        - age
+        - pet_type
+      properties:
+        hunts:
+          type: boolean
+        age:
+          type: integer
+        pet_type:
+          type: string
+  
+    Pet:
+      type: object
+      required:
+        - pet_type
+      properties:
+        pet_type:
+          type: string
+      discriminator:
+        propertyName: pet_type
+
+    Dog:     # "Dog" is a value for the pet_type property (the discriminator value)
+      allOf: # Combines the main `Pet` schema with `Dog`-specific properties 
+        - $ref: '#/components/schemas/Pet'
+        - type: object
+          # all other properties specific to a `Dog`
+          properties:
+            bark:
+              type: boolean
+            breed:
+              type: string
+              enum: [Dingo, Husky, Retriever, Shepherd]
+    Cat:     # "Cat" is a value for the pet_type property (the discriminator value)
+      allOf: # Combines the main `Pet` schema with `Cat`-specific properties 
+        - $ref: '#/components/schemas/Pet'
+        - type: object
+          # all other properties specific to a `Cat`
+          properties:
+            hunts:
+              type: boolean
+            age:
+              type: integer
