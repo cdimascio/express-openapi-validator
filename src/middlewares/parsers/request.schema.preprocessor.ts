@@ -57,6 +57,7 @@ export class RequestSchemaPreprocessor {
 
     const contentEntries = Object.entries(requestBody.content);
     for (const [_, mediaTypeObject] of contentEntries) {
+      this.handleDiscriminator(mediaTypeObject);
       this.cleanseContentSchema(mediaTypeObject);
     }
   }
@@ -104,6 +105,75 @@ export class RequestSchemaPreprocessor {
     return content.schema;
   }
 
+  private handleDiscriminator(content: OpenAPIV3.MediaTypeObject) {
+    const schemaObj = content.schema.hasOwnProperty('$ref')
+      ? <SchemaObject>this.ajv.getSchema(content.schema['$ref'])?.schema
+      : <SchemaObject>content.schema;
+
+    if (schemaObj.discriminator) {
+      // has discriminator
+      console.log('has disciminator');
+      // check oneOf require discriminator
+      this.discriminatorTraverse(null, schemaObj, {});
+      console.log('complet discriminator traversal');
+    } else {
+      return;
+    }
+  }
+
+  private discriminatorTraverse(parent: Schema, schema: Schema, o: any = {}) {
+    const schemaObj = schema.hasOwnProperty('$ref')
+      ? <SchemaObject>this.ajv.getSchema(schema['$ref'])?.schema
+      : <SchemaObject>schema;
+
+    const xOf = schemaObj.oneOf ? 'oneOf' : 'anyOf';
+    if (schemaObj?.discriminator?.propertyName && !o.discriminator) {
+      // TODO discriminator can be used for anyOf too!
+      const options = schemaObj[xOf].map((refObject) => {
+        const option = this.findKey(
+          schemaObj.discriminator.mapping,
+          (value) => value === refObject['$ref'],
+        );
+        const ref = this.getKeyFromRef(refObject['$ref']);
+        return { option: option || ref, ref };
+      });
+      o.options = options;
+      o.discriminator = schemaObj.discriminator?.propertyName;
+    }
+    o.properties = { ...(o.properties ?? {}), ...(schemaObj.properties ?? {}) };
+    o.required = Array.from(
+      new Set((o.required ?? []).concat(schemaObj.required ?? [])),
+    );
+
+    if (schemaObj[xOf]) {
+      schemaObj[xOf].forEach((s) =>
+        this.discriminatorTraverse(schemaObj, s, o),
+      );
+    } else if (schemaObj) {
+      const ancestor: any = parent;
+      const newSchema = JSON.parse(JSON.stringify(schemaObj));
+      newSchema.properties = {
+        ...(o.properties ?? {}),
+        ...(newSchema.properties ?? {}),
+      };
+      newSchema.required = o.required;
+      const option =
+        this.findKey(
+          ancestor.discriminator?.mapping,
+          (value) => value === schema['$ref'], // TODO what about non-refs, it explodes now
+        ) || this.getKeyFromRef(schema['$ref']); // TODO what about non-refs, it explodes now
+      if (newSchema.required.length === 0) {
+        delete newSchema.required;
+      }
+      ancestor._discriminator ??= {
+        validators: {},
+        options: o.options,
+        property: o.discriminator,
+      };
+      ancestor._discriminator.validators[option] = this.ajv.compile(newSchema);
+    }
+  }
+
   private traverse(schema: Schema, f: (p, s) => void) {
     const schemaObj = schema.hasOwnProperty('$ref')
       ? <SchemaObject>this.ajv.getSchema(schema['$ref'])?.schema
@@ -120,5 +190,20 @@ export class RequestSchemaPreprocessor {
         f(prop, schemaObj);
       });
     }
+  }
+
+  private findKey(object, searchFunc) {
+    if (!object) {
+      return;
+    }
+    const keys = Object.keys(object);
+    for (let i = 0; i < keys.length; i++) {
+      if (searchFunc(object[keys[i]])) {
+        return keys[i];
+      }
+    }
+  }
+  getKeyFromRef(ref) {
+    return ref.split('/components/schemas/')[1];
   }
 }

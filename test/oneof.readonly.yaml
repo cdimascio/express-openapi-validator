@@ -53,8 +53,8 @@ paths:
                 discriminator:
                   propertyName: type
                   mapping:
-                    A: '#/components/schemas/subC'
-                    B: '#/components/schemas/subD'
+                    C: '#/components/schemas/subC'
+                    D: '#/components/schemas/subD'
       responses:
           200:
             description: successful operation

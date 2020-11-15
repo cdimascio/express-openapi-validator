@@ -133,6 +133,24 @@ export class RequestValidator {
         );
       }
 
+      const discriminator = (<any>validator?.schemaBody)?.properties?.body
+        ?._discriminator;
+      let discriminatorValidator = null;
+      if (discriminator) {
+        const { options, property, validators } = discriminator;
+        const discriminatorValue = req.body[property]; // TODO may not alwasy be in this position
+        if (options.find((o) => o.option === discriminatorValue)) {
+          discriminatorValidator = validators[discriminatorValue];
+        } else {
+          throw new BadRequest({
+            path: req.path,
+            message: `'${property}' should be equal to one of the allowed values: ${options
+              .map((o) => o.option)
+              .join(', ')}.`,
+          });
+        }
+      }
+
       const cookies = req.cookies
         ? {
             ...req.cookies,
@@ -148,7 +166,7 @@ export class RequestValidator {
         body: req.body,
       };
       const valid = validator.validatorGeneral(data);
-      const validBody = validator.validatorBody(data);
+      const validBody = discriminatorValidator ?? validator.validatorBody(data);
 
       if (valid && validBody) {
         next();
