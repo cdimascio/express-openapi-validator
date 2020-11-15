@@ -1,3 +1,11 @@
+## 4.7.0 (2020-11-15)
+
+* chore: increment minor version ([a602c44](https://github.com/cdimascio/express-openapi-validator/commit/a602c44))
+* chore: update change log ([a3e1cc0](https://github.com/cdimascio/express-openapi-validator/commit/a3e1cc0))
+* top level discriminator support (oneOf, anyOf) for request bodies (#461) ([17f4c47](https://github.com/cdimascio/express-openapi-validator/commit/17f4c47)), closes [#461](https://github.com/cdimascio/express-openapi-validator/issues/461) [#458](https://github.com/cdimascio/express-openapi-validator/issues/458)
+
+
+
 ## 4.6.0 (2020-11-15)
 
 * chore: increment minor version ([af26e9c](https://github.com/cdimascio/express-openapi-validator/commit/af26e9c))
