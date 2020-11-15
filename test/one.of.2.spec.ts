@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
 
-describe(packageJson.name, () => {
+describe('one.of.2.spec', () => {
   let app = null;
 
   before(async () => {
@@ -13,6 +13,9 @@ describe(packageJson.name, () => {
       { apiSpec },
       3005,
       (app) => {
+        app.post(`${app.basePath}/discriminator_implied`, (req, res) =>
+          res.json(req.body),
+        );
         app.post(`${app.basePath}/pets`, (req, res) => {
           res.json(req.body);
         });
@@ -35,9 +38,52 @@ describe(packageJson.name, () => {
     app.server.close();
   });
 
+  describe('/discriminator_implied', () => {
+    it('should return 200 for dog', async () =>
+      request(app)
+        .post(`${app.basePath}/discriminator_implied`)
+        .set('content-type', 'application/json')
+        .send({
+          pet_type: 'DogObject',
+          bark: true,
+          breed: 'Dingo',
+        })
+        .expect(200));
+
+    it('should return 400 for dog with cat props', async () =>
+      request(app)
+        .post(`${app.basePath}/discriminator_implied`)
+        .set('content-type', 'application/json')
+        .send({
+          pet_type: 'DogObject',
+          hunts: true,
+          age: 3,
+        })
+        .expect(400)
+        .then((r) => {
+          expect(r.body.message).to.include("required property 'bark'");
+        }));
+
+    it('should return 400 a bad discriminator', async () =>
+      request(app)
+        .post(`${app.basePath}/discriminator_implied`)
+        .set('content-type', 'application/json')
+        .send({
+          pet_type: 'dog',
+          bark: true,
+          breed: 'Dingo',
+        })
+        .expect(400)
+        .then((r) => {
+          expect(r.body.message).to.include(
+            'one of the allowed values: CatObject, DogObject',
+          );
+        }));
+  });
+
   describe('/pets', () => {
-    it('should return 400 a bad discriminator', async () => {
-      return request(app)
+    it('should return 400 a bad discriminator', async () =>
+      request(app)
         .post(`${app.basePath}/pets`)
         .set('content-type', 'application/json')
         .send({
@@ -48,12 +94,11 @@ describe(packageJson.name, () => {
         .expect(400)
         .then((r) => {
           const e = r.body;
-          expect(e.message).to.include('one of the allowed values: dog, cat');
-        });
-    });
+          expect(e.message).to.include('one of the allowed values: cat, dog');
+        }));
 
-    it('should return 200 for dog', async () => {
-      return request(app)
+    it('should return 200 for dog', async () =>
+      request(app)
         .post(`${app.basePath}/pets`)
         .set('content-type', 'application/json')
         .send({
@@ -61,11 +106,10 @@ describe(packageJson.name, () => {
           bark: true,
           breed: 'Dingo',
         })
-        .expect(200);
-    });
+        .expect(200));
 
-    it('should return 200 for cat', async () => {
-      return request(app)
+    it('should return 200 for cat', async () =>
+      request(app)
         .post(`${app.basePath}/pets`)
         .set('content-type', 'application/json')
         .send({
@@ -73,29 +117,12 @@ describe(packageJson.name, () => {
           hunts: true,
           age: 3,
         })
-        .expect(200);
-    });
+        .expect(200));
   });
 
   describe('/pets_all', () => {
-    it('should return 400 a bad discriminator', async () => {
-      return request(app)
-        .post(`${app.basePath}/pets_all`)
-        .set('content-type', 'application/json')
-        .send({
-          pet_type: 'DogObject',
-          bark: true,
-          breed: 'Dingo',
-        })
-        .expect(400)
-        .then((r) => {
-          const e = r.body;
-          expect(e.message).to.include('to one of the allowed values: dog, cat');
-        });
-    });
-
-    it('should return 200 for dog', async () => {
-      return request(app)
+    it('should return 400 a bad discriminator', async () =>
+      request(app)
         .post(`${app.basePath}/pets_all`)
         .set('content-type', 'application/json')
         .send({
@@ -103,19 +130,34 @@ describe(packageJson.name, () => {
           bark: true,
           breed: 'Dingo',
         })
-        .expect(200);
-    });
+        .expect(400)
+        .then((r) => {
+          const e = r.body;
+          expect(e.message).to.include(
+            'to one of the allowed values: Cat, Dog',
+          );
+        }));
 
-    it('should return 200 for cat', async () => {
-      return request(app)
+    it('should return 200 for Dog', async () =>
+      request(app)
         .post(`${app.basePath}/pets_all`)
         .set('content-type', 'application/json')
         .send({
-          pet_type: 'cat',
+          pet_type: 'Dog',
+          bark: true,
+          breed: 'Dingo',
+        })
+        .expect(200));
+
+    it('should return 200 for Cat', async () =>
+      request(app)
+        .post(`${app.basePath}/pets_all`)
+        .set('content-type', 'application/json')
+        .send({
+          pet_type: 'Cat',
           hunts: true,
           age: 3,
         })
-        .expect(200);
-    });
+        .expect(200));
   });
 });

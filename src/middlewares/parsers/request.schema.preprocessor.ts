@@ -57,8 +57,8 @@ export class RequestSchemaPreprocessor {
 
     const contentEntries = Object.entries(requestBody.content);
     for (const [_, mediaTypeObject] of contentEntries) {
-      this.handleDiscriminator(mediaTypeObject);
       this.cleanseContentSchema(mediaTypeObject);
+      this.handleDiscriminator(mediaTypeObject);
     }
   }
 
@@ -111,13 +111,7 @@ export class RequestSchemaPreprocessor {
       : <SchemaObject>content.schema;
 
     if (schemaObj.discriminator) {
-      // has discriminator
-      console.log('has disciminator');
-      // check oneOf require discriminator
       this.discriminatorTraverse(null, schemaObj, {});
-      console.log('complet discriminator traversal');
-    } else {
-      return;
     }
   }
 
@@ -171,6 +165,9 @@ export class RequestSchemaPreprocessor {
         property: o.discriminator,
       };
       ancestor._discriminator.validators[option] = this.ajv.compile(newSchema);
+      //reset data
+      o.properties = {}
+      delete o.required;
     }
   }
 

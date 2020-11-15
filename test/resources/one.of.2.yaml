@@ -5,12 +5,26 @@ info:
 servers:
   - url: /v1
 paths:
+  /discriminator_implied:
+    post:
+      description: Creates a new pet in the store.
+      requestBody:
+        description: Pet to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CatObject'
+                - $ref: '#/components/schemas/DogObject'
+              discriminator:
+                propertyName: pet_type
+      responses:
+        '200':
+          description: Updated
   /pets:
     post:
       description: Creates a new pet in the store.
-      operationId: createPet
-      x-eov-operation-id: pets#create ## overrides operationId
-      x-eov-operation-handler: api/controllers/pets
       requestBody:
         description: Pet to add to the store
         required: true
@@ -23,8 +37,8 @@ paths:
               discriminator:
                 propertyName: pet_type
                 mapping:
-                  dog: '#/components/schemas/CatObject'
-                  cat: '#/components/schemas/DogObject'
+                  cat: '#/components/schemas/CatObject'
+                  dog: '#/components/schemas/DogObject'
       responses:
         '200':
           description: Updated
@@ -46,9 +60,6 @@ paths:
                 - $ref: '#/components/schemas/Dog'
               discriminator:
                 propertyName: pet_type
-                mapping:
-                  dog: '#/components/schemas/Cat'
-                  cat: '#/components/schemas/Dog'
       responses:
         '200':
           description: Updated
