@@ -46,8 +46,16 @@ describe('one.of readonly', () => {
       .expect(400)
       .then((r) => {
         const error = r.body;
+        console.log(error);
         expect(error.message).to.include('to one of the allowed values: C, D');
       }));
+
+  it('post type oneOf (without readonly id) should pass', async () =>
+    request(app)
+      .post(`${app.basePath}/one_of`)
+      .send({ type: 'C' })
+      .set('Content-Type', 'application/json')
+      .expect(200));
 
   it('post type anyof without providing the single required readonly property should pass', async () =>
     request(app)
@@ -56,10 +64,13 @@ describe('one.of readonly', () => {
       .set('Content-Type', 'application/json')
       .expect(200));
 
-  it('post type oneOf (without readonly id) should pass', async () =>
+  it('should fail if posting anyof with bad discriminator', async () =>
     request(app)
       .post(`${app.basePath}/one_of`)
-      .send({ type: 'C' })
+      .send({ type: 'A' }) // do not provide id
       .set('Content-Type', 'application/json')
-      .expect(200));
+      .expect(400)
+      .then((r) => {
+        expect(r.body.message).includes('to one of the allowed values: C, D');
+      }));
 });

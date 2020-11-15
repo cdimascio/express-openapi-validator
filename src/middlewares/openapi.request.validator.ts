@@ -147,8 +147,18 @@ export class RequestValidator {
         cookies,
         body: req.body,
       };
+      const schemaBody = <any>validator?.schemaBody;
+      const discriminator = schemaBody?.properties?.body?._discriminator;
+      const discriminatorValdiator = this.discriminatorValidator(
+        req,
+        discriminator,
+      );
+
+      const validatorBody = discriminatorValdiator ?? validator.validatorBody;
       const valid = validator.validatorGeneral(data);
-      const validBody = validator.validatorBody(data);
+      const validBody = validatorBody(
+        discriminatorValdiator ? data.body : data,
+      );
 
       if (valid && validBody) {
         next();
@@ -156,7 +166,7 @@ export class RequestValidator {
         const errors = augmentAjvErrors(
           []
             .concat(validator.validatorGeneral.errors ?? [])
-            .concat(validator.validatorBody.errors ?? []),
+            .concat(validatorBody.errors ?? []),
         );
         const err = ajvErrorsToValidatorError(400, errors);
         const message = this.ajv.errorsText(errors, { dataVar: 'request' });
@@ -170,6 +180,23 @@ export class RequestValidator {
     };
   }
 
+  private discriminatorValidator(req, discriminator) {
+    if (discriminator) {
+      const { options, property, validators } = discriminator;
+      const discriminatorValue = req.body[property]; // TODO may not alwasy be in this position
+      if (options.find((o) => o.option === discriminatorValue)) {
+        return validators[discriminatorValue];
+      } else {
+        throw new BadRequest({
+          path: req.path,
+          message: `'${property}' should be equal to one of the allowed values: ${options
+            .map((o) => o.option)
+            .join(', ')}.`,
+        });
+      }
+    }
+    return null;
+  }
   private processQueryParam(query: object, schema, whiteList: string[] = []) {
     const entries = Object.entries(schema.properties ?? {});
     let keys = [];

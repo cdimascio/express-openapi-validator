@@ -1,3 +1,11 @@
+## 4.6.0 (2020-11-15)
+
+* chore: increment minor version ([af26e9c](https://github.com/cdimascio/express-openapi-validator/commit/af26e9c))
+* Allow ignorePaths to take function or regexp (#459) ([9b855d1](https://github.com/cdimascio/express-openapi-validator/commit/9b855d1)), closes [#459](https://github.com/cdimascio/express-openapi-validator/issues/459)
+* test: return 204 instead of 200 ([6a88a9c](https://github.com/cdimascio/express-openapi-validator/commit/6a88a9c))
+
+
+
 ## 4.5.0 (2020-11-09)
 
 * chore: increment minor version ([80de114](https://github.com/cdimascio/express-openapi-validator/commit/80de114))
