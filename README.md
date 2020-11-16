@@ -569,6 +569,21 @@ Determines whether the validator should validate responses. Also accepts respons
   }
   ```
 
+  **onError:**
+
+  A function that will be invoked on response validation error, instead of the default handling. Useful if you want to log an error or emit a metric, but don't want to actually fail the request. Receives the validation error and offending response body.
+
+  For example:
+
+  ```
+  validateResponses: {
+    onError: (error, body) => {
+      console.log(`Response body fails validation: `, error);
+      console.debug(body);
+    }
+  }
+  ```
+
 ### ▪️ validateSecurity (optional)
 
 Determines whether the validator should validate securities e.g. apikey, basic, oauth2, openid, etc

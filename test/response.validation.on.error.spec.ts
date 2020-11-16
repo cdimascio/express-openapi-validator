@@ -16,8 +16,11 @@ describe(packageJson.name, () => {
       {
         apiSpec: apiSpecPath,
         validateResponses: {
-          onError: function() {
+          onError: function(_err, body) {
             onErrorArgs = Array.from(arguments);
+            if (body[0].id === 'bad_id_throw') {
+              throw new Error('error in onError handler');
+            }
           }
         },
       },
@@ -29,8 +32,10 @@ describe(packageJson.name, () => {
         });
         app.get(`${app.basePath}/pets`, (req, res) => {
           let json = {};
-          if ((req.query.mode = 'bad_type')) {
+          if (req.query.mode === 'bad_type') {
             json = [{ id: 'bad_id', name: 'name', tag: 'tag' }];
+          } else if (req.query.mode === 'bad_type_throw') {
+            json = [{ id: 'bad_id_throw', name: 'name', tag: 'tag' }];
           }
           return res.json(json);
         });
@@ -72,5 +77,17 @@ describe(packageJson.name, () => {
       .then((r: any) => {
         expect(r.body).is.an('array').with.length(3);
         expect(onErrorArgs).to.equal(null);
+      }));
+
+  it('returns error if custom error handler throws', async () =>
+    request(app)
+      .get(`${app.basePath}/pets?mode=bad_type_throw`)
+      .expect(500)
+      .then((r: any) => {
+        const data = [{ id: 'bad_id_throw', name: 'name', tag: 'tag' }];
+        expect(r.body.message).to.equal('error in onError handler');
+        expect(onErrorArgs.length).to.equal(2);
+        expect(onErrorArgs[0].message).to.equal('.response[0].id should be integer');
+        expect(onErrorArgs[1]).to.eql(data);
       }));
 });
