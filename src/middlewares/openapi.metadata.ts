@@ -37,7 +37,7 @@ export function applyOpenApiMetadata(
         (<any>req.openapi)._responseSchema = (<any>matched)._responseSchema;
       }
     } else if (openApiContext.isManagedRoute(path)) {
-      req.openapi = {};
+      req.openapi = undefined;
     }
     next();
   };
