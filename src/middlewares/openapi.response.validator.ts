@@ -13,6 +13,7 @@ import {
   OpenApiRequest,
   OpenApiRequestMetadata,
   InternalServerError,
+  ValidateResponseOpts,
 } from '../framework/types';
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
@@ -30,11 +31,19 @@ export class ResponseValidator {
   private validatorsCache: {
     [key: string]: { [key: string]: ajv.ValidateFunction };
   } = {};
+  private eovOptions: ValidateResponseOpts
 
-  constructor(openApiSpec: OpenAPIV3.Document, options: ajv.Options = {}) {
+  constructor(
+      openApiSpec: OpenAPIV3.Document,
+      options: ajv.Options = {},
+      eovOptions: ValidateResponseOpts = {}
+  ) {
     this.spec = openApiSpec;
     this.ajvBody = createResponseAjv(openApiSpec, options);
+    this.eovOptions = eovOptions;
 
+    // This is a pseudo-middleware function. It doesn't get registered with
+    // express via `use`
     (<any>mung).onError = (err, req, res, next) => {
       return next(err);
     };
@@ -60,13 +69,23 @@ export class ResponseValidator {
           ? accept.split(',').map((h) => h.trim())
           : [];
 
-        return this._validate({
-          validators,
-          body,
-          statusCode,
-          path,
-          accepts, // return 406 if not acceptable
-        });
+        try {
+          return this._validate({
+            validators,
+            body,
+            statusCode,
+            path,
+            accepts, // return 406 if not acceptable
+          });
+        } catch (err) {
+          // If a custom error handler was provided, we call that
+          if (err instanceof InternalServerError && this.eovOptions.onError) {
+            this.eovOptions.onError(err, body)
+          } else {
+            // No custom error handler, or something unexpected happen.
+            throw err;
+          }
+        }
       }
       return body;
     });
