@@ -1,3 +1,10 @@
+## <small>4.7.1 (2020-11-17)</small>
+
+* chore: increment patch version ([dd2033b](https://github.com/cdimascio/express-openapi-validator/commit/dd2033b))
+* Accept response validation error handler (#456) ([0cc8c4d](https://github.com/cdimascio/express-openapi-validator/commit/0cc8c4d)), closes [#456](https://github.com/cdimascio/express-openapi-validator/issues/456)
+
+
+
 ## 4.7.0 (2020-11-15)
 
 * chore: increment minor version ([a602c44](https://github.com/cdimascio/express-openapi-validator/commit/a602c44))
