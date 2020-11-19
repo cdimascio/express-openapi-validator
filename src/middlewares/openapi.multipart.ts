@@ -82,10 +82,10 @@ async function handleMiddleware(
   res: Response,
 ): Promise<any> {
   for (let mw of middlewares) {
-    const result = mw(req, res, (error: any) => {
-      if (error) return error;
-    });
+    let error: any;
+    const result = mw(req, res, (err: any) => (error = err));
     if (result instanceof Promise) await result;
+    if (error) return error;
   }
 }
 
