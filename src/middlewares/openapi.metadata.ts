@@ -1,6 +1,5 @@
 import * as _zipObject from 'lodash.zipobject';
 import { pathToRegexp } from 'path-to-regexp';
-import * as deepCopy from 'lodash.clonedeep';
 import { Response, NextFunction } from 'express';
 import { OpenApiContext } from '../framework/openapi.context';
 import {
