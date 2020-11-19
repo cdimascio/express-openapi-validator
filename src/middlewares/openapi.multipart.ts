@@ -27,9 +27,10 @@ export function multipart(
       const preError = await handleMiddleware(preMiddleware, req, res);
       if (preError) return next(error(req, preError));
 
+      let multError: any;
       mult.any()(req, res, (err) => {
         if (err) {
-          return next(error(req, err));
+          return (multError = err);
         } else {
           // TODO:
           // If a form parameter 'file' is defined to take file value, but the user provides a string value instead
@@ -67,6 +68,8 @@ export function multipart(
           }
         }
       });
+
+      if (multError) return next(error(req, multError));
 
       const postError = await handleMiddleware(preMiddleware, req, res);
       if (postError) return next(error(req, postError));
