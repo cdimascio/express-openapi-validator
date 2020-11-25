@@ -543,6 +543,19 @@ Determines whether the validator should validate requests.
   }
   ```
 
+  **coerceTypes:**
+
+  - `true` - coerce scalar data types.
+  - `false` - (**default**) do not coerce types. (almost always the desired behavior)
+  - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
+  For example:
+
+  ```javascript
+  validateRequests: {
+    allowUnknownQueryParameters: true;
+  }
+  ```
+
 ### ▪️ validateResponses (optional)
 
 Determines whether the validator should validate responses. Also accepts response validation options.
