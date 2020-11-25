@@ -546,7 +546,7 @@ Determines whether the validator should validate requests.
   **coerceTypes:**
 
   - `true` - coerce scalar data types.
-  - `false` - (**default**) do not coerce types. (almost always the desired behavior)
+  - `false` - (**default**) do not coerce types. (more strict, safer)
   - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
   For example:
 
