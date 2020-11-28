@@ -31,7 +31,7 @@ export function normalizeParameter(
   } else if (parameter?.schema?.['$ref']) {
     schema = dereferenceSchema(ajv, parameter.schema['$ref']);
   } else {
-    schema = parameter.schema 
+    schema = parameter.schema;
   }
   if (!schema && parameter.content) {
     const contentType = Object.keys(parameter.content)[0];
@@ -41,9 +41,41 @@ export function normalizeParameter(
     schema = parameter;
   }
 
+  applyParameterStyle(parameter);
+  applyParameterExplode(parameter);
+
   const name =
     parameter.in === 'header' ? parameter.name.toLowerCase() : parameter.name;
+
   return { name, schema };
+}
+
+function applyParameterStyle(param: OpenAPIV3.ParameterObject) {
+  if (!param.style) {
+    if (param.in === 'path') {
+      param.style = 'simple';
+    } else if (param.in === 'query') {
+      param.style = 'form';
+    } else if (param.style === 'header') {
+      param.style = 'simple';
+    } else if (param.style === 'cookie') {
+      param.style = 'form';
+    }
+  }
+}
+
+function applyParameterExplode(param: OpenAPIV3.ParameterObject) {
+  if (param.explode == null) {
+    if (param.in === 'path') {
+      param.explode = false;
+    } else if (param.in === 'query') {
+      param.explode = true;
+    } else if (param.style === 'header') {
+      param.explode = false;
+    } else if (param.style === 'cookie') {
+      param.explode = true;
+    }
+  }
 }
 
 export function dereferenceSchema(ajv: Ajv, ref: string) {
