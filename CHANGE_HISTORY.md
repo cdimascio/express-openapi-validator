@@ -1,3 +1,11 @@
+## <small>4.7.2 (2020-11-28)</small>
+
+* chore: increment patch version ([329aa7f](https://github.com/cdimascio/express-openapi-validator/commit/329aa7f))
+* fix: parameter style handling #473 (#474) ([19c6f49](https://github.com/cdimascio/express-openapi-validator/commit/19c6f49)), closes [#473](https://github.com/cdimascio/express-openapi-validator/issues/473) [#474](https://github.com/cdimascio/express-openapi-validator/issues/474)
+* test: test for #470 ([d690c9e](https://github.com/cdimascio/express-openapi-validator/commit/d690c9e)), closes [#470](https://github.com/cdimascio/express-openapi-validator/issues/470)
+
+
+
 ## <small>4.7.1 (2020-11-17)</small>
 
 * chore: increment patch version ([dd2033b](https://github.com/cdimascio/express-openapi-validator/commit/dd2033b))
