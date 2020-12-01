@@ -1,0 +1,58 @@
+openapi: '3.0.3'
+info:
+  title: Dummy
+  version: '0.1.0'
+
+paths:
+  /api/q_form_explode:
+    get:
+      parameters: 
+        - description: Description
+          schema:
+            title: State
+            type: array
+            items:
+              $ref: '#/components/schemas/Foo'
+            description: A description
+          name: state
+          in: query
+      responses:
+        200:
+          description: OK
+          content:
+            'application/json; charset=utf-8':
+              schema:
+                type: object
+
+  /api/q_form_nexplode:
+    get:
+      parameters: 
+        - description: Description
+          required: false
+          explode: false
+          schema:
+            title: State
+            type: array
+            items:
+              $ref: '#/components/schemas/Foo'
+            description: A description
+          name: state
+          in: query        
+      responses:
+        200:
+          description: OK
+          content:
+            'application/json; charset=utf-8':
+              schema:
+                type: object
+                
+                
+components:
+  schemas:
+    Foo:
+      type: string
+      enum:
+        - on
+        - off
+      
+      
