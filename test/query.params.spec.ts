@@ -19,7 +19,10 @@ describe(packageJson.name, () => {
           .post(`/pets/nullable`, (req, res) => res.json(req.body))
           .get(`/no_reserved`, (req, res) => res.json(req.body))
           .get(`/no_query_params`, (req, res) => res.json({ complete: true }))
-          .get(`/allow_reserved`, (req, res) => res.json(req.body)),
+          .get(`/allow_reserved`, (req, res) => res.json(req.body))
+          .get(`/unknown_query_params/allow`, (req, res) =>
+            res.json({ complete: true }),
+          ),
       ),
     );
   });
@@ -71,9 +74,18 @@ describe(packageJson.name, () => {
         unknown_prop: 'test',
       })
       .expect(400)
-      .then((r) => {
+      .then(r => {
         expect(r.body.errors).to.be.an('array');
       }));
+
+  it('should return 200 if operation overrides x-allow-unknown-query-parameters=true', async () =>
+    request(app)
+      .get(`${app.basePath}/unknown_query_params/allow`)
+      .query({
+        value: 'foobar',
+        unknown_prop: 'test',
+      })
+      .expect(200));
 
   it('should not allow empty query param value', async () =>
     request(app)

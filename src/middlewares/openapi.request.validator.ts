@@ -107,6 +107,11 @@ export class RequestValidator {
       body: this.ajvBody,
     });
 
+    const disallowUnknownQueryParameters = !(
+      reqSchema['x-allow-unknown-query-parameters'] ??
+      this.requestOpts.allowUnknownQueryParameters
+    );
+
     return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
       const openapi = <OpenApiRequestMetadata>req.openapi;
       const hasPathParams = Object.keys(openapi.pathParams).length > 0;
@@ -125,7 +130,7 @@ export class RequestValidator {
 
       mutator.modifyRequest(req);
 
-      if (!this.requestOpts.allowUnknownQueryParameters) {
+      if (disallowUnknownQueryParameters) {
         this.processQueryParam(
           req.query,
           schemaPoperties.query,
@@ -212,10 +217,7 @@ export class RequestValidator {
     const queryParams = Object.keys(query);
     const allowedEmpty = schema.allowEmptyValue;
     for (const q of queryParams) {
-      if (
-        !this.requestOpts.allowUnknownQueryParameters &&
-        !knownQueryParams.has(q)
-      ) {
+      if (!knownQueryParams.has(q)) {
         throw new BadRequest({
           path: `.query.${q}`,
           message: `Unknown query parameter '${q}'`,
