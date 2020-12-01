@@ -189,13 +189,13 @@ export class RequestValidator {
     if (discriminator) {
       const { options, property, validators } = discriminator;
       const discriminatorValue = req.body[property]; // TODO may not alwasy be in this position
-      if (options.find((o) => o.option === discriminatorValue)) {
+      if (options.find(o => o.option === discriminatorValue)) {
         return validators[discriminatorValue];
       } else {
         throw new BadRequest({
           path: req.path,
           message: `'${property}' should be equal to one of the allowed values: ${options
-            .map((o) => o.option)
+            .map(o => o.option)
             .join(', ')}.`,
         });
       }
@@ -213,7 +213,7 @@ export class RequestValidator {
       keys.push(key);
     }
     const knownQueryParams = new Set(keys);
-    whiteList.forEach((item) => knownQueryParams.add(item));
+    whiteList.forEach(item => knownQueryParams.add(item));
     const queryParams = Object.keys(query);
     const allowedEmpty = schema.allowEmptyValue;
     for (const q of queryParams) {
@@ -324,12 +324,12 @@ class Security {
   ): string[] {
     return usedSecuritySchema && securitySchema
       ? usedSecuritySchema
-          .filter((obj) => Object.entries(obj).length !== 0)
-          .map((sec) => {
+          .filter(obj => Object.entries(obj).length !== 0)
+          .map(sec => {
             const securityKey = Object.keys(sec)[0];
             return <SecuritySchemeObject>securitySchema[securityKey];
           })
-          .filter((sec) => sec?.type === 'apiKey' && sec?.in == 'query')
+          .filter(sec => sec?.type === 'apiKey' && sec?.in == 'query')
           .map((sec: ApiKeySecurityScheme) => sec.name)
       : [];
   }
