@@ -552,7 +552,7 @@ Determines whether the validator should validate requests.
 
   ```javascript
   validateRequests: {
-    allowUnknownQueryParameters: true;
+    coerceTypes: true;
   }
   ```
 

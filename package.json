@@ -1,5 +1,5 @@
 {
-  "name": "express-openapi-validator",
+  "name": "@madmango/express-openapi-validator",
   "version": "4.7.1",
   "description": "Automatically validate API requests and responses with OpenAPI 3 and Express.",
   "main": "dist/index.js",
