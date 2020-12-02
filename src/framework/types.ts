@@ -161,7 +161,6 @@ export namespace OpenAPIV3 {
     deprecated?: boolean;
     security?: SecurityRequirementObject[];
     servers?: ServerObject[];
-    'x-allow-unknown-query-parameters'?: boolean;
   }
 
   export interface ExternalDocumentationObject {

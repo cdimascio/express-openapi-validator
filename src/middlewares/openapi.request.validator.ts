@@ -107,7 +107,7 @@ export class RequestValidator {
       body: this.ajvBody,
     });
 
-    const disallowUnknownQueryParameters = !(
+    const allowUnknownQueryParameters = !!(
       reqSchema['x-allow-unknown-query-parameters'] ??
       this.requestOpts.allowUnknownQueryParameters
     );
@@ -130,7 +130,7 @@ export class RequestValidator {
 
       mutator.modifyRequest(req);
 
-      if (disallowUnknownQueryParameters) {
+      if (!allowUnknownQueryParameters) {
         this.processQueryParam(
           req.query,
           schemaPoperties.query,
