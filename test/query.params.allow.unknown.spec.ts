@@ -1,3 +1,4 @@
+import { expect } from 'chai';
 import * as path from 'path';
 import * as express from 'express';
 import * as request from 'supertest';
@@ -52,4 +53,16 @@ describe(packageJson.name, () => {
         unknown_prop: 'test',
       })
       .expect(200));
+
+  it('should fail if operation overrides x-allow-unknown-query-parameters=false', async () =>
+    request(app)
+      .get(`${app.basePath}/unknown_query_params/disallow`)
+      .query({
+        value: 'foobar',
+        unknown_prop: 'test',
+      })
+      .expect(400)
+      .then(r => {
+        expect(r.body.errors).to.be.an('array');
+      }));
 });
