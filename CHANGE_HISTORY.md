@@ -1,3 +1,10 @@
+## 4.8.0 (2020-12-03)
+
+* chore: increment minor version ([b91e548](https://github.com/cdimascio/express-openapi-validator/commit/b91e548))
+* feat: Specify allow unknown params on a per-operation level (#477) ([4e737b8](https://github.com/cdimascio/express-openapi-validator/commit/4e737b8)), closes [#477](https://github.com/cdimascio/express-openapi-validator/issues/477)
+
+
+
 ## <small>4.7.2 (2020-11-28)</small>
 
 * chore: increment patch version ([329aa7f](https://github.com/cdimascio/express-openapi-validator/commit/329aa7f))
