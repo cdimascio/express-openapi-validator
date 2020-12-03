@@ -543,6 +543,26 @@ Determines whether the validator should validate requests.
   }
   ```
 
+  `allowUnknownQueryParameters` is set for the entire validator. It can be overwritten per-operation using
+  a custom property `x-allow-unknown-query-parameters`.
+
+  For example to allow unknown query parameters on ONLY a single endpoint:
+
+  ```yaml
+  paths:
+    /allow_unknown:
+      get:
+        x-allow-unknown-query-parameters: true
+        parameters:
+          - name: value
+            in: query
+            schema:
+              type: string
+        responses:
+          200:
+            description: success
+  ```
+
 ### ▪️ validateResponses (optional)
 
 Determines whether the validator should validate responses. Also accepts response validation options.
