@@ -297,7 +297,7 @@ export class RequestParameterMutator {
     if (!vs) return;
     for (const v of vs) {
       if (v?.match(RESERVED_CHARS)) {
-        const message = `Parameter '${name}' must be url encoded. It's value may not contain reserved characters.`;
+        const message = `Parameter '${name}' must be url encoded. Its value may not contain reserved characters.`;
         throw new BadRequest({ path: `.query.${name}`, message: message });
       }
     }

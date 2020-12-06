@@ -134,7 +134,7 @@ describe(packageJson.name, () => {
       .then(r => {
         const body = r.body;
         expect(body.message).equals(
-          "Parameter 'value' must be url encoded. It's value may not contain reserved characters.",
+          "Parameter 'value' must be url encoded. Its value may not contain reserved characters.",
         );
       }));
 
