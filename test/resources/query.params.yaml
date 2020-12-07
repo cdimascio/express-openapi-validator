@@ -69,7 +69,7 @@ paths:
       responses:
         '200':
           description: success
-  /no_query_params: 
+  /no_query_params:
     get:
       description: test no query parameters
       responses:
@@ -118,6 +118,30 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Pet'
+  /unknown_query_params/allow:
+    get:
+      x-allow-unknown-query-parameters: true
+      parameters:
+        - name: value
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: success
+  /unknown_query_params/disallow:
+    get:
+      x-allow-unknown-query-parameters: false
+      parameters:
+        - name: value
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: success
 components:
   parameters:
     name:
