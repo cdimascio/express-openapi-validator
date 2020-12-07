@@ -543,7 +543,7 @@ Determines whether the validator should validate requests.
   }
   ```
 
-    `allowUnknownQueryParameters` is set for the entire validator. It can be overwritten per-operation using
+  `allowUnknownQueryParameters` is set for the entire validator. It can be overwritten per-operation using
   a custom property `x-allow-unknown-query-parameters`.
 
   For example to allow unknown query parameters on ONLY a single endpoint:
@@ -561,6 +561,7 @@ Determines whether the validator should validate requests.
         responses:
           200:
             description: success
+    ```
 
   **coerceTypes:**
 
