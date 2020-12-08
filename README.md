@@ -1147,11 +1147,13 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://ks.priv.no/"><img src="https://avatars2.githubusercontent.com/u/1738636?v=4" width="100px;" alt=""/><br /><sub><b>Kristjan Siimson</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=siimsoni" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=siimsoni" title="Tests">⚠️</a></td>
     <td align="center"><a href="https://github.com/LEI"><img src="https://avatars2.githubusercontent.com/u/4112243?v=4" width="100px;" alt=""/><br /><sub><b>Guillaume</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=LEI" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=LEI" title="Tests">⚠️</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://www.linkedin.com/in/volodymyr-kolesnykov"><img src="https://avatars1.githubusercontent.com/u/7810770?v=4" width="100px;" alt=""/><br /><sub><b>Volodymyr Kolesnykov</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=sjinks" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=sjinks" title="Tests">⚠️</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
