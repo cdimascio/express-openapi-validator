@@ -409,6 +409,16 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "sjinks",
+      "name": "Volodymyr Kolesnykov",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/7810770?v=4",
+      "profile": "https://www.linkedin.com/in/volodymyr-kolesnykov",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
