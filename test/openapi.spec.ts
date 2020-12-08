@@ -91,7 +91,7 @@ describe(packageJson.name, () => {
             expect(r.body)
               .to.have.property('message')
               .that.equals(
-                "Parameter 'testJson' must be url encoded. It's value may not contain reserved characters.",
+                "Parameter 'testJson' must be url encoded. Its value may not contain reserved characters.",
               );
           }));
 
@@ -150,7 +150,7 @@ describe(packageJson.name, () => {
             expect(r.body)
               .to.have.property('message')
               .that.equals(
-                "Parameter 'testArray' must be url encoded. It's value may not contain reserved characters.",
+                "Parameter 'testArray' must be url encoded. Its value may not contain reserved characters.",
               );
           }));
 
