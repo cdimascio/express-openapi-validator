@@ -46,7 +46,7 @@ export class RequestValidator {
     this.requestOpts.allowUnknownQueryParameters =
       options.allowUnknownQueryParameters;
     this.ajv = createRequestAjv(apiDoc, { ...options, coerceTypes: true });
-    this.ajvBody = createRequestAjv(apiDoc, { ...options, coerceTypes: false });
+    this.ajvBody = createRequestAjv(apiDoc, options);
   }
 
   public validate(

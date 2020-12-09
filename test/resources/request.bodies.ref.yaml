@@ -17,7 +17,14 @@ paths:
               properties:
                 id:
                   type: string
-                
+      responses:
+        '200':
+          description: OK
+
+  /coercion_test:
+    post:
+      requestBody:
+        $ref: '#/components/requestBodies/CoercionTestBody'
       responses:
         '200':
           description: OK
@@ -81,6 +88,11 @@ components:
           format: phone-number
       required:
         - testPropertyTwo
+    CoercionTest:
+      type: object
+      properties:
+        aNumberProperty:
+          type: number
 
   requestBodies:
     TestBody:
@@ -107,3 +119,9 @@ components:
         '*/*':
           schema:
             type: string
+    CoercionTestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CoercionTest'
