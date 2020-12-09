@@ -78,6 +78,7 @@ export class OpenApiValidator {
     if (options.validateRequests === true) {
       options.validateRequests = {
         allowUnknownQueryParameters: false,
+        coerceTypes: false
       };
     }
 
@@ -317,17 +318,7 @@ export class OpenApiValidator {
       );
     }
 
-    const coerceResponseTypes = options?.validateResponses?.['coerceTypes'];
-    if (options.coerceTypes != null && coerceResponseTypes != null) {
-      throw ono(
-        'coerceTypes and validateResponses.coerceTypes are mutually exclusive',
-      );
-    }
-
     if (options.coerceTypes) {
-      if (options?.validateResponses) {
-        options.validateResponses['coerceTypes'] = true;
-      }
       console.warn('coerceTypes is deprecated.');
     }
 
@@ -390,12 +381,13 @@ class AjvOptions {
   }
 
   get request(): RequestValidatorOptions {
-    const { allowUnknownQueryParameters } = <ValidateRequestOpts>(
+    const { allowUnknownQueryParameters, coerceTypes } = <ValidateRequestOpts>(
       this.options.validateRequests
     );
     return {
       ...this.baseOptions(),
       allowUnknownQueryParameters,
+      coerceTypes
     };
   }
 
