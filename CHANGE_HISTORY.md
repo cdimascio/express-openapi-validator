@@ -1,3 +1,12 @@
+## 4.9.0 (2020-12-09)
+
+* chore: increment minor version ([3a70cde](https://github.com/cdimascio/express-openapi-validator/commit/3a70cde))
+* Allowing request body to be coerced (#468) ([b640b75](https://github.com/cdimascio/express-openapi-validator/commit/b640b75)), closes [#468](https://github.com/cdimascio/express-openapi-validator/issues/468)
+* It's value => Its value (#479) ([d7757fa](https://github.com/cdimascio/express-openapi-validator/commit/d7757fa)), closes [#479](https://github.com/cdimascio/express-openapi-validator/issues/479)
+* docs: add sjinks as a contributor (#480) ([59fdf32](https://github.com/cdimascio/express-openapi-validator/commit/59fdf32)), closes [#480](https://github.com/cdimascio/express-openapi-validator/issues/480)
+
+
+
 ## 4.8.0 (2020-12-03)
 
 * chore: increment minor version ([b91e548](https://github.com/cdimascio/express-openapi-validator/commit/b91e548))
