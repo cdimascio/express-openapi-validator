@@ -1074,7 +1074,7 @@ With the following Express route defintion
   app.get(`/files/:path(*)`, (req, res) => { /* do stuff */ }`
 ```
 
-Paths like `/files/some/long/path` will pass validation and the matched path e.g. `some/long/path` will be stored in `req.params.path`.
+A path like `/files/some/long/path` will pass validation. The Express `req.params.path` property will hold the value `some/long/path`.
 
 **Q:** What happened to the `securityHandlers` property?
 
