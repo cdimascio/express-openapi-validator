@@ -98,6 +98,16 @@ export class OpenApiSpecLoader {
   }
 
   private toExpressParams(part: string): string {
-    return part.replace(/\{([^}]+)}/g, ':$1');
+    // substitute wildcard path with express equivalent
+    // {/path} => /path(*) <--- RFC 6570 format (not supported by openapi)
+    // const pass1 = part.replace(/\{(\/)([^\*]+)(\*)}/g, '$1:$2$3');
+    
+    // instead create our own syntax that is compatible with express' pathToRegex
+    // /{path}* => /:path*
+    const pass1 = part.replace(/\/{([^\*]+)}(\*)/g, '/:$1$2');
+
+    // substitute params with express equivalent
+    // /path/{id} => /path/:id
+    return pass1.replace(/\{([^}]+)}/g, ':$1');
   }
 }

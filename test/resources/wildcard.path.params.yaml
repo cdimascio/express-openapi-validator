@@ -1,0 +1,43 @@
+openapi: 3.0.1
+info:
+  title: api-server
+  description: Pharmacy Tools API server
+  version: 1.0.0
+servers:
+- url: /v1
+tags:
+- name: Data
+  description: Data endpoints
+- name: Specification
+  description: The swagger API specification
+paths:
+  /d1/{id}:
+    get:
+      tags:
+        - Data
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Returns the latest tracked s3 keys
+          content: {}
+
+  /d2/{path}*:
+    get:
+      tags:
+        - Data
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        200:
+          description: Returns the latest tracked s3 keys
+          content: {}
