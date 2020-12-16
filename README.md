@@ -958,7 +958,7 @@ See [examples](https://github.com/cdimascio/express-openapi-validator/blob/secur
 
 ## Example: Multiple Validators and API specs
 
-It may be useful to serve multiple APIs with separate specs via single service. An exampe might be an API that serves both `v1` and `v2` from the samee service. The sample code below show how one might accomplish this.
+It may be useful to serve multiple APIs with separate specs via single service. An example might be an API that serves both `v1` and `v2` from the same service. The sample code below shows how one might accomplish this.
 
 See complete [example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-standard-multiple-api-specs)
 
@@ -1060,10 +1060,6 @@ module.exports = app;
 
 **A:** Add `additionalProperties: false` when [describing](https://swagger.io/docs/specification/data-models/keywords/) e.g a `requestBody` to ensure that additional properties are not allowed. For example:
 
-**Q:** I upgraded from from v2 to v3 and validation no longer works. How do I fix it?
-
-**A**: In version 2.x.x, the `install` method was executed synchronously, in 3.x it's executed asynchronously. To get v2 behavior in v3, use the `installSync` method. See the [synchronous](#synchronous) section for details.
-
 ```yaml
 Pet:
 additionalProperties: false
@@ -1075,6 +1071,10 @@ properties:
   type:
     type: string
 ```
+
+**Q:** I upgraded from from v2 to v3 and validation no longer works. How do I fix it?
+
+**A**: In version 2.x.x, the `install` method was executed synchronously, in 3.x it's executed asynchronously. To get v2 behavior in v3, use the `installSync` method. See the [synchronous](#synchronous) section for details.
 
 **Q:** Can I use `express-openapi-validator` with `swagger-ui-express`?
 
