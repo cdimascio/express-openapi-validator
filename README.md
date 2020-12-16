@@ -1051,16 +1051,15 @@ module.exports = app;
 
 ## FAQ
 
-**Q:** How do i handle wildcard path, like those described in RFC 6570?
-**A:** OpenAPI 3.0 does not support RFC 6570. That said, we provide a minimalistic mechanism that conforms syntactically to OpenAPI 3 and accomplishes a common use case. For example, matching file paths
+**Q:** How do I match paths, like those described in RFC-6570?
 
-Using the following OpenAPI defintion
+**A:** OpenAPI 3.0 does not support RFC-6570. That said, we provide a minimalistic mechanism that conforms syntactically to OpenAPI 3 and accomplishes a common use case. For example, matching file paths and storing the matched path in `req.params`
+
+Using the following OpenAPI 3.x defintion
 
 ```yaml
 /files/{path}*:
   get:
-    tags:
-      - Data
     parameters:
       - name: path
         in: path
@@ -1069,13 +1068,13 @@ Using the following OpenAPI defintion
           type: string
 ```
 
-With the following route definition
+With the following Express route defintion
 
 ```javascript
   app.get(`/files/:path(*)`, (req, res) => { /* do stuff */ }`
 ```
 
-You can match `/files/some/long/path` and `req.params.path` will contain `some/long/path`
+Paths like `/files/some/long/path` will pass validation and the matched path e.g. `some/long/path` will be stored in `req.params.path`.
 
 **Q:** What happened to the `securityHandlers` property?
 
