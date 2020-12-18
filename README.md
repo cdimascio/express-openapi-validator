@@ -495,7 +495,8 @@ OpenApiValidator.middleware({
   fileUploader: { ... } | true | false,
   $refParser: {
     mode: 'bundle'
-  }
+  }, 
+  coerceComponents: { ... }
 });
 ```
 
@@ -621,6 +622,50 @@ Determines whether the validator should validate responses. Also accepts respons
     }
   }
   ```
+  
+
+### ▪️ coerceComponents (optional)
+Transform components string to object. I can be useful to cast :
+- a string to/from a `Date` Object
+- a string to/from a MongoDb `ObjectId` 
+- ...
+
+It maps a component declaration to 2 functions that allow to :
+- `serialize` a string to object on request validation
+- `deserialize` an object to string before sending the response 
+
+```javascript
+    coerceComponents: {
+      'ObjectId': {
+        serialize: (o) => new ObjectID(o),
+        deserialize: (o) => o.toString(),
+      },
+      'Date': {
+        serialize: (o) => new Date(o),
+        deserialize: (o) => o.toISOString().slice(0, 10),
+      },
+      'DateTime': {
+        serialize: (o) => new Date(o),
+        deserialize: (o) => o.toISOString(),
+      }
+    }
+```
+
+Components declaration must be in YAML 
+```yaml
+components:
+  schemas:
+    ObjectId:
+      type: string
+      pattern: '^[0-9a-fA-F]{24}$'
+    Date:
+      type: string
+      format: date
+    DateTime:
+      type: string
+      format: date-time
+```
+An example car be tested [here](examples/7-coerce-components).
 
 ### ▪️ validateSecurity (optional)
 

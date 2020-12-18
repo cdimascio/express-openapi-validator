@@ -396,10 +396,11 @@ class AjvOptions {
   }
 
   private baseOptions(): ajv.Options {
-    const { coerceTypes, unknownFormats, validateFormats } = this.options;
+    const { coerceTypes, unknownFormats, validateFormats, coerceComponents } = this.options;
     return {
       nullable: true,
       coerceTypes,
+      coerceComponents,
       useDefaults: true,
       removeAdditional: false,
       unknownFormats,

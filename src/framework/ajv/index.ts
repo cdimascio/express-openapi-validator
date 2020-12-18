@@ -36,6 +36,20 @@ function createAjv(
   ajv.removeKeyword('const');
 
   if (request) {
+    if (options.coerceComponents) {
+      ajv.addKeyword('coerceComponent', {
+        modifying: true,
+        compile: sch => {
+          if (sch) {
+            return function validate(data, path, obj, propName) {
+              obj[propName] = sch.serialize(data);
+              return true;
+            };
+          }
+          return () => true;
+        },
+      });
+    }
     ajv.removeKeyword('readOnly');
     ajv.addKeyword('readOnly', {
       modifying: true,
@@ -62,6 +76,20 @@ function createAjv(
     });
   } else {
     // response
+    if(options.coerceComponents) {
+      ajv.addKeyword('coerceComponent', {
+        modifying: true,
+        compile: sch => {
+          if (sch) {
+            return function validate(data, path, obj, propName) {
+              obj[propName] = sch.deserialize(data);
+              return true;
+            }
+          }
+          return () => true;
+        }
+      });
+    }
     ajv.removeKeyword('writeOnly');
     ajv.addKeyword('writeOnly', {
       modifying: true,
@@ -89,7 +117,20 @@ function createAjv(
 
   if (openApiSpec.components?.schemas) {
     Object.entries(openApiSpec.components.schemas).forEach(([id, schema]) => {
-      ajv.addSchema(schema, `#/components/schemas/${id}`);
+      if (options.coerceComponents && options.coerceComponents[id]) {
+        if (request) {
+          // On resquest, we must coerce at the end
+          schema.coerceComponent = options.coerceComponents[id];
+        } else {
+          // On response, we must transform the object to allowed type.
+          // No data validation. It must be done in coerceComponents deserialize.
+          openApiSpec.components.schemas[id] = {
+            type: "object",
+            coerceComponent: options.coerceComponents[id]
+          };
+        }
+      }
+      ajv.addSchema(openApiSpec.components.schemas[id], `#/components/schemas/${id}`);
     });
   }
 

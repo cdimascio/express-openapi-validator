@@ -66,6 +66,15 @@ export type Format = {
   validate: (v: any) => boolean;
 };
 
+export type CoerceComponentFunctions= {
+  serialize : Function
+  deserialize : Function
+};
+
+export type CoerceComponentsMap = {
+  [key:string]: CoerceComponentFunctions
+};
+
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
   validateResponses?: boolean | ValidateResponseOpts;
@@ -74,6 +83,7 @@ export interface OpenApiValidatorOpts {
   ignorePaths?: RegExp | Function;
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
+  coerceComponents?: CoerceComponentsMap;
   unknownFormats?: true | string[] | 'ignore';
   formats?: Format[];
   fileUploader?: boolean | multer.Options;
@@ -247,6 +257,9 @@ export namespace OpenAPIV3 {
     externalDocs?: ExternalDocumentationObject;
     example?: any;
     deprecated?: boolean;
+
+    // Express-openapi-validator specific properties
+    coerceComponent?: CoerceComponentFunctions;
   }
 
   export interface DiscriminatorObject {
@@ -264,6 +277,7 @@ export namespace OpenAPIV3 {
 
   export interface ReferenceObject {
     $ref: string;
+    coerceComponent?: CoerceComponentFunctions;
   }
 
   export interface ExampleObject {
