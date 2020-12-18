@@ -33,11 +33,17 @@ export type SecurityHandlers = {
 
 export interface MultipartOpts {
   multerOpts: boolean | multer.Options;
-  ajvOpts: ajv.Options;
+  ajvOpts: Options;
+}
+
+export interface Options extends ajv.Options {
+
+  // Specific options
+  coerceComponents?: object
 }
 
 export interface RequestValidatorOptions
-  extends ajv.Options,
+  extends Options,
     ValidateRequestOpts {}
 
 export type ValidateRequestOpts = {

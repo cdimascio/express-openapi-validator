@@ -17,6 +17,7 @@ import {
   ValidateSecurityOpts,
   OpenAPIV3,
   RequestValidatorOptions,
+  Options
 } from './framework/types';
 import { defaultResolver } from './resolvers';
 import { OperationHandlerOptions } from './framework/types';
@@ -391,11 +392,11 @@ class AjvOptions {
     };
   }
 
-  get multipart(): ajv.Options {
+  get multipart(): Options {
     return this.baseOptions();
   }
 
-  private baseOptions(): ajv.Options {
+  private baseOptions(): Options {
     const { coerceTypes, unknownFormats, validateFormats, coerceComponents } = this.options;
     return {
       nullable: true,
