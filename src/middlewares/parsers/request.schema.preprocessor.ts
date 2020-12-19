@@ -7,6 +7,13 @@ type SchemaObject = OpenAPIV3.SchemaObject;
 type ReferenceObject = OpenAPIV3.ReferenceObject;
 type Schema = ReferenceObject | SchemaObject;
 
+if (!Array.prototype['flatMap']) {
+  // polyfill flatMap
+  // TODO remove me when dropping node 10 support
+  Array.prototype['flatMap'] = function (lambda) {
+    return Array.prototype.concat.apply([], this.map(lambda));
+  };
+}
 const httpMethods = new Set([
   'get',
   'put',
@@ -214,6 +221,7 @@ export class RequestSchemaPreprocessor {
     }
     return matches;
   }
+
   getKeyFromRef(ref) {
     return ref.split('/components/schemas/')[1];
   }
