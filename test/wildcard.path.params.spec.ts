@@ -24,6 +24,16 @@ describe('wildcard path params', () => {
             res.json({
               ...req.params,
             }),
+          )
+          .get(`${app.basePath}/d3/:path(*)`, (req, res) =>
+            res.json({
+              ...req.params,
+            }),
+          )
+          .get(`${app.basePath}/d3`, (req, res) =>
+            res.json({
+              success: true,
+            }),
           );
       },
     );
@@ -45,5 +55,32 @@ describe('wildcard path params', () => {
       .expect(200)
       .then((r) => {
         expect(r.body.path).to.equal('some/long/path');
+      }));
+
+  it('should return not found if no path is specified', async () =>
+    request(app).get(`${app.basePath}/d2`).expect(404));
+
+  it('should return 200 when wildcard path includes all required params', async () =>
+    request(app)
+      .get(`${app.basePath}/d3/long/path/file.csv`)
+      .query({
+        qp: 'present',
+      })
+      .expect(200));
+
+  it('should 400 when wildcard path is missing a required query param', async () =>
+    request(app)
+      .get(`${app.basePath}/d3/long/path/file.csv`)
+      .expect(400)
+      .then((r) => {
+        expect(r.body.message).to.include('required');
+      }));
+
+  it('should return 200 if root of an existing wildcard route is defined', async () =>
+    request(app)
+      .get(`${app.basePath}/d3`)
+      .expect(200)
+      .then((r) => {
+        expect(r.body.success).to.be.true;
       }));
 });
