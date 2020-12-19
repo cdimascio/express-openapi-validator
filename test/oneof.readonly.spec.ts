@@ -46,7 +46,6 @@ describe('one.of readonly', () => {
       .expect(400)
       .then((r) => {
         const error = r.body;
-        console.log(error);
         expect(error.message).to.include('to one of the allowed values: C, D');
       }));
 

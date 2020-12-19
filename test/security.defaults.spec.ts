@@ -37,7 +37,6 @@ describe('security.defaults', () => {
       .get(`${basePath}/basic`)
       .expect(401)
       .then((r) => {
-        console.log(r.body);
         expect(r.body)
           .to.have.property('message')
           .that.equals('Authorization header required');

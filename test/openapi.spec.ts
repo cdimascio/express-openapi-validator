@@ -176,7 +176,6 @@ describe(packageJson.name, () => {
           .expect('Content-Type', /json/)
           .expect(400)
           .then(r => {
-            console.log(r.body);
             const e = r.body.errors;
             expect(e).to.have.length(1);
             expect(e[0].path).to.contain('testArray');

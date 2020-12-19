@@ -53,7 +53,6 @@ describe(packageJson.name, () => {
             name: 'My Name',
             ...(req.query.include_id ? { id: 'test_id' } : {}),
           };
-          console.log(json);
           res.json(json);
         }),
     );

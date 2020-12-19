@@ -66,7 +66,6 @@ describe('path params', () => {
       .expect(200)
       .then((r) => {
         const body = r.body;
-        console.log(body);
         expect(body[0]).to.have.property('amount').that.equals(-10.0);
       }));
 
@@ -80,7 +79,6 @@ describe('path params', () => {
       .expect(200)
       .then((r) => {
         const body = r.body;
-        console.log(body);
         expect(body[0]).to.have.property('amount').that.equals(0.0);
       }));
 
@@ -94,7 +92,6 @@ describe('path params', () => {
       .expect(200)
       .then((r) => {
         const body = r.body;
-        console.log(body);
         expect(body[0]).to.have.property('amount').that.equals(10.0);
       }));
 
