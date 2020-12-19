@@ -32,7 +32,6 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/deep_object`)
       .expect(200)
       .then((r) => {
-        console.log(r.body);
         expect(r.body).to.deep.equals({
           pagesort: { page: 1, perPage: 25, field: 'id', order: 'ASC' },
         });
@@ -43,7 +42,6 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/deep_object?pagesort[field]=name`)
       .expect(200)
       .then((r) => {
-        console.log(r.body);
         expect(r.body).to.deep.equals({
           pagesort: { page: 1, perPage: 25, field: 'name', order: 'ASC' },
         });
