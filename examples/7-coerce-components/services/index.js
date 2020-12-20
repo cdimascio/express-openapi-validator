@@ -7,18 +7,21 @@ let data = [
     name: 'sparky',
     type: 'dog',
     tags: ['sweet'],
+    creationDate: new Date()
   },
   {
     id: new ObjectID(),
     name: 'buzz',
     type: 'cat',
     tags: ['purrfect'],
+    creationDate: new Date()
   },
   {
     id: new ObjectID(),
     name: 'max',
     type: 'dog',
     tags: [],
+    creationDate: new Date()
   },
 ];
 

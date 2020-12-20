@@ -209,6 +209,8 @@ components:
           type: string
         type:
           $ref: '#/components/schemas/PetType'
+        creationDate:
+          $ref: '#/components/schemas/DateTime'
 
     PetType:
       type: string

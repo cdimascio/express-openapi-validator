@@ -265,6 +265,7 @@ export namespace OpenAPIV3 {
     deprecated?: boolean;
 
     // Express-openapi-validator specific properties
+    componentId?: string;
     coerceComponent?: CoerceComponentFunctions;
   }
 
@@ -283,6 +284,8 @@ export namespace OpenAPIV3 {
 
   export interface ReferenceObject {
     $ref: string;
+    // Custom attribute for coerceComponents feature. componentId needs to be set to certify cache uniqueness in ajv schemas
+    componentId?: string;
     coerceComponent?: CoerceComponentFunctions;
   }
 

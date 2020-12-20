@@ -121,12 +121,14 @@ function createAjv(
         if (request) {
           // On resquest, we must coerce at the end
           schema.coerceComponent = options.coerceComponents[id];
+          schema.componentId = `#/components/schemas/${id}`;
         } else {
           // On response, we must transform the object to allowed type.
           // No data validation. It must be done in coerceComponents deserialize.
           openApiSpec.components.schemas[id] = {
             type: "object",
-            coerceComponent: options.coerceComponents[id]
+            coerceComponent: options.coerceComponents[id],
+            componentId : `#/components/schemas/${id}`
           };
         }
       }
