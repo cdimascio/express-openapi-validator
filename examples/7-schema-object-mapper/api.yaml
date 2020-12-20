@@ -1,7 +1,7 @@
 openapi: '3.0.0'
 info:
   version: 1.0.0
-  title: Swagger Petstore coherceComponents variant
+  title: Swagger Petstore schemaObjectMapper variant
   description: A sample API
   termsOfService: http://swagger.io/terms/
   license:

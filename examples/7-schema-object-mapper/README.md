@@ -1,6 +1,6 @@
 # example
 
-coherceComponents option allow to serialize string received on request to custom object and deserialize objects to string.
+schemaObjectMapper option allow to deserialize string received on request to custom object and serialize objects to string on response.
 It can be useful for Date information (cast string date to Date object) or other needs such as Mongodb ObjectId...
 This example uses Mongodb package in order to show this feature.
 
@@ -12,7 +12,7 @@ npm run deps && npm i
 
 ## Run
 
-From this `7-coerce-components` directory, run:
+From this `7-schema-object-mapper` directory, run:
 
 ```shell
 npm start
