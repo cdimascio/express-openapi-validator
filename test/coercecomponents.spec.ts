@@ -18,7 +18,7 @@ class ObjectID {
 
 }
 
-describe('path params', () => {
+describe('coercecomponents', () => {
   let app = null;
 
   before(async () => {
