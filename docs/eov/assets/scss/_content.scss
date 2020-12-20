@@ -1,13 +1,18 @@
 .td-overlay--dark::after {
-  background-color: rgba(64, 63, 76, 0.1) !important;
+  background-color: #377eff !important;
 }
 
 .navbar-dark .navbar-brand {
   color: var(--white) !important;
 }
 
+.td-navbar {
+  background: #3772ff;
+}
+
 .nav-link {
-  text-shadow: 0px 0px 0px #403f4c !important;
+  color: var(--white);
+  text-shadow: 0px 0px 0px var(--white) !important;
 }
 
 .navbar-dark .navbar-nav .nav-link {
