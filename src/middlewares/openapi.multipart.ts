@@ -1,4 +1,3 @@
-import { OpenApiContext } from '../framework/openapi.context';
 import { createRequestAjv } from '../framework/ajv';
 import {
   OpenAPIV3,
@@ -11,22 +10,27 @@ import {
   MultipartOpts,
 } from '../framework/types';
 import { MulterError } from 'multer';
-
-const multer = require('multer');
+import * as multer from 'multer';
+import { Response } from 'express';
 
 export function multipart(
   apiDoc: OpenAPIV3.Document,
   options: MultipartOpts,
 ): OpenApiRequestHandler {
-  const mult = multer(options.multerOpts);
-  const Ajv = createRequestAjv(apiDoc, { ...options.ajvOpts });
-  return (req, res, next) => {
+  const { preMiddleware, postMiddleware, multerOpts, ajvOpts } = options;
+  const mult = multer(<multer.Options>multerOpts);
+  const Ajv = createRequestAjv(apiDoc, { ...ajvOpts });
+  return async (req, res, next) => {
     // TODO check that format: binary (for upload) else do not use multer.any()
     // use multer.none() if no binary parameters exist
     if (shouldHandle(Ajv, req)) {
+      const preError = await handleMiddleware(preMiddleware, req, res);
+      if (preError) return next(error(req, preError));
+
+      let multError: any;
       mult.any()(req, res, (err) => {
         if (err) {
-          next(error(req, err));
+          return (multError = err);
         } else {
           // TODO:
           // If a form parameter 'file' is defined to take file value, but the user provides a string value instead
@@ -62,13 +66,30 @@ export function multipart(
               },
             );
           }
-          next();
         }
       });
-    } else {
-      next();
+
+      if (multError) return next(error(req, multError));
+
+      const postError = await handleMiddleware(preMiddleware, req, res);
+      if (postError) return next(error(req, postError));
     }
+
+    next();
   };
+}
+
+async function handleMiddleware(
+  middlewares: OpenApiRequestHandler[],
+  req: OpenApiRequest,
+  res: Response,
+): Promise<any> {
+  for (let mw of middlewares) {
+    let error: any;
+    const result = mw(req, res, (err: any) => (error = err));
+    if (result instanceof Promise) await result;
+    if (error) return error;
+  }
 }
 
 function shouldHandle(Ajv, req: OpenApiRequest): boolean {

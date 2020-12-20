@@ -19,7 +19,10 @@ import {
   RequestValidatorOptions,
 } from './framework/types';
 import { defaultResolver } from './resolvers';
-import { OperationHandlerOptions } from './framework/types';
+import {
+  OperationHandlerOptions,
+  FileUploaderOptions,
+} from './framework/types';
 import { RequestSchemaPreprocessor } from './middlewares/parsers/request.schema.preprocessor';
 
 export {
@@ -46,7 +49,7 @@ export class OpenApiValidator {
     if (options.validateRequests == null) options.validateRequests = true;
     if (options.validateResponses == null) options.validateResponses = false;
     if (options.validateSecurity == null) options.validateSecurity = true;
-    if (options.fileUploader == null) options.fileUploader = {};
+    if (options.fileUploader == null) options.fileUploader = { multer: {} };
     if (options.$refParser == null) options.$refParser = { mode: 'bundle' };
     if (options.unknownFormats == null) options.unknownFormats === true;
     if (options.validateFormats == null) options.validateFormats = 'fast';
@@ -71,7 +74,7 @@ export class OpenApiValidator {
       options.validateResponses = {
         removeAdditional: false,
         coerceTypes: false,
-        onError: null
+        onError: null,
       };
     }
 
@@ -250,7 +253,11 @@ export class OpenApiValidator {
 
   private multipartMiddleware(apiDoc: OpenAPIV3.Document) {
     return middlewares.multipart(apiDoc, {
-      multerOpts: this.options.fileUploader,
+      multerOpts: (<FileUploaderOptions>this.options.fileUploader).multer,
+      preMiddleware: (<FileUploaderOptions>this.options.fileUploader)
+        .preMiddleware,
+      postMiddleware: (<FileUploaderOptions>this.options.fileUploader)
+        .postMiddleware,
       ajvOpts: this.ajvOpts.multipart,
     });
   }
@@ -275,7 +282,7 @@ export class OpenApiValidator {
       apiDoc,
       this.ajvOpts.response,
       // This has already been converted from boolean if required
-      this.options.validateResponses as ValidateResponseOpts
+      this.options.validateResponses as ValidateResponseOpts,
     ).validate();
   }
 

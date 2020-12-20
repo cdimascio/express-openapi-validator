@@ -33,6 +33,8 @@ export type SecurityHandlers = {
 
 export interface MultipartOpts {
   multerOpts: boolean | multer.Options;
+  preMiddleware: OpenApiRequestHandler[];
+  postMiddleware: OpenApiRequestHandler[];
   ajvOpts: ajv.Options;
 }
 
@@ -66,6 +68,12 @@ export type Format = {
   validate: (v: any) => boolean;
 };
 
+export type FileUploaderOptions = {
+  multer: multer.Options;
+  preMiddleware?: OpenApiRequestHandler[];
+  postMiddleware?: OpenApiRequestHandler[];
+};
+
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
   validateResponses?: boolean | ValidateResponseOpts;
@@ -76,8 +84,7 @@ export interface OpenApiValidatorOpts {
   coerceTypes?: boolean | 'array';
   unknownFormats?: true | string[] | 'ignore';
   formats?: Format[];
-  fileUploader?: boolean | multer.Options;
-  multerOpts?: multer.Options;
+  fileUploader?: boolean | FileUploaderOptions;
   $refParser?: {
     mode: 'bundle' | 'dereference';
   };

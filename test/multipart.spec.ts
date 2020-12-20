@@ -15,14 +15,16 @@ describe(packageJson.name, () => {
       {
         apiSpec,
         fileUploader: {
-          fileFilter: (req, file, cb) => {
-            fileNames.push(file.originalname);
-            cb(null, true);
+          multer: {
+            fileFilter: (req, file, cb) => {
+              fileNames.push(file.originalname);
+              cb(null, true);
+            },
           },
         },
       },
       3003,
-      app =>
+      (app) =>
         app.use(
           `${app.basePath}`,
           express
@@ -52,10 +54,8 @@ describe(packageJson.name, () => {
         .set('Content-Type', 'multipart/form-data')
         .set('Accept', 'application/json')
         .expect(400)
-        .then(e => {
-          expect(e.body)
-            .has.property('errors')
-            .with.length(1);
+        .then((e) => {
+          expect(e.body).has.property('errors').with.length(1);
           expect(e.body.errors[0])
             .has.property('message')
             .equal('multipart file(s) required');
@@ -69,7 +69,7 @@ describe(packageJson.name, () => {
         .attach('file', 'package.json')
         .expect(400));
 
-    it('should validate application/octet-stream file and metadata', done => {
+    it('should validate application/octet-stream file and metadata', (done) => {
       const testImage = `${__dirname}/assets/image.png`;
       const req = request(app)
         .post(`${app.basePath}/sample_3`)
@@ -88,14 +88,10 @@ describe(packageJson.name, () => {
         .attach('file', 'package.json')
         .field('metadata', 'some-metadata')
         .expect(200)
-        .then(r => {
+        .then((r) => {
           const b = r.body;
-          expect(b.files)
-            .to.be.an('array')
-            .with.length(1);
-          expect(b.files[0])
-            .to.have.property('fieldname')
-            .to.equal('file');
+          expect(b.files).to.be.an('array').with.length(1);
+          expect(b.files[0]).to.have.property('fieldname').to.equal('file');
           expect(b.metadata).to.equal('some-metadata');
         });
       expect(fileNames).to.deep.equal(['package.json']);
@@ -117,10 +113,8 @@ describe(packageJson.name, () => {
         .set('Content-Type', 'application/json')
         .expect('Content-Type', /json/)
         .expect(415)
-        .then(r => {
-          expect(r.body)
-            .has.property('errors')
-            .with.length(1);
+        .then((r) => {
+          expect(r.body).has.property('errors').with.length(1);
           expect(r.body.errors[0])
             .has.property('message')
             .equal('unsupported media type application/json');
