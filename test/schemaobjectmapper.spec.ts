@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 
-const apiSpecPath = path.join('test', 'resources', 'coercecomponents.yaml');
+const apiSpecPath = path.join('test', 'resources', 'schemaobjectmapper.yaml');
 
 class ObjectID {
   id : string;
@@ -18,7 +18,7 @@ class ObjectID {
 
 }
 
-describe('coercecomponents', () => {
+describe('schemaobjectmapper', () => {
   let app = null;
 
   before(async () => {
@@ -32,18 +32,18 @@ describe('coercecomponents', () => {
         validateResponses: {
           coerceTypes: true
         },
-        coerceComponents: {
+        schemaObjectMapper: {
           'ObjectId': {
-            serialize: (o) => new ObjectID(o),
-            deserialize: (o) => o.toString(),
+            deserializeRequestComponent: (o) => new ObjectID(o),
+            serializeResponseComponent: (o) => o.toString(),
           },
           'Date': {
-            serialize: (o) => new Date(o),
-            deserialize: (o) => o.toISOString().slice(0, 10),
+            deserializeRequestComponent: (o) => new Date(o),
+            serializeResponseComponent: (o) => o.toISOString().slice(0, 10),
           },
           'DateTime': {
-            serialize: (o) => new Date(o),
-            deserialize: (o) => o.toISOString(),
+            deserializeRequestComponent: (o) => new Date(o),
+            serializeResponseComponent: (o) => o.toISOString(),
           },
         },
 

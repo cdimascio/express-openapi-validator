@@ -496,7 +496,7 @@ OpenApiValidator.middleware({
   $refParser: {
     mode: 'bundle'
   }, 
-  coerceComponents: { ... }
+  schemaObjectMapper: { ... }
 });
 ```
 
@@ -624,29 +624,29 @@ Determines whether the validator should validate responses. Also accepts respons
   ```
   
 
-### ▪️ coerceComponents (optional)
+### ▪️ schemaObjectMapper (optional)
 Transform components string to object. I can be useful to cast :
 - a string to/from a `Date` Object
 - a string to/from a MongoDb `ObjectId` 
 - ...
 
 It maps a component declaration to 2 functions that allow to :
-- `serialize` a string to object on request validation
-- `deserialize` an object to string before sending the response 
+- `deserializeRequestComponent` a string to object on request validation
+- `serializeResponseComponent` an object to string before sending the response 
 
 ```javascript
-    coerceComponents: {
+    schemaObjectMapper: {
       'ObjectId': {
-        serialize: (o) => new ObjectID(o),
-        deserialize: (o) => o.toString(),
+        deserializeRequestComponent: (o) => new ObjectID(o),
+        serializeResponseComponent: (o) => o.toString(),
       },
       'Date': {
-        serialize: (o) => new Date(o),
-        deserialize: (o) => o.toISOString().slice(0, 10),
+        deserializeRequestComponent: (o) => new Date(o),
+        serializeResponseComponent: (o) => o.toISOString().slice(0, 10),
       },
       'DateTime': {
-        serialize: (o) => new Date(o),
-        deserialize: (o) => o.toISOString(),
+        deserializeRequestComponent: (o) => new Date(o),
+        serializeResponseComponent: (o) => o.toISOString(),
       }
     }
 ```
@@ -665,7 +665,7 @@ components:
       type: string
       format: date-time
 ```
-An example car be tested [here](examples/7-coerce-components).
+An example car be tested [here](examples/7-schema-object-mapper).
 
 ### ▪️ validateSecurity (optional)
 

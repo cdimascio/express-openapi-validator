@@ -39,7 +39,7 @@ export interface MultipartOpts {
 export interface Options extends ajv.Options {
 
   // Specific options
-  coerceComponents?: object
+  schemaObjectMapper?: object
 }
 
 export interface RequestValidatorOptions
@@ -72,13 +72,13 @@ export type Format = {
   validate: (v: any) => boolean;
 };
 
-export type CoerceComponentFunctions= {
-  serialize : Function
-  deserialize : Function
+export type SchemaObjectFunctions= {
+  deserializeRequestComponent : Function
+  serializeResponseComponent : Function
 };
 
-export type CoerceComponentsMap = {
-  [key:string]: CoerceComponentFunctions
+export type SchemaObjectMapperMap = {
+  [key:string]: SchemaObjectFunctions
 };
 
 export interface OpenApiValidatorOpts {
@@ -89,7 +89,7 @@ export interface OpenApiValidatorOpts {
   ignorePaths?: RegExp | Function;
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
-  coerceComponents?: CoerceComponentsMap;
+  schemaObjectMapper?: SchemaObjectMapperMap;
   unknownFormats?: true | string[] | 'ignore';
   formats?: Format[];
   fileUploader?: boolean | multer.Options;
@@ -266,7 +266,7 @@ export namespace OpenAPIV3 {
 
     // Express-openapi-validator specific properties
     componentId?: string;
-    coerceComponent?: CoerceComponentFunctions;
+    schemaObjectFunctions?: SchemaObjectFunctions;
   }
 
   export interface DiscriminatorObject {
@@ -284,9 +284,9 @@ export namespace OpenAPIV3 {
 
   export interface ReferenceObject {
     $ref: string;
-    // Custom attribute for coerceComponents feature. componentId needs to be set to certify cache uniqueness in ajv schemas
+    // Custom attributes for data transformation. componentId needs to be set by the mecanisme to guarantee cache uniqueness in ajv schemas
     componentId?: string;
-    coerceComponent?: CoerceComponentFunctions;
+    schemaObjectFunctions?: SchemaObjectFunctions;
   }
 
   export interface ExampleObject {

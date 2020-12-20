@@ -36,13 +36,13 @@ function createAjv(
   ajv.removeKeyword('const');
 
   if (request) {
-    if (options.coerceComponents) {
-      ajv.addKeyword('coerceComponent', {
+    if (options.schemaObjectMapper) {
+      ajv.addKeyword('schemaObjectFunctions', {
         modifying: true,
         compile: sch => {
           if (sch) {
             return function validate(data, path, obj, propName) {
-              obj[propName] = sch.serialize(data);
+              obj[propName] = sch.deserializeRequestComponent(data);
               return true;
             };
           }
@@ -76,13 +76,13 @@ function createAjv(
     });
   } else {
     // response
-    if(options.coerceComponents) {
-      ajv.addKeyword('coerceComponent', {
+    if(options.schemaObjectMapper) {
+      ajv.addKeyword('schemaObjectFunctions', {
         modifying: true,
         compile: sch => {
           if (sch) {
             return function validate(data, path, obj, propName) {
-              obj[propName] = sch.deserialize(data);
+              obj[propName] = sch.serializeResponseComponent(data);
               return true;
             }
           }
@@ -117,17 +117,17 @@ function createAjv(
 
   if (openApiSpec.components?.schemas) {
     Object.entries(openApiSpec.components.schemas).forEach(([id, schema]) => {
-      if (options.coerceComponents && options.coerceComponents[id]) {
+      if (options.schemaObjectMapper && options.schemaObjectMapper[id]) {
         if (request) {
-          // On resquest, we must coerce at the end
-          schema.coerceComponent = options.coerceComponents[id];
+          // On resquest, we transform data to object after other rules validation
+          schema.schemaObjectFunctions = options.schemaObjectMapper[id];
           schema.componentId = `#/components/schemas/${id}`;
         } else {
           // On response, we must transform the object to allowed type.
-          // No data validation. It must be done in coerceComponents deserialize.
+          // No data validation. It must be done in schemaObjectFunctions serializeResponseComponent.
           openApiSpec.components.schemas[id] = {
             type: "object",
-            coerceComponent: options.coerceComponents[id],
+            schemaObjectFunctions: options.schemaObjectMapper[id],
             componentId : `#/components/schemas/${id}`
           };
         }

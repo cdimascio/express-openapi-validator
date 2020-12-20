@@ -397,11 +397,11 @@ class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const { coerceTypes, unknownFormats, validateFormats, coerceComponents } = this.options;
+    const { coerceTypes, unknownFormats, validateFormats, schemaObjectMapper } = this.options;
     return {
       nullable: true,
       coerceTypes,
-      coerceComponents,
+      schemaObjectMapper,
       useDefaults: true,
       removeAdditional: false,
       unknownFormats,
