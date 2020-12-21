@@ -73,8 +73,8 @@ export type Format = {
 };
 
 export type SchemaObjectFunctions= {
-  deserializeRequestComponent : Function
-  serializeResponseComponent : Function
+  deserialize : (string) => any
+  serialize : (any) => string
 };
 
 export type SchemaObjectMapperMap = {

@@ -30,16 +30,16 @@ app.use(
     },
     schemaObjectMapper: {
       'ObjectId': {
-        deserializeRequestComponent: (o) => new ObjectID(o),
-        serializeResponseComponent: (o) => o.toString(),
+        deserialize: (o) => new ObjectID(o),
+        serialize: (o) => o.toString(),
       },
       'Date': {
-        deserializeRequestComponent: (o) => new Date(o),
-        serializeResponseComponent: (o) => o.toISOString().slice(0, 10),
+        deserialize: (o) => new Date(o),
+        serialize: (o) => o.toISOString().slice(0, 10),
       },
       'DateTime': {
-        deserializeRequestComponent: (o) => new Date(o),
-        serializeResponseComponent: (o) => o.toISOString(),
+        deserialize: (o) => new Date(o),
+        serialize: (o) => o.toISOString(),
       },
     },
   }),

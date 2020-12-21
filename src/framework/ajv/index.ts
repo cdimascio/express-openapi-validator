@@ -39,10 +39,10 @@ function createAjv(
     if (options.schemaObjectMapper) {
       ajv.addKeyword('schemaObjectFunctions', {
         modifying: true,
-        compile: sch => {
+        compile: (sch) => {
           if (sch) {
             return function validate(data, path, obj, propName) {
-              obj[propName] = sch.deserializeRequestComponent(data);
+              obj[propName] = sch.deserialize(data);
               return true;
             };
           }
@@ -76,18 +76,18 @@ function createAjv(
     });
   } else {
     // response
-    if(options.schemaObjectMapper) {
+    if (options.schemaObjectMapper) {
       ajv.addKeyword('schemaObjectFunctions', {
         modifying: true,
-        compile: sch => {
+        compile: (sch) => {
           if (sch) {
             return function validate(data, path, obj, propName) {
-              obj[propName] = sch.serializeResponseComponent(data);
+              obj[propName] = sch.serialize(data);
               return true;
-            }
+            };
           }
           return () => true;
-        }
+        },
       });
     }
     ajv.removeKeyword('writeOnly');
@@ -126,13 +126,16 @@ function createAjv(
           // On response, we must transform the object to allowed type.
           // No data validation. It must be done in schemaObjectFunctions serializeResponseComponent.
           openApiSpec.components.schemas[id] = {
-            type: "object",
+            type: 'object',
             schemaObjectFunctions: options.schemaObjectMapper[id],
-            componentId : `#/components/schemas/${id}`
+            componentId: `#/components/schemas/${id}`,
           };
         }
       }
-      ajv.addSchema(openApiSpec.components.schemas[id], `#/components/schemas/${id}`);
+      ajv.addSchema(
+        openApiSpec.components.schemas[id],
+        `#/components/schemas/${id}`,
+      );
     });
   }
 
