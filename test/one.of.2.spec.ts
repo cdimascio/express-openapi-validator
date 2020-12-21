@@ -22,7 +22,6 @@ describe('oneOf with discriminator', () => {
           res.json(req.body);
         });
         app.use((err, req, res, next) => {
-          console.error(err);
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
@@ -93,7 +92,9 @@ describe('oneOf with discriminator', () => {
         .expect(400)
         .then((r) => {
           const e = r.body;
-          expect(e.message).to.include('one of the allowed values: cat, kitty, dog, puppy');
+          expect(e.message).to.include(
+            'one of the allowed values: cat, kitty, dog, puppy',
+          );
         }));
 
     it('should return 200 for dog', async () =>

@@ -56,6 +56,12 @@ export class RequestSchemaPreprocessor {
     const v = pathItem[pathItemKey];
     const ref = v?.requestBody?.$ref;
 
+    if (ref?.includes('components/requestBodies/')) {
+      const reqBodyId = ref.split('/').pop()
+      v.requestBody = this.apiDoc.components.requestBodies[reqBodyId];
+      return this.preprocessRequestBody(pathItemKey, pathItem)
+    }
+
     const requestBody = <OpenAPIV3.RequestBodyObject>(
       (ref ? this.ajv.getSchema(ref)?.schema : v.requestBody)
     );
