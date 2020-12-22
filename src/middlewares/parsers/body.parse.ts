@@ -12,26 +12,16 @@ type ReferenceObject = OpenAPIV3.ReferenceObject;
 type Schema = ReferenceObject | SchemaObject;
 
 export class BodySchemaParser {
-  private _apiDoc: OpenAPIV3.Document;
-  private ajv: Ajv;
-  constructor(ajv: Ajv, apiDoc: OpenAPIV3.Document) {
-    this.ajv = ajv;
-    this._apiDoc = apiDoc;
+  constructor() {
   }
   public parse(
     path: string,
     pathSchema: OpenAPIV3.OperationObject,
     contentType: ContentType,
   ): BodySchema {
-    // TODO should return OpenAPIV3.SchemaObject instead
-    let schemaRequestBody = pathSchema.requestBody;
-    if (schemaRequestBody?.hasOwnProperty('$ref')) {
-      // TODO use ajv.getSchema instead
-      const ref = (<OpenAPIV3.ReferenceObject>schemaRequestBody).$ref;
-      const id = ref.replace(/^.+\//i, '');
-      schemaRequestBody = this._apiDoc.components.requestBodies[id];
-    }
-    const requestBody = <OpenAPIV3.RequestBodyObject>schemaRequestBody;
+    // The schema.preprocessor will have dereferenced the RequestBodyObject
+    // thus we can assume a RequestBodyObject, not a ReferenceObject
+    const requestBody = <OpenAPIV3.RequestBodyObject>pathSchema.requestBody;
     if (requestBody?.hasOwnProperty('content')) {
       return this.toSchema(path, contentType, requestBody);
     }
