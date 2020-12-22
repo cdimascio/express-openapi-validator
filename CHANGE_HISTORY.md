@@ -1,3 +1,25 @@
+## <small>4.9.5 (2020-12-22)</small>
+
+* fix: #495 inconsistent validation of multipart request body with $ref (#496) ([832f865](https://github.com/cdimascio/express-openapi-validator/commit/832f865)), closes [#495](https://github.com/cdimascio/express-openapi-validator/issues/495) [#496](https://github.com/cdimascio/express-openapi-validator/issues/496) [#495](https://github.com/cdimascio/express-openapi-validator/issues/495)
+* chore: increment patch version ([f35b1f2](https://github.com/cdimascio/express-openapi-validator/commit/f35b1f2))
+* chore: increment patch version ([a542ece](https://github.com/cdimascio/express-openapi-validator/commit/a542ece))
+* chore: publish script ([ab392b8](https://github.com/cdimascio/express-openapi-validator/commit/ab392b8))
+* chore: remove docs folder ([1592223](https://github.com/cdimascio/express-openapi-validator/commit/1592223))
+* doc: brief summary ([60f2cf4](https://github.com/cdimascio/express-openapi-validator/commit/60f2cf4))
+
+
+
+## <small>4.9.5 (2020-12-22)</small>
+
+* fix: #495 inconsistent validation of multipart request body with $ref (#496) ([832f865](https://github.com/cdimascio/express-openapi-validator/commit/832f865)), closes [#495](https://github.com/cdimascio/express-openapi-validator/issues/495) [#496](https://github.com/cdimascio/express-openapi-validator/issues/496) [#495](https://github.com/cdimascio/express-openapi-validator/issues/495)
+* chore: increment patch version ([f35b1f2](https://github.com/cdimascio/express-openapi-validator/commit/f35b1f2))
+* chore: increment patch version ([a542ece](https://github.com/cdimascio/express-openapi-validator/commit/a542ece))
+* chore: publish script ([ab392b8](https://github.com/cdimascio/express-openapi-validator/commit/ab392b8))
+* chore: remove docs folder ([1592223](https://github.com/cdimascio/express-openapi-validator/commit/1592223))
+* doc: brief summary ([60f2cf4](https://github.com/cdimascio/express-openapi-validator/commit/60f2cf4))
+
+
+
 ## <small>4.9.2 (2020-12-19)</small>
 
 * chore: add OpenAPIV3.Document return type ([e71e1b9](https://github.com/cdimascio/express-openapi-validator/commit/e71e1b9))
