@@ -98,10 +98,9 @@ export class RequestValidator {
   ): RequestHandler {
     const apiDoc = this.apiDoc;
     const schemaParser = new ParametersSchemaParser(this.ajv, apiDoc);
-    const bodySchemaParser = new BodySchemaParser(this.ajvBody, apiDoc);
     const parameters = schemaParser.parse(path, reqSchema.parameters);
     const securityQueryParam = Security.queryParam(apiDoc, reqSchema);
-    const body = bodySchemaParser.parse(path, reqSchema, contentType);
+    const body = new BodySchemaParser().parse(path, reqSchema, contentType);
     const validator = new Validator(this.apiDoc, parameters, body, {
       general: this.ajv,
       body: this.ajvBody,

@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import * as http from 'http';
 import * as express from 'express';
 
@@ -8,7 +8,6 @@ export function startServer(app, port: number): Promise<http.Server> {
     const server = http.createServer(app);
     app.server = server;
     server.listen(port, () => {
-      console.log(`Listening on port ${port}`);
       resolve(server);
     });
   });
