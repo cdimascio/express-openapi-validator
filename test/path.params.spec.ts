@@ -17,11 +17,14 @@ describe('path params', () => {
       },
       3005,
       (app) => {
-        app.get([`${app.basePath}/users/:id?`, `${app.basePath}/users_alt/:id?`], (req, res) => {
-          res.json({
-            id: req.params.id,
-          });
-        });
+        app.get(
+          [`${app.basePath}/users/:id?`, `${app.basePath}/users_alt/:id?`],
+          (req, res) => {
+            res.json({
+              id: req.params.id,
+            });
+          },
+        );
         app.get(`${app.basePath}/user_lookup\\::name`, (req, res) => {
           res.json({
             id: req.params.name,
@@ -33,7 +36,6 @@ describe('path params', () => {
           });
         });
         app.use((err, req, res, next) => {
-          console.error(err)
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
@@ -42,7 +44,7 @@ describe('path params', () => {
       },
       false,
     );
-    return app
+    return app;
   });
 
   after(() => {
@@ -58,12 +60,12 @@ describe('path params', () => {
       }));
 
   it('should url decode path parameters (path level)', async () =>
-      request(app)
-        .get(`${app.basePath}/users_alt/c%20dimascio`)
-        .expect(200)
-        .then((r) => {
-          expect(r.body.id).to.equal('c dimascio');
-        }));
+    request(app)
+      .get(`${app.basePath}/users_alt/c%20dimascio`)
+      .expect(200)
+      .then((r) => {
+        expect(r.body.id).to.equal('c dimascio');
+      }));
 
   it('should handle path parameter with style=simple', async () =>
     request(app)

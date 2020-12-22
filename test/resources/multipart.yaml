@@ -42,6 +42,7 @@ paths:
       responses:
         "200":
           description: form data
+
   /sample_2:
     post:
       description: upload a photo of the pet
@@ -74,6 +75,7 @@ paths:
       responses:
         "200":
           description: form data
+
   /sample_3:
     post:
       description: upload a photo of the pet
@@ -87,6 +89,39 @@ paths:
       responses:
         "200":
           description: binary
+
+  /sample_4:
+    post:
+      description: upload a photo of the pet
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Image'
+      responses:
+        201:
+          description: Created
+
+  /sample_5:
+    post:
+      description: upload a photo of the pet
+      requestBody:
+        $ref: '#/components/requestBodies/ImageReqBody'
+      responses:
+        201:
+          description: Created
+
+  /sample_6:
+    post:
+      description: upload a photo of the pet
+      requestBody:
+        $ref: '#/components/requestBodies/ImageReqBodyRef'
+      responses:
+        201:
+          description: Created
+          
+  # TODO add test with ImageReqBody ref to Image
+
   /range:
     get:
       parameters:
@@ -113,12 +148,34 @@ paths:
 
 components:
   schemas:
-    NewPhoto:
+    Image:
       type: object
       required:
-        - file
+        - image
       properties:
-        file:
-          description: The photo
+        image:
+          description: The image
           type: string
           format: binary
+
+  requestBodies:
+    ImageReqBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            required:
+              - image
+            properties:
+              image:
+                description: The image
+                type: string
+                format: binary
+
+    ImageReqBodyRef:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/Image'
