@@ -122,7 +122,7 @@ export class ResponseValidator {
     statusCode,
     path,
     accepts, // optional
-  }: ValidateResult): void {
+  }: ValidateResult): {} {
     const status = statusCode ?? 'default';
     const statusXX = status.toString()[0] + 'XX';
     let svalidator;
@@ -147,7 +147,7 @@ export class ResponseValidator {
     if (!contentType) {
       // not contentType inferred, assume valid
       console.warn('no contentType found');
-      return;
+      return body;
     }
 
     const validator = svalidator[contentType];
@@ -155,7 +155,7 @@ export class ResponseValidator {
     if (!validator) {
       // no validator found, assume valid
       console.warn('no validator found');
-      return;
+      return body;
     }
 
     if (body === undefined || body === null) {
@@ -170,12 +170,12 @@ export class ResponseValidator {
       if (!this.canValidateContentType(contentType)) {
         console.warn('Cannot validate content type', contentType);
         // assume valid
-        return;
+        return body;
       }
     } catch (e) {
       // Do nothing. Move on and validate response
     }
-
+    body = JSON.parse(JSON.stringify(body));
     const valid = validator({
       response: body,
     });
@@ -191,6 +191,7 @@ export class ResponseValidator {
         message: message,
       });
     }
+    return body;
   }
 
   /**

@@ -21,15 +21,13 @@ describe(packageJson.name, () => {
     const validators = v._getOrBuildValidator(fakeReq, responses);
 
     try {
-      expect(
-        v._validate({
-          validators,
-          body: { message: 'some error message', code: 400 },
-          statusCode: 400,
-          path: '/some-path',
-          accepts: [],
-        }),
-      ).to.not.exist;
+      v._validate({
+        validators,
+        body: { message: 'some error message', code: 400 },
+        statusCode: 400,
+        path: '/some-path',
+        accepts: [],
+      });
     } catch (e) {
       expect(e).to.not.exist;
     }
