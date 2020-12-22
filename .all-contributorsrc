@@ -419,6 +419,17 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "pilerou",
+      "name": "Pierre Le Roux",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/664865?v=4",
+      "profile": "https://github.com/pilerou",
+      "contributions": [
+        "code",
+        "test",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
