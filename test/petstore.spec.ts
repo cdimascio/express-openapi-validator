@@ -33,10 +33,7 @@ describe('petstore', () => {
   });
 
   it('should return 200', async () =>
-    request(app)
-      .get(`${app.basePath}/pets`)
-      .expect(200)
-      .then((r) => console.log(r.body)));
+    request(app).get(`${app.basePath}/pets`).expect(200));
 });
 
 function petstoreSpec(): OpenAPIV3.Document {

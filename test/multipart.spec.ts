@@ -4,9 +4,8 @@ import * as fs from 'fs';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
-import * as packageJson from '../package.json';
 
-describe(packageJson.name, () => {
+describe('a multipart request', () => {
   let app = null;
   const fileNames = [];
   before(async () => {
@@ -22,7 +21,7 @@ describe(packageJson.name, () => {
         },
       },
       3003,
-      app =>
+      (app) =>
         app.use(
           `${app.basePath}`,
           express
@@ -34,8 +33,7 @@ describe(packageJson.name, () => {
                 metadata: req.body.metadata,
               });
             })
-            .post(`/sample_1`, (req, res) => res.json(req.body))
-            .post(`/sample_3`, (req, res) => res.json(req.body)),
+            .post(`/sample_*`, (req, res) => res.json(req.body)),
         ),
     );
   });
@@ -45,17 +43,39 @@ describe(packageJson.name, () => {
   after(() => {
     (<any>app).server.close();
   });
-  describe(`multipart`, () => {
+
+  describe('that contains $refs', () => {
+    it('should validate a request body with a schemaObject $ref', async () =>
+      request(app)
+        .post(`${app.basePath}/sample_4`)
+        .set('Content-Type', 'multipart/form-data')
+        .attach('image', 'package.json')
+        .expect(200));
+
+    it('should validate a requestBody $ref', async () =>
+      request(app)
+        .post(`${app.basePath}/sample_5`)
+        .set('Content-Type', 'multipart/form-data')
+        .attach('image', 'package.json')
+        .expect(200));
+
+    it('should validate a requestBody $ref that contains a schemaObject $ref', async () =>
+      request(app)
+        .post(`${app.basePath}/sample_6`)
+        .set('Content-Type', 'multipart/form-data')
+        .attach('image', 'package.json')
+        .expect(200));
+  });
+
+  describe('that is malformed or not defined', () => {
     it('should throw 400 when required multipart file field', async () =>
       request(app)
         .post(`${app.basePath}/sample_2`)
         .set('Content-Type', 'multipart/form-data')
         .set('Accept', 'application/json')
         .expect(400)
-        .then(e => {
-          expect(e.body)
-            .has.property('errors')
-            .with.length(1);
+        .then((e) => {
+          expect(e.body).has.property('errors').with.length(1);
           expect(e.body.errors[0])
             .has.property('message')
             .equal('multipart file(s) required');
@@ -69,7 +89,33 @@ describe(packageJson.name, () => {
         .attach('file', 'package.json')
         .expect(400));
 
-    it('should validate application/octet-stream file and metadata', done => {
+    it('should throw 405 get method not allowed', async () =>
+      request(app)
+        .get(`${app.basePath}/sample_2`)
+        .set('Content-Type', 'multipart/form-data')
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .attach('file', 'package.json')
+        .field('metadata', 'some-metadata')
+        .expect(405));
+
+    it('should throw 415 unsupported media type', async () =>
+      request(app)
+        .post(`${app.basePath}/sample_2`)
+        .send({ test: 'test' })
+        .set('Content-Type', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(415)
+        .then((r) => {
+          expect(r.body).has.property('errors').with.length(1);
+          expect(r.body.errors[0])
+            .has.property('message')
+            .equal('unsupported media type application/json');
+        }));
+  });
+
+  describe('that is well formed', () => {
+    it('should validate application/octet-stream file and metadata', (done) => {
       const testImage = `${__dirname}/assets/image.png`;
       const req = request(app)
         .post(`${app.basePath}/sample_3`)
@@ -88,42 +134,13 @@ describe(packageJson.name, () => {
         .attach('file', 'package.json')
         .field('metadata', 'some-metadata')
         .expect(200)
-        .then(r => {
+        .then((r) => {
           const b = r.body;
-          expect(b.files)
-            .to.be.an('array')
-            .with.length(1);
-          expect(b.files[0])
-            .to.have.property('fieldname')
-            .to.equal('file');
+          expect(b.files).to.be.an('array').with.length(1);
+          expect(b.files[0]).to.have.property('fieldname').to.equal('file');
           expect(b.metadata).to.equal('some-metadata');
         });
       expect(fileNames).to.deep.equal(['package.json']);
     });
-    it('should throw 405 get method not allowed', async () =>
-      request(app)
-        .get(`${app.basePath}/sample_2`)
-        .set('Content-Type', 'multipart/form-data')
-        .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
-        .attach('file', 'package.json')
-        .field('metadata', 'some-metadata')
-        .expect(405));
-
-    it('should throw 415 unsupported media type', async () =>
-      request(app)
-        .post(`${app.basePath}/sample_2`)
-        .send({ test: 'test' })
-        .set('Content-Type', 'application/json')
-        .expect('Content-Type', /json/)
-        .expect(415)
-        .then(r => {
-          expect(r.body)
-            .has.property('errors')
-            .with.length(1);
-          expect(r.body.errors[0])
-            .has.property('message')
-            .equal('unsupported media type application/json');
-        }));
   });
 });
