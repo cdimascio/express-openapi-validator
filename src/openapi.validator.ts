@@ -94,16 +94,14 @@ export class OpenApiValidator {
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
     const middlewares: OpenApiRequestHandler[] = [];
     const pContext = spec.then((spec) => {
-      const responseApiDoc = this.options.validateResponses
-        ? cloneDeep(spec.apiDoc)
-        : null;
-      new RequestSchemaPreprocessor(
+      const { apiDocRes } = new RequestSchemaPreprocessor(
         spec.apiDoc,
         this.ajvOpts.preprocessor,
+        !!this.options.validateResponses,
       ).preProcess();
       return {
         context: new OpenApiContext(spec, this.options.ignorePaths),
-        responseApiDoc,
+        responseApiDoc: apiDocRes,
       };
     });
 

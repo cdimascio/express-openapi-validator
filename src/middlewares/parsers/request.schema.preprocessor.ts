@@ -1,8 +1,36 @@
 import { Ajv } from 'ajv';
 import ajv = require('ajv');
+import * as cloneDeep from 'lodash.clonedeep';
 import * as _get from 'lodash.get';
 import { createRequestAjv } from '../../framework/ajv';
 import { OpenAPIV3, BodySchema } from '../../framework/types';
+
+interface TopLevelPathNodes {
+  requestBodies: Root<SchemaObject>[];
+  responses: Root<SchemaObject>[];
+}
+interface TopLevelSchemaNodes extends TopLevelPathNodes {
+  schemas: Root<SchemaObject>[];
+  requestBodies: Root<SchemaObject>[];
+  responses: Root<SchemaObject>[];
+}
+
+class Node<T, P> {
+  public readonly path: string;
+  public readonly parent: P;
+  public readonly schema: T;
+  constructor(parent, schema, path) {
+    this.path = path;
+    this.parent = parent;
+    this.schema = schema;
+  }
+}
+
+class Root<T> extends Node<T, T> {
+  constructor(schema, path) {
+    super(null, schema, path);
+  }
+}
 
 const dateTime = {
   deserialize: (s) => new Date(s),
@@ -33,88 +61,142 @@ const httpMethods = new Set([
 export class RequestSchemaPreprocessor {
   private ajv: Ajv;
   private apiDoc: OpenAPIV3.Document;
-
-  constructor(apiDoc: OpenAPIV3.Document, options: ajv.Options) {
+  private apiDocRes: OpenAPIV3.Document;
+  private responseCopy: boolean;
+  constructor(
+    apiDoc: OpenAPIV3.Document,
+    options: ajv.Options,
+    responseCopy: boolean,
+  ) {
     this.ajv = createRequestAjv(apiDoc, options);
     this.apiDoc = apiDoc;
+    this.responseCopy = responseCopy;
   }
 
   public preProcess() {
-    // collect all component schemas
-    const componentSchemas = this.apiDoc?.components?.schemas ?? [];
-    const schemas = Object.values(componentSchemas);
-    // process paths, and collect all path schemas
-    // e.g. requestBodies, responses, parameters -- TODO response and parameters
-    const r = this.processPaths();
-    schemas.push(...r.requestBodySchemas);
-    this.traverseComponentSchemas(schemas, (parent, schema, opts) =>
+    const componentSchemas = this.gatherComponentSchemaNodes();
+    const r = this.gatherSchemaNodesFromPaths();
+
+    // Now that we've processed paths, clonse the spec
+    this.apiDocRes = this.responseCopy ? cloneDeep(this.apiDoc) : null;
+
+    const schemaNodes = {
+      schemas: componentSchemas,
+      requestBodies: r.requestBodies,
+      responses: r.responses,
+    };
+  
+    // Traverse the schemas
+    this.traverseSchemas(schemaNodes, (parent, schema, opts) =>
       this.schemaVisitor(parent, schema, opts),
     );
+
+    return {
+      apiDoc: this.apiDoc,
+      apiDocRes: this.apiDocRes,
+    };
   }
 
-  private processPaths() {
-    const paths = Object.entries(this.apiDoc.paths);
+  private gatherComponentSchemaNodes(): Root<SchemaObject>[] {
+    const nodes = [];
+    const componentSchemaMap = this.apiDoc?.components?.schemas ?? [];
+    for (const [id, s] of Object.entries(componentSchemaMap)) {
+      const schema = this.resolveSchema<SchemaObject>(s);
+      this.apiDoc.components.schemas[id] = schema;
+      const path = `components.schemas.${id}`;
+      const node = new Root(schema, path);
+      nodes.push(node);
+    }
+    return nodes;
+  }
+
+  private gatherSchemaNodesFromPaths(): TopLevelPathNodes {
     const requestBodySchemas = [];
     const responseSchemas = [];
-    for (const [_, pi] of paths) {
+
+    for (const [p, pi] of Object.entries(this.apiDoc.paths)) {
       const pathItem = this.resolveSchema<OpenAPIV3.PathItemObject>(pi);
       for (const method of Object.keys(pathItem)) {
         if (httpMethods.has(method)) {
           const operation = <OpenAPIV3.OperationObject>pathItem[method];
           // Adds path declared parameters to the schema's parameters list
           this.preprocessPathLevelParameters(method, pathItem);
-          requestBodySchemas.push(...this.extractRequestBodySchemas(operation));
-          responseSchemas.push(...this.extractResponseSchemas(operation));
+          const path = `paths.${p}.${method}`;
+          const node = new Root<OpenAPIV3.OperationObject>(operation, path);
+          const requestBodies = this.extractRequestBodySchemaNodes(node);
+          const responseBodies = this.extractResponseSchemaNodes(node);
+
+          requestBodySchemas.push(...requestBodies);
+          responseSchemas.push(...responseBodies);
         }
       }
     }
     return {
-      requestBodySchemas,
-      responseSchemas,
+      requestBodies: requestBodySchemas,
+      responses: responseSchemas,
     };
   }
 
-  private traverseComponentSchemas(schemas, visit) {
-    const recurse = (parent, dschema, opts?) => {
-      const schema = this.resolveSchema<SchemaObject>(dschema);
-      // TODO check if we revisit nodes, if so mark them
+  private traverseSchemas(nodes: TopLevelSchemaNodes, visit) {
+    const recurse = (parent, node, opts?) => {
+      const schema = this.resolveSchema<SchemaObject>(node.schema);
       // Save the original schema so we can check if it was a $ref
-      opts.originalSchema = dschema;
+      opts.originalSchema = node.schema;
 
-      visit(parent, schema, opts);
+      // TODO mark visited, and skip visited
+      // TODO Visit api docs
+      visit(parent, node, opts);
 
       if (schema.allOf) {
-        schema.allOf.forEach((s) => recurse(schema, s, opts));
+        schema.allOf.forEach((s) => {
+          const child = new Node(node, s, `${node.path}.allOf`);
+          recurse(node, child, opts);
+        });
       } else if (schema.oneOf) {
-        schema.oneOf.forEach((s) => recurse(schema, s, opts));
+        schema.oneOf.forEach((s) => {
+          const child = new Node(node, s, `${node.path}.oneOf`);
+          recurse(node, child, opts);
+        });
       } else if (schema.anyOf) {
-        schema.anyOf.forEach((s) => recurse(schema, s, opts));
-      } else if (schema.properties) {
-        this.processDiscriminator(parent, schema, opts); // TODO visit schema?
-        Object.entries(schema.properties).forEach(([id, dschema]) => {
-          recurse(schema, dschema, { ...opts, id });
+        schema.anyOf.forEach((s) => {
+          const child = new Node(node, s, `${node.path}.anyOf`);
+          recurse(node, child, opts);
+        });
+      } else if (node.schema.properties) {
+        this.processDiscriminator(parent?.schema, node.schema, opts); // TODO visit schema? -- need to update both
+        Object.entries(node.schema.properties).forEach(([id, cschema]) => {
+          const child = new Node(node, cschema, `${node.path}.properties.${id}`);
+          recurse(node, child, { ...opts, id });
         });
       }
     };
-    for (const schema of schemas) {
-      recurse(null, schema, { discriminator: {} });
+
+    for (const node of nodes.schemas) {
+      recurse(null, node, { discriminator: {} });
+    }
+
+    for (const node of nodes.requestBodies) {
+      recurse(null, node, { discriminator: {} });
+    }
+
+    for (const node of nodes.responses) {
+      recurse(null, node, { discriminator: {} });
     }
   }
 
-  private schemaVisitor(parent, schema, opts) {
-    this.registerFormatSerDes(parent, schema);
-    this.handleReadonly(parent, schema, opts);
-    this.processDiscriminator(parent, schema, opts);
+  private schemaVisitor(parent, node, opts) {
+    const pschema = parent?.schema
+    const schema = node.schema;
+    this.registerFormatSerDes(pschema, schema);
+    this.handleReadonly(pschema, schema, opts);
+    this.processDiscriminator(pschema, schema, opts);
   }
 
   private processDiscriminator(parent: Schema, schema: Schema, opts: any = {}) {
     const o = opts.discriminator;
     const schemaObj = <SchemaObject>schema;
     const xOf = schemaObj.oneOf ? 'oneOf' : schemaObj.anyOf ? 'anyOf' : null;
-    // if (xOf && schemaObj?.discriminator?.propertyName && !o.discriminator) {
-    //   const options = schemaObj[xOf].map((refObject) => {
-    //     const option = this.findKey(
-    // const xOf = schemaObj.oneOf ? 'oneOf' : 'anyOf';
+
     if (xOf && schemaObj?.discriminator?.propertyName && !o.discriminator) {
       const options = schemaObj[xOf].flatMap((refObject) => {
         const keys = this.findKeys(
@@ -223,51 +305,49 @@ export class RequestSchemaPreprocessor {
    * extract all requestBodies' schemas from an operation
    * @param op
    */
-  private extractRequestBodySchemas(op: OpenAPIV3.OperationObject): Schema[] {
-    const ref = (<OpenAPIV3.ReferenceObject>op.requestBody)?.['$ref'];
-    let bodySchema: OpenAPIV3.RequestBodyObject;
-    if (ref) {
-      const requestBodies = this.apiDoc.components?.requestBodies;
-      const id = ref.split('/').pop();
-      bodySchema = <OpenAPIV3.RequestBodyObject>requestBodies?.[id];
-      op.requestBody = bodySchema;
-    } else {
-      bodySchema = <OpenAPIV3.RequestBodyObject>op.requestBody;
-    }
+  private extractRequestBodySchemaNodes(
+    node: Root<OpenAPIV3.OperationObject>,
+  ): Root<SchemaObject>[] {
+    const op = node.schema;
+    const bodySchema = this.resolveSchema<OpenAPIV3.RequestBodyObject>(
+      op.requestBody,
+    );
+    op.requestBody = bodySchema;
 
     if (!bodySchema?.content) return [];
 
-    const result: Schema[] = [];
+    const result: Root<SchemaObject>[] = [];
     const contentEntries = Object.entries(bodySchema.content);
-    for (const [_, mediaTypeObject] of contentEntries) {
-      result.push(mediaTypeObject.schema);
+    for (const [type, mediaTypeObject] of contentEntries) {
+      const mediaTypeSchema = this.resolveSchema<SchemaObject>(mediaTypeObject.schema);
+      op.requestBody.content[type].schema = mediaTypeSchema;
+      const path = `${node.path}.requestBody.content.${type}`;
+      result.push(new Root(mediaTypeSchema, path));
     }
     return result;
   }
 
-  private extractResponseSchemas(op: OpenAPIV3.OperationObject): Schema[] {
+  private extractResponseSchemaNodes(
+    node: Root<OpenAPIV3.OperationObject>,
+  ): Root<SchemaObject>[] {
+    const op = node.schema;
     const responses = op.responses;
+
     if (!responses) return;
 
-    const responseEntries = Object.entries(responses);
-    const schemas: OpenAPIV3.SchemaObject[] = [];
-    for (const [statusCode, response] of responseEntries) {
-      const ref = (<OpenAPIV3.ReferenceObject>response)?.['$ref'];
-      let responseSchema: OpenAPIV3.ResponseObject;
-      if (ref) {
-        const componentResponses = this.apiDoc.components?.responses;
-        const refName = ref.split('/').pop();
-        responseSchema = <OpenAPIV3.ResponseObject>(
-          componentResponses?.[refName]
-        );
-        responses[statusCode] = responseSchema;
-      } else {
-        responseSchema = <OpenAPIV3.ResponseObject>response;
-      }
-      if (responseSchema.content) {
-        for (const [_, mediaType] of Object.entries(responseSchema.content)) {
+    const schemas: Root<SchemaObject>[] = [];
+    for (const [statusCode, response] of Object.entries(responses)) {
+      const rschema = this.resolveSchema<OpenAPIV3.ResponseObject>(response);
+      responses[statusCode] = rschema;
+
+      if (rschema.content) {
+        for (const [type, mediaType] of Object.entries(rschema.content)) {
           const schema = this.resolveSchema<SchemaObject>(mediaType?.schema);
-          if (schema) schemas.push(schema);
+          if (schema) {
+            rschema.content[type].schema = schema;
+            const path = `${node.path}.responses.${statusCode}.content.${type}`;
+            schemas.push(new Root(schema, path));
+          }
         }
       }
     }
@@ -298,8 +378,10 @@ export class RequestSchemaPreprocessor {
 
     if (parameters.length === 0) return;
 
-    const v = this.resolveSchema<OpenAPIV3.OperationObject>(pathItem[pathItemKey]);
-    if (v === parameters) return
+    const v = this.resolveSchema<OpenAPIV3.OperationObject>(
+      pathItem[pathItemKey],
+    );
+    if (v === parameters) return;
     v.parameters = v.parameters || [];
 
     for (const param of parameters) {

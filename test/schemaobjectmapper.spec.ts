@@ -50,11 +50,19 @@ describe('schemaobjectmapper', () => {
       },
       3005,
       (app) => {
-        app.get([`${app.basePath}/users/:id?`], (req, res) => {
+        app.get([`${app.basePath}/tests`], (req, res) => {
           let date = new Date("2020-12-20T07:28:19.213Z");
           res.json({
             id: req.params.id,
             creationDateTime : date,
+            creationDate: date
+          });
+        });
+        app.get([`${app.basePath}/users/:id?`], (req, res) => {
+          let date = new Date("2020-12-20T07:28:19.213Z");
+          res.json({
+            id: req.params.id || 10,
+            created_at : date,
             creationDate: date
           });
         });
@@ -75,6 +83,13 @@ describe('schemaobjectmapper', () => {
     app.server.close();
   });
 
+  it('serialize datae object in response', async () =>
+    request(app)
+      .get(`${app.basePath}/tests`)
+      .expect(200)
+      .then((r) => {
+        expect(r.body.ts).to.equal("2020-12-20T07:28:19.213Z");
+      }));
   it('should control BAD id format and throw an error', async () =>
     request(app)
       .get(`${app.basePath}/users/1234`)

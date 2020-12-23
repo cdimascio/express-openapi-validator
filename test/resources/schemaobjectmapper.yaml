@@ -5,6 +5,30 @@ info:
 servers:
   - url: /v1/
 paths:
+  /tests:
+    get:
+      # parameters:
+        # - name: id
+        #   in: path
+        #   required: true
+        #   schema:
+        #     schema:
+        #         type: string
+        #         format: date-time
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created_at:
+                    type: string
+                    format: date-time
+                  id:
+                    type: number
+                    
   /users/{id}:
     get:
       parameters:
