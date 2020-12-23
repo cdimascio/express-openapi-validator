@@ -6,12 +6,11 @@ describe('request body validation coercion', () => {
   let coerceApp = null;
   let nonCoerceApp = null;
 
-  const defineRoutes = app => {
+  const defineRoutes = (app) => {
     app.post(`${app.basePath}/coercion_test`, (req, res) => {
-      res.status(200).send()
-    }
-    )
-  }
+      res.status(200).send();
+    });
+  };
 
   before(async () => {
     // Set up the express app
@@ -20,8 +19,9 @@ describe('request body validation coercion', () => {
       {
         apiSpec,
         validateRequests: {
-          coerceTypes: true
+          coerceTypes: true,
         },
+        unknownFormats: ['phone-number'],
       },
       3005,
       defineRoutes,
@@ -31,6 +31,7 @@ describe('request body validation coercion', () => {
     nonCoerceApp = await createApp(
       {
         apiSpec,
+        unknownFormats: ['phone-number'],
         // not specifying coercion as it should be false by default
       },
       3006,
@@ -50,9 +51,9 @@ describe('request body validation coercion', () => {
       .set('accept', 'application/json')
       .set('content-type', 'application/json')
       .send({
-        aNumberProperty: 4
+        aNumberProperty: 4,
       })
-      .expect(200)
+      .expect(200);
   });
 
   it('should return 200 if coercion is enabled and the type is incorrect but can be coerced', async () => {
@@ -61,9 +62,9 @@ describe('request body validation coercion', () => {
       .set('accept', 'application/json')
       .set('content-type', 'application/json')
       .send({
-        aNumberProperty: '4'
+        aNumberProperty: '4',
       })
-      .expect(200)
+      .expect(200);
   });
 
   it('should return 400 if coercion is enabled and the type is incorrect and cannot be coerced', async () => {
@@ -72,9 +73,9 @@ describe('request body validation coercion', () => {
       .set('accept', 'application/json')
       .set('content-type', 'application/json')
       .send({
-        aNumberProperty: 'this is a string and definitely not a number'
+        aNumberProperty: 'this is a string and definitely not a number',
       })
-      .expect(400)
+      .expect(400);
   });
 
   it('should return 200 if coercion is disabled and the type is correct', async () => {
@@ -83,9 +84,9 @@ describe('request body validation coercion', () => {
       .set('accept', 'application/json')
       .set('content-type', 'application/json')
       .send({
-        aNumberProperty: 4
+        aNumberProperty: 4,
       })
-      .expect(200)
+      .expect(200);
   });
 
   it('should return 400 if coercion is disabled and the type is incorrect', async () => {
@@ -94,8 +95,8 @@ describe('request body validation coercion', () => {
       .set('accept', 'application/json')
       .set('content-type', 'application/json')
       .send({
-        aNumberProperty: '4'
+        aNumberProperty: '4',
       })
-      .expect(400)
+      .expect(400);
   });
 });

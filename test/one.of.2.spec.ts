@@ -2,7 +2,6 @@ import * as path from 'path';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
-import * as packageJson from '../package.json';
 
 describe('one.of.2.spec', () => {
   let app = null;

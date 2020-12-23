@@ -42,7 +42,7 @@ function createAjv(
         compile: (sch) => {
           if (sch) {
             return function validate(data, path, obj, propName) {
-              obj[propName] = sch.deserialize(data);
+              // obj[propName] = sch.deserialize(data);
               return true;
             };
           }
@@ -82,7 +82,9 @@ function createAjv(
         compile: (sch) => {
           if (sch) {
             return function validate(data, path, obj, propName) {
-              obj[propName] = sch.serialize(data);
+              console.log('start', typeof obj[propName], obj[propName])
+              obj[propName] = sch.deserialize(data);
+              console.log('end', typeof obj[propName], obj[propName])
               return true;
             };
           }

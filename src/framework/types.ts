@@ -220,7 +220,7 @@ export namespace OpenAPIV3 {
     items: ReferenceObject | SchemaObject;
   }
 
-  interface NonArraySchemaObject extends BaseSchemaObject {
+  export interface NonArraySchemaObject extends BaseSchemaObject {
     type: NonArraySchemaObjectType;
   }
 
