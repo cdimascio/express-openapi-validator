@@ -1,3 +1,72 @@
+## <small>4.9.5 (2020-12-22)</small>
+
+* fix: #495 inconsistent validation of multipart request body with $ref (#496) ([832f865](https://github.com/cdimascio/express-openapi-validator/commit/832f865)), closes [#495](https://github.com/cdimascio/express-openapi-validator/issues/495) [#496](https://github.com/cdimascio/express-openapi-validator/issues/496) [#495](https://github.com/cdimascio/express-openapi-validator/issues/495)
+* chore: increment patch version ([f35b1f2](https://github.com/cdimascio/express-openapi-validator/commit/f35b1f2))
+* chore: increment patch version ([a542ece](https://github.com/cdimascio/express-openapi-validator/commit/a542ece))
+* chore: publish script ([ab392b8](https://github.com/cdimascio/express-openapi-validator/commit/ab392b8))
+* chore: remove docs folder ([1592223](https://github.com/cdimascio/express-openapi-validator/commit/1592223))
+* doc: brief summary ([60f2cf4](https://github.com/cdimascio/express-openapi-validator/commit/60f2cf4))
+
+
+
+## <small>4.9.5 (2020-12-22)</small>
+
+* fix: #495 inconsistent validation of multipart request body with $ref (#496) ([832f865](https://github.com/cdimascio/express-openapi-validator/commit/832f865)), closes [#495](https://github.com/cdimascio/express-openapi-validator/issues/495) [#496](https://github.com/cdimascio/express-openapi-validator/issues/496) [#495](https://github.com/cdimascio/express-openapi-validator/issues/495)
+* chore: increment patch version ([f35b1f2](https://github.com/cdimascio/express-openapi-validator/commit/f35b1f2))
+* chore: increment patch version ([a542ece](https://github.com/cdimascio/express-openapi-validator/commit/a542ece))
+* chore: publish script ([ab392b8](https://github.com/cdimascio/express-openapi-validator/commit/ab392b8))
+* chore: remove docs folder ([1592223](https://github.com/cdimascio/express-openapi-validator/commit/1592223))
+* doc: brief summary ([60f2cf4](https://github.com/cdimascio/express-openapi-validator/commit/60f2cf4))
+
+
+
+## <small>4.9.2 (2020-12-19)</small>
+
+* chore: add OpenAPIV3.Document return type ([e71e1b9](https://github.com/cdimascio/express-openapi-validator/commit/e71e1b9))
+* chore: cleanup console logs ([5248f39](https://github.com/cdimascio/express-openapi-validator/commit/5248f39))
+* chore: increment minor version ([3a70cde](https://github.com/cdimascio/express-openapi-validator/commit/3a70cde))
+* chore: increment patch version ([d8090d5](https://github.com/cdimascio/express-openapi-validator/commit/d8090d5))
+* chore: increment patch version ([d659037](https://github.com/cdimascio/express-openapi-validator/commit/d659037))
+* chore: update change history ([2ac26fc](https://github.com/cdimascio/express-openapi-validator/commit/2ac26fc))
+* chore: update change log ([816b002](https://github.com/cdimascio/express-openapi-validator/commit/816b002))
+* chore(deps): bump ini from 1.3.5 to 1.3.7 (#483) ([e5a5cea](https://github.com/cdimascio/express-openapi-validator/commit/e5a5cea)), closes [#483](https://github.com/cdimascio/express-openapi-validator/issues/483)
+* chore(deps): bump ini from 1.3.5 to 1.3.8 in /examples/1-standard (#487) ([cf6c12d](https://github.com/cdimascio/express-openapi-validator/commit/cf6c12d)), closes [#487](https://github.com/cdimascio/express-openapi-validator/issues/487)
+* chore(deps): bump ini from 1.3.5 to 1.3.8 in /examples/3-eov-operations (#484) ([baa5cdf](https://github.com/cdimascio/express-openapi-validator/commit/baa5cdf)), closes [#484](https://github.com/cdimascio/express-openapi-validator/issues/484)
+* chore(deps): bump ini from 1.3.5 to 1.3.8 in /examples/6-multi-file-spec (#485) ([24988b8](https://github.com/cdimascio/express-openapi-validator/commit/24988b8)), closes [#485](https://github.com/cdimascio/express-openapi-validator/issues/485)
+* chore(deps): bump ini in /examples/2-standard-multiple-api-specs (#488) ([f0eb42e](https://github.com/cdimascio/express-openapi-validator/commit/f0eb42e)), closes [#488](https://github.com/cdimascio/express-openapi-validator/issues/488)
+* chore(deps): bump ini in /examples/4-eov-operations-babel (#486) ([384ff8c](https://github.com/cdimascio/express-openapi-validator/commit/384ff8c)), closes [#486](https://github.com/cdimascio/express-openapi-validator/issues/486)
+* chore(deps): bump ini in /examples/5-custom-operation-resolver (#489) ([25921fc](https://github.com/cdimascio/express-openapi-validator/commit/25921fc)), closes [#489](https://github.com/cdimascio/express-openapi-validator/issues/489)
+* fix: top-level discriminator using enum  (#494) ([7de0485](https://github.com/cdimascio/express-openapi-validator/commit/7de0485)), closes [#494](https://github.com/cdimascio/express-openapi-validator/issues/494) [#482](https://github.com/cdimascio/express-openapi-validator/issues/482) [#482](https://github.com/cdimascio/express-openapi-validator/issues/482)
+* test: add petstore test ([22db511](https://github.com/cdimascio/express-openapi-validator/commit/22db511))
+* feat: #467 support for URI path params (#491) ([0f7fcda](https://github.com/cdimascio/express-openapi-validator/commit/0f7fcda)), closes [#467](https://github.com/cdimascio/express-openapi-validator/issues/467) [#491](https://github.com/cdimascio/express-openapi-validator/issues/491) [#467](https://github.com/cdimascio/express-openapi-validator/issues/467)
+* Allowing request body to be coerced (#468) ([b640b75](https://github.com/cdimascio/express-openapi-validator/commit/b640b75)), closes [#468](https://github.com/cdimascio/express-openapi-validator/issues/468)
+* Fix typos in readme (#490) ([3e6a26b](https://github.com/cdimascio/express-openapi-validator/commit/3e6a26b)), closes [#490](https://github.com/cdimascio/express-openapi-validator/issues/490)
+* It's value => Its value (#479) ([d7757fa](https://github.com/cdimascio/express-openapi-validator/commit/d7757fa)), closes [#479](https://github.com/cdimascio/express-openapi-validator/issues/479)
+* docs: add sjinks as a contributor (#480) ([59fdf32](https://github.com/cdimascio/express-openapi-validator/commit/59fdf32)), closes [#480](https://github.com/cdimascio/express-openapi-validator/issues/480)
+
+
+
+## <small>4.9.1 (2020-12-19)</small>
+
+* chore: cleanup console logs ([5248f39](https://github.com/cdimascio/express-openapi-validator/commit/5248f39))
+* chore: increment minor version ([3a70cde](https://github.com/cdimascio/express-openapi-validator/commit/3a70cde))
+* chore: increment patch version ([d659037](https://github.com/cdimascio/express-openapi-validator/commit/d659037))
+* chore: update change history ([2ac26fc](https://github.com/cdimascio/express-openapi-validator/commit/2ac26fc))
+* chore(deps): bump ini from 1.3.5 to 1.3.7 (#483) ([e5a5cea](https://github.com/cdimascio/express-openapi-validator/commit/e5a5cea)), closes [#483](https://github.com/cdimascio/express-openapi-validator/issues/483)
+* chore(deps): bump ini from 1.3.5 to 1.3.8 in /examples/1-standard (#487) ([cf6c12d](https://github.com/cdimascio/express-openapi-validator/commit/cf6c12d)), closes [#487](https://github.com/cdimascio/express-openapi-validator/issues/487)
+* chore(deps): bump ini from 1.3.5 to 1.3.8 in /examples/3-eov-operations (#484) ([baa5cdf](https://github.com/cdimascio/express-openapi-validator/commit/baa5cdf)), closes [#484](https://github.com/cdimascio/express-openapi-validator/issues/484)
+* chore(deps): bump ini from 1.3.5 to 1.3.8 in /examples/6-multi-file-spec (#485) ([24988b8](https://github.com/cdimascio/express-openapi-validator/commit/24988b8)), closes [#485](https://github.com/cdimascio/express-openapi-validator/issues/485)
+* chore(deps): bump ini in /examples/2-standard-multiple-api-specs (#488) ([f0eb42e](https://github.com/cdimascio/express-openapi-validator/commit/f0eb42e)), closes [#488](https://github.com/cdimascio/express-openapi-validator/issues/488)
+* chore(deps): bump ini in /examples/4-eov-operations-babel (#486) ([384ff8c](https://github.com/cdimascio/express-openapi-validator/commit/384ff8c)), closes [#486](https://github.com/cdimascio/express-openapi-validator/issues/486)
+* chore(deps): bump ini in /examples/5-custom-operation-resolver (#489) ([25921fc](https://github.com/cdimascio/express-openapi-validator/commit/25921fc)), closes [#489](https://github.com/cdimascio/express-openapi-validator/issues/489)
+* feat: #467 support for URI path params (#491) ([0f7fcda](https://github.com/cdimascio/express-openapi-validator/commit/0f7fcda)), closes [#467](https://github.com/cdimascio/express-openapi-validator/issues/467) [#491](https://github.com/cdimascio/express-openapi-validator/issues/491) [#467](https://github.com/cdimascio/express-openapi-validator/issues/467)
+* Allowing request body to be coerced (#468) ([b640b75](https://github.com/cdimascio/express-openapi-validator/commit/b640b75)), closes [#468](https://github.com/cdimascio/express-openapi-validator/issues/468)
+* Fix typos in readme (#490) ([3e6a26b](https://github.com/cdimascio/express-openapi-validator/commit/3e6a26b)), closes [#490](https://github.com/cdimascio/express-openapi-validator/issues/490)
+* It's value => Its value (#479) ([d7757fa](https://github.com/cdimascio/express-openapi-validator/commit/d7757fa)), closes [#479](https://github.com/cdimascio/express-openapi-validator/issues/479)
+* docs: add sjinks as a contributor (#480) ([59fdf32](https://github.com/cdimascio/express-openapi-validator/commit/59fdf32)), closes [#480](https://github.com/cdimascio/express-openapi-validator/issues/480)
+
+
+
 ## 4.9.0 (2020-12-09)
 
 * chore: increment minor version ([3a70cde](https://github.com/cdimascio/express-openapi-validator/commit/3a70cde))

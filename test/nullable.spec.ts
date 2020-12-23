@@ -98,8 +98,6 @@ describe(packageJson.name, () => {
       .send({ number: null })
       .expect(200)
       .then((r) => {
-        console.log(r.body);
         expect(r.body).to.have.property('number').that.is.null;
-        // console.log(r.body);
       }));
 });

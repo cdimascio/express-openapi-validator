@@ -32,7 +32,6 @@ describe('request body validation coercion', () => {
       {
         apiSpec,
         unknownFormats: ['phone-number'],
-        // not specifying coercion as it should be false by default
       },
       3006,
       defineRoutes,
@@ -45,58 +44,53 @@ describe('request body validation coercion', () => {
     nonCoerceApp.server.close();
   });
 
-  it('should return 200 if coercion is enabled and the type is correct', async () => {
-    return request(coerceApp)
+  it('should return 200 if coercion is enabled and the type is correct', async () =>
+    request(coerceApp)
       .post(`${coerceApp.basePath}/coercion_test`)
       .set('accept', 'application/json')
       .set('content-type', 'application/json')
       .send({
         aNumberProperty: 4,
       })
-      .expect(200);
-  });
+      .expect(200));
 
-  it('should return 200 if coercion is enabled and the type is incorrect but can be coerced', async () => {
-    return request(coerceApp)
+  it('should return 200 if coercion is enabled and the type is incorrect but can be coerced', async () =>
+    request(coerceApp)
       .post(`${coerceApp.basePath}/coercion_test`)
       .set('accept', 'application/json')
       .set('content-type', 'application/json')
       .send({
         aNumberProperty: '4',
       })
-      .expect(200);
-  });
+      .expect(200));
 
-  it('should return 400 if coercion is enabled and the type is incorrect and cannot be coerced', async () => {
-    return request(coerceApp)
+  it('should return 400 if coercion is enabled and the type is incorrect and cannot be coerced', async () =>
+    request(coerceApp)
       .post(`${coerceApp.basePath}/coercion_test`)
       .set('accept', 'application/json')
       .set('content-type', 'application/json')
       .send({
         aNumberProperty: 'this is a string and definitely not a number',
       })
-      .expect(400);
-  });
+      .expect(400));
 
-  it('should return 200 if coercion is disabled and the type is correct', async () => {
-    return request(nonCoerceApp)
+  it('should return 200 if coercion is disabled and the type is correct', async () =>
+    request(nonCoerceApp)
       .post(`${nonCoerceApp.basePath}/coercion_test`)
       .set('accept', 'application/json')
       .set('content-type', 'application/json')
       .send({
         aNumberProperty: 4,
       })
-      .expect(200);
-  });
+      .expect(200));
 
-  it('should return 400 if coercion is disabled and the type is incorrect', async () => {
-    return request(nonCoerceApp)
+  it('should return 400 if coercion is disabled and the type is incorrect', async () =>
+    request(nonCoerceApp)
       .post(`${nonCoerceApp.basePath}/coercion_test`)
       .set('accept', 'application/json')
       .set('content-type', 'application/json')
       .send({
         aNumberProperty: '4',
       })
-      .expect(400);
-  });
+      .expect(400));
 });

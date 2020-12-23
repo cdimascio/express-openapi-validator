@@ -98,10 +98,9 @@ export class RequestValidator {
   ): RequestHandler {
     const apiDoc = this.apiDoc;
     const schemaParser = new ParametersSchemaParser(this.ajv, apiDoc);
-    const bodySchemaParser = new BodySchemaParser(this.ajvBody, apiDoc);
     const parameters = schemaParser.parse(path, reqSchema.parameters);
     const securityQueryParam = Security.queryParam(apiDoc, reqSchema);
-    const body = bodySchemaParser.parse(path, reqSchema, contentType);
+    const body = new BodySchemaParser().parse(path, reqSchema, contentType);
     const validator = new Validator(this.apiDoc, parameters, body, {
       general: this.ajv,
       body: this.ajvBody,
@@ -114,9 +113,22 @@ export class RequestValidator {
 
     return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
       const openapi = <OpenApiRequestMetadata>req.openapi;
-      const hasPathParams = Object.keys(openapi.pathParams).length > 0;
+      const pathParams = Object.keys(openapi.pathParams);
+      const hasPathParams = pathParams.length > 0;
 
       if (hasPathParams) {
+        // handle wildcard path param syntax
+        if (openapi.expressRoute.endsWith('*')) {
+          // if we have an express route /data/:p*, we require a path param, p
+          // if the p param is empty, the user called /p which is not found
+          // if it was found, it would match a different route
+          if (pathParams.filter((p) => openapi.pathParams[p]).length === 0) {
+            throw new NotFound({
+              path: req.path,
+              message: 'not found',
+            });
+          }
+        }
         req.params = openapi.pathParams ?? req.params;
       }
 
@@ -189,13 +201,13 @@ export class RequestValidator {
     if (discriminator) {
       const { options, property, validators } = discriminator;
       const discriminatorValue = req.body[property]; // TODO may not alwasy be in this position
-      if (options.find(o => o.option === discriminatorValue)) {
+      if (options.find((o) => o.option === discriminatorValue)) {
         return validators[discriminatorValue];
       } else {
         throw new BadRequest({
           path: req.path,
           message: `'${property}' should be equal to one of the allowed values: ${options
-            .map(o => o.option)
+            .map((o) => o.option)
             .join(', ')}.`,
         });
       }
@@ -213,7 +225,7 @@ export class RequestValidator {
       keys.push(key);
     }
     const knownQueryParams = new Set(keys);
-    whiteList.forEach(item => knownQueryParams.add(item));
+    whiteList.forEach((item) => knownQueryParams.add(item));
     const queryParams = Object.keys(query);
     const allowedEmpty = schema.allowEmptyValue;
     for (const q of queryParams) {
@@ -324,12 +336,12 @@ class Security {
   ): string[] {
     return usedSecuritySchema && securitySchema
       ? usedSecuritySchema
-          .filter(obj => Object.entries(obj).length !== 0)
-          .map(sec => {
+          .filter((obj) => Object.entries(obj).length !== 0)
+          .map((sec) => {
             const securityKey = Object.keys(sec)[0];
             return <SecuritySchemeObject>securitySchema[securityKey];
           })
-          .filter(sec => sec?.type === 'apiKey' && sec?.in == 'query')
+          .filter((sec) => sec?.type === 'apiKey' && sec?.in == 'query')
           .map((sec: ApiKeySecurityScheme) => sec.name)
       : [];
   }

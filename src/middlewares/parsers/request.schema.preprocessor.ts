@@ -12,6 +12,13 @@ type SchemaObject = OpenAPIV3.SchemaObject;
 type ReferenceObject = OpenAPIV3.ReferenceObject;
 type Schema = ReferenceObject | SchemaObject;
 
+if (!Array.prototype['flatMap']) {
+  // polyfill flatMap
+  // TODO remove me when dropping node 10 support
+  Array.prototype['flatMap'] = function (lambda) {
+    return Array.prototype.concat.apply([], this.map(lambda));
+  };
+}
 const httpMethods = new Set([
   'get',
   'put',
@@ -105,14 +112,20 @@ export class RequestSchemaPreprocessor {
     const o = opts.discriminator;
     const schemaObj = <SchemaObject>schema;
     const xOf = schemaObj.oneOf ? 'oneOf' : schemaObj.anyOf ? 'anyOf' : null;
+    // if (xOf && schemaObj?.discriminator?.propertyName && !o.discriminator) {
+    //   const options = schemaObj[xOf].map((refObject) => {
+    //     const option = this.findKey(
+    // const xOf = schemaObj.oneOf ? 'oneOf' : 'anyOf';
     if (xOf && schemaObj?.discriminator?.propertyName && !o.discriminator) {
-      const options = schemaObj[xOf].map((refObject) => {
-        const option = this.findKey(
+      const options = schemaObj[xOf].flatMap((refObject) => {
+        const keys = this.findKeys(
           schemaObj.discriminator.mapping,
           (value) => value === refObject['$ref'],
         );
         const ref = this.getKeyFromRef(refObject['$ref']);
-        return { option: option || ref, ref };
+        return keys.length > 0
+          ? keys.map((option) => ({ option, ref }))
+          : [{ option: ref, ref }];
       });
       o.options = options;
       o.discriminator = schemaObj.discriminator?.propertyName;
@@ -138,14 +151,19 @@ export class RequestSchemaPreprocessor {
 
       const ancestor: any = parent;
       const ref = opts.originalSchema.$ref;
-      if (!ref) return;
-      const option =
-        this.findKey(
-          ancestor.discriminator?.mapping,
-          (value) => value === ref,
-        ) || this.getKeyFromRef(ref);
 
-      if (option) {
+      if (!ref) return;
+
+      const options = this.findKeys(
+        ancestor.discriminator?.mapping,
+        (value) => value === ref,
+      );
+      const refName = this.getKeyFromRef(ref);
+      if (options.length === 0 && ref) {
+        options.push(refName);
+      }
+
+      if (options.length > 0) {
         const newSchema = JSON.parse(JSON.stringify(schemaObj));
         newSchema.properties = {
           ...(o.properties ?? {}),
@@ -160,9 +178,12 @@ export class RequestSchemaPreprocessor {
           options: o.options,
           property: o.discriminator,
         };
-        ancestor._discriminator.validators[option] = this.ajv.compile(
-          newSchema,
-        );
+
+        for (const option of options) {
+          ancestor._discriminator.validators[option] = this.ajv.compile(
+            newSchema,
+          );
+        }
       }
       //reset data
       o.properties = {};
@@ -211,6 +232,7 @@ export class RequestSchemaPreprocessor {
       const requestBodies = this.apiDoc.components?.requestBodies;
       const id = ref.split('/').pop();
       bodySchema = <OpenAPIV3.RequestBodyObject>requestBodies?.[id];
+      op.requestBody = bodySchema;
     } else {
       bodySchema = <OpenAPIV3.RequestBodyObject>op.requestBody;
     }
@@ -269,17 +291,20 @@ export class RequestSchemaPreprocessor {
     }
   }
 
-  private findKey(object, searchFunc) {
+  private findKeys(object, searchFunc): string[] {
+    const matches = [];
     if (!object) {
-      return;
+      return matches;
     }
     const keys = Object.keys(object);
     for (let i = 0; i < keys.length; i++) {
       if (searchFunc(object[keys[i]])) {
-        return keys[i];
+        matches.push(keys[i]);
       }
     }
+    return matches;
   }
+
   getKeyFromRef(ref) {
     return ref.split('/components/schemas/')[1];
   }

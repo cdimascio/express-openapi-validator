@@ -562,7 +562,7 @@ Determines whether the validator should validate requests.
         responses:
           200:
             description: success
-    ```
+  ```
 
   **coerceTypes:**
 
@@ -825,10 +825,13 @@ Defines a regular expression or function that determines whether a path(s) shoul
 
 The following ignores any path that ends in `/pets` e.g. `/v1/pets`.
 As a regular expression:
+
 ```
 ignorePaths: /.*\/pets$/
 ```
+
 or as a function:
+
 ```
 ignorePaths: (path) => path.endsWith('/pets')
 ```
@@ -1099,6 +1102,31 @@ module.exports = app;
 
 ## FAQ
 
+**Q:** How do I match paths, like those described in RFC-6570?
+
+**A:** OpenAPI 3.0 does not support RFC-6570. That said, we provide a minimalistic mechanism that conforms syntactically to OpenAPI 3 and accomplishes a common use case. For example, matching file paths and storing the matched path in `req.params`
+
+Using the following OpenAPI 3.x defintion
+
+```yaml
+/files/{path}*:
+  get:
+    parameters:
+      - name: path
+        in: path
+        required: true
+        schema:
+          type: string
+```
+
+With the following Express route defintion
+
+```javascript
+  app.get(`/files/:path(*)`, (req, res) => { /* do stuff */ }`
+```
+
+A path like `/files/some/long/path` will pass validation. The Express `req.params.path` property will hold the value `some/long/path`.
+
 **Q:** What happened to the `securityHandlers` property?
 
 **A:** In v3, `securityHandlers` have been replaced by `validateSecurity.handlers`. To use v3 security handlers, move your existing security handlers to the new property. No other change is required. Note that the v2 `securityHandlers` property is supported in v3, but deprecated
@@ -1223,6 +1251,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
