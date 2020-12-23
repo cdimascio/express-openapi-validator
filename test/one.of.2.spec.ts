@@ -2,9 +2,8 @@ import * as path from 'path';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
-import * as packageJson from '../package.json';
 
-describe('one.of.2.spec', () => {
+describe('oneOf with discriminator', () => {
   let app = null;
 
   before(async () => {
@@ -23,7 +22,6 @@ describe('one.of.2.spec', () => {
           res.json(req.body);
         });
         app.use((err, req, res, next) => {
-          console.error(err);
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
@@ -94,7 +92,9 @@ describe('one.of.2.spec', () => {
         .expect(400)
         .then((r) => {
           const e = r.body;
-          expect(e.message).to.include('one of the allowed values: cat, dog');
+          expect(e.message).to.include(
+            'one of the allowed values: cat, kitty, dog, puppy',
+          );
         }));
 
     it('should return 200 for dog', async () =>
@@ -108,6 +108,17 @@ describe('one.of.2.spec', () => {
         })
         .expect(200));
 
+    it('should return 200 for puppy', async () =>
+      request(app)
+        .post(`${app.basePath}/pets`)
+        .set('content-type', 'application/json')
+        .send({
+          pet_type: 'puppy',
+          bark: true,
+          breed: 'Dingo',
+        })
+        .expect(200));
+
     it('should return 200 for cat', async () =>
       request(app)
         .post(`${app.basePath}/pets`)
@@ -115,7 +126,18 @@ describe('one.of.2.spec', () => {
         .send({
           pet_type: 'cat',
           hunts: true,
-          age: 3,
+          age: 1,
+        })
+        .expect(200));
+
+    it('should return 200 for kitty', async () =>
+      request(app)
+        .post(`${app.basePath}/pets`)
+        .set('content-type', 'application/json')
+        .send({
+          pet_type: 'kitty',
+          hunts: true,
+          age: 1,
         })
         .expect(200));
   });

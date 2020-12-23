@@ -97,7 +97,6 @@ describe('ignorePaths as RegExp', () => {
         .expect(404)
         .then(r => {
           const e = r.body;
-          console.log(e)
           // There is no route defined by express, hence the validator verifies parameters,
           // then it fails over to the express error handler. In this case returns empty
           expect(e).to.be.empty;
@@ -197,7 +196,6 @@ describe('ignorePaths as Function', () => {
         .expect(404)
         .then(r => {
           const e = r.body;
-          console.log(e)
           // There is no route defined by express, hence the validator verifies parameters,
           // then it fails over to the express error handler. In this case returns empty
           expect(e).to.be.empty;

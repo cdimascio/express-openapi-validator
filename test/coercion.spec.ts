@@ -35,7 +35,6 @@ describe(packageJson.name, () => {
       })
       .expect(400)
       .then((r) => {
-        console.log(r.body);
         expect(r.body.message).to.contain('is_cat should be boolean');
       }));
 

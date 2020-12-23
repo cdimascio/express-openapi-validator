@@ -1,0 +1,58 @@
+openapi: 3.0.1
+info:
+  title: dummy api
+  version: 1.0.0
+servers:
+- url: /v1
+
+paths:
+  /d1/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: dummy response
+          content: {}
+
+  /d2/{path}(*):
+    get:
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: dummy response
+          content: {}
+
+  /d3/{path}*:
+    get:
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: qp
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: dummy response
+          content: {}
+
+  /d3:
+    get:
+      responses:
+        200:
+          description: dummy response
+          content: {}

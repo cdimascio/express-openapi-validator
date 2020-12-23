@@ -17,16 +17,12 @@ describe('path params', () => {
           {
             name: 'three-digits',
             type: 'number',
-            validate: (v) => {
-              return /^[0-9]{3}$/.test(v.toString())
-            },
+            validate: (v) => /^[0-9]{3}$/.test(v.toString()),
           },
           {
             name: 'three-letters',
             type: 'string',
-            validate: (v) => {
-              return /^[A-Za-z]{3}$/.test(v);
-            },
+            validate: (v) => /^[A-Za-z]{3}$/.test(v),
           },
         ],
       },
@@ -37,7 +33,6 @@ describe('path params', () => {
           res.json([req.query]),
         );
         app.use((err, req, res, next) => {
-          console.error(err);
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
@@ -66,7 +61,6 @@ describe('path params', () => {
       .expect(200)
       .then((r) => {
         const body = r.body;
-        console.log(body);
         expect(body[0]).to.have.property('amount').that.equals(-10.0);
       }));
 
@@ -80,7 +74,6 @@ describe('path params', () => {
       .expect(200)
       .then((r) => {
         const body = r.body;
-        console.log(body);
         expect(body[0]).to.have.property('amount').that.equals(0.0);
       }));
 
@@ -94,7 +87,6 @@ describe('path params', () => {
       .expect(200)
       .then((r) => {
         const body = r.body;
-        console.log(body);
         expect(body[0]).to.have.property('amount').that.equals(10.0);
       }));
 
