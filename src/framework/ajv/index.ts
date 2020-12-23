@@ -36,20 +36,20 @@ function createAjv(
   ajv.removeKeyword('const');
 
   if (request) {
-    if (options.schemaObjectMapper) {
-      ajv.addKeyword('schemaObjectFunctions', {
-        modifying: true,
-        compile: (sch) => {
-          if (sch) {
-            return function validate(data, path, obj, propName) {
-              // obj[propName] = sch.deserialize(data);
-              return true;
-            };
-          }
-          return () => true;
-        },
-      });
-    }
+    // if (options.schemaObjectMapper) {
+    ajv.addKeyword('schemaObjectFunctions', {
+      modifying: true,
+      compile: (sch) => {
+        if (sch) {
+          return function validate(data, path, obj, propName) {
+            // obj[propName] = sch.deserialize(data);
+            return true;
+          };
+        }
+        return () => true;
+      },
+    });
+    // }
     ajv.removeKeyword('readOnly');
     ajv.addKeyword('readOnly', {
       modifying: true,
@@ -76,22 +76,22 @@ function createAjv(
     });
   } else {
     // response
-    if (options.schemaObjectMapper) {
-      ajv.addKeyword('schemaObjectFunctions', {
-        modifying: true,
-        compile: (sch) => {
-          if (sch) {
-            return function validate(data, path, obj, propName) {
-              console.log('start', typeof obj[propName], obj[propName])
-              obj[propName] = sch.deserialize(data);
-              console.log('end', typeof obj[propName], obj[propName])
-              return true;
-            };
-          }
-          return () => true;
-        },
-      });
-    }
+    // if (options.schemaObjectMapper) {
+    ajv.addKeyword('schemaObjectFunctions', {
+      modifying: true,
+      compile: (sch) => {
+        if (sch) {
+          return function validate(data, path, obj, propName) {
+            console.log('start', typeof obj[propName], obj[propName]);
+            obj[propName] = sch.deserialize(data);
+            console.log('end', typeof obj[propName], obj[propName]);
+            return true;
+          };
+        }
+        return () => true;
+      },
+    });
+    // }
     ajv.removeKeyword('writeOnly');
     ajv.addKeyword('writeOnly', {
       modifying: true,
@@ -119,21 +119,21 @@ function createAjv(
 
   if (openApiSpec.components?.schemas) {
     Object.entries(openApiSpec.components.schemas).forEach(([id, schema]) => {
-      if (options.schemaObjectMapper && options.schemaObjectMapper[id]) {
-        if (request) {
-          // On resquest, we transform data to object after other rules validation
-          schema.schemaObjectFunctions = options.schemaObjectMapper[id];
-          schema.componentId = `#/components/schemas/${id}`;
-        } else {
-          // On response, we must transform the object to allowed type.
-          // No data validation. It must be done in schemaObjectFunctions serializeResponseComponent.
-          openApiSpec.components.schemas[id] = {
-            type: 'object',
-            schemaObjectFunctions: options.schemaObjectMapper[id],
-            componentId: `#/components/schemas/${id}`,
-          };
-        }
-      }
+      // if (options.schemaObjectMapper && options.schemaObjectMapper[id]) {
+      //   if (request) {
+      //     // On resquest, we transform data to object after other rules validation
+      //     schema.schemaObjectFunctions = options.schemaObjectMapper[id];
+      //     schema.componentId = `#/components/schemas/${id}`;
+      //   } else {
+      //     // On response, we must transform the object to allowed type.
+      //     // No data validation. It must be done in schemaObjectFunctions serializeResponseComponent.
+      //     openApiSpec.components.schemas[id] = {
+      //       type: 'object',
+      //       schemaObjectFunctions: options.schemaObjectMapper[id],
+      //       componentId: `#/components/schemas/${id}`,
+      //     };
+      //   }
+      // }
       ajv.addSchema(
         openApiSpec.components.schemas[id],
         `#/components/schemas/${id}`,

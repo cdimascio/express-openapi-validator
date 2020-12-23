@@ -17,7 +17,7 @@ import {
   ValidateSecurityOpts,
   OpenAPIV3,
   RequestValidatorOptions,
-  Options
+  Options,
 } from './framework/types';
 import { defaultResolver } from './resolvers';
 import { OperationHandlerOptions } from './framework/types';
@@ -72,14 +72,14 @@ export class OpenApiValidator {
       options.validateResponses = {
         removeAdditional: false,
         coerceTypes: false,
-        onError: null
+        onError: null,
       };
     }
 
     if (options.validateRequests === true) {
       options.validateRequests = {
         allowUnknownQueryParameters: false,
-        coerceTypes: false
+        coerceTypes: false,
       };
     }
 
@@ -101,7 +101,6 @@ export class OpenApiValidator {
         spec.apiDoc,
         this.ajvOpts.preprocessor,
       ).preProcess();
-
       return {
         context: new OpenApiContext(spec, this.options.ignorePaths),
         responseApiDoc,
@@ -276,7 +275,7 @@ export class OpenApiValidator {
       apiDoc,
       this.ajvOpts.response,
       // This has already been converted from boolean if required
-      this.options.validateResponses as ValidateResponseOpts
+      this.options.validateResponses as ValidateResponseOpts,
     ).validate();
   }
 
@@ -388,7 +387,7 @@ class AjvOptions {
     return {
       ...this.baseOptions(),
       allowUnknownQueryParameters,
-      coerceTypes
+      coerceTypes,
     };
   }
 
@@ -397,7 +396,12 @@ class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const { coerceTypes, unknownFormats, validateFormats, schemaObjectMapper } = this.options;
+    const {
+      coerceTypes,
+      unknownFormats,
+      validateFormats,
+      schemaObjectMapper,
+    } = this.options;
     return {
       nullable: true,
       coerceTypes,

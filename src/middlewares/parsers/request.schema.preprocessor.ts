@@ -1,5 +1,6 @@
 import { Ajv } from 'ajv';
 import ajv = require('ajv');
+import * as _get from 'lodash.get';
 import { createRequestAjv } from '../../framework/ajv';
 import { OpenAPIV3, BodySchema } from '../../framework/types';
 
@@ -54,33 +55,31 @@ export class RequestSchemaPreprocessor {
   private processPaths() {
     const paths = Object.entries(this.apiDoc.paths);
     const requestBodySchemas = [];
-    for (const [path, pi] of paths) {
-      const pathItem = pi.$ref
-        ? <OpenAPIV3.PathItemObject>this.ajv.getSchema(pi.$ref).schema
-        : pi;
+    const responseSchemas = [];
+    for (const [_, pi] of paths) {
+      const pathItem = this.resolveSchema<OpenAPIV3.PathItemObject>(pi);
       for (const method of Object.keys(pathItem)) {
         if (httpMethods.has(method)) {
           const operation = <OpenAPIV3.OperationObject>pathItem[method];
           // Adds path declared parameters to the schema's parameters list
           this.preprocessPathLevelParameters(method, pathItem);
           requestBodySchemas.push(...this.extractRequestBodySchemas(operation));
+          responseSchemas.push(...this.extractResponseSchemas(operation));
         }
       }
     }
     return {
       requestBodySchemas,
+      responseSchemas,
     };
   }
 
   private traverseComponentSchemas(schemas, visit) {
     const recurse = (parent, dschema, opts?) => {
-      const schema = dschema.hasOwnProperty('$ref')
-        ? <SchemaObject>this.ajv.getSchema(dschema['$ref'])?.schema
-        : <SchemaObject>dschema;
-
+      const schema = this.resolveSchema<SchemaObject>(dschema);
       // TODO check if we revisit nodes, if so mark them
       // Save the original schema so we can check if it was a $ref
-      opts.originalSchema = dschema; 
+      opts.originalSchema = dschema;
 
       visit(parent, schema, opts);
 
@@ -191,7 +190,6 @@ export class RequestSchemaPreprocessor {
     }
   }
 
- 
   private registerFormatSerDes(_: string, schema: OpenAPIV3.SchemaObject) {
     if (schema.type === 'string' && !!schema.format) {
       switch (schema.format) {
@@ -247,6 +245,46 @@ export class RequestSchemaPreprocessor {
     return result;
   }
 
+  private extractResponseSchemas(op: OpenAPIV3.OperationObject): Schema[] {
+    const responses = op.responses;
+    if (!responses) return;
+
+    const responseEntries = Object.entries(responses);
+    const schemas: OpenAPIV3.SchemaObject[] = [];
+    for (const [statusCode, response] of responseEntries) {
+      const ref = (<OpenAPIV3.ReferenceObject>response)?.['$ref'];
+      let responseSchema: OpenAPIV3.ResponseObject;
+      if (ref) {
+        const componentResponses = this.apiDoc.components?.responses;
+        const refName = ref.split('/').pop();
+        responseSchema = <OpenAPIV3.ResponseObject>(
+          componentResponses?.[refName]
+        );
+        responses[statusCode] = responseSchema;
+      } else {
+        responseSchema = <OpenAPIV3.ResponseObject>response;
+      }
+      if (responseSchema.content) {
+        for (const [_, mediaType] of Object.entries(responseSchema.content)) {
+          const schema = this.resolveSchema<SchemaObject>(mediaType?.schema);
+          if (schema) schemas.push(schema);
+        }
+      }
+    }
+    return schemas;
+  }
+
+  private resolveSchema<T>(schema): T {
+    if (!schema) return null;
+    const ref = schema?.['$ref'];
+    let res = (ref ? this.ajv.getSchema(ref)?.schema : schema) as T;
+    if (ref && !res) {
+      const path = ref.split('/').join('.');
+      const p = path.substring(path.indexOf('.') + 1);
+      res = _get(this.apiDoc, p);
+    }
+    return res;
+  }
   /**
    * add path level parameters to the schema's parameters list
    * @param pathItemKey
@@ -260,12 +298,8 @@ export class RequestSchemaPreprocessor {
 
     if (parameters.length === 0) return;
 
-    let v = pathItem[pathItemKey];
-    if (v === parameters) return;
-    const ref = v?.parameters?.$ref;
-
-    const op = ref && this.ajv.getSchema(ref)?.schema;
-    if (op) v = op;
+    const v = this.resolveSchema<OpenAPIV3.OperationObject>(pathItem[pathItemKey]);
+    if (v === parameters) return
     v.parameters = v.parameters || [];
 
     for (const param of parameters) {
@@ -274,10 +308,7 @@ export class RequestSchemaPreprocessor {
   }
 
   private traverse(schema: Schema, f: (p, s) => void) {
-    const schemaObj = schema.hasOwnProperty('$ref')
-      ? <SchemaObject>this.ajv.getSchema(schema['$ref'])?.schema
-      : <SchemaObject>schema;
-
+    const schemaObj = this.resolveSchema<SchemaObject>(schema);
     if (schemaObj.allOf) {
       schemaObj.allOf.forEach((s) => this.traverse(s, f));
     } else if (schemaObj.oneOf) {
