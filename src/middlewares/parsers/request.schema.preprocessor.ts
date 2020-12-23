@@ -5,6 +5,10 @@ import * as _get from 'lodash.get';
 import { createRequestAjv } from '../../framework/ajv';
 import { OpenAPIV3, BodySchema } from '../../framework/types';
 
+interface TraverseOpts {
+  req: { discriminator: object };
+  res: { discriminator: object };
+}
 interface TopLevelPathNodes {
   requestBodies: Root<SchemaObject>[];
   responses: Root<SchemaObject>[];
@@ -25,6 +29,7 @@ class Node<T, P> {
     this.schema = schema;
   }
 }
+type SchemaObjectNode = Node<SchemaObject, SchemaObject>;
 
 class Root<T> extends Node<T, T> {
   constructor(schema, path) {
@@ -85,7 +90,7 @@ export class RequestSchemaPreprocessor {
       requestBodies: r.requestBodies,
       responses: r.responses,
     };
-  
+
     // Traverse the schemas
     this.traverseSchemas(schemaNodes, (parent, schema, opts) =>
       this.schemaVisitor(parent, schema, opts),
@@ -137,11 +142,18 @@ export class RequestSchemaPreprocessor {
     };
   }
 
+  /**
+   * Traverse the schema starting at each node in nodes
+   * @param nodes the nodes to traverse
+   * @param visit a function to invoke per node
+   */
   private traverseSchemas(nodes: TopLevelSchemaNodes, visit) {
-    const recurse = (parent, node, opts?) => {
+    const recurse = (parent, node, opts: TraverseOpts) => {
       const schema = this.resolveSchema<SchemaObject>(node.schema);
+
       // Save the original schema so we can check if it was a $ref
-      opts.originalSchema = node.schema;
+      (<any>opts).req.originalSchema = node.schema;
+      (<any>opts).res.originalSchema = node.schema;
 
       // TODO mark visited, and skip visited
       // TODO Visit api docs
@@ -163,33 +175,53 @@ export class RequestSchemaPreprocessor {
           recurse(node, child, opts);
         });
       } else if (node.schema.properties) {
-        this.processDiscriminator(parent?.schema, node.schema, opts); // TODO visit schema? -- need to update both
         Object.entries(node.schema.properties).forEach(([id, cschema]) => {
-          const child = new Node(node, cschema, `${node.path}.properties.${id}`);
-          recurse(node, child, { ...opts, id });
+          const child = new Node(
+            node,
+            cschema,
+            `${node.path}.properties.${id}`,
+          );
+          recurse(node, child, opts);
         });
       }
     };
 
+    const initOpts = (): TraverseOpts => ({
+      req: { discriminator: {} },
+      res: { discriminator: {} },
+    });
+
     for (const node of nodes.schemas) {
-      recurse(null, node, { discriminator: {} });
+      recurse(null, node, initOpts());
     }
 
     for (const node of nodes.requestBodies) {
-      recurse(null, node, { discriminator: {} });
+      recurse(null, node, initOpts());
     }
 
     for (const node of nodes.responses) {
-      recurse(null, node, { discriminator: {} });
+      recurse(null, node, initOpts());
     }
   }
 
-  private schemaVisitor(parent, node, opts) {
-    const pschema = parent?.schema
-    const schema = node.schema;
-    this.registerFormatSerDes(pschema, schema);
-    this.handleReadonly(pschema, schema, opts);
-    this.processDiscriminator(pschema, schema, opts);
+  private schemaVisitor(
+    parent: SchemaObjectNode,
+    node: SchemaObjectNode,
+    opts,
+  ) {
+    const pschemas = [parent?.schema];
+    const nschemas = [node.schema];
+
+    // visit the node in both the request and response schema
+    for (let i = 0; i < nschemas.length; i++) {
+      const pschema = pschemas[i];
+      const nschema = nschemas[i];
+      const options = i === 0 ? opts.req : opts.res;
+      options.path = node.path;
+      this.registerFormatSerDes(pschema, nschema);
+      this.handleReadonly(pschema, nschema, options);
+      this.processDiscriminator(pschema, nschema, options);
+    }
   }
 
   private processDiscriminator(parent: Schema, schema: Schema, opts: any = {}) {
@@ -254,6 +286,7 @@ export class RequestSchemaPreprocessor {
         if (newSchema.required.length === 0) {
           delete newSchema.required;
         }
+
         ancestor._discriminator ??= {
           validators: {},
           options: o.options,
@@ -272,7 +305,7 @@ export class RequestSchemaPreprocessor {
     }
   }
 
-  private registerFormatSerDes(_: string, schema: OpenAPIV3.SchemaObject) {
+  private registerFormatSerDes(_: SchemaObject, schema: SchemaObject) {
     if (schema.type === 'string' && !!schema.format) {
       switch (schema.format) {
         case 'date-time':
@@ -289,7 +322,8 @@ export class RequestSchemaPreprocessor {
     opts,
   ) {
     const required = parent?.required ?? [];
-    const index = required.indexOf(opts?.id);
+    const prop = opts?.path?.split('.')?.pop();
+    const index = required.indexOf(prop);
     if (schema.readOnly && index > -1) {
       // remove required if readOnly
       parent.required = required
@@ -319,7 +353,9 @@ export class RequestSchemaPreprocessor {
     const result: Root<SchemaObject>[] = [];
     const contentEntries = Object.entries(bodySchema.content);
     for (const [type, mediaTypeObject] of contentEntries) {
-      const mediaTypeSchema = this.resolveSchema<SchemaObject>(mediaTypeObject.schema);
+      const mediaTypeSchema = this.resolveSchema<SchemaObject>(
+        mediaTypeObject.schema,
+      );
       op.requestBody.content[type].schema = mediaTypeSchema;
       const path = `${node.path}.requestBody.content.${type}`;
       result.push(new Root(mediaTypeSchema, path));
