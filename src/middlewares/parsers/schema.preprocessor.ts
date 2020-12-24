@@ -450,21 +450,6 @@ export class RequestSchemaPreprocessor {
     }
   }
 
-  // private traverse(schema: Schema, f: (p, s) => void) {
-  //   const schemaObj = this.resolveSchema<SchemaObject>(schema);
-  //   if (schemaObj.allOf) {
-  //     schemaObj.allOf.forEach((s) => this.traverse(s, f));
-  //   } else if (schemaObj.oneOf) {
-  //     schemaObj.oneOf.forEach((s) => this.traverse(s, f));
-  //   } else if (schemaObj.anyOf) {
-  //     schemaObj.anyOf.forEach((s) => this.traverse(s, f));
-  //   } else if (schemaObj.properties) {
-  //     Object.keys(schemaObj.properties).forEach((prop) => {
-  //       f(prop, schemaObj);
-  //     });
-  //   }
-  // }
-
   private findKeys(object, searchFunc): string[] {
     const matches = [];
     if (!object) {

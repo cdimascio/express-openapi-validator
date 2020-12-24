@@ -21,7 +21,7 @@ import {
 } from './framework/types';
 import { defaultResolver } from './resolvers';
 import { OperationHandlerOptions } from './framework/types';
-import { RequestSchemaPreprocessor } from './middlewares/parsers/request.schema.preprocessor';
+import { RequestSchemaPreprocessor } from './middlewares/parsers/schema.preprocessor';
 
 export {
   OpenApiValidatorOpts,
