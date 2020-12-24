@@ -495,8 +495,7 @@ OpenApiValidator.middleware({
   fileUploader: { ... } | true | false,
   $refParser: {
     mode: 'bundle'
-  }, 
-  schemaObjectMapper: { ... }
+  }
 });
 ```
 
@@ -622,57 +621,6 @@ Determines whether the validator should validate responses. Also accepts respons
     }
   }
   ```
-  
-
-### ▪️ schemaObjectMapper (optional)
-Maps specified schema objects to custom `deserialize` and `serialize` functions. Example use cases include:
-
-  - automatically convert a `string` to/from a `Date`
-  - automatically convert a `string` to/from a MongoDb `ObjectId` 
-- ...
-
-The `schemaObjectMapper` is an object. Each of its keys must match the name of a declared Schema Object. The value of each key must contain a `deserialize` and `serialize` function
-
-- `deserialize` - a custom function that converts a string value (provided in a request) to an in-memory representation. For example, one might define `deserialize` to convert the string `2020-12-12` to a `Date`.
-
-- `serialize` - a custom function that converts an in-memory representation to a string (sent in the response). For example, one might define `serialize` to convert the object `new Date('2020-12-20')` to a string, `2020-12-20T00:00:00.000Z`.
-
-For example,
-
-```javascript
-    schemaObjectMapper: {
-      'ObjectId': {
-        deserialize: (o) => new ObjectID(o),
-        serialize: (o) => o.toString(),
-      },
-      'Date': {
-        deserialize: (o) => new Date(o),
-        serialize: (o) => o.toISOString().slice(0, 10),
-      },
-      'DateTime': {
-        deserialize: (o) => new Date(o),
-        serialize: (o) => o.toISOString(),
-      }
-    }
-```
-
-Each 'schema object' mapping key must be declared in `components.schemas`. 
-
-```yaml
-components:
-  schemas:
-    ObjectId:
-      type: string
-      pattern: '^[0-9a-fA-F]{24}$'
-    Date:
-      type: string
-      format: date
-    DateTime:
-      type: string
-      format: date-time
-```
-See a complete example [here](examples/7-schema-object-mapper).
-
 ### ▪️ validateSecurity (optional)
 
 Determines whether the validator should validate securities e.g. apikey, basic, oauth2, openid, etc
