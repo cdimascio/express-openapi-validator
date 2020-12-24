@@ -80,7 +80,7 @@ describe('schemaobjectmapper', () => {
     app.server.close();
   });
 
-  it.only('serialize datae object in response', async () =>
+  it('serialize datae object in response', async () =>
     request(app)
       .get(`${app.basePath}/tests`)
       .expect(200)

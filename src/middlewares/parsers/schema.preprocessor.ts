@@ -3,7 +3,7 @@ import ajv = require('ajv');
 import * as cloneDeep from 'lodash.clonedeep';
 import * as _get from 'lodash.get';
 import { createRequestAjv } from '../../framework/ajv';
-import { OpenAPIV3, BodySchema } from '../../framework/types';
+import { OpenAPIV3, BodySchema, SchemaObjectFunctions } from '../../framework/types';
 
 interface TraversalStates {
   req: TraversalState;
@@ -44,13 +44,15 @@ class Root<T> extends Node<T, T> {
   }
 }
 
-const dateTime = {
+const dateTime: SchemaObjectFunctions = {
+  deserialize: (s) => {},
   serialize: (d) => {
     return d.toISOString();
   },
 };
 
-const fullDate = {
+const fullDate: SchemaObjectFunctions = {
+  deserialize: (s) => {},
   serialize: (d) => {
     return d.toISOString();
   },
