@@ -5,10 +5,17 @@ import * as _get from 'lodash.get';
 import { createRequestAjv } from '../../framework/ajv';
 import { OpenAPIV3, BodySchema } from '../../framework/types';
 
-interface TraverseOpts {
-  req: { discriminator: object };
-  res: { discriminator: object };
+interface TraversalStates {
+  req: TraversalState;
+  res: TraversalState;
 }
+
+interface TraversalState {
+  discriminator: object;
+  kind: 'req' | 'res';
+  path: string[];
+}
+
 interface TopLevelPathNodes {
   requestBodies: Root<SchemaObject>[];
   responses: Root<SchemaObject>[];
@@ -20,10 +27,10 @@ interface TopLevelSchemaNodes extends TopLevelPathNodes {
 }
 
 class Node<T, P> {
-  public readonly path: string;
+  public readonly path: string[];
   public readonly parent: P;
   public readonly schema: T;
-  constructor(parent, schema, path) {
+  constructor(parent: P, schema: T, path: string[]) {
     this.path = path;
     this.parent = parent;
     this.schema = schema;
@@ -32,7 +39,7 @@ class Node<T, P> {
 type SchemaObjectNode = Node<SchemaObject, SchemaObject>;
 
 class Root<T> extends Node<T, T> {
-  constructor(schema, path) {
+  constructor(schema: T, path: string[]) {
     super(null, schema, path);
   }
 }
@@ -108,7 +115,7 @@ export class RequestSchemaPreprocessor {
     for (const [id, s] of Object.entries(componentSchemaMap)) {
       const schema = this.resolveSchema<SchemaObject>(s);
       this.apiDoc.components.schemas[id] = schema;
-      const path = `components.schemas.${id}`;
+      const path = ['components', 'schemas', id];
       const node = new Root(schema, path);
       nodes.push(node);
     }
@@ -126,7 +133,7 @@ export class RequestSchemaPreprocessor {
           const operation = <OpenAPIV3.OperationObject>pathItem[method];
           // Adds path declared parameters to the schema's parameters list
           this.preprocessPathLevelParameters(method, pathItem);
-          const path = `paths.${p}.${method}`;
+          const path = ['paths', p, method];
           const node = new Root<OpenAPIV3.OperationObject>(operation, path);
           const requestBodies = this.extractRequestBodySchemaNodes(node);
           const responseBodies = this.extractResponseSchemaNodes(node);
@@ -148,7 +155,7 @@ export class RequestSchemaPreprocessor {
    * @param visit a function to invoke per node
    */
   private traverseSchemas(nodes: TopLevelSchemaNodes, visit) {
-    const recurse = (parent, node, opts: TraverseOpts) => {
+    const recurse = (parent, node, opts: TraversalStates) => {
       const schema = this.resolveSchema<SchemaObject>(node.schema);
 
       // Save the original schema so we can check if it was a $ref
@@ -160,35 +167,32 @@ export class RequestSchemaPreprocessor {
       visit(parent, node, opts);
 
       if (schema.allOf) {
-        schema.allOf.forEach((s) => {
-          const child = new Node(node, s, `${node.path}.allOf`);
+        schema.allOf.forEach((s, i) => {
+          const child = new Node(node, s, [...node.path, 'allOf', i + '']);
           recurse(node, child, opts);
         });
       } else if (schema.oneOf) {
-        schema.oneOf.forEach((s) => {
-          const child = new Node(node, s, `${node.path}.oneOf`);
+        schema.oneOf.forEach((s, i) => {
+          const child = new Node(node, s, [...node.path, 'oneOf', i + '']);
           recurse(node, child, opts);
         });
       } else if (schema.anyOf) {
-        schema.anyOf.forEach((s) => {
-          const child = new Node(node, s, `${node.path}.anyOf`);
+        schema.anyOf.forEach((s, i) => {
+          const child = new Node(node, s, [...node.path, 'anyOf', i + '']);
           recurse(node, child, opts);
         });
       } else if (node.schema.properties) {
         Object.entries(node.schema.properties).forEach(([id, cschema]) => {
-          const child = new Node(
-            node,
-            cschema,
-            `${node.path}.properties.${id}`,
-          );
+          const path = [...node.path, 'properties', id];
+          const child = new Node(node, cschema, path);
           recurse(node, child, opts);
         });
       }
     };
 
-    const initOpts = (): TraverseOpts => ({
-      req: { discriminator: {} },
-      res: { discriminator: {} },
+    const initOpts = (): TraversalStates => ({
+      req: { discriminator: {}, kind: 'req', path: [] },
+      res: { discriminator: {}, kind: 'res', path: [] },
     });
 
     for (const node of nodes.schemas) {
@@ -207,18 +211,27 @@ export class RequestSchemaPreprocessor {
   private schemaVisitor(
     parent: SchemaObjectNode,
     node: SchemaObjectNode,
-    opts,
+    opts: TraversalStates,
   ) {
     const pschemas = [parent?.schema];
     const nschemas = [node.schema];
 
+    if (this.apiDocRes) {
+      const p = _get(this.apiDocRes, parent?.path);
+      const n = _get(this.apiDocRes, node?.path);
+      pschemas.push(p);
+      nschemas.push(n);
+    }
+
     // visit the node in both the request and response schema
     for (let i = 0; i < nschemas.length; i++) {
+      const kind = i === 0 ? 'req' : 'res';
       const pschema = pschemas[i];
       const nschema = nschemas[i];
-      const options = i === 0 ? opts.req : opts.res;
+      const options = opts[kind];
       options.path = node.path;
-      this.registerFormatSerDes(pschema, nschema);
+
+      this.registerFormatSerDes(pschema, nschema, options);
       this.handleReadonly(pschema, nschema, options);
       this.processDiscriminator(pschema, nschema, options);
     }
@@ -305,7 +318,11 @@ export class RequestSchemaPreprocessor {
     }
   }
 
-  private registerFormatSerDes(_: SchemaObject, schema: SchemaObject) {
+  private registerFormatSerDes(
+    _: SchemaObject,
+    schema: SchemaObject,
+    state: TraversalState,
+  ) {
     if (schema.type === 'string' && !!schema.format) {
       switch (schema.format) {
         case 'date-time':
@@ -321,8 +338,10 @@ export class RequestSchemaPreprocessor {
     schema: OpenAPIV3.SchemaObject,
     opts,
   ) {
+    if (opts.kind === 'res') return;
+
     const required = parent?.required ?? [];
-    const prop = opts?.path?.split('.')?.pop();
+    const prop = opts?.path?.[opts?.path?.length - 1];
     const index = required.indexOf(prop);
     if (schema.readOnly && index > -1) {
       // remove required if readOnly
@@ -357,7 +376,7 @@ export class RequestSchemaPreprocessor {
         mediaTypeObject.schema,
       );
       op.requestBody.content[type].schema = mediaTypeSchema;
-      const path = `${node.path}.requestBody.content.${type}`;
+      const path = [...node.path, 'requestBody', 'content', type, 'schema'];
       result.push(new Root(mediaTypeSchema, path));
     }
     return result;
@@ -381,7 +400,14 @@ export class RequestSchemaPreprocessor {
           const schema = this.resolveSchema<SchemaObject>(mediaType?.schema);
           if (schema) {
             rschema.content[type].schema = schema;
-            const path = `${node.path}.responses.${statusCode}.content.${type}`;
+            const path = [
+              ...node.path,
+              'responses',
+              statusCode,
+              'content',
+              type,
+              'schema',
+            ];
             schemas.push(new Root(schema, path));
           }
         }
@@ -425,20 +451,20 @@ export class RequestSchemaPreprocessor {
     }
   }
 
-  private traverse(schema: Schema, f: (p, s) => void) {
-    const schemaObj = this.resolveSchema<SchemaObject>(schema);
-    if (schemaObj.allOf) {
-      schemaObj.allOf.forEach((s) => this.traverse(s, f));
-    } else if (schemaObj.oneOf) {
-      schemaObj.oneOf.forEach((s) => this.traverse(s, f));
-    } else if (schemaObj.anyOf) {
-      schemaObj.anyOf.forEach((s) => this.traverse(s, f));
-    } else if (schemaObj.properties) {
-      Object.keys(schemaObj.properties).forEach((prop) => {
-        f(prop, schemaObj);
-      });
-    }
-  }
+  // private traverse(schema: Schema, f: (p, s) => void) {
+  //   const schemaObj = this.resolveSchema<SchemaObject>(schema);
+  //   if (schemaObj.allOf) {
+  //     schemaObj.allOf.forEach((s) => this.traverse(s, f));
+  //   } else if (schemaObj.oneOf) {
+  //     schemaObj.oneOf.forEach((s) => this.traverse(s, f));
+  //   } else if (schemaObj.anyOf) {
+  //     schemaObj.anyOf.forEach((s) => this.traverse(s, f));
+  //   } else if (schemaObj.properties) {
+  //     Object.keys(schemaObj.properties).forEach((prop) => {
+  //       f(prop, schemaObj);
+  //     });
+  //   }
+  // }
 
   private findKeys(object, searchFunc): string[] {
     const matches = [];

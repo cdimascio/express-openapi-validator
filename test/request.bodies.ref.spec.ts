@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
 
-describe(packageJson.name, () => {
+describe('request bodies', () => {
   let app = null;
 
   before(async () => {

@@ -36,7 +36,6 @@ function createAjv(
   ajv.removeKeyword('const');
 
   if (request) {
-    // if (options.schemaObjectMapper) {
     ajv.addKeyword('schemaObjectFunctions', {
       modifying: true,
       compile: (sch) => {
@@ -49,7 +48,7 @@ function createAjv(
         return () => true;
       },
     });
-    // }
+
     ajv.removeKeyword('readOnly');
     ajv.addKeyword('readOnly', {
       modifying: true,
@@ -76,22 +75,18 @@ function createAjv(
     });
   } else {
     // response
-    // if (options.schemaObjectMapper) {
     ajv.addKeyword('schemaObjectFunctions', {
       modifying: true,
       compile: (sch) => {
         if (sch) {
           return function validate(data, path, obj, propName) {
-            console.log('start', typeof obj[propName], obj[propName]);
-            obj[propName] = sch.deserialize(data);
-            console.log('end', typeof obj[propName], obj[propName]);
+            // obj[propName] = sch.deserialize(data);
             return true;
           };
         }
         return () => true;
       },
     });
-    // }
     ajv.removeKeyword('writeOnly');
     ajv.addKeyword('writeOnly', {
       modifying: true,
