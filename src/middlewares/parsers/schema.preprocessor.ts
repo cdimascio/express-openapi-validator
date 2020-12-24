@@ -319,7 +319,7 @@ export class RequestSchemaPreprocessor {
   }
 
   private handleSerDes(
-    _: SchemaObject,
+    parent: SchemaObject,
     schema: SchemaObject,
     state: TraversalState,
   ) {
