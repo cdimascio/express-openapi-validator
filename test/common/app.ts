@@ -42,7 +42,7 @@ export async function createApp(
   if (useRoutes) {
     // Register error handler
     app.use((err, req, res, next) => {
-      // console.error(err);
+      console.error(err);
       res.status(err.status ?? 500).json({
         message: err.message,
         errors: err.errors,

@@ -231,7 +231,7 @@ export class RequestSchemaPreprocessor {
       const options = opts[kind];
       options.path = node.path;
 
-      this.registerFormatSerDes(pschema, nschema, options);
+      this.handleSerDes(pschema, nschema, options);
       this.handleReadonly(pschema, nschema, options);
       this.processDiscriminator(pschema, nschema, options);
     }
@@ -318,7 +318,7 @@ export class RequestSchemaPreprocessor {
     }
   }
 
-  private registerFormatSerDes(
+  private handleSerDes(
     _: SchemaObject,
     schema: SchemaObject,
     state: TraversalState,
