@@ -328,7 +328,6 @@ export class RequestSchemaPreprocessor {
         case 'date-time':
         case 'full-date':
           schema.schemaObjectFunctions = dateTime;
-          console.log(schema);
       }
     }
   }
