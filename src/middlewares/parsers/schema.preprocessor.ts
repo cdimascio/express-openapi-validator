@@ -45,8 +45,15 @@ class Root<T> extends Node<T, T> {
 }
 
 const dateTime = {
-  deserialize: (s) => new Date(s),
-  serialize: (d) => d.toISOString(),
+  serialize: (d) => {
+    return d.toISOString();
+  },
+};
+
+const fullDate = {
+  serialize: (d) => {
+    return d.toISOString();
+  },
 };
 
 type SchemaObject = OpenAPIV3.SchemaObject;
@@ -323,11 +330,16 @@ export class RequestSchemaPreprocessor {
     schema: SchemaObject,
     state: TraversalState,
   ) {
-    if (schema.type === 'string' && !!schema.format) {
-      switch (schema.format) {
-        case 'date-time':
-        case 'full-date':
-          schema.schemaObjectFunctions = dateTime;
+    if (state.kind === 'res') {
+      if (schema.type === 'string' && !!schema.format) {
+        switch (schema.format) {
+          case 'date-time':
+          case 'full-date':
+            // type: 'object',
+            // schemaObjectFunctions: options.schemaObjectMapper[id],
+            // componentId: `#/components/schemas/${id}`,
+            (schema.type = 'object'), (schema.schemaObjectFunctions = dateTime);
+        }
       }
     }
   }
