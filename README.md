@@ -591,13 +591,13 @@ Determines whether the validator should validate responses. Also accepts respons
 
   **serializers:**
 
-  Automatically serialize objects to according to their OpenAPI 3 declared `format`. Serializers include: `date` and `date-time`
+  Automatically serialize objects e.g `Date` according to the specified `format`. Serializers include: `date` and `date-time`. See [example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/7-response-date-serialization)
 
-  - `string[]` - a list of serializers e.g. `date-time`
+  - `string[]` - a list of serializers e.g. `['date', 'date-time']`
 
-  When `date-time` is included in the `serializers` array, `Date` objects are validated when it's `format` includes `date-time` or `date`.
+  When a serializer e.g `date-time` is included in the `serializers` array, a `Date` object is serialized accoring to the specified `format` e.g. `date-time`.
 
-  For example, the option
+  For example, using the following option
 
   ```
   validateResponses: {
@@ -605,7 +605,7 @@ Determines whether the validator should validate responses. Also accepts respons
   }
   ```
 
-  with the schema declaring `format: date-time`
+  and a schema that declares a date `format`
 
   ```yaml
   type: type
@@ -615,7 +615,7 @@ Determines whether the validator should validate responses. Also accepts respons
       format: date-time
   ```
 
-  will expect a `Date` object (in the response) at validation time.
+  will validate `Date` objects, rather than date strings
 
   ```javascript
   res.json({
@@ -623,7 +623,7 @@ Determines whether the validator should validate responses. Also accepts respons
   });
   ```
 
-  and will respond with an ISO formatted datetime e.g.
+  and respond with its ISO formatted date-time string representation e.g.
 
   ```json
   {
@@ -631,7 +631,7 @@ Determines whether the validator should validate responses. Also accepts respons
   }
   ```
 
-  if `date` was specified as the `format`, the response will include the serialized date
+  if `date` is specified as `format`, the date portion is serialized e.g.
 
   ```json
   {
