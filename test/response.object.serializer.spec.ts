@@ -66,7 +66,6 @@ describe('response serializer', () => {
         .get(`${app.basePath}/date`)
         .expect(200)
         .then((r) => {
-          console.log(r.body);
           expect(r.body.created_at).to.equal('2020-12-20');
         }));
   });
