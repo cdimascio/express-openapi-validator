@@ -430,6 +430,15 @@
         "test",
         "ideas"
       ]
+    },
+    {
+      "login": "electrotype",
+      "name": "Electro Type",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/1643012?v=4",
+      "profile": "https://www.spincast.org",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
