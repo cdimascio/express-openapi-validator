@@ -1195,12 +1195,13 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://www.linkedin.com/in/volodymyr-kolesnykov"><img src="https://avatars1.githubusercontent.com/u/7810770?v=4" width="100px;" alt=""/><br /><sub><b>Volodymyr Kolesnykov</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=sjinks" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=sjinks" title="Tests">⚠️</a></td>
+    <td align="center"><a href="https://github.com/pilerou"><img src="https://avatars2.githubusercontent.com/u/664865?v=4" width="100px;" alt=""/><br /><sub><b>Pierre Le Roux</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=pilerou" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=pilerou" title="Tests">⚠️</a> <a href="#ideas-pilerou" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://www.spincast.org"><img src="https://avatars2.githubusercontent.com/u/1643012?v=4" width="100px;" alt=""/><br /><sub><b>Electro Type</b></sub></a><br /><a href="#ideas-electrotype" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
