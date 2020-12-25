@@ -72,7 +72,6 @@ export class OpenApiValidator {
       options.validateResponses = {
         removeAdditional: false,
         coerceTypes: false,
-        serializers: [],
         onError: null,
       };
     }

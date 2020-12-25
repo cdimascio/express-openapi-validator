@@ -50,13 +50,13 @@ class Root<T> extends Node<T, T> {
 
 const dateTime: Serializer = {
   serialize: (d: Date) => {
-    return d.toISOString();
+    return d && d.toISOString();
   },
 };
 
 const date: Serializer = {
   serialize: (d: Date) => {
-    return d.toISOString().split('T')[0];
+    return d && d.toISOString().split('T')[0];
   },
 };
 
@@ -342,19 +342,14 @@ export class SchemaPreprocessor {
   ) {
     if (state.kind === 'res') {
       if (schema.type === 'string' && !!schema.format) {
-        const serializers = this.responseOpts.serializers ?? [];
         switch (schema.format) {
           case 'date-time':
-            if (serializers.includes('date-time')) {
-              schema.type = 'object';
-              schema['x-eov-serializer'] = dateTime;
-            }
+            (<any>schema).type = ['object', 'string'];
+            schema['x-eov-serializer'] = dateTime;
             break;
           case 'date':
-            if (serializers.includes('date')) {
-              schema.type = 'object';
-              schema['x-eov-serializer'] = date;
-            }
+            (<any>schema).type = ['object', 'string'];
+            schema['x-eov-serializer'] = date;
             break;
           case 'byte':
             schema['x-eov-serializer'] = byte;

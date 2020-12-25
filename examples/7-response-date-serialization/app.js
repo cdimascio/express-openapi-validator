@@ -20,9 +20,7 @@ app.use('/spec', express.static(apiSpec));
 app.use(
   OpenApiValidator.middleware({
     apiSpec,
-    validateResponses: {
-      serializers: ['date', 'date-time'],
-    },
+    validateResponses: true,
   }),
 );
 // 3. Add routes

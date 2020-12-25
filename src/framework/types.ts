@@ -51,7 +51,6 @@ export type ValidateRequestOpts = {
 export type ValidateResponseOpts = {
   removeAdditional?: 'failing' | boolean;
   coerceTypes?: boolean | 'array';
-  serializers?: string[];
   onError?: (err: InternalServerError, json: any) => void;
 };
 

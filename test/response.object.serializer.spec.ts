@@ -17,9 +17,7 @@ describe('response serializer', () => {
     app = await createApp(
       {
         apiSpec: apiSpecPath,
-        validateResponses: {
-          serializers: ['date', 'date-time'],
-        },
+        validateResponses: true,
       },
       3005,
       (app) => {
