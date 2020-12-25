@@ -21,7 +21,7 @@ import {
 } from './framework/types';
 import { defaultResolver } from './resolvers';
 import { OperationHandlerOptions } from './framework/types';
-import { RequestSchemaPreprocessor } from './middlewares/parsers/schema.preprocessor';
+import { SchemaPreprocessor } from './middlewares/parsers/schema.preprocessor';
 
 export {
   OpenApiValidatorOpts,
@@ -72,6 +72,7 @@ export class OpenApiValidator {
       options.validateResponses = {
         removeAdditional: false,
         coerceTypes: false,
+        serializers: [],
         onError: null,
       };
     }
@@ -94,14 +95,13 @@ export class OpenApiValidator {
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
     const middlewares: OpenApiRequestHandler[] = [];
     const pContext = spec.then((spec) => {
-      const { apiDocRes } = new RequestSchemaPreprocessor(
-        spec.apiDoc,
-        this.ajvOpts.preprocessor,
-        !!this.options.validateResponses,
-      ).preProcess();
+      const apiDoc = spec.apiDoc;
+      const ajvOpts = this.ajvOpts.preprocessor;
+      const resOpts = this.options.validateResponses as ValidateRequestOpts;
+      const sp = new SchemaPreprocessor(apiDoc, ajvOpts, resOpts).preProcess();
       return {
         context: new OpenApiContext(spec, this.options.ignorePaths),
-        responseApiDoc: apiDocRes,
+        responseApiDoc: sp.apiDocRes,
       };
     });
 
@@ -394,16 +394,10 @@ class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const {
-      coerceTypes,
-      unknownFormats,
-      validateFormats,
-      schemaObjectMapper,
-    } = this.options;
+    const { coerceTypes, unknownFormats, validateFormats } = this.options;
     return {
       nullable: true,
       coerceTypes,
-      schemaObjectMapper,
       useDefaults: true,
       removeAdditional: false,
       unknownFormats,

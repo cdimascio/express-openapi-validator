@@ -36,7 +36,7 @@ function createAjv(
   ajv.removeKeyword('const');
 
   if (request) {
-    // ajv.addKeyword('schemaObjectFunctions', {
+    // ajv.addKeyword('x-eov-serializer', {
     //   modifying: true,
     //   compile: (sch) => {
     //     if (sch) {
@@ -75,11 +75,12 @@ function createAjv(
     });
   } else {
     // response
-    ajv.addKeyword('schemaObjectFunctions', {
+    ajv.addKeyword('x-eov-serializer', {
       modifying: true,
       compile: (sch) => {
         if (sch) {
           return function validate(data, path, obj, propName) {
+            if (typeof data === 'string') return true;
             obj[propName] = sch.serialize(data);
             return true;
           };

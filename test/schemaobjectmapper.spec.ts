@@ -30,20 +30,7 @@ describe('schemaobjectmapper', () => {
         },
         validateResponses: {
           coerceTypes: true,
-        },
-        schemaObjectMapper: {
-          ObjectId: {
-            deserialize: (o) => new ObjectID(o),
-            serialize: (o) => o.toString(),
-          },
-          Date: {
-            deserialize: (o) => new Date(o),
-            serialize: (o) => o.toISOString().slice(0, 10),
-          },
-          DateTime: {
-            deserialize: (o) => new Date(o),
-            serialize: (o) => o.toISOString(),
-          },
+          serializers: ['system'],
         },
       },
       3005,

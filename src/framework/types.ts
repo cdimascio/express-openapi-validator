@@ -37,14 +37,11 @@ export interface MultipartOpts {
 }
 
 export interface Options extends ajv.Options {
-
   // Specific options
-  schemaObjectMapper?: object
+  schemaObjectMapper?: object;
 }
 
-export interface RequestValidatorOptions
-  extends Options,
-    ValidateRequestOpts {}
+export interface RequestValidatorOptions extends Options, ValidateRequestOpts {}
 
 export type ValidateRequestOpts = {
   allowUnknownQueryParameters?: boolean;
@@ -54,6 +51,7 @@ export type ValidateRequestOpts = {
 export type ValidateResponseOpts = {
   removeAdditional?: 'failing' | boolean;
   coerceTypes?: boolean | 'array';
+  serializers?: string[];
   onError?: (err: InternalServerError, json: any) => void;
 };
 
@@ -72,13 +70,8 @@ export type Format = {
   validate: (v: any) => boolean;
 };
 
-export type SchemaObjectFunctions= {
-  deserialize : (string) => any
-  serialize : (any) => string
-};
-
-export type SchemaObjectMapperMap = {
-  [key:string]: SchemaObjectFunctions
+export type Serializer = {
+  serialize: (o: unknown) => string;
 };
 
 export interface OpenApiValidatorOpts {
@@ -89,7 +82,6 @@ export interface OpenApiValidatorOpts {
   ignorePaths?: RegExp | Function;
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
-  schemaObjectMapper?: SchemaObjectMapperMap;
   unknownFormats?: true | string[] | 'ignore';
   formats?: Format[];
   fileUploader?: boolean | multer.Options;
@@ -266,7 +258,6 @@ export namespace OpenAPIV3 {
 
     // Express-openapi-validator specific properties
     componentId?: string;
-    schemaObjectFunctions?: SchemaObjectFunctions;
   }
 
   export interface DiscriminatorObject {
@@ -284,9 +275,6 @@ export namespace OpenAPIV3 {
 
   export interface ReferenceObject {
     $ref: string;
-    // Custom attributes for data transformation. componentId needs to be set by the mecanisme to guarantee cache uniqueness in ajv schemas
-    componentId?: string;
-    schemaObjectFunctions?: SchemaObjectFunctions;
   }
 
   export interface ExampleObject {

@@ -3,7 +3,11 @@ import ajv = require('ajv');
 import * as cloneDeep from 'lodash.clonedeep';
 import * as _get from 'lodash.get';
 import { createRequestAjv } from '../../framework/ajv';
-import { OpenAPIV3, BodySchema, SchemaObjectFunctions } from '../../framework/types';
+import {
+  OpenAPIV3,
+  Serializer,
+  ValidateResponseOpts,
+} from '../../framework/types';
 
 interface TraversalStates {
   req: TraversalState;
@@ -44,17 +48,21 @@ class Root<T> extends Node<T, T> {
   }
 }
 
-const dateTime: SchemaObjectFunctions = {
-  deserialize: (s) => {},
-  serialize: (d) => {
+const dateTime: Serializer = {
+  serialize: (d: Date) => {
     return d.toISOString();
   },
 };
 
-const fullDate: SchemaObjectFunctions = {
-  deserialize: (s) => {},
-  serialize: (d) => {
-    return d.toISOString();
+const fullDate: Serializer = {
+  serialize: (d: Date) => {
+    return d.toISOString().split('T')[0];
+  },
+};
+
+const byte: Serializer = {
+  serialize: (s: string) => {
+    return Buffer.from(s).toString('base64');
   },
 };
 
@@ -79,19 +87,19 @@ const httpMethods = new Set([
   'patch',
   'trace',
 ]);
-export class RequestSchemaPreprocessor {
+export class SchemaPreprocessor {
   private ajv: Ajv;
   private apiDoc: OpenAPIV3.Document;
   private apiDocRes: OpenAPIV3.Document;
-  private responseCopy: boolean;
+  private responseOpts: ValidateResponseOpts;
   constructor(
     apiDoc: OpenAPIV3.Document,
-    options: ajv.Options,
-    responseCopy: boolean,
+    ajvOptions: ajv.Options,
+    validateResponsesOpts: ValidateResponseOpts,
   ) {
-    this.ajv = createRequestAjv(apiDoc, options);
+    this.ajv = createRequestAjv(apiDoc, ajvOptions);
     this.apiDoc = apiDoc;
-    this.responseCopy = responseCopy;
+    this.responseOpts = validateResponsesOpts;
   }
 
   public preProcess() {
@@ -99,7 +107,7 @@ export class RequestSchemaPreprocessor {
     const r = this.gatherSchemaNodesFromPaths();
 
     // Now that we've processed paths, clonse the spec
-    this.apiDocRes = this.responseCopy ? cloneDeep(this.apiDoc) : null;
+    this.apiDocRes = !!this.responseOpts ? cloneDeep(this.apiDoc) : null;
 
     const schemaNodes = {
       schemas: componentSchemas,
@@ -334,13 +342,21 @@ export class RequestSchemaPreprocessor {
   ) {
     if (state.kind === 'res') {
       if (schema.type === 'string' && !!schema.format) {
-        switch (schema.format) {
-          case 'date-time':
-          case 'full-date':
-            // type: 'object',
-            // schemaObjectFunctions: options.schemaObjectMapper[id],
-            // componentId: `#/components/schemas/${id}`,
-            (schema.type = 'object'), (schema.schemaObjectFunctions = dateTime);
+        const serializers = this.responseOpts.serializers ?? [];
+        if (serializers.includes('system')) {
+          switch (schema.format) {
+            case 'date-time':
+              schema.type = 'object';
+              schema['x-eov-serializer'] = fullDate;
+              break;
+            case 'full-date':
+              schema.type = 'object';
+              schema['x-eov-serializer'] = dateTime;
+              break;
+            case 'byte':
+              schema['x-eov-serializer'] = byte;
+              break;
+          }
         }
       }
     }
