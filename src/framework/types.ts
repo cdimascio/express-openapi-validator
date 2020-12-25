@@ -70,6 +70,7 @@ export type Format = {
 };
 
 export type Serializer = {
+  format: string,
   serialize: (o: unknown) => string;
 };
 

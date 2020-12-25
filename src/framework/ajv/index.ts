@@ -66,8 +66,9 @@ function createAjv(
       modifying: true,
       compile: (sch) => {
         if (sch) {
+          const isDate = ['date', 'date-time'].includes(sch.format);
           return function validate(data, path, obj, propName) {
-            if (typeof data === 'string') return true;
+            if (typeof data === 'string' && isDate) return true
             obj[propName] = sch.serialize(data);
             return true;
           };
