@@ -54,7 +54,7 @@ const dateTime: Serializer = {
   },
 };
 
-const fullDate: Serializer = {
+const date: Serializer = {
   serialize: (d: Date) => {
     return d.toISOString().split('T')[0];
   },
@@ -343,20 +343,22 @@ export class SchemaPreprocessor {
     if (state.kind === 'res') {
       if (schema.type === 'string' && !!schema.format) {
         const serializers = this.responseOpts.serializers ?? [];
-        if (serializers.includes('system')) {
-          switch (schema.format) {
-            case 'date-time':
-              schema.type = 'object';
-              schema['x-eov-serializer'] = fullDate;
-              break;
-            case 'full-date':
+        switch (schema.format) {
+          case 'date-time':
+            if (serializers.includes('date-time')) {
               schema.type = 'object';
               schema['x-eov-serializer'] = dateTime;
-              break;
-            case 'byte':
-              schema['x-eov-serializer'] = byte;
-              break;
-          }
+            }
+            break;
+          case 'date':
+            if (serializers.includes('date')) {
+              schema.type = 'object';
+              schema['x-eov-serializer'] = date;
+            }
+            break;
+          case 'byte':
+            schema['x-eov-serializer'] = byte;
+            break;
         }
       }
     }
