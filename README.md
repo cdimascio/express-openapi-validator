@@ -589,6 +589,56 @@ Determines whether the validator should validate responses. Also accepts respons
 - `false` (**default**) - do not validate responses
 - `{ ... }` - validate responses with options
 
+  **serializers:**
+
+  Automatically serialize objects to according to their OpenAPI 3 declared `format`. Serializers include: `date` and `date-time`
+
+  - `string[]` - a list of serializers e.g. `date-time`
+
+  When `date-time` is included in the `serializers` array, `Date` objects are validated when it's `format` includes `date-time` or `date`.
+
+  For example, the option
+
+  ```
+  validateResponses: {
+    serializers: ['date', 'date-time'];
+  }
+  ```
+
+  with the schema declaring `format: date-time`
+
+  ```yaml
+  type: type
+  properties:
+    created_at:
+      type: string
+      format: date-time
+  ```
+
+  will expect a `Date` object (in the response) at validation time.
+
+  ```javascript
+  res.json({
+    created_at: new Date(),
+  });
+  ```
+
+  and will respond with an ISO formatted datetime e.g.
+
+  ```json
+  {
+    "created_at": "2020-12-25T03:36:34.706Z"
+  }
+  ```
+
+  if `date` was specified as the `format`, the response will include the serialized date
+
+  ```json
+  {
+    "created_at": "2020-12-25"
+  }
+  ```
+
   **removeAdditional:**
 
   - `"failing"` - additional properties that fail schema validation are automatically removed from the response.
@@ -621,6 +671,7 @@ Determines whether the validator should validate responses. Also accepts respons
     }
   }
   ```
+
 ### ▪️ validateSecurity (optional)
 
 Determines whether the validator should validate securities e.g. apikey, basic, oauth2, openid, etc
