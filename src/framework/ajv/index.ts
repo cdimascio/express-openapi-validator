@@ -36,19 +36,6 @@ function createAjv(
   ajv.removeKeyword('const');
 
   if (request) {
-    // ajv.addKeyword('x-eov-serializer', {
-    //   modifying: true,
-    //   compile: (sch) => {
-    //     if (sch) {
-    //       return function validate(data, path, obj, propName) {
-    //         // obj[propName] = sch.deserialize(data);
-    //         return true;
-    //       };
-    //     }
-    //     return () => true;
-    //   },
-    // });
-
     ajv.removeKeyword('readOnly');
     ajv.addKeyword('readOnly', {
       modifying: true,
