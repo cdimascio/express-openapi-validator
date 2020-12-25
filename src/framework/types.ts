@@ -43,6 +43,7 @@ export interface RequestValidatorOptions
 export type ValidateRequestOpts = {
   allowUnknownQueryParameters?: boolean;
   coerceTypes?: boolean | 'array';
+  removeAdditional?: boolean;
 };
 
 export type ValidateResponseOpts = {

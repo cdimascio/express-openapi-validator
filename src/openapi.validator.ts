@@ -381,13 +381,14 @@ class AjvOptions {
   }
 
   get request(): RequestValidatorOptions {
-    const { allowUnknownQueryParameters, coerceTypes } = <ValidateRequestOpts>(
+    const { allowUnknownQueryParameters, coerceTypes, removeAdditional } = <ValidateRequestOpts>(
       this.options.validateRequests
     );
     return {
       ...this.baseOptions(),
       allowUnknownQueryParameters,
-      coerceTypes
+      coerceTypes,
+      removeAdditional
     };
   }
 
