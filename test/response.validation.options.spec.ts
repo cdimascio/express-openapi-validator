@@ -19,7 +19,7 @@ describe(packageJson.name, () => {
         },
       },
       3005,
-      app => {
+      (app) => {
         app.get(`${app.basePath}/users`, (req, res) => {
           const json = ['user1', 'user2', 'user3'];
           return res.json(json);
@@ -55,9 +55,7 @@ describe(packageJson.name, () => {
       .expect(500)
       .then((r: any) => {
         expect(r.body.message).to.contain('should be integer');
-        expect(r.body)
-          .to.have.property('code')
-          .that.equals(500);
+        expect(r.body).to.have.property('code').that.equals(500);
       }));
 
   it('should remove additional properties when set false', async () =>
@@ -105,8 +103,6 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/users`)
       .expect(200)
       .then((r: any) => {
-        expect(r.body)
-          .is.an('array')
-          .with.length(3);
+        expect(r.body).is.an('array').with.length(3);
       }));
 });
