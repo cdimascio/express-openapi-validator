@@ -17,10 +17,11 @@ import {
   ValidateSecurityOpts,
   OpenAPIV3,
   RequestValidatorOptions,
+  Options,
 } from './framework/types';
 import { defaultResolver } from './resolvers';
 import { OperationHandlerOptions } from './framework/types';
-import { RequestSchemaPreprocessor } from './middlewares/parsers/request.schema.preprocessor';
+import { SchemaPreprocessor } from './middlewares/parsers/schema.preprocessor';
 
 export {
   OpenApiValidatorOpts,
@@ -71,14 +72,14 @@ export class OpenApiValidator {
       options.validateResponses = {
         removeAdditional: false,
         coerceTypes: false,
-        onError: null
+        onError: null,
       };
     }
 
     if (options.validateRequests === true) {
       options.validateRequests = {
         allowUnknownQueryParameters: false,
-        coerceTypes: false
+        coerceTypes: false,
       };
     }
 
@@ -93,17 +94,13 @@ export class OpenApiValidator {
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
     const middlewares: OpenApiRequestHandler[] = [];
     const pContext = spec.then((spec) => {
-      const responseApiDoc = this.options.validateResponses
-        ? cloneDeep(spec.apiDoc)
-        : null;
-      new RequestSchemaPreprocessor(
-        spec.apiDoc,
-        this.ajvOpts.preprocessor,
-      ).preProcess();
-
+      const apiDoc = spec.apiDoc;
+      const ajvOpts = this.ajvOpts.preprocessor;
+      const resOpts = this.options.validateResponses as ValidateRequestOpts;
+      const sp = new SchemaPreprocessor(apiDoc, ajvOpts, resOpts).preProcess();
       return {
         context: new OpenApiContext(spec, this.options.ignorePaths),
-        responseApiDoc,
+        responseApiDoc: sp.apiDocRes,
       };
     });
 
@@ -275,7 +272,7 @@ export class OpenApiValidator {
       apiDoc,
       this.ajvOpts.response,
       // This has already been converted from boolean if required
-      this.options.validateResponses as ValidateResponseOpts
+      this.options.validateResponses as ValidateResponseOpts,
     ).validate();
   }
 
@@ -387,15 +384,15 @@ class AjvOptions {
     return {
       ...this.baseOptions(),
       allowUnknownQueryParameters,
-      coerceTypes
+      coerceTypes,
     };
   }
 
-  get multipart(): ajv.Options {
+  get multipart(): Options {
     return this.baseOptions();
   }
 
-  private baseOptions(): ajv.Options {
+  private baseOptions(): Options {
     const { coerceTypes, unknownFormats, validateFormats } = this.options;
     return {
       nullable: true,

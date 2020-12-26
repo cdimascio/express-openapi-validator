@@ -33,12 +33,15 @@ export type SecurityHandlers = {
 
 export interface MultipartOpts {
   multerOpts: boolean | multer.Options;
-  ajvOpts: ajv.Options;
+  ajvOpts: Options;
 }
 
-export interface RequestValidatorOptions
-  extends ajv.Options,
-    ValidateRequestOpts {}
+export interface Options extends ajv.Options {
+  // Specific options
+  schemaObjectMapper?: object;
+}
+
+export interface RequestValidatorOptions extends Options, ValidateRequestOpts {}
 
 export type ValidateRequestOpts = {
   allowUnknownQueryParameters?: boolean;
@@ -64,6 +67,11 @@ export type Format = {
   name: string;
   type?: 'number' | 'string';
   validate: (v: any) => boolean;
+};
+
+export type Serializer = {
+  format: string,
+  serialize: (o: unknown) => string;
 };
 
 export interface OpenApiValidatorOpts {
@@ -204,7 +212,7 @@ export namespace OpenAPIV3 {
     items: ReferenceObject | SchemaObject;
   }
 
-  interface NonArraySchemaObject extends BaseSchemaObject {
+  export interface NonArraySchemaObject extends BaseSchemaObject {
     type: NonArraySchemaObjectType;
   }
 
@@ -247,6 +255,9 @@ export namespace OpenAPIV3 {
     externalDocs?: ExternalDocumentationObject;
     example?: any;
     deprecated?: boolean;
+
+    // Express-openapi-validator specific properties
+    componentId?: string;
   }
 
   export interface DiscriminatorObject {

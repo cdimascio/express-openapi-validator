@@ -1,0 +1,44 @@
+openapi: "3.0.0"
+info:
+  title: "Test for allOf"
+  version: "1"
+servers:
+  - url: /v1/
+paths:
+  /date-time:
+    get:
+      responses:
+        200:
+          description: date-time handler
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created_at:
+                    type: string
+                    format: date-time
+                  id:
+                    type: number
+
+  /date:
+    get:
+      responses:
+        200:
+          description: date handler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+components:
+  schemas:
+    Date:
+      type: string
+      format: date
+    User:
+      type: object
+      properties:
+        id: 
+          type: number
+        created_at:
+          $ref: "#/components/schemas/Date"
