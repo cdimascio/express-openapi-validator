@@ -31,7 +31,6 @@ describe('request body validation coercion', () => {
     nonCoerceApp = await createApp(
       {
         apiSpec,
-        // not specifying coercion as it should be false by default
         unknownFormats: ['phone-number'],
       },
       3006,
