@@ -1,26 +1,26 @@
 import * as Ajv from 'ajv';
 import * as draftSchema from 'ajv/lib/refs/json-schema-draft-04.json';
 import { formats } from './formats';
-import { OpenAPIV3 } from '../types';
+import { OpenAPIV3, Options } from '../types';
 import ajv = require('ajv');
 
 export function createRequestAjv(
   openApiSpec: OpenAPIV3.Document,
-  options: ajv.Options = {},
+  options: Options = {},
 ): Ajv.Ajv {
   return createAjv(openApiSpec, options);
 }
 
 export function createResponseAjv(
   openApiSpec: OpenAPIV3.Document,
-  options: ajv.Options = {},
+  options: Options = {},
 ): Ajv.Ajv {
   return createAjv(openApiSpec, options, false);
 }
 
 function createAjv(
   openApiSpec: OpenAPIV3.Document,
-  options: ajv.Options = {},
+  options: Options = {},
   request = true,
 ): Ajv.Ajv {
   const ajv = new Ajv({
@@ -62,6 +62,20 @@ function createAjv(
     });
   } else {
     // response
+    ajv.addKeyword('x-eov-serializer', {
+      modifying: true,
+      compile: (sch) => {
+        if (sch) {
+          const isDate = ['date', 'date-time'].includes(sch.format);
+          return function validate(data, path, obj, propName) {
+            if (typeof data === 'string' && isDate) return true
+            obj[propName] = sch.serialize(data);
+            return true;
+          };
+        }
+        return () => true;
+      },
+    });
     ajv.removeKeyword('writeOnly');
     ajv.addKeyword('writeOnly', {
       modifying: true,
@@ -89,7 +103,10 @@ function createAjv(
 
   if (openApiSpec.components?.schemas) {
     Object.entries(openApiSpec.components.schemas).forEach(([id, schema]) => {
-      ajv.addSchema(schema, `#/components/schemas/${id}`);
+      ajv.addSchema(
+        openApiSpec.components.schemas[id],
+        `#/components/schemas/${id}`,
+      );
     });
   }
 
