@@ -59,5 +59,16 @@ describe(packageJson.name, () => {
           tag: 'cat',
         })
         .expect(200));
+
+    it('should match mediatype when charset case does not match the case defined in the spec', async () =>
+      request(app)
+        .post(`${app.basePath}/pets_charset`)
+        .set('Content-Type', 'application/json; charset=UTF-8')
+        .set('Accept', 'application/json; charset=UTF-8')
+        .send({
+          name: 'myPet',
+          tag: 'cat',
+        })
+        .expect(200));
   });
 });
