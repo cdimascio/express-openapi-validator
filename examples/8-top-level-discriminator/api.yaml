@@ -1,0 +1,86 @@
+openapi: '3.0.3'
+info:
+  version: 1.0.0
+  title: Swagger
+servers:
+  - url: /v1
+paths:
+  /pets/nomapping:
+    post:
+      description: Creates a new pet in the store.
+      requestBody:
+        description: Pet to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CatObject'
+                - $ref: '#/components/schemas/DogObject'
+              discriminator:
+                propertyName: pet_type
+      responses:
+        '200':
+          description: Updated
+
+  /pets/mapping:
+    post:
+      description: Creates a new pet in the store.
+      requestBody:
+        description: Pet to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CatObject'
+                - $ref: '#/components/schemas/DogObject'
+              discriminator:
+                propertyName: pet_type
+                mapping:
+                  cat: '#/components/schemas/CatObject'
+                  kitty: '#/components/schemas/CatObject'
+                  dog: '#/components/schemas/DogObject'
+                  puppy: '#/components/schemas/DogObject'
+      responses:
+        '200':
+          description: Updated
+
+components:
+  schemas:
+    DogObject:
+      type: object
+      required:
+        - bark
+        - breed
+        - pet_type
+      properties:
+        bark:
+          type: boolean
+        breed:
+          type: string
+          enum: [Dingo, Husky, Retriever, Shepherd]
+        pet_type:
+          type: string
+          # since we use an enum here
+          # add DogObject as an option
+          # so that the non-mapping / implied mapping tests can pass
+          enum: [dog, puppy, DogObject]
+
+    CatObject:
+      type: object
+      required:
+        - hunts
+        - age
+        - pet_type
+      properties:
+        hunts:
+          type: boolean
+        age:
+          type: integer
+        pet_type:
+          type: string
+          # since we use an enum here
+          # add CatObject as an option
+          # so that the non-mapping / implied mapping tests can pass
+          enum: [cat, kitty, CatObject]
