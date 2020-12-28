@@ -91,6 +91,15 @@ describe(packageJson.name, () => {
         expect(r.body.id).to.be.a('number').that.equals(213);
       }));
 
+  it('should return 200 on valid responses 200 $ref', async () =>
+    request(app)
+      .get(`${app.basePath}/ref_response_body`)
+      .set('Accept', 'APPLICATION/JSON')
+      .expect(200)
+      .then((r: any) => {
+        expect(r.body.id).to.be.a('number').that.equals(213);
+      }));
+
   it('should fail if response field has a value of incorrect type', async () =>
     request(app)
       .get(`${app.basePath}/pets?mode=bad_type`)
