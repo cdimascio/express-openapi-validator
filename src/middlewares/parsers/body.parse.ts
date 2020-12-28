@@ -1,4 +1,3 @@
-import { Ajv } from 'ajv';
 import { ContentType } from '../util';
 
 import {
@@ -6,10 +5,6 @@ import {
   BodySchema,
   UnsupportedMediaType,
 } from '../../framework/types';
-
-type SchemaObject = OpenAPIV3.SchemaObject;
-type ReferenceObject = OpenAPIV3.ReferenceObject;
-type Schema = ReferenceObject | SchemaObject;
 
 export class BodySchemaParser {
   constructor() {

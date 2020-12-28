@@ -1,4 +1,4 @@
-import { findResponseContent, ContentType } from '../src/middlewares/util';
+import { findResponseContent } from '../src/middlewares/util';
 import { expect } from 'chai';
 
 describe('contentType', () => {
