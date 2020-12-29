@@ -35,7 +35,7 @@
   "dependencies": {
     "ajv": "^6.12.6",
     "content-type": "^1.0.4",
-    "js-yaml": "^3.14.0",
+    "js-yaml": "^3.14.1",
     "json-schema-ref-parser": "^9.0.6",
     "lodash.clonedeep": "^4.5.0",
     "lodash.get": "^4.4.2",
