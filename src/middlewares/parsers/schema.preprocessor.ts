@@ -7,6 +7,7 @@ import {
   OpenAPIV3,
   SerDesMap,
   Options,
+  ValidateResponseOpts,
 } from '../../framework/types';
 
 interface TraversalStates {
@@ -74,13 +75,16 @@ export class SchemaPreprocessor {
   private apiDoc: OpenAPIV3.Document;
   private apiDocRes: OpenAPIV3.Document;
   private serDesMap: SerDesMap;
+  private responseOpts: ValidateResponseOpts;
   constructor(
     apiDoc: OpenAPIV3.Document,
     ajvOptions: Options,
+    validateResponsesOpts: ValidateResponseOpts,
   ) {
     this.ajv = createRequestAjv(apiDoc, ajvOptions);
     this.apiDoc = apiDoc;
-    this.serDesMap = ajvOptions.serDesMap
+    this.serDesMap = ajvOptions.serDesMap;
+    this.responseOpts = validateResponsesOpts;
   }
 
   public preProcess() {
@@ -88,7 +92,7 @@ export class SchemaPreprocessor {
     const r = this.gatherSchemaNodesFromPaths();
 
     // Now that we've processed paths, clone the spec
-    this.apiDocRes = cloneDeep(this.apiDoc);
+    this.apiDocRes = !!this.responseOpts ? cloneDeep(this.apiDoc) : null;
 
     const schemaNodes = {
       schemas: componentSchemas,

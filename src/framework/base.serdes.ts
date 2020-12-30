@@ -33,3 +33,8 @@ export const dateSerializeOnly : SerDes = {
     return d && d.toISOString().split('T')[0];
   },
 };
+
+export const defaultSerDes : SerDes[] = [
+  dateSerializeOnly,
+  dateTimeSerializeOnly
+];

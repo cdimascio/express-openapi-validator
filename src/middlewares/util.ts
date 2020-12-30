@@ -11,12 +11,12 @@ export class ContentType {
   private constructor(contentType: string | null) {
     this.contentType = contentType;
     if (contentType) {
-      this.withoutBoundary = contentType.replace(/;\s{0,}boundary.*/, '');
-      this.mediaType = this.withoutBoundary.split(';')[0].trim();
-      this.charSet = this.withoutBoundary.split(';')[1];
+      this.withoutBoundary = contentType.replace(/;\s{0,}boundary.*/, '').toLowerCase();
+      this.mediaType = this.withoutBoundary.split(';')[0].toLowerCase().trim();
+      this.charSet = this.withoutBoundary.split(';')[1]?.toLowerCase();
       this.isWildCard = RegExp(/^[a-z]+\/\*$/).test(this.contentType);
       if (this.charSet) {
-        this.charSet = this.charSet.trim();
+        this.charSet = this.charSet.toLowerCase().trim();
       }
     }
   }

@@ -21,7 +21,9 @@ import {
 } from './framework/types';
 import { defaultResolver } from './resolvers';
 import { OperationHandlerOptions } from './framework/types';
+import { defaultSerDes } from './framework/base.serdes';
 import { SchemaPreprocessor } from './middlewares/parsers/schema.preprocessor';
+
 
 export {
   OpenApiValidatorOpts,
@@ -96,7 +98,8 @@ export class OpenApiValidator {
     const pContext = spec.then((spec) => {
       const apiDoc = spec.apiDoc;
       const ajvOpts = this.ajvOpts.preprocessor;
-      const sp = new SchemaPreprocessor(apiDoc, ajvOpts).preProcess();
+      const resOpts = this.options.validateResponses as ValidateRequestOpts;
+      const sp = new SchemaPreprocessor(apiDoc, ajvOpts, resOpts).preProcess();
       return {
         context: new OpenApiContext(spec, this.options.ignorePaths),
         responseApiDoc: sp.apiDocRes,
@@ -341,7 +344,9 @@ export class OpenApiValidator {
   }
 
   private normalizeOptions(options: OpenApiValidatorOpts): void {
-    // Modify the request
+    if(!options.serDes) {
+      options.serDes = defaultSerDes;
+    }
   }
 
   private isOperationHandlerOptions(
