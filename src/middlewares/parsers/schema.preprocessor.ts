@@ -88,7 +88,7 @@ export class SchemaPreprocessor {
     const r = this.gatherSchemaNodesFromPaths();
 
     // Now that we've processed paths, clone the spec
-    this.apiDocRes = !!this.serDesMap ? cloneDeep(this.apiDoc) : null;
+    this.apiDocRes = cloneDeep(this.apiDoc);
 
     const schemaNodes = {
       schemas: componentSchemas,
