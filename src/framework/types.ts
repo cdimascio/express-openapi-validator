@@ -38,7 +38,7 @@ export interface MultipartOpts {
 
 export interface Options extends ajv.Options {
   // Specific options
-  schemaObjectMapper?: object;
+  serDesMap?: SerDesMap;
 }
 
 export interface RequestValidatorOptions extends Options, ValidateRequestOpts {}
@@ -69,9 +69,14 @@ export type Format = {
   validate: (v: any) => boolean;
 };
 
-export type Serializer = {
+export type SerDes = {
   format: string,
-  serialize: (o: unknown) => string;
+  serialize?: (o: unknown) => string;
+  deserialize?: (s: string) => unknown;
+};
+
+export type SerDesMap = {
+  [format: string]: SerDes
 };
 
 export interface OpenApiValidatorOpts {
@@ -83,6 +88,7 @@ export interface OpenApiValidatorOpts {
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
   unknownFormats?: true | string[] | 'ignore';
+  serDes?: SerDes[];
   formats?: Format[];
   fileUploader?: boolean | multer.Options;
   multerOpts?: multer.Options;

@@ -5,8 +5,8 @@ import * as _get from 'lodash.get';
 import { createRequestAjv } from '../../framework/ajv';
 import {
   OpenAPIV3,
-  Serializer,
-  ValidateResponseOpts,
+  SerDesMap,
+  Options,
 } from '../../framework/types';
 
 interface TraversalStates {
@@ -48,20 +48,6 @@ class Root<T> extends Node<T, T> {
   }
 }
 
-const dateTime: Serializer = {
-  format: 'date-time',
-  serialize: (d: Date) => {
-    return d && d.toISOString();
-  },
-};
-
-const date: Serializer = {
-  format: 'date',
-  serialize: (d: Date) => {
-    return d && d.toISOString().split('T')[0];
-  },
-};
-
 type SchemaObject = OpenAPIV3.SchemaObject;
 type ReferenceObject = OpenAPIV3.ReferenceObject;
 type Schema = ReferenceObject | SchemaObject;
@@ -87,23 +73,22 @@ export class SchemaPreprocessor {
   private ajv: Ajv;
   private apiDoc: OpenAPIV3.Document;
   private apiDocRes: OpenAPIV3.Document;
-  private responseOpts: ValidateResponseOpts;
+  private serDesMap: SerDesMap;
   constructor(
     apiDoc: OpenAPIV3.Document,
-    ajvOptions: ajv.Options,
-    validateResponsesOpts: ValidateResponseOpts,
+    ajvOptions: Options,
   ) {
     this.ajv = createRequestAjv(apiDoc, ajvOptions);
     this.apiDoc = apiDoc;
-    this.responseOpts = validateResponsesOpts;
+    this.serDesMap = ajvOptions.serDesMap
   }
 
   public preProcess() {
     const componentSchemas = this.gatherComponentSchemaNodes();
     const r = this.gatherSchemaNodesFromPaths();
 
-    // Now that we've processed paths, clonse the spec
-    this.apiDocRes = !!this.responseOpts ? cloneDeep(this.apiDoc) : null;
+    // Now that we've processed paths, clone the spec
+    this.apiDocRes = !!this.serDesMap ? cloneDeep(this.apiDoc) : null;
 
     const schemaNodes = {
       schemas: componentSchemas,
@@ -244,7 +229,9 @@ export class SchemaPreprocessor {
       const options = opts[kind];
       options.path = node.path;
 
-      this.handleSerDes(pschema, nschema, options);
+      if(this.serDesMap) {
+        this.handleSerDes(pschema, nschema, options);
+      }
       this.handleReadonly(pschema, nschema, options);
       this.processDiscriminator(pschema, nschema, options);
     }
@@ -336,20 +323,12 @@ export class SchemaPreprocessor {
     schema: SchemaObject,
     state: TraversalState,
   ) {
-    if (state.kind === 'res') {
-      if (schema.type === 'string' && !!schema.format) {
-        switch (schema.format) {
-          case 'date-time':
-            (<any>schema).type = ['object', 'string'];
-            schema['x-eov-serializer'] = dateTime;
-            break;
-          case 'date':
-            (<any>schema).type = ['object', 'string'];
-            schema['x-eov-serializer'] = date;
-            break;
-        }
+    //if (state.kind === 'res') {
+      if (schema.type === 'string' && !!schema.format && this.serDesMap[schema.format]) {
+        (<any>schema).type = ['object', 'string'];
+        schema['x-eov-serdes'] = this.serDesMap[schema.format];
       }
-    }
+    //}
   }
 
   private handleReadonly(

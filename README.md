@@ -15,7 +15,7 @@
 - ✔️ request validation
 - ✔️ response validation (json only)
 - 👮 security validation / custom security functions
-- 👽 3rd party / custom formats
+- 👽 3rd party / custom formats / custom data serialization-deserialization
 - 🧵 optionally auto-map OpenAPI endpoints to Express handler functions
 - ✂️ **\$ref** support; split specs over multiple files
 - 🎈 file upload
@@ -490,12 +490,21 @@ OpenApiValidator.middleware({
     validate: (value: any) => boolean,
   }],
   unknownFormats: ['phone-number', 'uuid'],
+  serDes: [{
+    OpenApiValidator.baseSerDes.dateTime,
+    OpenApiValidator.baseSerDes.date,
+    {
+      format: 'mongo-objectid',
+      deserialize: (s) => new ObjectID(s),
+      serialize: (o) => o.toString(),
+    }
+  }],
   operationHandlers: false | 'operations/base/path' | { ... },
   ignorePaths: /.*\/pets$/,
   fileUploader: { ... } | true | false,
   $refParser: {
     mode: 'bundle'
-  }
+  },
 });
 ```
 
@@ -702,6 +711,41 @@ Defines how the validator should behave if an unknown or custom format is encoun
   ```
 
 - `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
+
+### ▪️ serDes (optional)
+
+Add custom mecanism in order to 
+- serialize object before sending the response 
+- AND/OR deserialize string to custom object (Date...) on request
+Route function can focus on feature and doesn't have to cast data at request or before sending response.
+
+To `deserialize` on request and `serialize` on response, both functions must be defined and are launched when API `format` field is similar. 
+```javascript
+serDes: [{
+  OpenApiValidator.baseSerDes.dateTime, // used when 'format: date-time' 
+  OpenApiValidator.baseSerDes.date, // used when 'format: date' 
+  {
+    format: 'mongo-objectid',
+    deserialize: (s) => new ObjectID(s),
+    serialize: (o) => o.toString(),
+  }
+}],
+```
+
+In order to ONLY `serialize` on response (and avoid to deserialize on request), the configuration must not define `deserialize` function.
+```javascript
+serDes: [{
+  OpenApiValidator.baseSerDes.dateTimeSerializeOnly, // used when 'format: date-time' on response only
+  OpenApiValidator.baseSerDes.dateSerializeOnly, // used when 'format: date' on response only
+  {
+    format: 'mongo-objectid',
+    serialize: (o) => o.toString(),
+  }
+}],
+```
+
+`format` field can be set with custom values (such as `mongo-objectid`). 
+You must add those custom formats in [unknownFormats](#unknownFormats-(optional)) setting. 
 
 ### ▪️ operationHandlers (optional)
 

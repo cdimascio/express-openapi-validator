@@ -96,8 +96,7 @@ export class OpenApiValidator {
     const pContext = spec.then((spec) => {
       const apiDoc = spec.apiDoc;
       const ajvOpts = this.ajvOpts.preprocessor;
-      const resOpts = this.options.validateResponses as ValidateRequestOpts;
-      const sp = new SchemaPreprocessor(apiDoc, ajvOpts, resOpts).preProcess();
+      const sp = new SchemaPreprocessor(apiDoc, ajvOpts).preProcess();
       return {
         context: new OpenApiContext(spec, this.options.ignorePaths),
         responseApiDoc: sp.apiDocRes,
@@ -393,7 +392,7 @@ class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const { coerceTypes, unknownFormats, validateFormats } = this.options;
+    const { coerceTypes, unknownFormats, validateFormats, serDes } = this.options;
     return {
       nullable: true,
       coerceTypes,
@@ -408,6 +407,10 @@ class AjvOptions {
         };
         return acc;
       }, {}),
+      serDesMap : serDes ? serDes.reduce((map, obj) => {
+        map[obj.format]=obj;
+        return map;
+      }, {}) : null,
     };
   }
 }
