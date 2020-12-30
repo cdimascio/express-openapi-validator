@@ -327,12 +327,10 @@ export class SchemaPreprocessor {
     schema: SchemaObject,
     state: TraversalState,
   ) {
-    //if (state.kind === 'res') {
-      if (schema.type === 'string' && !!schema.format && this.serDesMap[schema.format]) {
-        (<any>schema).type = ['object', 'string'];
-        schema['x-eov-serdes'] = this.serDesMap[schema.format];
-      }
-    //}
+    if (schema.type === 'string' && !!schema.format && this.serDesMap[schema.format]) {
+      (<any>schema).type = ['object', 'string'];
+      schema['x-eov-serdes'] = this.serDesMap[schema.format];
+    }
   }
 
   private handleReadonly(
