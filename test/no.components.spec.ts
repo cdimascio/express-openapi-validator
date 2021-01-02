@@ -24,7 +24,7 @@ describe('no components', () => {
     app.server.close();
   });
 
-  it('should pass if components are missing', async () =>
+  it('should pass if /components is not present', async () =>
     request(app)
       .get(`${app.basePath}/ping`)
       .expect(200)
