@@ -14,8 +14,7 @@
     "coveralls": "cat coverage/lcov.info | coveralls -v",
     "codacy": "cat coverage/lcov.info | codacy-coverage",
     "test:reset": "rm -rf node_modules && npm i && npm run compile && npm t",
-    "commit": "cz",
-    "publish": "./build.sh"
+    "commit": "cz"
   },
   "repository": {
     "url": "https://github.com/cdimascio/express-openapi-validator"
