@@ -171,6 +171,12 @@ export class SchemaPreprocessor {
     const recurse = (parent, node, opts: TraversalStates) => {
       const schema = this.resolveSchema<SchemaObject>(node.schema);
 
+      if (!schema) {
+        // if we can't resolve the schema, skip it
+        // TODO fix me - must resolve $refs like, etc
+        // #/paths/~1subscription/get/requestBody/content/application~1json/schema/properties/subscription
+        return;
+      }
       // Save the original schema so we can check if it was a $ref
       (<any>opts).req.originalSchema = node.schema;
       (<any>opts).res.originalSchema = node.schema;
