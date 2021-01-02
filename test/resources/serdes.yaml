@@ -13,6 +13,11 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/ObjectId"
+        - name: baddateresponse
+          in: query
+          schema:
+            type: string
+            enum: ['functionNotExists', 'functionBadFormat']
       responses:
         200:
           description: ""

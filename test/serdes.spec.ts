@@ -20,6 +20,12 @@ class ObjectID {
 
 }
 
+class BadDate extends Date {
+  public toISOString(): string {
+    return "oh no a bad iso date";
+  }
+}
+
 describe('serdes', () => {
   let app = null;
 
@@ -153,7 +159,7 @@ describe('serdes', () => {
 
 
 
-describe('serdes serialize request components only', () => {
+describe('serdes serialize response components only', () => {
   let app = null;
 
   before(async () => {
@@ -183,12 +189,23 @@ describe('serdes serialize request components only', () => {
           if(typeof req.params.id !== 'string') {
             throw new Error("Should be not be deserialized to ObjectId object");
           }
+          console.log(req.query.baddateresponse);
           let date = new Date("2020-12-20T07:28:19.213Z");
-          res.json({
+          let result = {
             id: new ObjectID(req.params.id),
             creationDateTime : date,
-            creationDate: date
-          });
+            creationDate : undefined,
+          };
+          if(req.query.baddateresponse === 'functionNotExists') {
+            result.creationDate = new ObjectID();
+          }
+          else if(req.query.baddateresponse === 'functionBadFormat') {
+            result.creationDate = new BadDate();
+          }
+          else {
+            result.creationDate = date;
+          }
+          res.json(result);
         });
         app.post([`${app.basePath}/users`], (req, res) => {
           if(typeof req.body.id !== 'string') {
@@ -203,6 +220,7 @@ describe('serdes serialize request components only', () => {
           req.body.id = new ObjectID(req.body.id);
           req.body.creationDateTime = new Date(req.body.creationDateTime);
           // We let creationDate as String and it should also work (either in Date Object ou String 'date' format)
+          console.log(req.body);
           res.json(req.body);
         });
         app.use((err, req, res, next) => {
@@ -283,5 +301,30 @@ describe('serdes serialize request components only', () => {
       .then((r) => {
         expect(r.body.message).to.equal('request.body.creationDate should match format "date"');
       }));
+
+  it('should throw error 500 on invalid object type instead of Date expected', async () =>
+    request(app)
+      .get(`${app.basePath}/users/5fdefd13a6640bb5fb5fa925`)
+      .query({baddateresponse : 'functionNotExists'})
+      .expect(500)
+      .then((r) => {
+        console.log(r);
+        expect(r.body.message).to.equal('d.toISOString is not a function');
+      }));
+
+  /*
+  FIXME Manage format validation after serialize ? I can serialize using a working serialize method but that respond a bad format
+  it('should throw error 500 on an object that serialize to a bad string format', async () =>
+
+    request(app)
+      .get(`${app.basePath}/users/5fdefd13a6640bb5fb5fa925`)
+      .query({baddateresponse : 'functionBadFormat'})
+      .expect(200)
+      .then((r) => {
+        console.log(r.body);
+        expect(r.body.message).to.equal('Something saying that date is not date-time format');
+      }));
+
+   */
 
 });
