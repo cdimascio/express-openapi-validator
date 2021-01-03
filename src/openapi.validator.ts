@@ -355,7 +355,7 @@ export class OpenApiValidator {
         if(!defautSerDesOverride) {
           options.serDes.push(currentDefaultSerDes);
         }
-      })
+      });
     }
   }
 
