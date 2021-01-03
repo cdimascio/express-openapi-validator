@@ -347,6 +347,16 @@ export class OpenApiValidator {
     if(!options.serDes) {
       options.serDes = defaultSerDes;
     }
+    else {
+      defaultSerDes.forEach(currentDefaultSerDes => {
+        let defautSerDesOverride = options.serDes.find(currentOptionSerDes => {
+          return currentDefaultSerDes.format === currentOptionSerDes.format;
+        });
+        if(!defautSerDesOverride) {
+          options.serDes.push(currentDefaultSerDes);
+        }
+      })
+    }
   }
 
   private isOperationHandlerOptions(
