@@ -262,6 +262,9 @@ export class SchemaPreprocessor {
 
     if (xOf && schemaObj?.discriminator?.propertyName && !o.discriminator) {
       const options = schemaObj[xOf].flatMap((refObject) => {
+        if (refObject['$ref'] === undefined) {
+          return [];
+        }
         const keys = this.findKeys(
           schemaObj.discriminator.mapping,
           (value) => value === refObject['$ref'],
