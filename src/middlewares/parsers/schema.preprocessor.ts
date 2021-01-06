@@ -249,9 +249,11 @@ export class SchemaPreprocessor {
       const options = opts[kind];
       options.path = node.path;
 
-      this.handleSerDes(pschema, nschema, options);
-      this.handleReadonly(pschema, nschema, options);
-      this.processDiscriminator(pschema, nschema, options);
+      if (nschema) {
+        this.handleSerDes(pschema, nschema, options);
+        this.handleReadonly(pschema, nschema, options);
+        this.processDiscriminator(pschema, nschema, options);
+      }
     }
   }
 
