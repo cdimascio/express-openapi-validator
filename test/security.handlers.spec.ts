@@ -351,18 +351,6 @@ describe('security.handlers', () => {
       });
   });
 
-  it('should return 500 if scopes are no allowed', async () =>
-    request(app)
-      .get(`${basePath}/api_key_with_scopes`)
-      .set('X-Api-Key', 'XXX')
-      .expect(500)
-      .then((r) => {
-        const body = r.body;
-        expect(body.message).to.equal(
-          "scopes array must be empty for security type 'http'",
-        );
-      }));
-
   it('should return 200 if api_key or anonymous and no api key is supplied', async () => {
     const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
     validateSecurity.handlers.ApiKeyAuth = <any>((req, scopes, schema) => true);
