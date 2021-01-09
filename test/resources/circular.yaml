@@ -1,0 +1,40 @@
+openapi: '3.0.3'
+info:
+  version: 1.0.0
+  title: Swagger
+servers:
+  - url: /v1
+paths:
+  /circular:
+    post:
+      description: creates user
+      requestBody:
+        description: creates user
+        required: true
+        content:
+          application/json:
+            schema:
+             $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Updated
+
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        favorite: 
+          $ref: '#/components/schemas/User'
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+
+  
