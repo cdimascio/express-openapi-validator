@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as jsYaml from 'js-yaml';
 import * as path from 'path';
 import * as $RefParser from 'json-schema-ref-parser';
 import { OpenAPISchemaValidator } from './openapi.schema.validator';
@@ -86,13 +85,9 @@ export class OpenAPIFramework {
         // Get document, or throw exception on error
         try {
           process.chdir(specDir);
-          const docWithRefs = jsYaml.safeLoad(
-            fs.readFileSync(absolutePath, 'utf8'),
-            { json: true },
-          );
           return $refParser.mode === 'dereference'
-            ? $RefParser.dereference(docWithRefs)
-            : $RefParser.bundle(docWithRefs);
+            ? $RefParser.dereference(absolutePath)
+            : $RefParser.bundle(absolutePath);
         } finally {
           process.chdir(origCwd);
         }
