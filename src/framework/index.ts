@@ -23,13 +23,12 @@ export class OpenAPIFramework {
     visitor: OpenAPIFrameworkVisitor,
   ): Promise<OpenAPIFrameworkInit> {
     const args = this.args;
-    const apiDoc = await this.copy(
-      await this.loadSpec(args.apiDoc, args.$refParser),
-    );
+    const apiDoc = await this.loadSpec(args.apiDoc, args.$refParser);
+
     const basePathObs = this.getBasePathsFromServers(apiDoc.servers);
     const basePaths = Array.from(
       basePathObs.reduce((acc, bp) => {
-        bp.all().forEach(path => acc.add(path));
+        bp.all().forEach((path) => acc.add(path));
         return acc;
       }, new Set<string>()),
     );
@@ -55,7 +54,7 @@ export class OpenAPIFramework {
       }
     }
     const getApiDoc = () => {
-      return this.copy(apiDoc);
+      return apiDoc;
     };
 
     this.sortApiDocTags(apiDoc);
@@ -108,10 +107,6 @@ export class OpenAPIFramework {
       : $RefParser.bundle(filePath);
   }
 
-  private copy<T>(obj: T): T {
-    return JSON.parse(JSON.stringify(obj));
-  }
-
   private sortApiDocTags(apiDoc: OpenAPIV3.Document): void {
     if (apiDoc && Array.isArray(apiDoc.tags)) {
       apiDoc.tags.sort((a, b): number => {
@@ -131,6 +126,6 @@ export class OpenAPIFramework {
       const basePath = new BasePath(server);
       basePathsMap[basePath.expressPath] = basePath;
     }
-    return Object.keys(basePathsMap).map(key => basePathsMap[key]);
+    return Object.keys(basePathsMap).map((key) => basePathsMap[key]);
   }
 }
