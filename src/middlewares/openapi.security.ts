@@ -279,8 +279,6 @@ class AuthValidator {
       if (type === 'basic' && !authHeader.includes('basic')) {
         throw Error(`Authorization header with scheme 'Basic' required`);
       }
-
-      this.dissallowScopes();
     }
   }
 
@@ -300,17 +298,6 @@ class AuthValidator {
           throw Error(`cookie '${scheme.name}' required`);
         }
       }
-
-      this.dissallowScopes();
-    }
-  }
-
-  private dissallowScopes(): void {
-    if (this.scopes.length > 0) {
-      // https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md#security-requirement-object
-      throw new InternalServerError({
-        message: "scopes array must be empty for security type 'http'",
-      });
     }
   }
 }

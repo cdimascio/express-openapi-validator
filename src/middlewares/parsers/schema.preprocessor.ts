@@ -252,9 +252,11 @@ export class SchemaPreprocessor {
       const options = opts[kind];
       options.path = node.path;
 
-      this.handleSerDes(pschema, nschema, options);
-      this.handleReadonly(pschema, nschema, options);
-      this.processDiscriminator(pschema, nschema, options);
+      if (nschema) {
+        this.handleSerDes(pschema, nschema, options);
+        this.handleReadonly(pschema, nschema, options);
+        this.processDiscriminator(pschema, nschema, options);
+      }
     }
   }
 
@@ -265,6 +267,9 @@ export class SchemaPreprocessor {
 
     if (xOf && schemaObj?.discriminator?.propertyName && !o.discriminator) {
       const options = schemaObj[xOf].flatMap((refObject) => {
+        if (refObject['$ref'] === undefined) {
+          return [];
+        }
         const keys = this.findKeys(
           schemaObj.discriminator.mapping,
           (value) => value === refObject['$ref'],

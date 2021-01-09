@@ -1,3 +1,14 @@
+## <small>4.10.4 (2021-01-09)</small>
+
+* chore: increment patch version ([2d0f2d8](https://github.com/cdimascio/express-openapi-validator/commit/2d0f2d8))
+* chore: increment patch version ([20e2350](https://github.com/cdimascio/express-openapi-validator/commit/20e2350))
+* feat: 3.1.0 roles in security schema for all types (#513) ([6d2a14d](https://github.com/cdimascio/express-openapi-validator/commit/6d2a14d)), closes [#513](https://github.com/cdimascio/express-openapi-validator/issues/513)
+* Fix using discriminators. (#510) ([590649a](https://github.com/cdimascio/express-openapi-validator/commit/590649a)), closes [#510](https://github.com/cdimascio/express-openapi-validator/issues/510)
+* fix: preprocessor type of undefined ([d17abd3](https://github.com/cdimascio/express-openapi-validator/commit/d17abd3))
+* test: test for issue #590 ([7e601c4](https://github.com/cdimascio/express-openapi-validator/commit/7e601c4)), closes [#590](https://github.com/cdimascio/express-openapi-validator/issues/590)
+
+
+
 ## <small>4.10.2 (2021-01-02)</small>
 
 * chore: increment patch version ([de89f56](https://github.com/cdimascio/express-openapi-validator/commit/de89f56))
