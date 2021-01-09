@@ -34,12 +34,10 @@ class Node<T, P> {
   public readonly path: string[];
   public readonly parent: P;
   public readonly schema: T;
-  public readonly seen: boolean;
   constructor(parent: P, schema: T, path: string[]) {
     this.path = path;
     this.parent = parent;
     this.schema = schema;
-    this.seen = false;
   }
 }
 type SchemaObjectNode = Node<SchemaObject, SchemaObject>;
@@ -172,13 +170,13 @@ export class SchemaPreprocessor {
   private traverseSchemas(nodes: TopLevelSchemaNodes, visit) {
     const recurse = (parent, node, opts: TraversalStates) => {
       const schema = this.resolveSchema<SchemaObject>(node.schema);
-      if (node.seen || !schema) {
+      if (node.schema._seen || !schema) {
         // if we can't dereference a path within the schema, skip preprocessing
         // TODO handle refs like below during preprocessing
         // #/paths/~1subscription/get/requestBody/content/application~1json/schema/properties/subscription
         return;
       }
-      node.seen = true;
+      node.schema._seen = true;
       // Save the original schema so we can check if it was a $ref
       (<any>opts).req.originalSchema = node.schema;
       (<any>opts).res.originalSchema = node.schema;
