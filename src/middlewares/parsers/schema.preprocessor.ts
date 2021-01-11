@@ -168,21 +168,34 @@ export class SchemaPreprocessor {
    * @param visit a function to invoke per node
    */
   private traverseSchemas(nodes: TopLevelSchemaNodes, visit) {
+    const seen = new Set();
     const recurse = (parent, node, opts: TraversalStates) => {
-      const schema = this.resolveSchema<SchemaObject>(node.schema);
-      if (node.schema._seen || !schema) {
+      if (node.schema.$ref) {
+        seen.add(node.schema);
+        const schema = this.resolveSchema<SchemaObject>(node.schema);
+        const path = node.schema.$ref.split('/').slice(1);
+
+        (<any>opts).req.originalSchema = node.schema;
+        (<any>opts).res.originalSchema = node.schema;
+        visit(parent, node, opts);
+
+        recurse(node, new Node(node.schema, schema, path), opts);
+        return;
+      }
+      const schema = node.schema;
+      if (seen.has(schema) || !schema) {
+        // console.log('skipp')
         // if we can't dereference a path within the schema, skip preprocessing
         // TODO handle refs like below during preprocessing
         // #/paths/~1subscription/get/requestBody/content/application~1json/schema/properties/subscription
         return;
       }
-      node.schema._seen = true;
+      seen.add(schema);
       // Save the original schema so we can check if it was a $ref
-      (<any>opts).req.originalSchema = node.schema;
-      (<any>opts).res.originalSchema = node.schema;
+      (<any>opts).req.originalSchema = schema;
+      (<any>opts).res.originalSchema = schema;
 
-      // TODO mark visited, and skip visited
-      // TODO Visit api docs
+
       visit(parent, node, opts);
 
       if (schema.allOf) {
