@@ -1,3 +1,21 @@
+## <small>4.10.5 (2021-01-11)</small>
+
+* chore: beta ([979e310](https://github.com/cdimascio/express-openapi-validator/commit/979e310))
+* chore: change history ([8a058fe](https://github.com/cdimascio/express-openapi-validator/commit/8a058fe))
+* chore: increment patch version ([6a5f160](https://github.com/cdimascio/express-openapi-validator/commit/6a5f160))
+* chore: increment patch version ([2d0f2d8](https://github.com/cdimascio/express-openapi-validator/commit/2d0f2d8))
+* improve preprocess logic and skip unneeded clones (#515) ([06d8c6e](https://github.com/cdimascio/express-openapi-validator/commit/06d8c6e)), closes [#515](https://github.com/cdimascio/express-openapi-validator/issues/515) [#511](https://github.com/cdimascio/express-openapi-validator/issues/511)
+* fix: cleanup ([8f2c3fb](https://github.com/cdimascio/express-openapi-validator/commit/8f2c3fb))
+* fix: remove merge ([53efb35](https://github.com/cdimascio/express-openapi-validator/commit/53efb35))
+* fix: remove uneeded clones ([66d2762](https://github.com/cdimascio/express-openapi-validator/commit/66d2762))
+* fix: remove uneeded deps ([c0f43fa](https://github.com/cdimascio/express-openapi-validator/commit/c0f43fa))
+* fix: remove yaml parse ([009d95e](https://github.com/cdimascio/express-openapi-validator/commit/009d95e))
+* fix: skip schemas ([617e9d3](https://github.com/cdimascio/express-openapi-validator/commit/617e9d3))
+* test: add circular test ([db15435](https://github.com/cdimascio/express-openapi-validator/commit/db15435))
+* feat: skip visited nodes ([08df2b4](https://github.com/cdimascio/express-openapi-validator/commit/08df2b4))
+
+
+
 ## <small>4.10.4 (2021-01-09)</small>
 
 * chore: increment patch version ([2d0f2d8](https://github.com/cdimascio/express-openapi-validator/commit/2d0f2d8))
