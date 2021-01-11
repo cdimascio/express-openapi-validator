@@ -259,7 +259,7 @@ export class SchemaPreprocessor {
       const options = opts[kind];
       options.path = node.path;
 
-      if (nschema) {
+      if (nschema) { // This null check should no longer be necessary
         this.handleSerDes(pschema, nschema, options);
         this.handleReadonly(pschema, nschema, options);
         this.processDiscriminator(pschema, nschema, options);
