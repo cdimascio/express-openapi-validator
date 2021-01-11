@@ -102,7 +102,7 @@ export class SchemaPreprocessor {
     const componentSchemas = this.gatherComponentSchemaNodes();
     const r = this.gatherSchemaNodesFromPaths();
 
-    // Now that we've processed paths, clonse the spec
+    // Now that we've processed paths, clone a response spec if we are validating responses
     this.apiDocRes = !!this.responseOpts ? cloneDeep(this.apiDoc) : null;
 
     const schemaNodes = {
@@ -168,20 +168,30 @@ export class SchemaPreprocessor {
    * @param visit a function to invoke per node
    */
   private traverseSchemas(nodes: TopLevelSchemaNodes, visit) {
+    const seen = new Set();
     const recurse = (parent, node, opts: TraversalStates) => {
-      const schema = this.resolveSchema<SchemaObject>(node.schema);
-      if (!schema) {
-        // if we can't dereference a path within the schema, skip preprocessing
-        // TODO handle refs like below during preprocessing
-        // #/paths/~1subscription/get/requestBody/content/application~1json/schema/properties/subscription
+      const schema = node.schema;
+
+      if (!schema || seen.has(schema)) return;
+
+      seen.add(schema);
+
+      if (schema.$ref) {
+        const resolvedSchema = this.resolveSchema<SchemaObject>(schema);
+        const path = schema.$ref.split('/').slice(1);
+
+        (<any>opts).req.originalSchema = schema;
+        (<any>opts).res.originalSchema = schema;
+
+        visit(parent, node, opts);
+        recurse(node, new Node(schema, resolvedSchema, path), opts);
         return;
       }
-      // Save the original schema so we can check if it was a $ref
-      (<any>opts).req.originalSchema = node.schema;
-      (<any>opts).res.originalSchema = node.schema;
 
-      // TODO mark visited, and skip visited
-      // TODO Visit api docs
+      // Save the original schema so we can check if it was a $ref
+      (<any>opts).req.originalSchema = schema;
+      (<any>opts).res.originalSchema = schema;
+
       visit(parent, node, opts);
 
       if (schema.allOf) {
@@ -199,8 +209,8 @@ export class SchemaPreprocessor {
           const child = new Node(node, s, [...node.path, 'anyOf', i + '']);
           recurse(node, child, opts);
         });
-      } else if (node.schema.properties) {
-        Object.entries(node.schema.properties).forEach(([id, cschema]) => {
+      } else if (schema.properties) {
+        Object.entries(schema.properties).forEach(([id, cschema]) => {
           const path = [...node.path, 'properties', id];
           const child = new Node(node, cschema, path);
           recurse(node, child, opts);
@@ -249,7 +259,7 @@ export class SchemaPreprocessor {
       const options = opts[kind];
       options.path = node.path;
 
-      if (nschema) {
+      if (nschema) { // This null check should no longer be necessary
         this.handleSerDes(pschema, nschema, options);
         this.handleReadonly(pschema, nschema, options);
         this.processDiscriminator(pschema, nschema, options);
