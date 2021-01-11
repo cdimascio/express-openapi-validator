@@ -102,7 +102,7 @@ export class SchemaPreprocessor {
     const componentSchemas = this.gatherComponentSchemaNodes();
     const r = this.gatherSchemaNodesFromPaths();
 
-    // Now that we've processed paths, clonse the spec
+    // Now that we've processed paths, clone a response spec if we are validating responses
     this.apiDocRes = !!this.responseOpts ? cloneDeep(this.apiDoc) : null;
 
     const schemaNodes = {
@@ -171,9 +171,9 @@ export class SchemaPreprocessor {
     const seen = new Set();
     const recurse = (parent, node, opts: TraversalStates) => {
       const schema = node.schema;
-      
+
       if (!schema || seen.has(schema)) return;
-      
+
       seen.add(schema);
 
       if (schema.$ref) {
