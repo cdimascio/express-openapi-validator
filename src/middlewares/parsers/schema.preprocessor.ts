@@ -170,31 +170,27 @@ export class SchemaPreprocessor {
   private traverseSchemas(nodes: TopLevelSchemaNodes, visit) {
     const seen = new Set();
     const recurse = (parent, node, opts: TraversalStates) => {
-      if (node.schema.$ref) {
-        seen.add(node.schema);
-        const schema = this.resolveSchema<SchemaObject>(node.schema);
-        const path = node.schema.$ref.split('/').slice(1);
-
-        (<any>opts).req.originalSchema = node.schema;
-        (<any>opts).res.originalSchema = node.schema;
-        visit(parent, node, opts);
-
-        recurse(node, new Node(node.schema, schema, path), opts);
-        return;
-      }
       const schema = node.schema;
-      if (seen.has(schema) || !schema) {
-        // console.log('skipp')
-        // if we can't dereference a path within the schema, skip preprocessing
-        // TODO handle refs like below during preprocessing
-        // #/paths/~1subscription/get/requestBody/content/application~1json/schema/properties/subscription
+      
+      if (!schema || seen.has(schema)) return;
+      
+      seen.add(schema);
+
+      if (schema.$ref) {
+        const resolvedSchema = this.resolveSchema<SchemaObject>(schema);
+        const path = schema.$ref.split('/').slice(1);
+
+        (<any>opts).req.originalSchema = schema;
+        (<any>opts).res.originalSchema = schema;
+
+        visit(parent, node, opts);
+        recurse(node, new Node(schema, resolvedSchema, path), opts);
         return;
       }
-      seen.add(schema);
+
       // Save the original schema so we can check if it was a $ref
       (<any>opts).req.originalSchema = schema;
       (<any>opts).res.originalSchema = schema;
-
 
       visit(parent, node, opts);
 
@@ -213,8 +209,8 @@ export class SchemaPreprocessor {
           const child = new Node(node, s, [...node.path, 'anyOf', i + '']);
           recurse(node, child, opts);
         });
-      } else if (node.schema.properties) {
-        Object.entries(node.schema.properties).forEach(([id, cschema]) => {
+      } else if (schema.properties) {
+        Object.entries(schema.properties).forEach(([id, cschema]) => {
           const path = [...node.path, 'properties', id];
           const child = new Node(node, cschema, path);
           recurse(node, child, opts);
