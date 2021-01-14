@@ -1,3 +1,121 @@
+## <small>4.10.5 (2021-01-11)</small>
+
+* chore: beta ([979e310](https://github.com/cdimascio/express-openapi-validator/commit/979e310))
+* chore: change history ([8a058fe](https://github.com/cdimascio/express-openapi-validator/commit/8a058fe))
+* chore: increment patch version ([6a5f160](https://github.com/cdimascio/express-openapi-validator/commit/6a5f160))
+* chore: increment patch version ([2d0f2d8](https://github.com/cdimascio/express-openapi-validator/commit/2d0f2d8))
+* improve preprocess logic and skip unneeded clones (#515) ([06d8c6e](https://github.com/cdimascio/express-openapi-validator/commit/06d8c6e)), closes [#515](https://github.com/cdimascio/express-openapi-validator/issues/515) [#511](https://github.com/cdimascio/express-openapi-validator/issues/511)
+* fix: cleanup ([8f2c3fb](https://github.com/cdimascio/express-openapi-validator/commit/8f2c3fb))
+* fix: remove merge ([53efb35](https://github.com/cdimascio/express-openapi-validator/commit/53efb35))
+* fix: remove uneeded clones ([66d2762](https://github.com/cdimascio/express-openapi-validator/commit/66d2762))
+* fix: remove uneeded deps ([c0f43fa](https://github.com/cdimascio/express-openapi-validator/commit/c0f43fa))
+* fix: remove yaml parse ([009d95e](https://github.com/cdimascio/express-openapi-validator/commit/009d95e))
+* fix: skip schemas ([617e9d3](https://github.com/cdimascio/express-openapi-validator/commit/617e9d3))
+* test: add circular test ([db15435](https://github.com/cdimascio/express-openapi-validator/commit/db15435))
+* feat: skip visited nodes ([08df2b4](https://github.com/cdimascio/express-openapi-validator/commit/08df2b4))
+
+
+
+## <small>4.10.4 (2021-01-09)</small>
+
+* chore: increment patch version ([2d0f2d8](https://github.com/cdimascio/express-openapi-validator/commit/2d0f2d8))
+* chore: increment patch version ([20e2350](https://github.com/cdimascio/express-openapi-validator/commit/20e2350))
+* feat: 3.1.0 roles in security schema for all types (#513) ([6d2a14d](https://github.com/cdimascio/express-openapi-validator/commit/6d2a14d)), closes [#513](https://github.com/cdimascio/express-openapi-validator/issues/513)
+* Fix using discriminators. (#510) ([590649a](https://github.com/cdimascio/express-openapi-validator/commit/590649a)), closes [#510](https://github.com/cdimascio/express-openapi-validator/issues/510)
+* fix: preprocessor type of undefined ([d17abd3](https://github.com/cdimascio/express-openapi-validator/commit/d17abd3))
+* test: test for issue #590 ([7e601c4](https://github.com/cdimascio/express-openapi-validator/commit/7e601c4)), closes [#590](https://github.com/cdimascio/express-openapi-validator/issues/590)
+
+
+
+## <small>4.10.2 (2021-01-02)</small>
+
+* chore: increment patch version ([de89f56](https://github.com/cdimascio/express-openapi-validator/commit/de89f56))
+* chore: increment patch version ([dd9eb8e](https://github.com/cdimascio/express-openapi-validator/commit/dd9eb8e))
+* chore: increment patch version ([5df747c](https://github.com/cdimascio/express-openapi-validator/commit/5df747c))
+* chore: increment patch version ([f35b1f2](https://github.com/cdimascio/express-openapi-validator/commit/f35b1f2))
+* chore: increment patch version ([a542ece](https://github.com/cdimascio/express-openapi-validator/commit/a542ece))
+* chore: increment v4.10.0 ([7357083](https://github.com/cdimascio/express-openapi-validator/commit/7357083))
+* chore: launch.json ([3347f5d](https://github.com/cdimascio/express-openapi-validator/commit/3347f5d))
+* chore: publish script ([ab392b8](https://github.com/cdimascio/express-openapi-validator/commit/ab392b8))
+* chore: remove docs folder ([1592223](https://github.com/cdimascio/express-openapi-validator/commit/1592223))
+* chore: update example deps ([1846227](https://github.com/cdimascio/express-openapi-validator/commit/1846227))
+* fix: #495 inconsistent validation of multipart request body with $ref (#496) ([832f865](https://github.com/cdimascio/express-openapi-validator/commit/832f865)), closes [#495](https://github.com/cdimascio/express-openapi-validator/issues/495) [#496](https://github.com/cdimascio/express-openapi-validator/issues/496) [#495](https://github.com/cdimascio/express-openapi-validator/issues/495)
+* fix: case-insensitive charset (#503) ([20aa8f1](https://github.com/cdimascio/express-openapi-validator/commit/20aa8f1)), closes [#503](https://github.com/cdimascio/express-openapi-validator/issues/503)
+* fix: preprocessor fails if it cannot dereference a path ([45c2605](https://github.com/cdimascio/express-openapi-validator/commit/45c2605))
+* fix: preprocessor fails if it cannot dereference a path. skip it. ([57324ee](https://github.com/cdimascio/express-openapi-validator/commit/57324ee))
+* fix: update comments ([6f7f582](https://github.com/cdimascio/express-openapi-validator/commit/6f7f582))
+* improved schema preprocessor and `Date` object handling (validation/serialization) for response bodi ([e08f45a](https://github.com/cdimascio/express-openapi-validator/commit/e08f45a)), closes [#499](https://github.com/cdimascio/express-openapi-validator/issues/499)
+* Update no.components.spec.ts ([7899c54](https://github.com/cdimascio/express-openapi-validator/commit/7899c54))
+* test: empty components ([61b698a](https://github.com/cdimascio/express-openapi-validator/commit/61b698a))
+* doc: brief summary ([60f2cf4](https://github.com/cdimascio/express-openapi-validator/commit/60f2cf4))
+* doc: update README ([f466d9e](https://github.com/cdimascio/express-openapi-validator/commit/f466d9e))
+* doc: update README ([1d3dcee](https://github.com/cdimascio/express-openapi-validator/commit/1d3dcee))
+* doc: update README ([29a83a7](https://github.com/cdimascio/express-openapi-validator/commit/29a83a7))
+* feat: discriminator example ([95509b8](https://github.com/cdimascio/express-openapi-validator/commit/95509b8))
+* docs: add electrotype as a contributor (#502) ([e8d6a37](https://github.com/cdimascio/express-openapi-validator/commit/e8d6a37)), closes [#502](https://github.com/cdimascio/express-openapi-validator/issues/502)
+* docs: add pilerou as a contributor (#497) ([2b2aa7f](https://github.com/cdimascio/express-openapi-validator/commit/2b2aa7f)), closes [#497](https://github.com/cdimascio/express-openapi-validator/issues/497)
+
+
+
+## <small>4.10.1 (2020-12-28)</small>
+
+* fix: #495 inconsistent validation of multipart request body with $ref (#496) ([832f865](https://github.com/cdimascio/express-openapi-validator/commit/832f865)), closes [#495](https://github.com/cdimascio/express-openapi-validator/issues/495) [#496](https://github.com/cdimascio/express-openapi-validator/issues/496) [#495](https://github.com/cdimascio/express-openapi-validator/issues/495)
+* fix: case-insensitive charset (#503) ([20aa8f1](https://github.com/cdimascio/express-openapi-validator/commit/20aa8f1)), closes [#503](https://github.com/cdimascio/express-openapi-validator/issues/503)
+* chore: increment patch version ([5df747c](https://github.com/cdimascio/express-openapi-validator/commit/5df747c))
+* chore: increment patch version ([f35b1f2](https://github.com/cdimascio/express-openapi-validator/commit/f35b1f2))
+* chore: increment patch version ([a542ece](https://github.com/cdimascio/express-openapi-validator/commit/a542ece))
+* chore: increment v4.10.0 ([7357083](https://github.com/cdimascio/express-openapi-validator/commit/7357083))
+* chore: launch.json ([3347f5d](https://github.com/cdimascio/express-openapi-validator/commit/3347f5d))
+* chore: publish script ([ab392b8](https://github.com/cdimascio/express-openapi-validator/commit/ab392b8))
+* chore: remove docs folder ([1592223](https://github.com/cdimascio/express-openapi-validator/commit/1592223))
+* chore: update example deps ([1846227](https://github.com/cdimascio/express-openapi-validator/commit/1846227))
+* improved schema preprocessor and `Date` object handling (validation/serialization) for response bodi ([e08f45a](https://github.com/cdimascio/express-openapi-validator/commit/e08f45a)), closes [#499](https://github.com/cdimascio/express-openapi-validator/issues/499)
+* docs: add electrotype as a contributor (#502) ([e8d6a37](https://github.com/cdimascio/express-openapi-validator/commit/e8d6a37)), closes [#502](https://github.com/cdimascio/express-openapi-validator/issues/502)
+* docs: add pilerou as a contributor (#497) ([2b2aa7f](https://github.com/cdimascio/express-openapi-validator/commit/2b2aa7f)), closes [#497](https://github.com/cdimascio/express-openapi-validator/issues/497)
+* doc: brief summary ([60f2cf4](https://github.com/cdimascio/express-openapi-validator/commit/60f2cf4))
+* doc: update README ([1d3dcee](https://github.com/cdimascio/express-openapi-validator/commit/1d3dcee))
+* doc: update README ([29a83a7](https://github.com/cdimascio/express-openapi-validator/commit/29a83a7))
+
+
+
+## 4.10.0 (2020-12-26)
+
+* improved schema preprocessor and `Date` object handling (validation/serialization) for response bodi ([e08f45a](https://github.com/cdimascio/express-openapi-validator/commit/e08f45a)), closes [#499](https://github.com/cdimascio/express-openapi-validator/issues/499)
+* docs: add electrotype as a contributor (#502) ([e8d6a37](https://github.com/cdimascio/express-openapi-validator/commit/e8d6a37)), closes [#502](https://github.com/cdimascio/express-openapi-validator/issues/502)
+* docs: add pilerou as a contributor (#497) ([2b2aa7f](https://github.com/cdimascio/express-openapi-validator/commit/2b2aa7f)), closes [#497](https://github.com/cdimascio/express-openapi-validator/issues/497)
+* chore: increment patch version ([5df747c](https://github.com/cdimascio/express-openapi-validator/commit/5df747c))
+* chore: increment patch version ([f35b1f2](https://github.com/cdimascio/express-openapi-validator/commit/f35b1f2))
+* chore: increment patch version ([a542ece](https://github.com/cdimascio/express-openapi-validator/commit/a542ece))
+* chore: launch.json ([3347f5d](https://github.com/cdimascio/express-openapi-validator/commit/3347f5d))
+* chore: publish script ([ab392b8](https://github.com/cdimascio/express-openapi-validator/commit/ab392b8))
+* chore: remove docs folder ([1592223](https://github.com/cdimascio/express-openapi-validator/commit/1592223))
+* chore: update example deps ([1846227](https://github.com/cdimascio/express-openapi-validator/commit/1846227))
+* doc: brief summary ([60f2cf4](https://github.com/cdimascio/express-openapi-validator/commit/60f2cf4))
+* doc: update README ([1d3dcee](https://github.com/cdimascio/express-openapi-validator/commit/1d3dcee))
+* doc: update README ([29a83a7](https://github.com/cdimascio/express-openapi-validator/commit/29a83a7))
+* fix: #495 inconsistent validation of multipart request body with $ref (#496) ([832f865](https://github.com/cdimascio/express-openapi-validator/commit/832f865)), closes [#495](https://github.com/cdimascio/express-openapi-validator/issues/495) [#496](https://github.com/cdimascio/express-openapi-validator/issues/496) [#495](https://github.com/cdimascio/express-openapi-validator/issues/495)
+
+
+
+## <small>4.9.5 (2020-12-26)</small>
+
+* improved schema preprocessor and `Date` object handling (validation/serialization) for response bodi ([e08f45a](https://github.com/cdimascio/express-openapi-validator/commit/e08f45a)), closes [#499](https://github.com/cdimascio/express-openapi-validator/issues/499)
+* docs: add electrotype as a contributor (#502) ([e8d6a37](https://github.com/cdimascio/express-openapi-validator/commit/e8d6a37)), closes [#502](https://github.com/cdimascio/express-openapi-validator/issues/502)
+* docs: add pilerou as a contributor (#497) ([2b2aa7f](https://github.com/cdimascio/express-openapi-validator/commit/2b2aa7f)), closes [#497](https://github.com/cdimascio/express-openapi-validator/issues/497)
+* chore: increment patch version ([5df747c](https://github.com/cdimascio/express-openapi-validator/commit/5df747c))
+* chore: increment patch version ([f35b1f2](https://github.com/cdimascio/express-openapi-validator/commit/f35b1f2))
+* chore: increment patch version ([a542ece](https://github.com/cdimascio/express-openapi-validator/commit/a542ece))
+* chore: launch.json ([3347f5d](https://github.com/cdimascio/express-openapi-validator/commit/3347f5d))
+* chore: publish script ([ab392b8](https://github.com/cdimascio/express-openapi-validator/commit/ab392b8))
+* chore: remove docs folder ([1592223](https://github.com/cdimascio/express-openapi-validator/commit/1592223))
+* chore: update example deps ([1846227](https://github.com/cdimascio/express-openapi-validator/commit/1846227))
+* doc: brief summary ([60f2cf4](https://github.com/cdimascio/express-openapi-validator/commit/60f2cf4))
+* doc: update README ([1d3dcee](https://github.com/cdimascio/express-openapi-validator/commit/1d3dcee))
+* doc: update README ([29a83a7](https://github.com/cdimascio/express-openapi-validator/commit/29a83a7))
+* fix: #495 inconsistent validation of multipart request body with $ref (#496) ([832f865](https://github.com/cdimascio/express-openapi-validator/commit/832f865)), closes [#495](https://github.com/cdimascio/express-openapi-validator/issues/495) [#496](https://github.com/cdimascio/express-openapi-validator/issues/496) [#495](https://github.com/cdimascio/express-openapi-validator/issues/495)
+
+
+
 ## <small>4.9.5 (2020-12-22)</small>
 
 * fix: #495 inconsistent validation of multipart request body with $ref (#496) ([832f865](https://github.com/cdimascio/express-openapi-validator/commit/832f865)), closes [#495](https://github.com/cdimascio/express-openapi-validator/issues/495) [#496](https://github.com/cdimascio/express-openapi-validator/issues/496) [#495](https://github.com/cdimascio/express-openapi-validator/issues/495)

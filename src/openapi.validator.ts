@@ -2,7 +2,6 @@ import ono from 'ono';
 import ajv = require('ajv');
 import * as express from 'express';
 import * as _uniq from 'lodash.uniq';
-import * as cloneDeep from 'lodash.clonedeep';
 import * as middlewares from './middlewares';
 import { Application, Response, NextFunction, Router } from 'express';
 import { OpenApiContext } from './framework/openapi.context';

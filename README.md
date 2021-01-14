@@ -1120,6 +1120,11 @@ With the following Express route defintion
 
 A path like `/files/some/long/path` will pass validation. The Express `req.params.path` property will hold the value `some/long/path`.
 
+**Q:** Can I use discriminators with `oneOf` and `anyOf`?
+
+**A:**
+Currently, there is support for top level discriminators. See [top-level discriminator example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/8-top-level-discriminator)
+
 **Q:** What happened to the `securityHandlers` property?
 
 **A:** In v3, `securityHandlers` have been replaced by `validateSecurity.handlers`. To use v3 security handlers, move your existing security handlers to the new property. No other change is required. Note that the v2 `securityHandlers` property is supported in v3, but deprecated
@@ -1246,6 +1251,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

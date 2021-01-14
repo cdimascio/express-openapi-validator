@@ -1,4 +1,3 @@
-import * as _uniq from 'lodash.uniq';
 import * as res from './resolvers';
 import { OpenApiValidator, OpenApiValidatorOpts } from './openapi.validator';
 import { OpenApiSpecLoader } from './framework/openapi.spec.loader';
