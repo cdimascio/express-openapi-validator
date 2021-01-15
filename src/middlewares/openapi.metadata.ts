@@ -24,11 +24,23 @@ export function applyOpenApiMetadata(
     const matched = lookupRoute(req);
     if (matched) {
       const { expressRoute, openApiRoute, pathParams, schema } = matched;
+      const parameters = [];
+      for (const param of schema?.parameters || []) {
+        if (param.$ref) {
+          const p = param.$ref.replace('#/components/parameters/', '');
+          parameters.push(
+            openApiContext.apiDoc.components.parameters[p]
+          );
+        } else {
+          parameters.push(param);
+        }
+      }
       req.openapi = {
         expressRoute: expressRoute,
         openApiRoute: openApiRoute,
         pathParams: pathParams,
         schema: schema,
+        parameters: parameters,
       };
       req.params = pathParams;
       if (responseApiDoc) {

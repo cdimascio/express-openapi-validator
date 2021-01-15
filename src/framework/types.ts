@@ -433,6 +433,7 @@ export interface OpenApiRequestMetadata {
   openApiRoute: string;
   pathParams: { [index: string]: string };
   schema: OpenAPIV3.OperationObject;
+  parameters: Array<ParameterObject>;
 }
 
 export interface OpenApiRequest extends Request {
