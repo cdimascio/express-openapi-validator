@@ -32,7 +32,7 @@ mung.json = function json(fn, options) {
       let originalJson = json;
       res.json = original;
       if (res.headersSent) return res;
-      if (!mungError && res.statusCode >= 400) return original.call(this, json);
+      if (!mungError && res.statusCode >= 500) return original.call(this, json);
 
       // Run the munger
       try {
