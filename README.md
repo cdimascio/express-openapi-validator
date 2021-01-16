@@ -33,7 +33,7 @@ npm install express-openapi-validator
 1. Require/import the openapi validator
 
 ```javascript
-const OpenApiValidator = require("express-openapi-validator");
+const OpenApiValidator = require('express-openapi-validator');
 ```
 
 2. Install the middleware
@@ -41,10 +41,10 @@ const OpenApiValidator = require("express-openapi-validator");
 ```javascript
 app.use(
   OpenApiValidator.middleware({
-    apiSpec: "./openapi.yaml",
+    apiSpec: './openapi.yaml',
     validateRequests: true, // (default)
     validateResponses: true, // false by default
-  })
+  }),
 );
 ```
 
@@ -85,14 +85,14 @@ The following demonstrates how to use express-openapi-validator to auto validate
 See the complete [source code](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/1-standard) and [OpenAPI spec](https://github.com/cdimascio/express-openapi-validator/blob/master/examples/1-standard/api.yaml) for the example below:
 
 ```javascript
-const express = require("express");
-const path = require("path");
-const bodyParser = require("body-parser");
-const http = require("http");
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const http = require('http');
 const app = express();
 
 // 1. Import the express-openapi-validator library
-const OpenApiValidator = require("express-openapi-validator");
+const OpenApiValidator = require('express-openapi-validator');
 
 // 2. Set up body parsers for the request body types you expect
 //    Must be specified prior to endpoints in 5.
@@ -101,36 +101,36 @@ app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // 3. (optionally) Serve the OpenAPI spec
-const spec = path.join(__dirname, "api.yaml");
-app.use("/spec", express.static(spec));
+const spec = path.join(__dirname, 'api.yaml');
+app.use('/spec', express.static(spec));
 
 // 4. Install the OpenApiValidator onto your express app
 app.use(
   OpenApiValidator.middleware({
-    apiSpec: "./api.yaml",
+    apiSpec: './api.yaml',
     validateResponses: true, // <-- to validate responses
     // unknownFormats: ['my-format'] // <-- to provide custom formats
-  })
+  }),
 );
 
 // 5. Define routes using Express
-app.get("/v1/pets", function (req, res, next) {
+app.get('/v1/pets', function (req, res, next) {
   res.json([
-    { id: 1, type: "cat", name: "max" },
-    { id: 2, type: "cat", name: "mini" },
+    { id: 1, type: 'cat', name: 'max' },
+    { id: 2, type: 'cat', name: 'mini' },
   ]);
 });
 
-app.post("/v1/pets", function (req, res, next) {
-  res.json({ name: "sparky", type: "dog" });
+app.post('/v1/pets', function (req, res, next) {
+  res.json({ name: 'sparky', type: 'dog' });
 });
 
-app.get("/v1/pets/:id", function (req, res, next) {
-  res.json({ id: req.params.id, type: "dog", name: "sparky" });
+app.get('/v1/pets/:id', function (req, res, next) {
+  res.json({ id: req.params.id, type: 'dog', name: 'sparky' });
 });
 
 // 5a. Define route(s) to upload file(s)
-app.post("/v1/pets/:id/photos", function (req, res, next) {
+app.post('/v1/pets/:id/photos', function (req, res, next) {
   // files are found in req.files
   // non-file multipart params can be found as such: req.body['my-param']
   res.json({
@@ -172,7 +172,7 @@ app.use(
   OpenApiValidator.middleware({
     apiSpec,
     operationHandlers: path.join(__dirname),
-  })
+  }),
 );
 ```
 
@@ -199,7 +199,7 @@ app.use(
 ```javascript
 module.exports = {
   // the express handler implementaiton for ping
-  ping: (req, res) => res.status(200).send("pong"),
+  ping: (req, res) => res.status(200).send('pong'),
 };
 ```
 
@@ -210,25 +210,25 @@ Below are some code snippets:
 **app.js**
 
 ```javascript
-const express = require("express");
-const path = require("path");
-const bodyParser = require("body-parser");
-const logger = require("morgan");
-const http = require("http");
-const OpenApiValidator = require("express-openapi-validator");
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const logger = require('morgan');
+const http = require('http');
+const OpenApiValidator = require('express-openapi-validator');
 
 const port = 3000;
 const app = express();
-const apiSpec = path.join(__dirname, "api.yaml");
+const apiSpec = path.join(__dirname, 'api.yaml');
 
 // 1. Install bodyParsers for the request types your API will support
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.text());
 app.use(bodyParser.json());
 
-app.use(logger("dev"));
+app.use(logger('dev'));
 
-app.use("/spec", express.static(apiSpec));
+app.use('/spec', express.static(apiSpec));
 
 //  2. Install the OpenApiValidator on your express app
 app.use(
@@ -237,7 +237,7 @@ app.use(
     validateResponses: true, // default false
     // 3. Provide the base path to the operation handlers directory
     operationHandlers: path.join(__dirname), // default false
-  })
+  }),
 );
 
 // 4. Woah sweet! With auto-wired operation handlers, I don't have to declare my routes!
@@ -275,7 +275,7 @@ module.exports = app;
     # e.g. operations/base/path/routes/ping.js
     x-eov-operation-handler: routes/ping
     responses:
-      "200":
+      '200':
         description: OK
         # ...
 ```
@@ -286,7 +286,7 @@ module.exports = app;
 module.exports = {
   // ping must match operationId or x-eov-operation-id above
   // note that x-eov-operation-id overrides operationId
-  ping: (req, res) => res.status(200).send("pong"),
+  ping: (req, res) => res.status(200).send('pong'),
 };
 ```
 
@@ -504,7 +504,7 @@ OpenApiValidator.middleware({
 Specifies the path to an OpenAPI 3 specification or a JSON object representing the OpenAPI 3 specificiation
 
 ```javascript
-apiSpec: "./path/to/my-openapi-spec.yaml";
+apiSpec: './path/to/my-openapi-spec.yaml';
 ```
 
 or
@@ -603,7 +603,7 @@ Determines whether the validator should validate responses. Also accepts respons
 
   ```javascript
   validateResponses: {
-    removeAdditional: "failing";
+    removeAdditional: 'failing';
   }
   ```
 
@@ -659,14 +659,14 @@ e.g.
 ```javascript
 formats: [
   {
-    name: "my-three-digit-format",
-    type: "number",
+    name: 'my-three-digit-format',
+    type: 'number',
     // validate returns true the number has 3 digits, false otherwise
     validate: (v) => /^\d{3}$/.test(v.toString()),
   },
   {
-    name: "my-three-letter-format",
-    type: "string",
+    name: 'my-three-letter-format',
+    type: 'string',
     // validate returns true the string has 3 letters, false otherwise
     validate: (v) => /^[A-Za-z]{3}$/.test(v),
   },
@@ -698,7 +698,7 @@ Defines how the validator should behave if an unknown or custom format is encoun
   e.g.
 
   ```javascript
-  unknownFormats: ["phone-number", "uuid"];
+  unknownFormats: ['phone-number', 'uuid'];
   ```
 
 - `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
@@ -751,7 +751,7 @@ Complete example [here](https://github.com/cdimascio/express-openapi-validator/t
     # e.g. operations/base/path/routes/ping.js
     x-eov-operation-handler: routes/ping
     responses:
-      "200":
+      '200':
         description: OK
         # ...
 ```
@@ -764,7 +764,7 @@ Complete example [here](https://github.com/cdimascio/express-openapi-validator/t
 
 ```javascript
 module.exports = {
-  ping: (req, res) => res.status(200).send("pong"),
+  ping: (req, res) => res.status(200).send('pong'),
 };
 ```
 
@@ -797,7 +797,7 @@ Specifies the options to passthrough to multer. express-openapi-validator uses m
 
   ```javascript
   fileUploader: {
-    dest: "uploads/";
+    dest: 'uploads/';
   }
   ```
 
@@ -814,7 +814,7 @@ e.g.
 
 ```javascript
 $refParser: {
-  mode: "bundle";
+  mode: 'bundle';
 }
 ```
 
@@ -966,11 +966,11 @@ It may be useful to serve multiple APIs with separate specs via single service. 
 See complete [example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/2-standard-multiple-api-specs)
 
 ```javascript
-const express = require("express");
-const path = require("path");
-const bodyParser = require("body-parser");
-const http = require("http");
-const OpenApiValidator = require("express-openapi-validator");
+const express = require('express');
+const path = require('path');
+const bodyParser = require('body-parser');
+const http = require('http');
+const OpenApiValidator = require('express-openapi-validator');
 
 app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -984,14 +984,14 @@ for (const v of versions) {
   app.use(
     OpenApiValidator.middleware({
       apiSpec,
-    })
+    }),
   );
 
   routes(app, v);
 }
 
 http.createServer(app).listen(3000);
-console.log("Listening on port 3000");
+console.log('Listening on port 3000');
 
 function routes(app, v) {
   if (v === 1) routesV1(app);
@@ -999,7 +999,7 @@ function routes(app, v) {
 }
 
 function routesV1(app) {
-  const v = "/v1";
+  const v = '/v1';
   app.post(`${v}/pets`, (req, res, next) => {
     res.json({ ...req.body });
   });
@@ -1007,8 +1007,8 @@ function routesV1(app) {
     res.json([
       {
         id: 1,
-        name: "happy",
-        type: "cat",
+        name: 'happy',
+        type: 'cat',
       },
     ]);
   });
@@ -1023,13 +1023,13 @@ function routesV1(app) {
 }
 
 function routesV2(app) {
-  const v = "/v2";
+  const v = '/v2';
   app.get(`${v}/pets`, (req, res, next) => {
     res.json([
       {
         pet_id: 1,
-        pet_name: "happy",
-        pet_type: "kitty",
+        pet_name: 'happy',
+        pet_type: 'kitty',
       },
     ]);
   });

@@ -20,9 +20,9 @@ export class BasePath {
     let urlPath = this.findUrlPath(server.url);
     if (/:/.test(urlPath)) {
       // escape colons as (any at this point) do not signify express route params.
-      // this is an openapi base path, thus route params are wrapped in braces {}, 
+      // this is an openapi base path, thus route params are wrapped in braces {},
       // not prefixed by colon : (like express route params)
-      urlPath = urlPath.replace(':','\\:')
+      urlPath = urlPath.replace(':', '\\:');
     }
     if (/{\w+}/.test(urlPath)) {
       // has variable that we need to check out
@@ -47,7 +47,7 @@ export class BasePath {
     if (!servers) {
       return [new BasePath({ url: '' })];
     }
-    return servers.map(server => new BasePath(server));
+    return servers.map((server) => new BasePath(server));
   }
 
   public hasVariables(): boolean {
@@ -61,7 +61,7 @@ export class BasePath {
     // ignore variables that are not part of path params
     const allParams = Object.entries(this.variables).reduce((acc, v) => {
       const [key, value] = v;
-      const params = value.enum.map(e => ({
+      const params = value.enum.map((e) => ({
         [key]: e,
       }));
       acc.push(params);
@@ -79,12 +79,12 @@ export class BasePath {
   }
 
   private findUrlPath(u: string): string {
-    const findColonSlashSlash = p => {
+    const findColonSlashSlash = (p) => {
       const r = /:\/\//.exec(p);
       if (r) return r.index;
       return -1;
     };
-    const findFirstSlash = p => {
+    const findFirstSlash = (p) => {
       const r = /\//.exec(p);
       if (r) return r.index;
       return -1;

@@ -1,9 +1,10 @@
 {
-    "name": "root",
-    "private": true,
-    "version": "4.10.6",
-    "devDependencies": {
-      "lerna": "^3.22.1"
-    }
+  "name": "root",
+  "private": true,
+  "version": "4.10.6",
+  "devDependencies": {
+    "lerna": "^3.22.1",
+    "prettier": "^2.2.1",
+    "typescript": "^4.1.3"
   }
-  
+}
