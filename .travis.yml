@@ -9,10 +9,11 @@ before_install:
   -in secrets.zip.enc -out secrets.zip -d; fi'
 - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then unzip secrets.zip; fi'
 install:
-- npm install
+- npm install lerna -g
+- lerna bootstrap
 script:
-- npm run compile
-- npm run test:coverage
+- lerna run compile
+- lerna run test:coverage
 - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run coveralls; fi'
 - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run codacy; fi'
 env:
