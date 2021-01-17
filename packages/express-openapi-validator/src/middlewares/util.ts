@@ -1,4 +1,6 @@
 import * as Ajv from 'ajv';
+import * as url from 'url';
+import * as qs from 'querystring';
 import { Request } from 'express';
 import { ValidationError } from 'framework';
 
@@ -35,6 +37,21 @@ export class ContentType {
     }
     return [this.withoutBoundary, `${this.mediaType}; charset=utf-8`];
   }
+}
+
+export function pathname(req: Request) {
+  // req.path doesn't exist on a base node js request.
+  // handle it to enable other frameworks e.g. fastify
+  const pathname = req.path || url.parse(req.url).pathname;
+  const baseUrl = req.baseUrl || '';
+  return pathname.startsWith(baseUrl) ? pathname : `${req.baseUrl}/${req.path}`;
+}
+
+export function query(req) {
+  if (req.query) return req.query;
+  const q = url.parse(req.url).query;
+  const qo = { ...qs.parse(q) };
+  return qo;
 }
 
 /**

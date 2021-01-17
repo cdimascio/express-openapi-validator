@@ -24,9 +24,10 @@ Click the Gitpod badge to setup a ready to code dev env in the cloud.
    git clone <forked-repo>
    ```
 
-2. Install the dependencies
+2. Install the dependencies for each package in the mono repo
 
    ```shell
+<<<<<<< HEAD
    # install lerna and common deps
    npm install 
 
@@ -44,14 +45,40 @@ Click the Gitpod badge to setup a ready to code dev env in the cloud.
    ```shell
    # for example, navigate the express validator package
    cd packages/express-openapi-validator
+=======
+   # From the project directory, run
+   npm i lerna -g
+   lerna bootstrap
+>>>>>>> fastify
    ```
+3a. Compile sources for each package in the mono repo
+
+```shell
+   lerna run compile
+```
+
+3b. Compile sources a single package
+
+```shell
+   cd packages express-openapi-validator
+   npm run compile
+```
    
 4. Be [Create a Pull Request](#create-a-pull-request) once you've written you code.
 
 ## Run the tests
 
-3. Run the tests
+1a. Run all tests in the mono repo
 
+   ```shell
+    # compile any changes
+   lerna run compile
+   lerna run test --scope express-openapi-validator
+   ```
+
+1b. Run tests in one package
+
+<<<<<<< HEAD
    Run tests for all packages
       ```shell
       lerna run test
@@ -61,6 +88,13 @@ Click the Gitpod badge to setup a ready to code dev env in the cloud.
       ```shell
       npm run test
       ```
+
+=======
+   ```shell
+   cd packages express-openapi-validator
+   npm t
+   ```
+>>>>>>> fastify
 
 
 ## Develop

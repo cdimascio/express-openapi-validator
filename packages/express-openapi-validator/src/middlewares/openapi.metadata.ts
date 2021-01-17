@@ -66,8 +66,8 @@ export function applyOpenApiMetadata(
       const _schema = responseApiDoc?.paths[pathKey][method.toLowerCase()];
 
       const keys = [];
-      const strict = !!req.app.enabled('strict routing');
-      const sensitive = !!req.app.enabled('case sensitive routing');
+      const strict = !!req.app?.enabled('strict routing');
+      const sensitive = !!req.app?.enabled('case sensitive routing');
       const pathOpts = {
         sensitive,
         strict,

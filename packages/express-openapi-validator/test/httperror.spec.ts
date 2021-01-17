@@ -1,9 +1,8 @@
 import { expect } from 'chai';
-import * as packageJson from '../package.json';
 import { error } from '../src';
 import { HttpError } from 'framework';
 
-describe(packageJson.name, () => {
+describe('headers', () => {
   it('should be an instance of BadRequest', (done) => {
     console.log('Testing instaceof detection of BadRequest');
     const err = {
@@ -86,7 +85,9 @@ describe(packageJson.name, () => {
       path: '/method_not_allowed',
       message: 'POST method not allowed',
     };
-    expect(new error.MethodNotAllowed(err)).to.be.an.instanceof(error.MethodNotAllowed);
+    expect(new error.MethodNotAllowed(err)).to.be.an.instanceof(
+      error.MethodNotAllowed,
+    );
     expect(
       HttpError.create({
         status: 405,

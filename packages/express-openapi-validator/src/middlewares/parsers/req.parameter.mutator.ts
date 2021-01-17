@@ -6,6 +6,7 @@ import * as url from 'url';
 import { dereferenceParameter, normalizeParameter } from './util';
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
+import { query } from '../util';
 
 type SchemaObject = OpenAPIV3.SchemaObject;
 type ReferenceObject = OpenAPIV3.ReferenceObject;
@@ -99,8 +100,8 @@ export class RequestParameterMutator {
   }
 
   private handleDeepObject(req: Request, qs: string, name: string): void {
-    if (!req.query?.[name]) {
-      req.query[name] = {};
+    if (!query(req)?.[name]) {
+      query(req)[name] = {};
     }
     this.parseJsonAndMutateRequest(req, 'query', name);
     // TODO handle url encoded?

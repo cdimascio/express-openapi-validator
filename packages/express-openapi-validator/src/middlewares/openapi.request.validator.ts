@@ -3,6 +3,7 @@ import {
   ContentType,
   ajvErrorsToValidatorError,
   augmentAjvErrors,
+  pathname,
 } from './util';
 import { NextFunction, RequestHandler, Response } from 'express';
 import {
@@ -173,7 +174,7 @@ export class RequestValidator {
         const err = ajvErrorsToValidatorError(400, errors);
         const message = this.ajv.errorsText(errors, { dataVar: 'request' });
         const error: BadRequest = new BadRequest({
-          path: req.path,
+          path: pathname(req),
           message: message,
         });
         error.errors = err.errors;

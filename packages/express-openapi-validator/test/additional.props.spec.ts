@@ -1,3 +1,4 @@
+import 'mocha'
 import * as request from 'supertest';
 import * as path from 'path';
 import * as express from 'express';

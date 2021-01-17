@@ -14,7 +14,7 @@
     "typeRoots": ["node_modules/@types", "typings"]
   },
   "include": [
-    "src/**/*.ts"
+    "**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

@@ -1,0 +1,3 @@
+tasks:
+  - init: npm install && npm install lerna -g
+    command: lerna bootstrap && lerna run compile

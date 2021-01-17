@@ -1,12 +1,12 @@
 {
-  "name": "example",
-  "version": "1.0.0",
+  "name": "6-multi-file-spec",
+  "version": "4.11.0-beta.5",
+  "private": true,
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
-    "deps": "cd ../../ && npm i && npm run compile",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deps": "cd ../../ && npm i && npm run compile"
   },
   "keywords": [],
   "author": "",
@@ -15,7 +15,8 @@
     "ajv": "^6.12.4",
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
-    "express-openapi-validator": "^4.0.2",
+    "express-openapi-validator": "^4.11.0-beta.5",
+    "framework": "^4.11.0-beta.5",
     "morgan": "^1.10.0"
   },
   "devDependencies": {

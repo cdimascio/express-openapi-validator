@@ -7,6 +7,7 @@ import {
   HttpError,
   MultipartOpts,
 } from 'framework';
+import { pathname } from './util';
 import { OpenApiRequest, OpenApiRequestHandler } from '../types';
 import { MulterError } from 'multer';
 
@@ -117,7 +118,7 @@ function error(req: OpenApiRequest, err: Error): ValidationError {
     const status = payload_too_big ? 413 : !unexpected ? 400 : 500;
     return HttpError.create({
       status: status,
-      path: req.path,
+      path: pathname(req),
       message: err.message,
     });
     /*return payload_too_big
@@ -133,11 +134,14 @@ function error(req: OpenApiRequest, err: Error): ValidationError {
     );
     if (missingField) {
       return new BadRequest({
-        path: req.path,
+        path: pathname(req),
         message: 'multipart file(s) required',
       });
     } else {
-      return new InternalServerError({ path: req.path, message: err.message });
+      return new InternalServerError({
+        path: pathname(req),
+        message: err.message,
+      });
     }
   }
 }

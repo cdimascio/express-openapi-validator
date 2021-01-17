@@ -1,19 +1,19 @@
 {
-  "name": "example",
-  "version": "1.0.0",
+  "name": "7-response-date-serialization",
+  "version": "4.11.0-beta.5",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
-    "deps": "cd ../../ && npm i && npm run compile",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deps": "cd ../../ && npm i && npm run compile"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express-openapi-validator": "file:../.."
+    "express-openapi-validator": "^4.11.0-beta.5",
+    "framework": "^4.11.0-beta.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.6",

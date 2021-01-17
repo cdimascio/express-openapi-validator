@@ -1,8 +1,6 @@
 import {
   OpenAPIV3,
   SecurityHandlers,
-  NotFound,
-  MethodNotAllowed,
   InternalServerError,
   HttpError,
 } from 'framework';
@@ -11,6 +9,7 @@ import {
   OpenApiRequestMetadata,
   OpenApiRequestHandler,
 } from '../types';
+import { query } from './util';
 
 const defaultSecurityHandler = (
   req: Express.Request,
@@ -276,7 +275,7 @@ class AuthValidator {
           throw Error(`'${scheme.name}' header required`);
         }
       } else if (scheme.in === 'query') {
-        if (!req.query[scheme.name]) {
+        if (!query(req)[scheme.name]) {
           throw Error(`query parameter '${scheme.name}' required`);
         }
       } else if (scheme.in === 'cookie') {
