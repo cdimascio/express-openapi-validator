@@ -70,7 +70,7 @@ export type Format = {
 };
 
 export type Serializer = {
-  format: string,
+  format: string;
   serialize: (o: unknown) => string;
 };
 
@@ -436,7 +436,7 @@ export interface OpenApiRequestMetadata {
 }
 
 export interface OpenApiRequest extends Request {
-  openapi?: OpenApiRequestMetadata | {};
+  openapi?: OpenApiRequestMetadata;
 }
 
 export type OpenApiRequestHandler = (

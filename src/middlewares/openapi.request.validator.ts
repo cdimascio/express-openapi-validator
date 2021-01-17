@@ -63,21 +63,7 @@ export class RequestValidator {
 
     const openapi = <OpenApiRequestMetadata>req.openapi;
     const path = openapi.expressRoute;
-    if (!path) {
-      throw new NotFound({
-        path: req.path,
-        message: 'not found',
-      });
-    }
-
     const reqSchema = openapi.schema;
-    if (!reqSchema) {
-      throw new MethodNotAllowed({
-        path: req.path,
-        message: `${req.method} method not allowed`,
-      });
-    }
-
     // cache middleware by combining method, path, and contentType
     const contentType = ContentType.from(req);
     const contentTypeKey = contentType.equivalents()[0] ?? 'not_provided';
