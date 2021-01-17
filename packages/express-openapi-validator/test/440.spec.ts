@@ -1,10 +1,9 @@
 import * as express from 'express';
 import * as request from 'supertest';
 import { createApp } from './common/app';
-import * as packageJson from '../package.json';
 import { OpenAPIV3 } from 'framework';
 
-describe(packageJson.name, () => {
+describe('issue #440', () => {
   let app = null;
 
   before(async () => {

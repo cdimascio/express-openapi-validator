@@ -1,7 +1,6 @@
 import * as res from './resolvers';
 import { OpenApiValidator, OpenApiValidatorOpts } from './openapi.validator';
 import {
-  OpenAPIV3,
   OpenApiSpecLoader,
   InternalServerError,
   UnsupportedMediaType,
