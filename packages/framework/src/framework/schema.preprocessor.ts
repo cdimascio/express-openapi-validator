@@ -1,14 +1,9 @@
 import { Ajv } from 'ajv';
-import ajv = require('ajv');
+import { createRequestAjv } from '../ajv';
 import * as cloneDeep from 'lodash.clonedeep';
 import * as _get from 'lodash.get';
-
-import {
-  Ajv as fAjv,
-  OpenAPIV3,
-  Serializer,
-  ValidateResponseOpts,
-} from 'framework';
+import { OpenAPIV3, Serializer, ValidateResponseOpts } from '..';
+import ajv = require('ajv');
 
 interface TraversalStates {
   req: TraversalState;
@@ -94,7 +89,7 @@ export class SchemaPreprocessor {
     ajvOptions: ajv.Options,
     validateResponsesOpts: ValidateResponseOpts,
   ) {
-    this.ajv = fAjv.createRequestAjv(apiDoc, ajvOptions);
+    this.ajv = createRequestAjv(apiDoc, ajvOptions);
     this.apiDoc = apiDoc;
     this.responseOpts = validateResponsesOpts;
   }

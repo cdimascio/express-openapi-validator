@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Forbidden = exports.Unauthorized = exports.UnsupportedMediaType = exports.InternalServerError = exports.RequestEntityTooLarge = exports.BadRequest = exports.MethodNotAllowed = exports.NotAcceptable = exports.NotFound = exports.HttpError = exports.Ajv = exports.OpenApiContext = exports.OpenApiSpecLoader = exports.OpenAPIFramework = void 0;
 const ajv_1 = require("./ajv");
-var framework_1 = require("./framework");
+var framework_1 = require("./framework/framework");
 Object.defineProperty(exports, "OpenAPIFramework", { enumerable: true, get: function () { return framework_1.OpenAPIFramework; } });
-var openapi_spec_loader_1 = require("./openapi.spec.loader");
+var openapi_spec_loader_1 = require("./framework/openapi.spec.loader");
 Object.defineProperty(exports, "OpenApiSpecLoader", { enumerable: true, get: function () { return openapi_spec_loader_1.OpenApiSpecLoader; } });
-var openapi_context_1 = require("./openapi.context");
+var openapi_context_1 = require("./framework/openapi.context");
 Object.defineProperty(exports, "OpenApiContext", { enumerable: true, get: function () { return openapi_context_1.OpenApiContext; } });
 exports.Ajv = {
     createRequestAjv: ajv_1.createRequestAjv,

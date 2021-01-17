@@ -1,6 +1,6 @@
 import {
   sortRoutes,
-} from 'framework/dist/openapi.spec.loader';
+} from 'framework/dist/framework/openapi.spec.loader';
 import { expect } from 'chai';
 
 describe('url sorter', () => {

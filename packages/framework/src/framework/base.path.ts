@@ -1,5 +1,5 @@
 import { compile } from 'path-to-regexp';
-import { OpenAPIV3 } from '.';
+import { OpenAPIV3 } from '..';
 
 interface ServerUrlVariables {
   [key: string]: ServerUrlValues;

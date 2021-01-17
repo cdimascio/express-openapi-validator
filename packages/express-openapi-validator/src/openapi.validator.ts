@@ -22,7 +22,7 @@ import {
   OpenApiRequestMetadata,
 } from './types';
 import { defaultResolver } from './resolvers';
-import { SchemaPreprocessor } from './middlewares/parsers/schema.preprocessor';
+import { SchemaPreprocessor } from 'framework/src/framework/schema.preprocessor';
 
 export {
   OpenApiValidatorOpts,

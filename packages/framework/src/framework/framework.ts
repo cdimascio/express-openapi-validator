@@ -8,7 +8,7 @@ import {
   OpenAPIFrameworkInit,
   OpenAPIFrameworkVisitor,
   OpenAPIV3,
-} from '.';
+} from '..';
 
 export class OpenAPIFramework {
   private readonly args: OpenAPIFrameworkArgs;

@@ -2,7 +2,7 @@ import * as Ajv from 'ajv';
 import * as draftSchema from 'ajv/lib/refs/json-schema-draft-04.json';
 // https://github.com/OAI/OpenAPI-Specification/blob/master/schemas/v3.0/schema.json
 import * as openapi3Schema from './openapi.v3.schema.json';
-import { OpenAPIV3 } from './index.js';
+import { OpenAPIV3 } from '../index.js';
 
 export class OpenAPISchemaValidator {
   private validator: Ajv.ValidateFunction;

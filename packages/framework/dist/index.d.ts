@@ -1,9 +1,9 @@
 import * as ajv from 'ajv';
 import * as multer from 'multer';
 import { createRequestAjv, createResponseAjv } from './ajv';
-export { OpenAPIFramework } from './framework';
-export { OpenApiSpecLoader, Spec, RouteMetadata } from './openapi.spec.loader';
-export { OpenApiContext } from './openapi.context';
+export { OpenAPIFramework } from './framework/framework';
+export { OpenApiSpecLoader, Spec, RouteMetadata } from './framework/openapi.spec.loader';
+export { OpenApiContext } from './framework/openapi.context';
 export declare const Ajv: {
     createRequestAjv: typeof createRequestAjv;
     createResponseAjv: typeof createResponseAjv;

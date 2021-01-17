@@ -1,5 +1,5 @@
 import { OpenAPIFramework } from './framework';
-import { OpenAPIFrameworkAPIContext, OpenAPIV3, OpenAPIFrameworkArgs } from '.';
+import { OpenAPIFrameworkAPIContext, OpenAPIV3, OpenAPIFrameworkArgs } from '..';
 
 export interface Spec {
   apiDoc: OpenAPIV3.Document;

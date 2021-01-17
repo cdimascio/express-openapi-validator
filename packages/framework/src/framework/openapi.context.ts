@@ -1,4 +1,4 @@
-import { OpenAPIV3 } from '.';
+import { OpenAPIV3 } from '..';
 import { Spec, RouteMetadata } from './openapi.spec.loader';
 
 export interface RoutePair {
