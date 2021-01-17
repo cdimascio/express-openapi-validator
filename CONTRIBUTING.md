@@ -4,6 +4,10 @@ Contributors are welcome!
 
 See something that needs fixing? Got an idea for a new feature? Contribute a [Pull Request](#Create-a-Pull-Request)!
 
+## Background
+
+This project is set up as a mono-repo. We use `lerna` to manage dependencies. Thus, after the initial `npm install` (to get lerna), you will use `lerna bootstrap` in place of `npm install`. This will ensure all local package / dependies are compiled/transpiled.
+
 ## Easy path to contribution
 Click the Gitpod badge to setup a ready to code dev env in the cloud.
 
@@ -23,19 +27,41 @@ Click the Gitpod badge to setup a ready to code dev env in the cloud.
 2. Install the dependencies
 
    ```shell
-   # From the project directory, run
-   npm i
+   # install lerna and common deps
+   npm install 
+
+   # run lerna bootstrap to install module dependencies
+   # note: use lerna bootstrap, rather than npm install
+   lerna bootstrap
+   ```
+
+3. Navigate to the package dir you'd like to modify
+
+   **Packages:**
+   - [framework](/packages/framework) - core schema load and preprocess logic
+   - [express-openapi-validator](/packages/express-openapi-validator) - the express middleware 
+
+   ```shell
+   # for example, navigate the express validator package
+   cd packages/express-openapi-validator
    ```
    
-Be [Create a Pull Request](#create-a-pull-request) once you've written you code.
+4. Be [Create a Pull Request](#create-a-pull-request) once you've written you code.
 
 ## Run the tests
 
 3. Run the tests
 
-   ```shell
-   npm test
-   ```
+   Run tests for all packages
+      ```shell
+      lerna run test
+      ```
+
+   Run tests in the current package:
+      ```shell
+      npm run test
+      ```
+
 
 ## Develop
 
