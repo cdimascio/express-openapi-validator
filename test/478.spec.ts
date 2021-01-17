@@ -2,7 +2,7 @@ import * as request from 'supertest';
 import { OpenAPIV3 } from '../src/framework/types';
 import { createApp } from './common/app';
 
-describe.only('478 incorrect additionalProperties', () => {
+describe('issue #478', () => {
   let app = null;
 
   before(async () => {
