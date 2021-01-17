@@ -37,7 +37,7 @@ describe('servers property', () => {
     request(app).get('/api/v3/petstore/ping').send({}).expect(200));
 });
 
-describe(packageJson.name, () => {
+describe('servers property test', () => {
     let app = null;
   
     before(async () => {

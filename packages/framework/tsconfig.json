@@ -1,7 +1,17 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "declaration": true,
+    "target": "es2017",
+    "lib": ["es2019", "es2019.array"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "esModuleInterop": false,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist",
+    "typeRoots": ["node_modules/@types"]
   },
   "include": [
     "src/**/*.ts"
