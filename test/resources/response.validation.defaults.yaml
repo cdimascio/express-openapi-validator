@@ -1,0 +1,42 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: Sample
+servers:
+  - url: /v1
+paths:
+ /default_inline:
+  get:
+    parameters: 
+    - name: q
+      in: 'query'
+      required: true
+      schema:
+        type: string
+    responses:
+      '200':
+        description: Success
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                data:
+                  description: Some data
+                  type: string
+              required:
+                - data
+      default:
+        description: Unexpected error
+        content:
+          'application/json':
+            schema:
+              required:
+                - code
+                - message
+              properties:
+                code:
+                  type: integer
+                  format: int32
+                message:
+                  type: string
