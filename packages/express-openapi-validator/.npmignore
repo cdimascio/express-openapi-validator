@@ -3,6 +3,7 @@
 /assets
 /examples
 /example
+/dist/test
 /docs
 node_modules
 /src
