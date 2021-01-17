@@ -1,7 +1,10 @@
 {
   "name": "root",
   "private": true,
-  "version": "4.10.6",
+  "version": "4.10.8",
+  "workspaces": [
+    "packages/*"
+  ],
   "devDependencies": {
     "lerna": "^3.22.1",
     "prettier": "^2.2.1",

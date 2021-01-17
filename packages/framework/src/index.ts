@@ -1,3 +1,4 @@
+import { Request } from 'express'
 import * as ajv from 'ajv';
 import * as multer from 'multer';
 import { createRequestAjv, createResponseAjv } from './ajv';

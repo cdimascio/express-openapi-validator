@@ -1,7 +1,12 @@
 import * as _zipObject from 'lodash.zipobject';
 import { pathToRegexp } from 'path-to-regexp';
 import { Response, NextFunction } from 'express';
-import { OpenApiContext, OpenAPIV3 } from 'framework';
+import {
+  OpenApiContext,
+  OpenAPIV3,
+  MethodNotAllowed,
+  NotFound,
+} from 'framework';
 import {
   OpenApiRequest,
   OpenApiRequestHandler,
@@ -23,6 +28,12 @@ export function applyOpenApiMetadata(
     const matched = lookupRoute(req);
     if (matched) {
       const { expressRoute, openApiRoute, pathParams, schema } = matched;
+      if (!schema) {
+        throw new MethodNotAllowed({
+          path: req.path,
+          message: `${req.method} method not allowed`,
+        });
+      }
       req.openapi = {
         expressRoute: expressRoute,
         openApiRoute: openApiRoute,
@@ -35,7 +46,10 @@ export function applyOpenApiMetadata(
         (<any>req.openapi)._responseSchema = (<any>matched)._responseSchema;
       }
     } else if (openApiContext.isManagedRoute(path)) {
-      req.openapi = {};
+      throw new NotFound({
+        path: req.path,
+        message: 'not found',
+      });
     }
     next();
   };

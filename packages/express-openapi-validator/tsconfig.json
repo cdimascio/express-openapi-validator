@@ -2,11 +2,13 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "typeRoots": ["./node_modules/@types", "./typings", "./packages/node_modules/@types"]
+    "typeRoots": [
+      "./node_modules/@types", 
+      "./typings"
+    ],
   },
   "include": [
     "typings/**/*.d.ts",
-    "src/**/*.ts",
-    "src/framework/modded.express.mung.ts"
+    "src/**/*.ts"
   ]
 }

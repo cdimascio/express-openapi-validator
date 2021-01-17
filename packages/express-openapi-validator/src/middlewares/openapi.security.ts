@@ -40,28 +40,6 @@ export function security(
     }
 
     const openapi = <OpenApiRequestMetadata>req.openapi;
-    const expressRoute = openapi.expressRoute;
-    if (!expressRoute) {
-      return next(
-        new NotFound({
-          path: req.path,
-          message: 'not found',
-        }),
-      );
-    }
-
-    const pathSchema = openapi.schema;
-    if (!pathSchema) {
-      // add openapi metadata to make this case more clear
-      // its not obvious that missig schema means methodNotAllowed
-      return next(
-        new MethodNotAllowed({
-          path: req.path,
-          message: `${req.method} method not allowed`,
-        }),
-      );
-    }
-
     // use the local security object or fallbac to api doc's security or undefined
     const securities: OpenAPIV3.SecurityRequirementObject[] =
       openapi.schema.security ?? apiDoc.security;
