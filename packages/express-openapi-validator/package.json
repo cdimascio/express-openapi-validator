@@ -12,7 +12,7 @@
     "test:coverage": "TS_NODE_FILES=true nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
     "test:coverage:windows": "set TS_NODE_FILES=true & nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
     "coveralls": "cat coverage/lcov.info | coveralls -v",
-    "codacy": " bash <(curl -Ls https://coverage.codacy.com/get.sh) report ---language typescript -r coverage/lcov.info",
+    "codacy": "bash <(curl -Ls https://coverage.codacy.com/get.sh) report --language typescript -r coverage/lcov.info",
     "codacy-old": "cat coverage/lcov.info | codacy-coverage",
     "test:reset": "rm -rf node_modules && npm i && npm run compile && npm t",
     "commit": "cz"
