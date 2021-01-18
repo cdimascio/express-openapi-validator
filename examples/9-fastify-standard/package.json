@@ -14,7 +14,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "express-openapi-validator": "^4.11.0-beta.6",
     "fastify": "^3.3.0",
