@@ -407,6 +407,21 @@ class AjvOptions {
 
   private baseOptions(): Options {
     const { coerceTypes, unknownFormats, validateFormats, serDes } = this.options;
+    const serDesMap = {};
+    for (const serDesObject of serDes) {
+      if(!serDesMap[serDesObject.format]) {
+        serDesMap[serDesObject.format] = serDesObject;
+      }
+      else {
+        if (serDesObject.serialize) {
+          serDesMap[serDesObject.format].serialize = serDesObject.serialize;
+        }
+        if (serDesObject.deserialize) {
+          serDesMap[serDesObject.format].deserialize = serDesObject.deserialize;
+        }
+      }
+    }
+
     return {
       nullable: true,
       coerceTypes,
@@ -421,10 +436,7 @@ class AjvOptions {
         };
         return acc;
       }, {}),
-      serDesMap : serDes ? serDes.reduce((map, obj) => {
-        map[obj.format]=obj;
-        return map;
-      }, {}) : null,
+      serDesMap : serDesMap,
     };
   }
 }

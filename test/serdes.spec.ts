@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 
-import { date, dateTime, dateSerializeOnly,dateTimeSerializeOnly } from '../src/framework/base.serdes';
+import { date, dateTime } from '../src/framework/base.serdes';
 
 const apiSpecPath = path.join('test', 'resources', 'serdes.yaml');
 
@@ -174,8 +174,8 @@ describe('serdes serialize response components only', () => {
           coerceTypes: true
         },
         serDes: [
-          dateSerializeOnly,
-          dateTimeSerializeOnly,
+          date.serializer,
+          dateTime.serializer,
           {
             format: "mongo-objectid",
             serialize: (o) => o.toString(),

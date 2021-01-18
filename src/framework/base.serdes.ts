@@ -1,6 +1,6 @@
-import { SerDes } from './types';
+import { SerDes, SerDesSingleton } from './types';
 
-export const dateTime : SerDes = {
+export const dateTime : SerDesSingleton = new SerDesSingleton({
   format : 'date-time',
   serialize: (d: Date) => {
     return d && d.toISOString();
@@ -8,16 +8,9 @@ export const dateTime : SerDes = {
   deserialize: (s: string) => {
     return new Date(s);
   }
-};
+});
 
-export const dateTimeSerializeOnly : SerDes = {
-  format : 'date-time',
-  serialize: (d: Date) => {
-    return d && d.toISOString();
-  },
-};
-
-export const date : SerDes = {
+export const date : SerDesSingleton = new SerDesSingleton({
   format : 'date',
   serialize: (d: Date) => {
     return d && d.toISOString().split('T')[0];
@@ -25,16 +18,9 @@ export const date : SerDes = {
   deserialize: (s: string) => {
     return new Date(s);
   }
-};
-
-export const dateSerializeOnly : SerDes = {
-  format : 'date',
-  serialize: (d: Date) => {
-    return d && d.toISOString().split('T')[0];
-  },
-};
+});
 
 export const defaultSerDes : SerDes[] = [
-  dateSerializeOnly,
-  dateTimeSerializeOnly
+  date.serializer,
+  dateTime.serializer
 ];
