@@ -90,6 +90,11 @@ app.use(router.routes()).use(router.allowedMethods());
 app.listen(1234, () => console.log('running on port 1234'));
 ```
 
+## Related Projects
+
+- [express-openapi-validator](https://github.com/cdimascio/express-openapi-validator)
+- [fastify-openapi-validator](https://github.com/cdimascio/express-openapi-validator/tree/lerna-fastify/packages/fastify-openapi-validator)
+
 ## License
 
 MIT
