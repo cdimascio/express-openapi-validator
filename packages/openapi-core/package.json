@@ -1,6 +1,6 @@
 {
   "name": "openapi-core",
-  "version": "4.11.0-beta.6",
+  "version": "4.12.0-beta.0",
   "description": "Automatically validate API requests and responses with OpenAPI 3 and Express.",
   "main": "dist/index.js",
   "scripts": {

@@ -1,7 +1,7 @@
 {
   "name": "fastify-openapi-validator",
   "description": "Automatically validate API requests with OpenAPI 3 and Fastify.",
-  "version": "4.11.0-beta.6",
+  "version": "4.12.0-beta.0",
   "main": "dist/index.js",
   "scripts": {
     "compile": "rm -rf dist/ && tsc",
@@ -20,9 +20,9 @@
   "license": "MIT",
   "dependencies": {
     "@types/multer": "^1.4.5",
-    "express-openapi-validator": "^4.11.0-beta.6",
+    "express-openapi-validator": "^4.12.0-beta.0",
     "fastify-plugin": "^2.3.3",
-    "openapi-core": "^4.11.0-beta.6"
+    "openapi-core": "^4.12.0-beta.0"
   },
   "devDependencies": {
     "@types/koa-compose": "^3.2.5",
