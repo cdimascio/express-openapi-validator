@@ -1,6 +1,6 @@
-import * as path from 'path';
+import path from 'path';
 import { expect } from 'chai';
-import * as request from 'supertest';
+import request from 'supertest';
 import { createApp } from './common/app';
 
 describe('ignorePaths as RegExp', () => {
@@ -12,7 +12,7 @@ describe('ignorePaths as RegExp', () => {
     app = await createApp(
       { apiSpec, ignorePaths: /.*\/hippies$/ },
       3005,
-      app => {
+      (app) => {
         app.all('/v1/hippies', (req, res) => {
           res.json([
             { id: 1, name: 'farah' },
@@ -74,7 +74,7 @@ describe('ignorePaths as RegExp', () => {
       return request(app)
         .get(`${basePath}/pets/${id}`)
         .expect(400)
-        .then(r => {
+        .then((r) => {
           const e = r.body.errors;
           expect(e[0].path).contains('id');
           expect(e[0].message).equals('should be integer');
@@ -85,7 +85,7 @@ describe('ignorePaths as RegExp', () => {
       request(app)
         .get(`${basePath}/route_defined_in_openapi_only`)
         .expect(400)
-        .then(r => {
+        .then((r) => {
           const e = r.body.errors;
           expect(e[0].message).to.equal("should have required property 'id'");
         }));
@@ -95,7 +95,7 @@ describe('ignorePaths as RegExp', () => {
         .get(`${basePath}/route_defined_in_openapi_only`)
         .query({ id: 123 })
         .expect(404)
-        .then(r => {
+        .then((r) => {
           const e = r.body;
           // There is no route defined by express, hence the validator verifies parameters,
           // then it fails over to the express error handler. In this case returns empty
@@ -114,7 +114,7 @@ describe('ignorePaths as Function', () => {
     app = await createApp(
       { apiSpec, ignorePaths: (path) => path.endsWith('/hippies') },
       3005,
-      app => {
+      (app) => {
         app.all('/v1/hippies', (req, res) => {
           res.json([
             { id: 1, name: 'farah' },
@@ -173,7 +173,7 @@ describe('ignorePaths as Function', () => {
       return request(app)
         .get(`${basePath}/pets/${id}`)
         .expect(400)
-        .then(r => {
+        .then((r) => {
           const e = r.body.errors;
           expect(e[0].path).contains('id');
           expect(e[0].message).equals('should be integer');
@@ -184,7 +184,7 @@ describe('ignorePaths as Function', () => {
       request(app)
         .get(`${basePath}/route_defined_in_openapi_only`)
         .expect(400)
-        .then(r => {
+        .then((r) => {
           const e = r.body.errors;
           expect(e[0].message).to.equal("should have required property 'id'");
         }));
@@ -194,7 +194,7 @@ describe('ignorePaths as Function', () => {
         .get(`${basePath}/route_defined_in_openapi_only`)
         .query({ id: 123 })
         .expect(404)
-        .then(r => {
+        .then((r) => {
           const e = r.body;
           // There is no route defined by express, hence the validator verifies parameters,
           // then it fails over to the express error handler. In this case returns empty

@@ -1,22 +1,22 @@
-import * as path from 'path';
-import {expect} from 'chai';
-import * as request from 'supertest';
-import {createApp} from './common/app';
+import path from 'path';
+import { expect } from 'chai';
+import request from 'supertest';
+import { createApp } from './common/app';
 
-describe("datetime.validation", () => {
+describe('datetime.validation', () => {
   let app = null;
 
-  async function setupServer(validateFormats?: false | "full" | "fast") {
+  async function setupServer(validateFormats?: false | 'full' | 'fast') {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'datetime.validation.yaml');
     app = await createApp(
       {
         apiSpec,
         validateResponses: true,
-        validateFormats
+        validateFormats,
       },
       3005,
-      app => {
+      (app) => {
         // Define new coercion routes
         app.post(`${app.basePath}/date-time-validation`, (req, res) => {
           res.json(req.body);
@@ -32,10 +32,9 @@ describe("datetime.validation", () => {
 
   afterEach(async () => {
     if (app) {
-      await new Promise(resolve => app.server.close(resolve));
+      await new Promise((resolve) => app.server.close(resolve));
     }
   });
-
 
   it('should return 200 if testDateTimeProperty is provided with invalid, but correctly formatted date time and default validation is enabled (past compatibility)', async () => {
     await setupServer();
@@ -45,8 +44,8 @@ describe("datetime.validation", () => {
         testDateTimeProperty: '2000-13-03T12:13:14Z',
       })
       .expect(200)
-      .then(r => {
-        const {body} = r;
+      .then((r) => {
+        const { body } = r;
         expect(body).to.have.property('testDateTimeProperty');
       });
   });
@@ -69,28 +68,28 @@ describe("datetime.validation", () => {
         testDateTimeProperty: 'blah-blah',
       })
       .expect(200)
-      .then(r => {
-        const {body} = r;
+      .then((r) => {
+        const { body } = r;
         expect(body).to.have.property('testDateTimeProperty');
       });
   });
 
   it('should return 200 if testDateTimeProperty is provided with valid date time and full validation enabled', async () => {
-    await setupServer("full");
+    await setupServer('full');
     await request(app)
       .post(`${app.basePath}/date-time-validation`)
       .send({
         testDateTimeProperty: '2000-02-03T12:13:14Z',
       })
       .expect(200)
-      .then(r => {
-        const {body} = r;
+      .then((r) => {
+        const { body } = r;
         expect(body).to.have.property('testDateTimeProperty');
       });
   });
 
   it('should return 400 if testDateTimeProperty is provided with invalid date time and full validation enabled', async () => {
-    await setupServer("full");
+    await setupServer('full');
     await request(app)
       .post(`${app.basePath}/date-time-validation`)
       .send({

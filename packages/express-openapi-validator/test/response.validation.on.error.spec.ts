@@ -1,8 +1,8 @@
-import * as path from 'path';
+import path from 'path';
 import { expect } from 'chai';
-import * as request from 'supertest';
+import request from 'supertest';
 import { createApp } from './common/app';
-import * as packageJson from '../package.json';
+import packageJson from '../package.json';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 
@@ -16,16 +16,16 @@ describe(packageJson.name, () => {
       {
         apiSpec: apiSpecPath,
         validateResponses: {
-          onError: function(_err, body) {
+          onError: function (_err, body) {
             onErrorArgs = Array.from(arguments);
             if (body[0].id === 'bad_id_throw') {
               throw new Error('error in onError handler');
             }
-          }
+          },
         },
       },
       3005,
-      app => {
+      (app) => {
         app.get(`${app.basePath}/users`, (_req, res) => {
           const json = ['user1', 'user2', 'user3'];
           return res.json(json);
@@ -52,7 +52,7 @@ describe(packageJson.name, () => {
 
   afterEach(() => {
     onErrorArgs = null;
-  })
+  });
 
   after(() => {
     app.server.close();
@@ -66,7 +66,9 @@ describe(packageJson.name, () => {
         const data = [{ id: 'bad_id', name: 'name', tag: 'tag' }];
         expect(r.body).to.eql(data);
         expect(onErrorArgs.length).to.equal(2);
-        expect(onErrorArgs[0].message).to.equal('.response[0].id should be integer');
+        expect(onErrorArgs[0].message).to.equal(
+          '.response[0].id should be integer',
+        );
         expect(onErrorArgs[1]).to.eql(data);
       }));
 
@@ -87,7 +89,9 @@ describe(packageJson.name, () => {
         const data = [{ id: 'bad_id_throw', name: 'name', tag: 'tag' }];
         expect(r.body.message).to.equal('error in onError handler');
         expect(onErrorArgs.length).to.equal(2);
-        expect(onErrorArgs[0].message).to.equal('.response[0].id should be integer');
+        expect(onErrorArgs[0].message).to.equal(
+          '.response[0].id should be integer',
+        );
         expect(onErrorArgs[1]).to.eql(data);
       }));
 });

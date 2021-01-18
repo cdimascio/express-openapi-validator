@@ -1,8 +1,8 @@
-import * as path from 'path';
+import path from 'path';
 import { expect } from 'chai';
-import * as request from 'supertest';
+import request from 'supertest';
 import { createApp } from './common/app';
-import * as packageJson from '../package.json';
+import packageJson from '../package.json';
 
 describe(packageJson.name, () => {
   let app = null;
@@ -12,7 +12,7 @@ describe(packageJson.name, () => {
     app = await createApp(
       { apiSpec },
       3005,
-      app => {
+      (app) => {
         app.post(`${app.basePath}/one_of`, (req, res) => {
           res.json(req.body);
         });
@@ -80,7 +80,7 @@ describe(packageJson.name, () => {
         ],
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         const e = r.body;
         expect(e.message).to.contain(
           'should match exactly one schema in oneOf',
@@ -136,7 +136,7 @@ describe(packageJson.name, () => {
         ],
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         const e = r.body;
         expect(e.message).to.contain(
           'should match exactly one schema in oneOf',

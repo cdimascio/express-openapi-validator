@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import * as ajv from 'ajv';
+import ajv from 'ajv';
 import mung from './modded.express.mung';
 import { Ajv } from 'framework';
 import {
@@ -14,8 +14,8 @@ import {
   ValidateResponseOpts,
 } from 'framework';
 import { OpenApiRequest, OpenApiRequestMetadata } from '../types';
-import * as mediaTypeParser from 'media-typer';
-import * as contentTypeParser from 'content-type';
+import mediaTypeParser from 'media-typer';
+import contentTypeParser from 'content-type';
 
 interface ValidateResult {
   validators: { [key: string]: ajv.ValidateFunction };

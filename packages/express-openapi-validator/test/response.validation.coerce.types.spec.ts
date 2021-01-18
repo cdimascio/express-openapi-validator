@@ -1,6 +1,6 @@
-import * as path from 'path';
+import path from 'path';
 import { expect } from 'chai';
-import * as request from 'supertest';
+import request from 'supertest';
 import { createApp } from './common/app';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
@@ -48,7 +48,5 @@ describe('response validation with type coercion', () => {
         expect(r.body).to.equal(true);
       }));
   it('should coerce id from string to number', async () =>
-    request(app)
-      .get(`${app.basePath}/object`)
-      .expect(200));
+    request(app).get(`${app.basePath}/object`).expect(200));
 });

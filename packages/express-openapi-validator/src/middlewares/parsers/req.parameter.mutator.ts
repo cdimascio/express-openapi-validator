@@ -2,10 +2,10 @@ import { Request } from 'express';
 import { Ajv } from 'ajv';
 import { OpenAPIV3, ValidationSchema, BadRequest } from 'framework';
 import { OpenApiRequest, OpenApiRequestMetadata } from '../../types';
-import * as url from 'url';
+import url from 'url';
 import { dereferenceParameter, normalizeParameter } from './util';
-import * as mediaTypeParser from 'media-typer';
-import * as contentTypeParser from 'content-type';
+import mediaTypeParser from 'media-typer';
+import contentTypeParser from 'content-type';
 import { query } from '../util';
 
 type SchemaObject = OpenAPIV3.SchemaObject;

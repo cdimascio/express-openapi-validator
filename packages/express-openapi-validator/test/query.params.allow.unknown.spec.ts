@@ -1,9 +1,9 @@
 import { expect } from 'chai';
-import * as path from 'path';
-import * as express from 'express';
-import * as request from 'supertest';
+import path from 'path';
+import express from 'express';
+import request from 'supertest';
 import { createApp } from './common/app';
-import * as packageJson from '../package.json';
+import packageJson from '../package.json';
 
 describe(packageJson.name, () => {
   let app = null;
@@ -15,7 +15,7 @@ describe(packageJson.name, () => {
     app = await createApp(
       { apiSpec, validateRequests: { allowUnknownQueryParameters: true } },
       3005,
-      app =>
+      (app) =>
         app.use(
           `${app.basePath}`,
           express
@@ -62,7 +62,7 @@ describe(packageJson.name, () => {
         unknown_prop: 'test',
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         expect(r.body.errors).to.be.an('array');
       }));
 });

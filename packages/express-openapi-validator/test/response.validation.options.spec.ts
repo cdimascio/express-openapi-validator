@@ -1,8 +1,8 @@
-import * as path from 'path';
+import path from 'path';
 import { expect } from 'chai';
-import * as request from 'supertest';
+import request from 'supertest';
 import { createApp } from './common/app';
-import * as packageJson from '../package.json';
+import packageJson from '../package.json';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 

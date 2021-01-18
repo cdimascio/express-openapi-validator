@@ -1,5 +1,5 @@
-import * as express from 'express';
-import * as request from 'supertest';
+import express from 'express';
+import request from 'supertest';
 import { createApp } from './common/app';
 import { OpenAPIV3 } from 'framework';
 

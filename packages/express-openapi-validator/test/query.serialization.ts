@@ -1,9 +1,9 @@
-import * as path from 'path';
-import * as express from 'express';
+import path from 'path';
+import express from 'express';
 import { expect } from 'chai';
-import * as request from 'supertest';
+import request from 'supertest';
 import { createApp } from './common/app';
-import * as packageJson from '../package.json';
+import packageJson from '../package.json';
 import { log } from 'console';
 
 describe.only('styles', () => {
@@ -15,8 +15,12 @@ describe.only('styles', () => {
         `/`,
         express
           .Router()
-          .get('/api/q_form_explode', (req, res) => res.json({ query: req.query }))
-          .get('/api/q_form_nexplode', (req, res) => res.json({ query: req.query })),
+          .get('/api/q_form_explode', (req, res) =>
+            res.json({ query: req.query }),
+          )
+          .get('/api/q_form_nexplode', (req, res) =>
+            res.json({ query: req.query }),
+          ),
       ),
     );
   });

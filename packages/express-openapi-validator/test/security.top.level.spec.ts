@@ -1,7 +1,7 @@
-import * as path from 'path';
-import * as express from 'express';
+import path from 'path';
+import express from 'express';
 import { expect } from 'chai';
-import * as request from 'supertest';
+import request from 'supertest';
 import { createApp } from './common/app';
 
 describe('security.top.level', () => {
@@ -38,7 +38,7 @@ describe('security.top.level', () => {
     request(app)
       .get(`${basePath}/api_key`)
       .expect(401)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -56,7 +56,7 @@ describe('security.top.level', () => {
       .get(`${basePath}/api_key_undefined_path`)
       .set('X-API-Key', 'test')
       .expect(404)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -68,7 +68,7 @@ describe('security.top.level', () => {
       .post(`${basePath}/api_key`)
       .set('X-API-Key', 'test')
       .expect(405)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -98,15 +98,13 @@ describe('security.top.level', () => {
         .expect(200),
   );
   it('should return 200 if apikey or anonymous', async () =>
-    request(app)
-      .get(`${basePath}/api_key_or_anonymous`)
-      .expect(200));
+    request(app).get(`${basePath}/api_key_or_anonymous`).expect(200));
 
   it('should override api key with bearer and return 401 if bearer is missing', async () =>
     request(app)
       .get(`${basePath}/bearer`)
       .expect(401)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -122,12 +120,8 @@ describe('security.top.level', () => {
       .expect(200));
 
   it('should override api key with anonymous', async () =>
-    request(app)
-      .get(`${basePath}/anonymous_2`)
-      .expect(200));
+    request(app).get(`${basePath}/anonymous_2`).expect(200));
 
   it('should override api key with anonymous', async () =>
-    request(app)
-      .get(`${basePath}/anonymous`)
-      .expect(200));
+    request(app).get(`${basePath}/anonymous`).expect(200));
 });

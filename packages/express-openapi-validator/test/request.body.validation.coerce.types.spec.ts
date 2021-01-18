@@ -1,5 +1,5 @@
-import * as path from 'path';
-import * as request from 'supertest';
+import path from 'path';
+import request from 'supertest';
 import { createApp } from './common/app';
 
 describe('request body validation coercion', () => {

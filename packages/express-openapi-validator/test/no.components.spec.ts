@@ -1,6 +1,6 @@
-import * as express from 'express';
+import express from 'express';
 import { expect } from 'chai';
-import * as request from 'supertest';
+import request from 'supertest';
 import { createApp } from './common/app';
 import { OpenAPIV3 } from 'framework';
 

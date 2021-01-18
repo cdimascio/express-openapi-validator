@@ -1,10 +1,10 @@
-import * as express from 'express';
-import * as path from 'path';
-import * as cookieParser from 'cookie-parser';
-import * as bodyParser from 'body-parser';
-import * as logger from 'morgan';
+import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import logger from 'morgan';
 
-import * as OpenApiValidator  from '../../src';
+import * as OpenApiValidator from '../../src';
 import { startServer, routes } from './app.common';
 import { OpenApiValidatorOpts } from 'framework';
 

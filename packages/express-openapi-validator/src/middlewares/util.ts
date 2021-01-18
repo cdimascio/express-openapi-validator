@@ -1,6 +1,6 @@
-import * as Ajv from 'ajv';
-import * as url from 'url';
-import * as qs from 'querystring';
+import Ajv from 'ajv';
+import url from 'url';
+import qs from 'querystring';
 import { Request } from 'express';
 import { ValidationError } from 'framework';
 
@@ -13,7 +13,9 @@ export class ContentType {
   private constructor(contentType: string | null) {
     this.contentType = contentType;
     if (contentType) {
-      this.withoutBoundary = contentType.replace(/;\s{0,}boundary.*/, '').toLowerCase();
+      this.withoutBoundary = contentType
+        .replace(/;\s{0,}boundary.*/, '')
+        .toLowerCase();
       this.mediaType = this.withoutBoundary.split(';')[0].toLowerCase().trim();
       this.charSet = this.withoutBoundary.split(';')[1]?.toLowerCase();
       this.isWildCard = RegExp(/^[a-z]+\/\*$/).test(this.contentType);

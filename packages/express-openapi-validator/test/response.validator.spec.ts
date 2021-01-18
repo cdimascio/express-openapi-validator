@@ -1,11 +1,11 @@
-import * as path from 'path';
-import * as fs from 'fs';
-import * as cloneDeep from 'lodash.clonedeep';
-import * as jsyaml from 'js-yaml';
+import path from 'path';
+import fs from 'fs';
+import cloneDeep from 'lodash.clonedeep';
+import jsyaml from 'js-yaml';
 import { expect } from 'chai';
 import { ResponseValidator } from '../src/middlewares/openapi.response.validator';
 import { OpenAPIV3 } from 'framework';
-import { OpenApiRequest } from '../src/types'
+import { OpenApiRequest } from '../src/types';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 const apiSpec = jsyaml.safeLoad(fs.readFileSync(apiSpecPath, 'utf8'));

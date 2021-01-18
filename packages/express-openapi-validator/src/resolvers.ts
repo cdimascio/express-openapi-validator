@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path from 'path';
 import { RequestHandler } from 'express';
 import { OpenAPIV3, RouteMetadata } from 'framework';
 

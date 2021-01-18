@@ -1,4 +1,4 @@
-import * as _zipObject from 'lodash.zipobject';
+import _zipObject from 'lodash.zipobject';
 import { pathToRegexp } from 'path-to-regexp';
 import { Response, NextFunction } from 'express';
 import {

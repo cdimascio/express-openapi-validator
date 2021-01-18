@@ -1,4 +1,4 @@
-import * as MulterExt from 'multer';
+import MulterExt from 'multer';
 
 declare module 'multer' {
   type ErrorCodes =

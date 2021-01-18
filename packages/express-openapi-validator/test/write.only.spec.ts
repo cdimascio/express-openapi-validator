@@ -1,8 +1,8 @@
-import * as path from 'path';
+import path from 'path';
 import { expect } from 'chai';
-import * as request from 'supertest';
+import request from 'supertest';
 import { createApp } from './common/app';
-import * as packageJson from '../package.json';
+import packageJson from '../package.json';
 
 describe(packageJson.name, () => {
   let app = null;
@@ -10,7 +10,7 @@ describe(packageJson.name, () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'write.only.yaml');
-    app = await createApp({ apiSpec, validateResponses: true }, 3005, app =>
+    app = await createApp({ apiSpec, validateResponses: true }, 3005, (app) =>
       app
         .post(`${app.basePath}/products/inlined`, (req, res) => {
           const body = req.body;
@@ -25,7 +25,7 @@ describe(packageJson.name, () => {
           const excludeWriteOnly = req.query.exclude_write_only;
           body.id = 'test';
           body.created_at = new Date().toISOString();
-          body.reviews = body.reviews.map(r => ({
+          body.reviews = body.reviews.map((r) => ({
             ...(excludeWriteOnly ? {} : { role_x: 'admin' }),
             rating: r.rating ?? 2,
           }));
@@ -52,7 +52,7 @@ describe(packageJson.name, () => {
         created_at: new Date().toUTCString(),
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         // id is a readonly property and should not be allowed in the request
         expect(body.message).to.contain('created_at');
@@ -68,7 +68,7 @@ describe(packageJson.name, () => {
         price: 10.99,
       })
       .expect(500)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.message).to.contain('role');
         expect(body.errors[0].path).to.contain('.response.role');
@@ -103,7 +103,7 @@ describe(packageJson.name, () => {
         ],
       })
       .expect(500)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.message).to.contain('role_x');
         expect(body.errors[0].path).to.contain('.response.reviews[0].role_x');
@@ -129,7 +129,7 @@ describe(packageJson.name, () => {
         ],
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.message).to.contain('request.body.reviews[0].id');
       }));

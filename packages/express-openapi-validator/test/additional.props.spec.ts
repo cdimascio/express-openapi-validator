@@ -1,10 +1,10 @@
-import 'mocha'
-import * as request from 'supertest';
-import * as path from 'path';
-import * as express from 'express';
+import 'mocha';
+import request from 'supertest';
+import path from 'path';
+import express from 'express';
 import { expect } from 'chai';
 import { createApp } from './common/app';
-import * as packageJson from '../package.json';
+import packageJson from '../package.json';
 
 describe(packageJson.name, () => {
   let app = null;
