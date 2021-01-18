@@ -112,11 +112,18 @@ If you are using VSCode, see the debugger. There are configurations:
 6. From the Github UI, Click Create pull request to open a new pull request
 7. Detailed steps with example here:
 
-## Project structure
+## Package
+Only maintainers have permissions to perform the publish actions:
 
-`src` contains the source code
-`test` contains the tests
+prerelease
+```shell
+lerna publish prerelease --dist-tag beta --preid beta
+```
 
+release
+```shell
+lerna publish patch # minor
+```
 ## Need help?
 
 Reach out on [gitter](https://gitter.im/cdimascio-oss/community).
