@@ -8,13 +8,14 @@ npm install fastify-openapi-validator@4.11.0-beta.6
 
 ## Usage
 
-
 ### Code
+
 ```js
 const OpenApiValidator = require('fastify-openapi-validator');
 app.use(
   OpenApiValidator.middleware({
     apiSpec: './openapi.yml',
+    // additional options
   }),
 );
 ```
@@ -37,6 +38,7 @@ app.use(
   validateFormats?: false | 'fast' | 'full';
 }
 ```
+
 See detailed [documentation](https://github.com/cdimascio/express-openapi-validator#Advanced-Usage)
 
 _**Note:** `validateResponses`, `operationHandlers` are not yet supported for Fastify_
@@ -77,8 +79,8 @@ function plugin(instance, options, next) {
 }
 
 module.exports = plugin;
-
 ```
 
 ## License
+
 MIT

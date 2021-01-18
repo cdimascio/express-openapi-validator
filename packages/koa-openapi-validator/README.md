@@ -15,6 +15,7 @@ const OpenApiValidator = require('koa-openapi-validator');
 app.use(
   OpenApiValidator.middleware({
     apiSpec: './openapi.yml',
+    // additional options
   }),
 );
 ```
