@@ -25,19 +25,9 @@
 ## Install
 
 ```shell
-<<<<<<< HEAD
 npm install express-openapi-validator
 ```
 
-=======
-npm i express-openapi-validator@4.0.0-alpha.1
-```
-
-#### Upgrading from v3.x.x
-
-In v4.x.x, the validator is installed as standard express middleware using `app.use(...) and/or router.use(...)` ([example](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md#Example-Express-API-Server)). This differs from the v3.x.x the installation which required the `install` method(s). The `install` methods no longer exist in v4.
-
->>>>>>> fastify
 ## Usage
 
 1. Require/import the openapi validator
@@ -74,13 +64,10 @@ _**Important:** Ensure express is configured with all relevant body parsers. Bod
 
 ## Upgrading from 3.x
 
-<<<<<<< HEAD
 In v4.x.x, the validator is installed as standard connect middleware using `app.use(...) and/or router.use(...)` ([example](https://github.com/cdimascio/express-openapi-validator/blob/v4/README.md#Example-Express-API-Server)). This differs from the v3.x.x the installation which required the `install` method(s). The `install` methods no longer exist in v4.
 
 ## Usage (options)
 
-=======
->>>>>>> fastify
 See [Advanced Usage](#Advanced-Usage) options to:
 
 - inline api specs as JSON.
@@ -105,11 +92,7 @@ const http = require('http');
 const app = express();
 
 // 1. Import the express-openapi-validator library
-<<<<<<< HEAD
 const OpenApiValidator = require('express-openapi-validator');
-=======
-const OpenApiValidator = require('express-openapi-validator';
->>>>>>> fastify
 
 // 2. Set up body parsers for the request body types you expect
 //    Must be specified prior to endpoints in 5.
@@ -124,18 +107,10 @@ app.use('/spec', express.static(spec));
 // 4. Install the OpenApiValidator onto your express app
 app.use(
   OpenApiValidator.middleware({
-<<<<<<< HEAD
     apiSpec: './api.yaml',
     validateResponses: true, // <-- to validate responses
     // unknownFormats: ['my-format'] // <-- to provide custom formats
   }),
-=======
-      apiSpec: './api.yaml',
-      validateResponses: true, // <-- to validate responses
-      // unknownFormats: ['my-format'] // <-- to provide custom formats
-    }
-  ),
->>>>>>> fastify
 );
 
 // 5. Define routes using Express
@@ -826,16 +801,6 @@ Specifies the options to passthrough to multer. express-openapi-validator uses m
   }
   ```
 
-<<<<<<< HEAD
-=======
-### ▪️ coerceTypes (optional)
-
-Determines whether the validator should coerce value types to match the type defined in the OpenAPI spec.
-
-- `true` (**default**) - coerce scalar data types.
-- `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
-
->>>>>>> fastify
 ### ▪️ \$refParser.mode (optional)
 
 Determines how JSON schema references are resolved by the internal [json-schema-ref-parser](https://github.com/APIDevTools/json-schema-ref-parser). Generally, the default mode, `bundle` is sufficient, however if you use [escape characters in \$refs](https://swagger.io/docs/specification/using-ref/), `dereference` is necessary.
@@ -1163,15 +1128,12 @@ app.use(OpenApiValidator.middleware({
 }))
 ```
 
-<<<<<<< HEAD
 **Q:** I have a handler function defined on an `express.Router`. If i call `req.params` each param value has type `string`. If i define same handler function on an `express.Application`, each value in `req.params` is already coerced to the type declare in my spec. Why not coerce theseF values on an `express.Router`?
 
 **A:** First, it's important to note that this behavior does not impact validation. The validator will validate against the type defined in your spec.
 
 In order to modify the `req.params`, express requires that a param handler be registered e.g. `app.param(...)` or `router.param(...)`. Since `app` is available to middleware functions, the validator registers an `app.param` handler to coerce and modify the values of `req.params` to their declared types. Unfortunately, express does not provide a means to determine the current router from a middleware function, hence the validator is unable to register the same param handler on an express router. Ultimately, this means if your handler function is defined on `app`, the values of `req.params` will be coerced to their declared types. If your handler function is declare on an `express.Router`, the values of `req.params` values will be of type `string` (You must coerce them e.g. `parseInt(req.params.id)`).
 
-=======
->>>>>>> fastify
 ## Contributors ✨
 
 Contributions welcome! Here's how to [contribute](CONTRIBUTING.md).

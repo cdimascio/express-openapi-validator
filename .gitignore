@@ -1,10 +1,6 @@
-<<<<<<< HEAD
+.DS_Store
 /_old
 .vscode
 .idea
 node_modules
 dist
-=======
-node_modules
-.vscode
->>>>>>> fastify
