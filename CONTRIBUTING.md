@@ -85,7 +85,11 @@ Click the Gitpod badge to setup a ready to code dev env in the cloud.
    npm run test
    ```
 
+## Debug
 
+If you are using VSCode, see the debugger. There are configurations:
+- Run Mocha Tests - allows to step through Mocha tests
+- 7-Fastify Attach - allows to start the fastify example and step through code
 
 ## Develop
 
