@@ -1,5 +1,4 @@
 const koa = require('koa');
-const c2k = require('koa-connect');
 const koaRouter = require('koa-router');
 const OpenApiValidator = require('koa-openapi-validator');
 
