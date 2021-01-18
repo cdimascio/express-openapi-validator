@@ -11,7 +11,7 @@ script:
 - lerna run compile
 - lerna run test:coverage
 - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then lerna run coveralls; fi
-- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then lerna run codacy fi
+- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then lerna run codacy; fi
 env:
   global:
   - secure: gL8LAXeUAuBDFKfIWXZMONoMy0CNN5dUx7oYdEgtiPxgfSTazbrALzA56mLyL9wPw7Utr71uLvzuI0FvNN62oVGXj/1u3tVL0ALj5z62OeY58640zEgZbrL04CEyMewKoyjkxZ3+ForLs2L1ZyHcNDyJRgdMAHG2w+DvvWdmXgmVXEh/3KYir0IxHPQoj/HjKO/o9G2zSyEIoW9OpMNjQt4hhvrIbK3ZwHoDW+uxZYN5XZ3uxZZwkWpG87vp7uhOl6sGPjA2d20u48iPdM2hB4I0esJew5/jGZ0xSNCg/oiC/iegQ7LMnqVCB3NTdhSz6bw4TMi3bRM5npXNDFp8AkrbC5TAsVr4TqAoRzSQs3maLp3fmthuItLw4p6NAoyVMlOBfAryZtY/gn2I4yD71Qnr+owo2GqP6PsVaP3kO0d5RioDs8X9hNCt6MhG/vUxf2jqJQHI9YPBvCX0Xgq0emDCHF1O9mSbiMoBzJ1yTYTYd9IBnWpYKUAtfPlMg+W4HTkQTHYYFjGRP0OFKnlbVRO61AaIvnvRlv2XmAP9V6LSmN1v1J3czBCSbnL3jYKslI4gQTrJtUa9wqbE8eI/ro4wcKp1Qa56LylK/hGnbzB5QyYX30mIpN7lOyezmlD3OHiowAA3Z8rgG4ssw1D2/1aue/08CfMP//I0ccI0M6k=
