@@ -1,6 +1,6 @@
 {
   "name": "8-top-level-discriminator",
-  "version": "4.11.0-beta.5",
+  "version": "4.11.0-beta.6",
   "description": "",
   "private": true,
   "main": "index.js",
@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express-openapi-validator": "^4.11.0-beta.5"
+    "express-openapi-validator": "^4.11.0-beta.6"
   },
   "devDependencies": {
     "nodemon": "^2.0.6",

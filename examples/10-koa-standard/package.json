@@ -1,6 +1,6 @@
 {
   "name": "10-koa-standard",
-  "version": "1.0.0",
+  "version": "4.11.0-beta.6",
   "description": "",
   "private": true,
   "main": "index.js",
@@ -11,10 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "koa-openapi-validator": "^4.11.0-beta.5",
     "koa": "^2.13.1",
     "koa-compose": "^4.1.0",
     "koa-connect": "^2.1.0",
+    "koa-openapi-validator": "^4.11.0-beta.6",
     "koa-router": "^10.0.0"
   },
   "devDependencies": {

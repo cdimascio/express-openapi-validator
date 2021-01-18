@@ -1,7 +1,7 @@
 {
   "name": "1-standard",
   "private": true,
-  "version": "4.11.0-beta.5",
+  "version": "4.11.0-beta.6",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express-openapi-validator": "^4.11.0-beta.5",
+    "express-openapi-validator": "^4.11.0-beta.6",
     "morgan": "^1.10.0"
   },
   "devDependencies": {

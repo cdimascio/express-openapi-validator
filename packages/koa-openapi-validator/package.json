@@ -1,6 +1,6 @@
 {
   "name": "koa-openapi-validator",
-  "version": "4.11.0-beta.5",
+  "version": "4.11.0-beta.6",
   "description": "Automatically validate API requests with OpenAPI 3 and Koa.",
   "main": "dist/index.js",
   "scripts": {
@@ -22,9 +22,9 @@
   "license": "MIT",
   "dependencies": {
     "@types/multer": "^1.4.5",
-    "express-openapi-validator": "^4.11.0-beta.5",
-    "openapi-framework": "^4.11.0-beta.5",
-    "koa-compose": "^4.1.0"
+    "express-openapi-validator": "^4.11.0-beta.6",
+    "koa-compose": "^4.1.0",
+    "openapi-framework": "^4.11.0-beta.6"
   },
   "devDependencies": {
     "@types/koa": "^2.11.6",

@@ -1,6 +1,6 @@
 {
   "name": "6-multi-file-spec",
-  "version": "4.11.0-beta.5",
+  "version": "4.11.0-beta.6",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -14,7 +14,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.5",
-    "express-openapi-validator": "^4.11.0-beta.5",
+    "express-openapi-validator": "^4.11.0-beta.6",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
