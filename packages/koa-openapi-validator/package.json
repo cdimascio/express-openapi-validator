@@ -1,8 +1,7 @@
 {
   "name": "koa-openapi-validator",
-  "private": true,
   "version": "4.11.0-beta.5",
-  "description": "Automatically validate API requests and responses with OpenAPI 3 and Express.",
+  "description": "Automatically validate API requests with OpenAPI 3 and Koa.",
   "main": "dist/index.js",
   "scripts": {
     "compile": "rm -rf dist/ && tsc"
