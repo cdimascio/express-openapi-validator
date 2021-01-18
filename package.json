@@ -1,7 +1,6 @@
 {
-  "name": "root",
+  "name": "openapi-validator-monorepo",
   "private": true,
-  "version": "4.11.0-beta.5",
   "workspaces": [
     "packages/*"
   ],
