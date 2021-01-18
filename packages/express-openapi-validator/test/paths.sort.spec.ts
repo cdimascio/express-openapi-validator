@@ -1,4 +1,4 @@
-import { sortRoutes } from 'framework';
+import { sortRoutes } from 'openapi-framework';
 import { expect } from 'chai';
 
 describe('url sorter', () => {

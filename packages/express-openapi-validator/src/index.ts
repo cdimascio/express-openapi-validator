@@ -11,7 +11,7 @@ import {
   NotFound,
   Unauthorized,
   Forbidden,
-} from 'framework';
+} from 'openapi-framework';
 
 export const resolvers = res;
 export const middleware = openapiValidator;

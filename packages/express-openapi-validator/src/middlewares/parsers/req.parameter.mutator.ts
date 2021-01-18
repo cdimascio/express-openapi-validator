@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { Ajv } from 'ajv';
-import { OpenAPIV3, ValidationSchema, BadRequest } from 'framework';
+import { OpenAPIV3, ValidationSchema, BadRequest } from 'openapi-framework';
 import { OpenApiRequest, OpenApiRequestMetadata } from '../../types';
 import url from 'url';
 import { dereferenceParameter, normalizeParameter } from './util';
@@ -70,7 +70,7 @@ export class RequestParameterMutator {
 
       const { type } = <SchemaObject>schema;
       const { style, explode } = parameter;
-      const originalUrl = req.originalUrl ?? req.url
+      const originalUrl = req.originalUrl ?? req.url;
       const i = originalUrl.indexOf('?');
       const queryString = originalUrl.substr(i + 1);
 

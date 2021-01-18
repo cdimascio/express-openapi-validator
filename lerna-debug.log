@@ -1,0 +1,6 @@
+0 silly argv { _: [ 'clean' ], lernaVersion: '3.22.1', '$0': 'lerna' }
+1 notice cli v3.22.1
+2 verbose rootPath /Users/cdimasci/git/express-openapi-validator
+3 error JSONError: Unexpected token } in JSON at position 390 while parsing near '..."^4.11.0-beta.5",  },  "devDependencie...' in ../8-top-level-discriminator/package.json
+3 error     at module.exports (/Users/cdimasci/git/express-openapi-validator/node_modules/parse-json/index.js:26:19)
+3 error     at parse (/Users/cdimasci/git/express-openapi-validator/node_modules/load-json-file/index.js:15:9)

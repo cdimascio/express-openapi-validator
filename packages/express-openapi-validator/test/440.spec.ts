@@ -1,7 +1,7 @@
 import express from 'express';
 import request from 'supertest';
 import { createApp } from './common/app';
-import { OpenAPIV3 } from 'framework';
+import { OpenAPIV3 } from 'openapi-framework';
 
 describe('issue #440', () => {
   let app = null;

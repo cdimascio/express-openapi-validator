@@ -3,7 +3,7 @@ import {
   SecurityHandlers,
   InternalServerError,
   HttpError,
-} from 'framework';
+} from 'openapi-framework';
 import {
   OpenApiRequest,
   OpenApiRequestMetadata,

@@ -22,12 +22,10 @@
     "fastify-cli": "^2.2.0",
     "fastify-openapi-validator": "^4.11.0-beta.5",
     "fastify-plugin": "^2.3.3",
-    "framework": "^4.11.0-beta.5",
     "koa-compose": "^4.1.0",
     "middie": "^5.1.0"
   },
   "devDependencies": {
-    "@types/koa-compose": "^3.2.5",
     "tap": "^14.11.0-beta.5"
   }
 }

@@ -1,6 +1,6 @@
 import path from 'path';
 import { RequestHandler } from 'express';
-import { OpenAPIV3, RouteMetadata } from 'framework';
+import { OpenAPIV3, RouteMetadata } from 'openapi-framework';
 
 const cache = {};
 export function defaultResolver(

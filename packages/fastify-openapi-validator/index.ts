@@ -5,7 +5,7 @@ import {
   ValidateRequestOpts,
   ValidateSecurityOpts,
   Format,
-} from 'framework';
+} from 'openapi-framework';
 
 const fp = require('fastify-plugin');
 
@@ -14,7 +14,6 @@ export interface FastifyOpenApiValidatorOpts {
   validateRequests?: boolean | ValidateRequestOpts;
   validateSecurity?: boolean | ValidateSecurityOpts;
   ignorePaths?: RegExp | Function;
-  // securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
   unknownFormats?: true | string[] | 'ignore';
   formats?: Format[];

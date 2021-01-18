@@ -1,6 +1,7 @@
 {
   "name": "7-response-date-serialization",
   "version": "4.11.0-beta.5",
+  "private": true,
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,12 +13,9 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express-openapi-validator": "^4.11.0-beta.5",
-    "framework": "^4.11.0-beta.5",
-    "koa-compose": "^4.1.0"
+    "express-openapi-validator": "^4.11.0-beta.5"
   },
   "devDependencies": {
-    "@types/koa-compose": "^3.2.5",
     "nodemon": "^2.0.6",
     "prettier": "^2.1.1"
   }

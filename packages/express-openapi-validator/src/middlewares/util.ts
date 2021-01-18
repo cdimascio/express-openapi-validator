@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 import url from 'url';
 import qs from 'querystring';
 import { Request } from 'express';
-import { ValidationError } from 'framework';
+import { ValidationError } from 'openapi-framework';
 
 export class ContentType {
   public readonly contentType: string = null;

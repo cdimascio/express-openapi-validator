@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { OpenAPIV3 } from 'framework';
+import { OpenAPIV3 } from 'openapi-framework';
 
 export interface OpenApiRequest extends Request {
   openapi?: OpenApiRequestMetadata | {};

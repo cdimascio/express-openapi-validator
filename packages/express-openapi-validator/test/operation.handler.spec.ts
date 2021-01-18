@@ -5,7 +5,7 @@ import request from 'supertest';
 import * as OpenApiValidator from '../src';
 import * as resolvers from '../src/resolvers';
 import { createApp } from './common/app';
-import { OpenApiValidatorOpts } from 'framework';
+import { OpenApiValidatorOpts } from 'openapi-framework';
 
 describe('operation handler', () => {
   let defaultNumberOfRoutes = null;

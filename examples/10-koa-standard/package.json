@@ -2,10 +2,10 @@
   "name": "10-koa-standard",
   "version": "1.0.0",
   "description": "",
+  "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "node index",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index"
   },
   "keywords": [],
   "author": "",
@@ -18,7 +18,6 @@
     "koa-router": "^10.0.0"
   },
   "devDependencies": {
-    "@types/koa-compose": "^3.2.5",
     "nodemon": "^2.0.7"
   }
 }

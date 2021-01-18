@@ -17,7 +17,7 @@ import {
   ParametersSchema,
   BodySchema,
   ValidationSchema,
-} from 'framework';
+} from 'openapi-framework';
 import { OpenApiRequest, OpenApiRequestMetadata } from '../types';
 import { BodySchemaParser } from './parsers/body.parse';
 import { ParametersSchemaParser } from './parsers/schema.parse';

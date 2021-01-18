@@ -6,7 +6,7 @@ import {
   InternalServerError,
   HttpError,
   MultipartOpts,
-} from 'framework';
+} from 'openapi-framework';
 import { pathname } from './util';
 import { OpenApiRequest, OpenApiRequestHandler } from '../types';
 import { MulterError } from 'multer';

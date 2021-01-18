@@ -6,7 +6,7 @@ import {
   OpenAPIV3,
   MethodNotAllowed,
   NotFound,
-} from 'framework';
+} from 'openapi-framework';
 import {
   OpenApiRequest,
   OpenApiRequestHandler,

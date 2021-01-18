@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { OpenAPIV3 } from 'framework';
+import { OpenAPIV3 } from 'openapi-framework';
 import { createApp } from './common/app';
 
 describe('issue #478', () => {

@@ -1,5 +1,5 @@
 import { Ajv } from 'ajv';
-import { OpenAPIV3 } from 'framework';
+import { OpenAPIV3 } from 'openapi-framework';
 
 export function dereferenceParameter(
   apiDocs: OpenAPIV3.Document,

@@ -6,7 +6,7 @@ import logger from 'morgan';
 
 import * as OpenApiValidator from '../../src';
 import { startServer, routes } from './app.common';
-import { OpenApiValidatorOpts } from 'framework';
+import { OpenApiValidatorOpts } from 'openapi-framework';
 
 export async function createApp(
   opts?: OpenApiValidatorOpts,
