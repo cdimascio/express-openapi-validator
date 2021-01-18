@@ -10,21 +10,12 @@
   "repository": {
     "url": "https://github.com/cdimascio/express-openapi-validator"
   },
-  "keywords": [
-    "openapi",
-    "openapi 3",
-    "expressjs",
-    "express",
-    "request validation",
-    "response validation",
-    "middleware",
-    "nodejs"
-  ],
   "author": "Carmine DiMascio <cdimascio@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "ajv": "^6.12.6",
     "json-schema-ref-parser": "^9.0.6",
+    "koa-compose": "^4.1.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.get": "^4.4.2",
     "lodash.uniq": "^4.5.0",
@@ -37,6 +28,7 @@
     "@types/ajv": "^1.0.0",
     "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.8",
+    "@types/koa-compose": "^3.2.5",
     "@types/mocha": "^8.0.3",
     "@types/morgan": "^1.9.1",
     "@types/multer": "^1.4.4",

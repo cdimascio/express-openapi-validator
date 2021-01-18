@@ -1,0 +1,24 @@
+{
+  "name": "10-koa-standard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "koa-openapi-validator": "^4.11.0-beta.5",
+    "koa": "^2.13.1",
+    "koa-compose": "^4.1.0",
+    "koa-connect": "^2.1.0",
+    "koa-router": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/koa-compose": "^3.2.5",
+    "nodemon": "^2.0.7"
+  }
+}

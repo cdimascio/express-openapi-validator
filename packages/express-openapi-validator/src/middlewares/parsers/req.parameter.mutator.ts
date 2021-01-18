@@ -59,8 +59,9 @@ export class RequestParameterMutator {
    */
   public modifyRequest(req: OpenApiRequest): void {
     const { parameters } = (<OpenApiRequestMetadata>req.openapi).schema;
+    const originalUrl = req.originalUrl ?? req.url;
     const rawQuery = this.parseQueryStringUndecoded(
-      url.parse(req.originalUrl).query,
+      url.parse(originalUrl).query,
     );
 
     (parameters || []).forEach((p) => {
@@ -69,8 +70,9 @@ export class RequestParameterMutator {
 
       const { type } = <SchemaObject>schema;
       const { style, explode } = parameter;
-      const i = req.originalUrl.indexOf('?');
-      const queryString = req.originalUrl.substr(i + 1);
+      const originalUrl = req.originalUrl ?? req.url
+      const i = originalUrl.indexOf('?');
+      const queryString = originalUrl.substr(i + 1);
 
       if (parameter.in === 'query' && !parameter.allowReserved) {
         this.validateReservedCharacters(name, rawQuery);

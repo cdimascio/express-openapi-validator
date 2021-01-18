@@ -57,7 +57,7 @@ export class ResponseValidator {
           ._responseSchema?.responses;
 
         const validators = this._getOrBuildValidator(req, responses);
-        const path = req.originalUrl;
+        const path = req.originalUrl || req.url;
         const statusCode = res.statusCode;
         const contentType = res.getHeaders()['content-type'];
         const accept = req.headers['accept'];

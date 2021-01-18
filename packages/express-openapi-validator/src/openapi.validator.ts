@@ -9,6 +9,7 @@ import {
   OpenApiContext,
   OperationHandlerOptions,
   Spec,
+  SchemaPreprocessor,
   ValidateRequestOpts,
   ValidateResponseOpts,
   ValidateSecurityOpts,
@@ -22,7 +23,6 @@ import {
   OpenApiRequestMetadata,
 } from './types';
 import { defaultResolver } from './resolvers';
-import { SchemaPreprocessor } from 'framework';
 
 export {
   OpenApiValidatorOpts,
