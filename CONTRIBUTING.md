@@ -27,29 +27,28 @@ Click the Gitpod badge to setup a ready to code dev env in the cloud.
 2. Install the dependencies for each package in the mono repo
 
    ```shell
-<<<<<<< HEAD
    # install lerna and common deps
    npm install 
 
    # run lerna bootstrap to install module dependencies
    # note: use lerna bootstrap, rather than npm install
-   lerna bootstrap
+   lerna bootstrap && lerna run compile
    ```
+
+   _**Tip:**_ Run `lerna clean && lerna bootstrap && lerna run compile` to reset the project, e.g. clean, install, and compile all packages.
 
 3. Navigate to the package dir you'd like to modify
 
    **Packages:**
-   - [framework](/packages/framework) - core schema load and preprocess logic
    - [express-openapi-validator](/packages/express-openapi-validator) - the express middleware 
+   - [koa-openapi-validator](/packages/koa-openapi-validator) - the koa middleware 
+   - [fastify-openapi-validator](/packages/fastify-openapi-validator) - the fastify middleware 
+   - [framework](/packages/framework) - core schema load and preprocess logic
+   
 
    ```shell
    # for example, navigate the express validator package
    cd packages/express-openapi-validator
-=======
-   # From the project directory, run
-   npm i lerna -g
-   lerna bootstrap
->>>>>>> fastify
    ```
 3a. Compile sources for each package in the mono repo
 
@@ -73,28 +72,19 @@ Click the Gitpod badge to setup a ready to code dev env in the cloud.
    ```shell
     # compile any changes
    lerna run compile
-   lerna run test --scope express-openapi-validator
+   lerna run test
    ```
 
 1b. Run tests in one package
 
-<<<<<<< HEAD
-   Run tests for all packages
-      ```shell
-      lerna run test
-      ```
-
    Run tests in the current package:
-      ```shell
-      npm run test
-      ```
 
-=======
    ```shell
-   cd packages express-openapi-validator
-   npm t
+   lerna run test --scope express-openapi-validator
+   # or if in the package directory, you can run
+   npm run test
    ```
->>>>>>> fastify
+
 
 
 ## Develop
