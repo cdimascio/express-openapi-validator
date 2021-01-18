@@ -7,7 +7,7 @@ import {
   OpenApiValidatorOpts,
   ValidateSecurityOpts,
   OpenAPIV3,
-} from 'openapi-framework';
+} from 'openapi-core';
 
 // NOTE/TODO: These tests modify eovConf.validateSecurity.handlers
 // Thus test execution order matters :-(

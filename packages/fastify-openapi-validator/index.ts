@@ -5,7 +5,7 @@ import {
   ValidateRequestOpts,
   ValidateSecurityOpts,
   Format,
-} from 'openapi-framework';
+} from 'openapi-core';
 
 const fp = require('fastify-plugin');
 

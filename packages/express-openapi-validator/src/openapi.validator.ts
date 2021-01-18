@@ -16,7 +16,7 @@ import {
   OpenAPIV3,
   RequestValidatorOptions,
   Options,
-} from 'openapi-framework';
+} from 'openapi-core';
 import {
   OpenApiRequest,
   OpenApiRequestHandler,
@@ -35,7 +35,7 @@ export {
   NotFound,
   Unauthorized,
   Forbidden,
-} from 'openapi-framework';
+} from 'openapi-core';
 
 export class OpenApiValidator {
   readonly options: OpenApiValidatorOpts;

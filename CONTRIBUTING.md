@@ -43,7 +43,7 @@ Click the Gitpod badge to setup a ready to code dev env in the cloud.
    - [express-openapi-validator](/packages/express-openapi-validator) - the express middleware 
    - [koa-openapi-validator](/packages/koa-openapi-validator) - the koa middleware 
    - [fastify-openapi-validator](/packages/fastify-openapi-validator) - the fastify middleware 
-   - [framework](/packages/framework) - core schema load and preprocess logic
+   - [openapi-core](/packages/openapi-core) - core schema load and preprocess logic
    
 
    ```shell

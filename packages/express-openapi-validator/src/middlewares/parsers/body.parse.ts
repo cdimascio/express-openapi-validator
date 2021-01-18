@@ -1,6 +1,6 @@
 import { ContentType } from '../util';
 
-import { OpenAPIV3, BodySchema, UnsupportedMediaType } from 'openapi-framework';
+import { OpenAPIV3, BodySchema, UnsupportedMediaType } from 'openapi-core';
 
 export class BodySchemaParser {
   constructor() {}

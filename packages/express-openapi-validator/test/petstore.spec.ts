@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { OpenAPIV3 } from 'openapi-framework';
+import { OpenAPIV3 } from 'openapi-core';
 import { createApp } from './common/app';
 
 describe('petstore', () => {

@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import ajv from 'ajv';
 import mung from './modded.express.mung';
-import { Ajv } from 'openapi-framework';
+import { Ajv } from 'openapi-core';
 import {
   augmentAjvErrors,
   ContentType,
@@ -12,7 +12,7 @@ import {
   OpenAPIV3,
   InternalServerError,
   ValidateResponseOpts,
-} from 'openapi-framework';
+} from 'openapi-core';
 import { OpenApiRequest, OpenApiRequestMetadata } from '../types';
 import mediaTypeParser from 'media-typer';
 import contentTypeParser from 'content-type';

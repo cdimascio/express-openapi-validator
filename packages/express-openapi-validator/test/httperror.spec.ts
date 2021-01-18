@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { error } from '../src';
-import { HttpError } from 'openapi-framework';
+import { HttpError } from 'openapi-core';
 
 describe('headers', () => {
   it('should be an instance of BadRequest', (done) => {

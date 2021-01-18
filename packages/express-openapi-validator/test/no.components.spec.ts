@@ -2,7 +2,7 @@ import express from 'express';
 import { expect } from 'chai';
 import request from 'supertest';
 import { createApp } from './common/app';
-import { OpenAPIV3 } from 'openapi-framework';
+import { OpenAPIV3 } from 'openapi-core';
 
 describe('no components', () => {
   let app = null;

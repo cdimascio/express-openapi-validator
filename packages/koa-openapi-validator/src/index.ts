@@ -7,7 +7,7 @@ import {
   ValidateRequestOpts,
   ValidateSecurityOpts,
   Format,
-} from 'openapi-framework';
+} from 'openapi-core';
 
 export interface KoaOpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;

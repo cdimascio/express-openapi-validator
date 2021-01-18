@@ -4,7 +4,7 @@ import cloneDeep from 'lodash.clonedeep';
 import jsyaml from 'js-yaml';
 import { expect } from 'chai';
 import { ResponseValidator } from '../src/middlewares/openapi.response.validator';
-import { OpenAPIV3 } from 'openapi-framework';
+import { OpenAPIV3 } from 'openapi-core';
 import { OpenApiRequest } from '../src/types';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');

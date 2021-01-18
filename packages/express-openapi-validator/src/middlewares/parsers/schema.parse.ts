@@ -1,4 +1,4 @@
-import { OpenAPIV3, ParametersSchema, BadRequest } from 'openapi-framework';
+import { OpenAPIV3, ParametersSchema, BadRequest } from 'openapi-core';
 import { dereferenceParameter, normalizeParameter } from './util';
 import { Ajv } from 'ajv';
 

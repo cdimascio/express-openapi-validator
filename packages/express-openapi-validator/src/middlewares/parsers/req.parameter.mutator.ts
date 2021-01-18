@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { Ajv } from 'ajv';
-import { OpenAPIV3, ValidationSchema, BadRequest } from 'openapi-framework';
+import { OpenAPIV3, ValidationSchema, BadRequest } from 'openapi-core';
 import { OpenApiRequest, OpenApiRequestMetadata } from '../../types';
 import url from 'url';
 import { dereferenceParameter, normalizeParameter } from './util';
