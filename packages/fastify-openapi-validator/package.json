@@ -1,7 +1,7 @@
 {
   "name": "fastify-openapi-validator",
   "description": "Automatically validate API requests with OpenAPI 3 and Fastify.",
-  "version": "4.12.0-beta.1",
+  "version": "4.12.0-beta.2",
   "main": "dist/index.js",
   "scripts": {
     "compile": "rm -rf dist/ && tsc",
