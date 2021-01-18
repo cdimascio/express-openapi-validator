@@ -1,21 +1,21 @@
 sudo: required
 language: node_js
 node_js:
-- '14'
-- '12'
-- '10'
+  - '14'
+  - '12'
+  - '10'
 install:
-- npm install lerna -g
-- lerna bootstrap
+  - npm install lerna -g
+  - lerna bootstrap
 script:
-- lerna run compile
-- lerna run test:coverage
-- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then lerna run coveralls; fi
-- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then lerna run codacy; fi
+  - lerna run compile
+  - lerna run test:coverage
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then lerna run coveralls; fi
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then lerna run codacy; fi
 env:
   global:
-  - secure: IXdKTVOalRPE/2Nc7sv1Mw+QDrJsFqPCJsmpStKO6yQ2fkuIFNiAjerBl5yVHEGs02jOBR85J51Cl7Qe6EyhX0udNU+uYtYC9Upo9B6/b3VTEhAJ9aIH9Wn12DfqJ6LgBe235YShrlrzGOYUIY9gVFgt3WgHdQjXwAoeHM1WKomQewv2AZM0jLkGQD0PM1Kqape0damErz18aft7NwwEcU5A0Hu3CezTPRKGJV7dUFQ27t2VG0sz6C0BXl03tU270kKjBoUIicj7D6ItRlzcVldWFW3b1Z/SpJTbcJltcjj6WHlkTcztFuco2KPCHITsbBve7h8N6l5iJqaF/L1xXO4xkAJUXaznCpbaNePXUPvd89eYRWpJFAJ6NG9PVb1ZHEKIZbU0iubjenop2Xh4t47OLQqIMYYsGkk4+B1e02jWl6Fmgn8WRqRLw+bklFghFd1vlL8JMSLx7akmkankgK1nbO8VmLKdXQT9jXa9S+i5KDaIKSFOP2JuJH6mKVmSP0EUlwEBT+lmwonfmsLqHgNR1Ig+l87iF+2e+ISODmqVAh6c6SqJna03lPDyakNmR6In839Zh+IEFiPwdlnElfU/zJOKbZChHw78EoFfL8Y4RrCn4bPxzhMMEb0BpldtFEstP/TH2/kJ0kNA41abPjnZTiLBoQO8yOLwtgIYKak=
-  - secure: ynK6+WANBepDwgTGqkip+maVd6lmfgFeViXKTxJsV2eP/0LS/jKaFceNuTHm82SDkmMiXi9OsDXNqmtfRq/cxiHr9VBvmPqrXufO/Um3JRt+1UWldZ5/f6lIGk/1enxC/zvruIBLUy1avFAjSHyT+tLYRbFZIxMRySPj/F0/9YIKVdrOf0uxVyGeJ4W0nMTLyDORG3fKfuVfxVcTcobXJpsHKmwXD0L1BtIutBrpb7ohvmrUScsnCdwdD8aqExwc5ac4nBqpvOBntkUlpHIrMvanv4JNAPG2eKi/zfZXlT9LN4oDG0ct8Z0r930nKEeDyZ41T2cURhh0VY8p5zvQhWYGmsXi65Pi72tNxCi82+5dpbOCPi7jKySzE+F0YNsDj818awIzj7+fU1ZRgDhJyF1OAlbDkQ2flUTMafHy2VPYDNhQBxErY6Jq0kzMdo42BmYoACyVFLni6y6V7htQBq/LIxqjFaqw2Uz3vGoTI2MRIeaqVMSHd/p6S5Qw4lO5u5J/PzxisE6k8D8MGZ2RzMLqCqdyvIuUSAwv1VnHFswfdntE+CjXJdk9ahRMrz7EzvLGXC5B2B5y2aUyCGwtrpxLWTejoeNj3SZ1ePLJ3aG/lXMjQGaD0U8+NZ3kr8L3qXDrND7uymRbogcsN1JWVTy9YDjkrWpzfCtH5uMbSXw=
+    - secure: IXdKTVOalRPE/2Nc7sv1Mw+QDrJsFqPCJsmpStKO6yQ2fkuIFNiAjerBl5yVHEGs02jOBR85J51Cl7Qe6EyhX0udNU+uYtYC9Upo9B6/b3VTEhAJ9aIH9Wn12DfqJ6LgBe235YShrlrzGOYUIY9gVFgt3WgHdQjXwAoeHM1WKomQewv2AZM0jLkGQD0PM1Kqape0damErz18aft7NwwEcU5A0Hu3CezTPRKGJV7dUFQ27t2VG0sz6C0BXl03tU270kKjBoUIicj7D6ItRlzcVldWFW3b1Z/SpJTbcJltcjj6WHlkTcztFuco2KPCHITsbBve7h8N6l5iJqaF/L1xXO4xkAJUXaznCpbaNePXUPvd89eYRWpJFAJ6NG9PVb1ZHEKIZbU0iubjenop2Xh4t47OLQqIMYYsGkk4+B1e02jWl6Fmgn8WRqRLw+bklFghFd1vlL8JMSLx7akmkankgK1nbO8VmLKdXQT9jXa9S+i5KDaIKSFOP2JuJH6mKVmSP0EUlwEBT+lmwonfmsLqHgNR1Ig+l87iF+2e+ISODmqVAh6c6SqJna03lPDyakNmR6In839Zh+IEFiPwdlnElfU/zJOKbZChHw78EoFfL8Y4RrCn4bPxzhMMEb0BpldtFEstP/TH2/kJ0kNA41abPjnZTiLBoQO8yOLwtgIYKak=
+    - secure: ynK6+WANBepDwgTGqkip+maVd6lmfgFeViXKTxJsV2eP/0LS/jKaFceNuTHm82SDkmMiXi9OsDXNqmtfRq/cxiHr9VBvmPqrXufO/Um3JRt+1UWldZ5/f6lIGk/1enxC/zvruIBLUy1avFAjSHyT+tLYRbFZIxMRySPj/F0/9YIKVdrOf0uxVyGeJ4W0nMTLyDORG3fKfuVfxVcTcobXJpsHKmwXD0L1BtIutBrpb7ohvmrUScsnCdwdD8aqExwc5ac4nBqpvOBntkUlpHIrMvanv4JNAPG2eKi/zfZXlT9LN4oDG0ct8Z0r930nKEeDyZ41T2cURhh0VY8p5zvQhWYGmsXi65Pi72tNxCi82+5dpbOCPi7jKySzE+F0YNsDj818awIzj7+fU1ZRgDhJyF1OAlbDkQ2flUTMafHy2VPYDNhQBxErY6Jq0kzMdo42BmYoACyVFLni6y6V7htQBq/LIxqjFaqw2Uz3vGoTI2MRIeaqVMSHd/p6S5Qw4lO5u5J/PzxisE6k8D8MGZ2RzMLqCqdyvIuUSAwv1VnHFswfdntE+CjXJdk9ahRMrz7EzvLGXC5B2B5y2aUyCGwtrpxLWTejoeNj3SZ1ePLJ3aG/lXMjQGaD0U8+NZ3kr8L3qXDrND7uymRbogcsN1JWVTy9YDjkrWpzfCtH5uMbSXw=
 branches:
   only:
-  - "/.*/"
+    - "/.*/"
