@@ -468,7 +468,7 @@ export interface OpenApiRequestMetadata {
 }
 
 export interface OpenApiRequest extends Request {
-  openapi?: OpenApiRequestMetadata | {};
+  openapi?: OpenApiRequestMetadata;
 }
 
 export type OpenApiRequestHandler = (

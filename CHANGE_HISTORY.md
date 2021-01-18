@@ -1,3 +1,9 @@
+## <small>4.10.6 (2021-01-15)</small>
+
+* fix: #469 - Response validation skipped on status codes >=400 ([57d3c0e](https://github.com/cdimascio/express-openapi-validator/commit/57d3c0e)), closes [#469](https://github.com/cdimascio/express-openapi-validator/issues/469)
+
+
+
 ## <small>4.10.5 (2021-01-11)</small>
 
 * chore: beta ([979e310](https://github.com/cdimascio/express-openapi-validator/commit/979e310))

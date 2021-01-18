@@ -36,3 +36,5 @@ secrets.zip.enc
 README.md
 tsconfig.json
 TODO.md
+build.sh
+launch.json

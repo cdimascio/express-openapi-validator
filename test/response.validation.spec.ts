@@ -19,11 +19,17 @@ describe(packageJson.name, () => {
       },
       3005,
       (app) => {
+        app.get(`${app.basePath}/error`, (req, res) => {
+          return res.status(400).json({
+            message: 'test',
+            code: 400,
+          });
+        });
         app.get(`${app.basePath}/ref_response_body`, (req, res) => {
           return res.json({ id: 213, name: 'name', kids: [] });
         });
         app.get(`${app.basePath}/empty_response`, (req, res) => {
-          return res.status(204).end();
+          return res.status(204).send();
         });
         app.get(`${app.basePath}/boolean`, (req, res) => {
           return res.json(req.query.value);
@@ -144,7 +150,7 @@ describe(packageJson.name, () => {
         expect(r.body).to.have.property('code').that.equals(500);
       }));
 
-  it('should fail if response is response is empty', async () =>
+  it('should fail if response is empty', async () =>
     request(app)
       .get(`${app.basePath}/pets?mode=empty_response`)
       .expect(500)
@@ -153,11 +159,20 @@ describe(packageJson.name, () => {
         expect(r.body).to.have.property('code').that.equals(500);
       }));
 
+  it('should return throw 500 on invalid error response', async () =>
+    request(app)
+      .get(`${app.basePath}/error`)
+      .expect(500)
+      .then((r) => {
+        expect(r.body.message).to.include('required property');
+      }));
+
   it('should return 204 for endpoints that return empty response', async () =>
     request(app)
       .get(`${app.basePath}/empty_response`)
       .expect(204)
       .then((r) => {
+        console.log(r.body);
         expect(r.body).to.be.empty;
       }));
 
