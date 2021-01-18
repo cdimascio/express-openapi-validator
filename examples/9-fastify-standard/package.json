@@ -1,6 +1,6 @@
 {
   "name": "9-fastify-standard",
-  "version": "4.12.0-beta.0",
+  "version": "4.12.0-beta.1",
   "description": "",
   "private": true,
   "main": "app.js",
@@ -16,11 +16,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express-openapi-validator": "^4.12.0-beta.0",
+    "express-openapi-validator": "^4.12.0-beta.1",
     "fastify": "^3.3.0",
     "fastify-autoload": "^3.0.8",
     "fastify-cli": "^2.2.0",
-    "fastify-openapi-validator": "^4.12.0-beta.0",
+    "fastify-openapi-validator": "^4.12.0-beta.1",
     "fastify-plugin": "^2.3.3",
     "koa-compose": "^4.1.0",
     "middie": "^5.1.0"
