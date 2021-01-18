@@ -3,7 +3,7 @@
 ## Install
 
 ```shell
-npm install koa-openapi-validator@4.11.0-beta.6
+npm install koa-openapi-validator@4.12.0-beta.1
 ```
 
 ## Usage
