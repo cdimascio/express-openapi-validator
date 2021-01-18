@@ -49,7 +49,6 @@ describe('serdes', () => {
             serialize: (o) => o.toString(),
           },
         ],
-        unknownFormats: ['mongo-objectid'],
       },
       3005,
       (app) => {

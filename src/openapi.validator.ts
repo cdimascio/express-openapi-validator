@@ -347,6 +347,14 @@ export class OpenApiValidator {
       options.serDes = defaultSerDes;
     }
     else {
+      if(!Array.isArray(options.unknownFormats)) {
+        options.unknownFormats = Array<string>();
+      }
+      options.serDes.forEach(currentSerDes => {
+        if((options.unknownFormats as string[]).indexOf(currentSerDes.format) === -1) {
+          (options.unknownFormats as string[]).push(currentSerDes.format)
+        }
+      });
       defaultSerDes.forEach(currentDefaultSerDes => {
         let defautSerDesOverride = options.serDes.find(currentOptionSerDes => {
           return currentDefaultSerDes.format === currentOptionSerDes.format;

@@ -719,7 +719,9 @@ This Date conversion only occurs before sending the response.
 
 You can use `serDes` option to add custom mecanism that :
 - `deserialize` string to custom object (Date...) on request
+  - Deserialization is made after other schema validation (`pattern`...)
 - `serialize` object before sending the response 
+  - Serialization is made instead of other validation. No `pattern` or other rule is checked.
 
 The goal of `serDes` option is to focus route functions on feature and without having to cast data on request or before sending response.
 
@@ -751,12 +753,9 @@ serDes: [{
 So, in conclusion, you can use `OpenApiValidator.baseSerDes.dateTime` if you can to serialize and deserialize dateTime.
 You can also use `OpenApiValidator.baseSerDes.dateTime.serializer` if you only want to serialize or `OpenApiValidator.baseSerDes.dateTime.deserializer` if you only want to deserialize.
 
-IMPORTANT : You must add your custom formats in [unknownFormats](#unknownFormats-(optional)) option setting. 
-Even if OpenAPI allows custom values in `format` field (such as `mongo-objectid`), it's needed to allow those formats. 
-```javascript
-   unknownFormats: ['mongo-objectid'] 
-```
-
+NOTE : If you add custom formats in serDes, they are automatically added as accepted custom formats in [unknownFormats](#unknownFormats-(optional)) option setting. 
+You don't need to add them in unknownFormats.
+ 
 You may want to use `serDes` option for MongoDB types (ObjectID, UUID...). 
 Then you can use the package [mongo-serdes-js](https://github.com/pilerou/mongo-serdes-js). It is designed to be a good addition to this package.
 
