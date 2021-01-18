@@ -50,6 +50,7 @@ profile-*
 
 # vscode
 .vscode
+!.vscode/launch.json
 *code-workspace
 
 # clinic
