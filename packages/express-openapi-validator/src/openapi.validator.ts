@@ -22,7 +22,7 @@ import {
   OpenApiRequestMetadata,
 } from './types';
 import { defaultResolver } from './resolvers';
-import { SchemaPreprocessor } from 'framework/src/framework/schema.preprocessor';
+import { SchemaPreprocessor } from 'framework';
 
 export {
   OpenApiValidatorOpts,
@@ -217,25 +217,27 @@ export class OpenApiValidator {
     }
 
     // install param on routes with paths
-    for (const p of _uniq(pathParams)) {
-      app.param(
-        p,
-        (
-          req: OpenApiRequest,
-          res: Response,
-          next: NextFunction,
-          value: any,
-          name: string,
-        ) => {
-          const openapi = <OpenApiRequestMetadata>req.openapi;
-          if (openapi?.pathParams) {
-            const { pathParams } = openapi;
-            // override path params
-            req.params[name] = pathParams[name] || req.params[name];
-          }
-          next();
-        },
-      );
+    if (app && app.param) {
+      for (const p of _uniq(pathParams)) {
+        app.param(
+          p,
+          (
+            req: OpenApiRequest,
+            res: Response,
+            next: NextFunction,
+            value: any,
+            name: string,
+          ) => {
+            const openapi = <OpenApiRequestMetadata>req.openapi;
+            if (openapi?.pathParams) {
+              const { pathParams } = openapi;
+              // override path params
+              req.params[name] = pathParams[name] || req.params[name];
+            }
+            next();
+          },
+        );
+      }
     }
   }
 

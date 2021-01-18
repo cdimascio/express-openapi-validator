@@ -12,16 +12,14 @@ import {
   OpenApiRequestHandler,
   OpenApiRequestMetadata,
 } from '../types';
+import { pathname } from './util';
 
 export function applyOpenApiMetadata(
   openApiContext: OpenApiContext,
   responseApiDoc: OpenAPIV3.Document,
 ): OpenApiRequestHandler {
   return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
-    // note base path is empty when path is fully qualified i.e. req.path.startsWith('')
-    const path = req.path.startsWith(req.baseUrl)
-      ? req.path
-      : `${req.baseUrl}/${req.path}`;
+    const path = pathname(req);
     if (openApiContext.shouldIgnoreRoute(path)) {
       return next();
     }

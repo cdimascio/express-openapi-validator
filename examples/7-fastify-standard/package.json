@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "fastify start -l info server.js",
-    "dev": "fastify start -w -l info -P server.js"
+    "dev": "fastify start -w -l info -P server.js",
+    "dev:debug": "fastify start -w -l info --debug -P server.js"
   },
   "keywords": [],
   "author": "",

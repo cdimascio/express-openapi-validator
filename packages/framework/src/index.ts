@@ -3,8 +3,9 @@ import * as ajv from 'ajv';
 import * as multer from 'multer';
 import { createRequestAjv, createResponseAjv } from './ajv';
 
+export { SchemaPreprocessor } from './framework/schema.preprocessor';
 export { OpenAPIFramework } from './framework/framework';
-export { OpenApiSpecLoader, Spec, RouteMetadata } from './framework/openapi.spec.loader';
+export { OpenApiSpecLoader, Spec, RouteMetadata, sortRoutes } from './framework/openapi.spec.loader';
 export { OpenApiContext } from './framework/openapi.context';
 export const Ajv = {
   createRequestAjv,

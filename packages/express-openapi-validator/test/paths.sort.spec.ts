@@ -1,6 +1,4 @@
-import {
-  sortRoutes,
-} from 'framework/dist/framework/openapi.spec.loader';
+import { sortRoutes } from 'framework';
 import { expect } from 'chai';
 
 describe('url sorter', () => {
@@ -38,7 +36,7 @@ describe('url sorter', () => {
 });
 
 function asRouteMetadatas(urls: string[]) {
-  return urls.map(u => ({
+  return urls.map((u) => ({
     expressRoute: u,
   }));
 }
