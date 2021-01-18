@@ -1,6 +1,5 @@
 import ono from 'ono';
 import ajv = require('ajv');
-import * as express from 'express';
 import _uniq from 'lodash.uniq';
 import * as middlewares from './middlewares';
 import { Application, Response, NextFunction, Router } from 'express';
@@ -280,6 +279,8 @@ export class OpenApiValidator {
   }
 
   installOperationHandlers(baseUrl: string, context: OpenApiContext): Router {
+    // operation handlers are support for express only. load express here
+    const express = require('express');
     const router = express.Router({ mergeParams: true });
 
     this.installPathParams(router, context);
