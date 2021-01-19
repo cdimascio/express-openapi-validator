@@ -66,23 +66,10 @@ function plugin(instance, options, next) {
 module.exports = plugin;
 ```
 
-### Options
+## Options
 
-```ts
-{
-  apiSpec: OpenAPIV3.Document | string;
-  validateRequests?: boolean | ValidateRequestOpts;
-  validateFormats?: false | 'fast' | 'full';
-  unknownFormats?: true | string[] | 'ignore';
-  formats?: Format[];
-  ignorePaths?: RegExp | Function;
-  coerceTypes?: boolean | 'array';
-  $refParser?: {
-    mode: 'bundle' | 'dereference';
-  };
+Options are provided via the options object. Options take the following form:
 
-}
-```
 
 ```javascript
 OpenApiValidator.middleware({
