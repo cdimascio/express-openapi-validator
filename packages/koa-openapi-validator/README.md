@@ -90,6 +90,10 @@ app.use(router.routes()).use(router.allowedMethods());
 app.listen(1234, () => console.log('running on port 1234'));
 ```
 
+## [Documentation](https://github.com/cdimascio/express-openapi-validator#Advanced-Usage)
+
+Documentation is similar to [express-openapi-validator](https://github.com/cdimascio/express-openapi-validator#Advanced-Usag) with the caveat that `validateRequests`, `fileUploader`, and `operationHandlers` are not yet supported.
+
 ## Related Projects
 
 - [express-openapi-validator](https://github.com/cdimascio/express-openapi-validator)
