@@ -5,7 +5,7 @@
 **An OpenApi validator for Fastify** that automatically validates **API** \_**requests** using an **OpenAPI 3** specification.
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/cdimascio/express-openapi-validator/lerna-fastify/assets/fastify-openapi-validator-logo.png" width="600">
+<img src="https://raw.githubusercontent.com/cdimascio/express-openapi-validator/lerna-fastify/assets/fastify-openapi-validator-logo.png" width="400">
 </p>
 
 ## Install
