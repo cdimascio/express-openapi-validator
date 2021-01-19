@@ -491,8 +491,8 @@ OpenApiValidator.middleware({
   }],
   unknownFormats: ['phone-number', 'uuid'],
   serDes: [{
-    OpenApiValidator.baseSerDes.dateTime,
-    OpenApiValidator.baseSerDes.date,
+    OpenApiValidator.serdes.dateTime,
+    OpenApiValidator.serdes.date,
     {
       format: 'mongo-objectid',
       deserialize: (s) => new ObjectID(s),
@@ -728,8 +728,8 @@ The goal of `serDes` option is to focus route functions on feature and without h
 To both `deserialize` on request and `serialize` on response, both functions must be defined and are launched when schema `format` fields match. 
 ```javascript
 serDes: [{
-  OpenApiValidator.baseSerDes.dateTime, // used when 'format: date-time' 
-  OpenApiValidator.baseSerDes.date, // used when 'format: date' 
+  OpenApiValidator.serdes.dateTime, // used when 'format: date-time' 
+  OpenApiValidator.serdes.date, // used when 'format: date' 
   {
     format: 'mongo-objectid',
     deserialize: (s) => new ObjectID(s),
@@ -742,16 +742,16 @@ If you ONLY want to `serialize` response data (and avoid to deserialize on reque
 ```javascript
 serDes: [{
   // No need to declare date and dateTime. Those types deserialization is already done by default.
-  //OpenApiValidator.baseSerDes.dateTime.serializer, 
-  //OpenApiValidator.baseSerDes.date.serializer, 
+  //OpenApiValidator.serdes.dateTime.serializer, 
+  //OpenApiValidator.serdes.date.serializer, 
   {
     format: 'mongo-objectid',
     serialize: (o) => o.toString(),
   }
 }],
 ```
-So, in conclusion, you can use `OpenApiValidator.baseSerDes.dateTime` if you can to serialize and deserialize dateTime.
-You can also use `OpenApiValidator.baseSerDes.dateTime.serializer` if you only want to serialize or `OpenApiValidator.baseSerDes.dateTime.deserializer` if you only want to deserialize.
+So, in conclusion, you can use `OpenApiValidator.serdes.dateTime` if you can to serialize and deserialize dateTime.
+You can also use `OpenApiValidator.serdes.dateTime.serializer` if you only want to serialize or `OpenApiValidator.serdes.dateTime.deserializer` if you only want to deserialize.
 
 NOTE : If you add custom formats in serDes, they are automatically added as accepted custom formats in [unknownFormats](#unknownFormats-(optional)) option setting. 
 You don't need to add them in unknownFormats.
