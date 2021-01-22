@@ -959,7 +959,7 @@ components:
 ```
 
 See [OpenAPI 3](https://swagger.io/docs/specification/authentication/) authentication for `securityScheme` and `security` documentation
-See [examples](https://github.com/cdimascio/express-openapi-validator/blob/security/test/security.spec.ts#L17) from unit tests
+See [examples](https://github.com/cdimascio/express-openapi-validator/blob/master/test/security.handlers.spec.ts#L21) from unit tests
 
 ## Example: Multiple Validators and API specs
 
