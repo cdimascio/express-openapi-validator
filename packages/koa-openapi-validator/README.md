@@ -33,13 +33,16 @@ app.use(
 ```js
 const koa = require('koa');
 const koaRouter = require('koa-router');
-// 1. require the package
+const koaBodyParser = require('koa-bodyparser');
 const OpenApiValidator = require('koa-openapi-validator');
 
 const app = new koa();
 const router = new koaRouter();
 
-// 2. define a route
+// 1. install body parser for multipart
+app.use(koaBodyParser({}))
+
+// 2. define your routes
 router.get('koala', '/v1/pets', (ctx) => {
   ctx.body = {
     message: 'Welcome! To the Koala Book of Everything!',
@@ -60,7 +63,7 @@ app.use(async (ctx, next) => {
   }
 });
 
-// 4. configure the middleware (see options)
+// 4. configure the koa-openapi-validator
 app.use(
   OpenApiValidator.middleware({
     apiSpec: './openapi.yml',
