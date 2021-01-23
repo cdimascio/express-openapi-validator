@@ -1,6 +1,6 @@
 {
   "name": "4-eov-operations-babel",
-  "version": "4.12.0-beta.1",
+  "version": "4.12.0-beta.3",
   "private": true,
   "description": "",
   "main": "index.js",
@@ -16,7 +16,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
-    "express-openapi-validator": "^4.12.0-beta.1",
+    "express-openapi-validator": "^4.12.0-beta.3",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
@@ -26,7 +26,7 @@
     "@babel/preset-env": "^7.11.5",
     "@babel/register": "^7.11.5",
     "nodemon": "^2.0.4",
-    "openapi-core": "^4.12.0-beta.0",
+    "openapi-core": "^4.12.0-beta.3",
     "prettier": "^2.1.1"
   }
 }

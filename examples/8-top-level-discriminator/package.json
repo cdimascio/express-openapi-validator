@@ -1,6 +1,6 @@
 {
   "name": "8-top-level-discriminator",
-  "version": "4.12.0-beta.1",
+  "version": "4.12.0-beta.3",
   "description": "",
   "private": true,
   "main": "index.js",
@@ -14,11 +14,11 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
-    "express-openapi-validator": "^4.12.0-beta.1"
+    "express-openapi-validator": "^4.12.0-beta.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.6",
-    "openapi-core": "^4.12.0-beta.0",
+    "openapi-core": "^4.12.0-beta.3",
     "prettier": "^2.1.1"
   }
 }
