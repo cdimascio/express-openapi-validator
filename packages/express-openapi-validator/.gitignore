@@ -1,0 +1,17 @@
+.vscode
+!.vscode/launch.json
+.idea
+.DS_Store
+node_modules
+*.orig
+dist
+/sample
+/coverage
+.coveralls.yml
+.nyc_output
+secrets.zip
+jest
+junk
+/a_reference
+/sample2
+README.md.sav

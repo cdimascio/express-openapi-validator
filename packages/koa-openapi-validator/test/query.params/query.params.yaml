@@ -1,0 +1,28 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: Multipart
+servers:
+  - url: /v1
+paths:
+ /qp1:
+  get:
+    parameters: 
+    - name: q
+      in: 'query'
+      required: true
+      schema:
+        type: string
+    responses:
+      '200':
+        description: Success
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                data:
+                  description: Some data
+                  type: string
+              required:
+                - data

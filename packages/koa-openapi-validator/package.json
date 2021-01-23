@@ -1,0 +1,47 @@
+{
+  "name": "koa-openapi-validator",
+  "version": "4.12.0-beta.3",
+  "description": "Automatically validate API requests with OpenAPI 3 and Koa.",
+  "main": "dist/index.js",
+  "scripts": {
+    "compile": "rm -rf dist/ && tsc",
+    "test": "TS_NODE_FILES=true mocha -r source-map-support/register -r ts-node/register  --files --recursive -R spec test/**/*.spec.ts",
+    "test:debug": "TS_NODE_FILES=true mocha -r source-map-support/register -r ts-node/register --inspect-brk --files --recursive test/**/*.spec.ts"
+  },
+  "repository": {
+    "url": "https://github.com/cdimascio/express-openapi-validator"
+  },
+  "keywords": [
+    "openapi",
+    "openapi 3",
+    "koa",
+    "request validation",
+    "response validation",
+    "middleware",
+    "nodejs"
+  ],
+  "author": "Carmine DiMascio <cdimascio@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@types/multer": "^1.4.5",
+    "express-openapi-validator": "^4.12.0-beta.3",
+    "koa-compose": "^4.1.0",
+    "openapi-core": "^4.12.0-beta.3"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.14",
+    "@types/koa": "^2.11.6",
+    "@types/koa-compose": "^3.2.5",
+    "@types/node": "^14.14.2",
+    "chai": "^4.2.0",
+    "koa": "^2.13.1",
+    "koa-body": "^4.2.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-router": "^10.0.0",
+    "mocha": "^8.2.1",
+    "prettier": "^2.1.2",
+    "source-map-support": "0.5.19",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.3"
+  }
+}

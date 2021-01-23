@@ -1,0 +1,24 @@
+{
+  "name": "10-koa-standard",
+  "version": "4.12.0-beta.3",
+  "description": "",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "node index"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "koa": "^2.13.1",
+    "koa-compose": "^4.1.0",
+    "koa-connect": "^2.1.0",
+    "koa-openapi-validator": "^4.12.0-beta.3",
+    "koa-router": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7",
+    "openapi-core": "^4.12.0-beta.3"
+  }
+}

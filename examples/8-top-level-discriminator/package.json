@@ -1,22 +1,24 @@
 {
-  "name": "example",
-  "version": "1.0.0",
+  "name": "8-top-level-discriminator",
+  "version": "4.12.0-beta.3",
   "description": "",
+  "private": true,
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
-    "deps": "cd ../../ && npm i && npm run compile",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deps": "cd ../../ && npm i && npm run compile"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express-openapi-validator": "file:../.."
+    "express": "^4.17.1",
+    "express-openapi-validator": "^4.12.0-beta.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.6",
+    "openapi-core": "^4.12.0-beta.3",
     "prettier": "^2.1.1"
   }
 }

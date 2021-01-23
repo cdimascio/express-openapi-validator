@@ -1,23 +1,25 @@
 {
-  "name": "example",
-  "version": "1.0.0",
+  "name": "3-eov-operations",
+  "version": "4.12.0-beta.3",
+  "private": true,
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
-    "deps": "cd ../../ && npm i && npm run compile",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deps": "cd ../../ && npm i && npm run compile"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express-openapi-validator": "^4.0.7",
+    "express": "^4.17.1",
+    "express-openapi-validator": "^4.12.0-beta.3",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.4",
+    "openapi-core": "^4.12.0-beta.3",
     "prettier": "^2.1.1"
   }
 }

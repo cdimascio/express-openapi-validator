@@ -1,0 +1,39 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: Multipart
+servers:
+  - url: /v1
+paths:
+   /mp2:
+    post:
+      description: upload a photo of the pet
+      operationId: formData
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - metadata
+              properties:
+                file:
+                  description: The photo
+                  type: string
+                  format: binary
+                metadata:
+                  type: string
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - form_p1
+              properties:
+                form_p1:
+                  type: string
+                form_p2:
+                  type: string
+      responses:
+        "200":
+          description: form data

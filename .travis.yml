@@ -4,22 +4,18 @@ node_js:
 - '14'
 - '12'
 - '10'
-before_install:
-- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then openssl aes-256-cbc -K $encrypted_deba340dfe89_key -iv $encrypted_deba340dfe89_iv
-  -in secrets.zip.enc -out secrets.zip -d; fi'
-- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then unzip secrets.zip; fi'
 install:
-- npm install
+- npm install lerna -g
+- lerna bootstrap
 script:
-- npm run compile
-- npm run test:coverage
-- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run coveralls; fi'
-- 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run codacy; fi'
+- lerna run compile
+- lerna run test:coverage
+- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then lerna run coveralls; fi
+- if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then lerna run codacy; fi
 env:
   global:
-  - secure: x+Nxbq8RrOVJyQ7JWNRpXdBmp61rXPKulYPxUwGeIe/ZJwX1QHsy2HAAB2m7aRvAMBAqr2urBaIKgPBmBklyY0elRTD/chUdT5cJiPhMIxBghqkQ1NYqx/WzcCBUrZbRzoQcpAES7sJnUs0PMujKv3wMsujoFJ9b9Z+trHMqD0IztBlg45azAh4A6ApVcDB8j4L+g42kps6d4r5jUt2d4uW537PKXpsnWJMaaj2Pw7pxU2H5kBaeNGnvlK+w9k3porToop7OUG+HBTN2BjofdF1PSHm8fizzFL6/h2x39cLYMxFvHb7oVUKBiWQe8PBXD5+k/X0RgPJMZO9AggMHln5MIihTowGvuSLK/3d95ta/qXTmzG0Csv4J8xWD+koCJm0xpSzsrBSUOPt5ZKN71o0VmLmc7U4Z0aEplZyVcMdTbwA1XeoeXD4UU1fD7BlzYl4oOTB8HlucJILwAZFg0upPB33lQchAUIgoUCDxze3OoG3V1Odcw4u64bXlPrdqgCg8AQZgnrYP+EzKczjGd7pBQZRVxKyq+44JV8JOUAXEka3qQRPvmw5wcAaXgsqU7uv1C6FcQb+j/ZKQ6GlWu8qDzouRR+OqbKeLk2lOvtU08Y32tn6u14+vVNbmsG3iXxGf2+esGcETFP/0EYluPGpo257h/9qC1yMN8ZExey0=
-  - secure: l5s8AWcMM9Ih8aq1OElM47vBI+NS06EB/7k19r7xsurU6+t7s1CoqdJn3HDzUfKax54HtJZzkbAAnfIhVJNIvC9srInW0fRCbD6hW9qS8o0HYDb7dakFa1/CxzoQv8Wz+xus9+Gx2IUJPGJ4ZzVGak704KW0Ds5CFnzQTorohyl/2a6jlODd2gAZMciJA0ZjQGiQPRYpt73cHa5QN03n5Buybp/m0ErsA2Wc7OZONTl0oW0hoQ0A8hICUP1nIbrZjavw8tIf5cComp9GxuatbFCRCaOu5kgbM/O5x0bKJkJutVabO1HC2dYd78o+X7e9ApH+Oly9cLEsuLyYLWnH5Kbdv2j/Huz6wP8H6is4FQUgasTUCcV5+9og6mSccoKDHIvuy0c5lkC30wuaiXJAAWSeohZ8lM6SnrDNp7Q+5mWx5ooVo4A6AGLdXNFeIkqmBat59eNijlnspkJ7MRp2+5mVI+rTyX+fwjLw6Z/1oY5GA9NY061+yPs8LL0BQYkm5r1et3lTIWGo3bJeLIZM4Dsh+VXv1Z8q7oz1PkhSwbmQH19FyQdeohgyzokidbQhGTgk8tO2ol1j2tZMPkwAh3MTRU4Gpmo641Qye69TMhBrhIb5ebmTFXt8HnRbfJT0x/hLjLdCd8hUzo27ICu7yCqZTR74RfIdBvIumSvGQJQ=
-
+  - secure: fMTLwwfm5nb7t0dP0HDoVBPprRUvGrs8VXwaTMqJvUn2jHjab8cbSo/Kkf7IAooMtSItk0NsXeH7YsZpjiEcXmEpwuHVgaRIGy0Kp0U6PXhtUNzAxiTi32/gR8HhyGUKRJpxH73A3LFVH9ybDlSUI5FNvAhtfwCjlYqiU/jiiwQfvlp/N52FwnN439rtx0leyHTOWMieTzltl7gJ1f7dNziQR2J0/aQeQYnjhy5VTXcYn0gJhJtvFWQ/A9IECbVmXcn/Qm9HQA3ooCYSO8bBrcuMxbs2TCDqHReudtRwhZNXIVZWryLYq9z2qAmG0kyxbjTlnol8FviDTHllfsqJnuT2denEwJZSelJwe0QPxYsQlI5Q8FktuE/q/O/Wqgq7LUZu83wVQO2hG5KEXCz5v24H8viVQ1pFe0WxJhaRvywB7oUimy4xZQ53v74YsJhFTmXvRlziuxVPXg+wYyaehGS1yo+k2UifJHJCPaabUu0D+0Scm1YI8TqIrEbP1aoVqMSrm9qALEGKXEXKQrOy4uum7tlXWNAFgESYOAx+wgpewHe5LGdBSUKha1AKSzyQRnlQXNTY/k4JRnwo/TLe35GVN0JAx78I23tw+uV7WL+bjDT95Lhm5lebSCyOOD2tDHxvNq9VVwyAw3xAU7aBRuupdWLM/eJ9/2K0L1T8OZA=
+  - secure: XN0VoTOd+d6RINBNw3v3+kRnCBPat+kIgc11Z4CWpGQxkJWpvqCof0L1O/yhcxeLJuK1Kskh7qF+fob9N2pRDqw0tLlfpVmtyp4YF2PP4lj2TN6J1K8duPB9Y29COoVFb98CFjiyc4D22ByN6Ej6PAYoZrUbXXg/y+2vm6ATkjzJayhPgsFQ06/5vWSTzdaKiwBlnLDjzeUpID5XvOonxPOk/Xrjwp54zKzD1kPs1D5PBxB0QTZtMOSM4udvns95qWUvzXv+yfml9RC4rnFDiWrQkrnYAaN1yNW4Cd7xoR/TiFmtkBinhrrco/+giclz8YSwUkuv9rXMbvdF5hDUbB9rfCvxmue6F9Nz0KQ15EYV/iB3e4kO8vpS+d+/H295cRueU6+70HD7NpfSthE7xHdTxR9/8wPKAHMZq230YZHAxKZkDCII8C9yhBIvQ49hleocckrlBeajTXs36HSeCgtXjZ/JeLRZlQ9Y+Z/zNnKRq/Sm2C95CfEl/YRrNaEaB6eu34Y7lIGqKapU1ka3mENEJaoNjNFEbXupKPWQeb3Qg+ssChqPEalFhozVBNErLX2PJCMaxBxm9jZFTLtLkBAk9GBBDjgnofIayX3zhuymlS72t9ptEh1LjPLVlRUAwyiPOgw5odDh2lHJGh9fllq9q1bsbiSxHchvUTF1nao=
 branches:
   only:
-  - /.*/
+  - "/.*/"

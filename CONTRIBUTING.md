@@ -4,6 +4,10 @@ Contributors are welcome!
 
 See something that needs fixing? Got an idea for a new feature? Contribute a [Pull Request](#Create-a-Pull-Request)!
 
+## Background
+
+This project is set up as a mono-repo. We use `lerna` to manage dependencies. Thus, after the initial `npm install` (to get lerna), you will use `lerna bootstrap` in place of `npm install`. This will ensure all local package / dependies are compiled/transpiled.
+
 ## Easy path to contribution
 Click the Gitpod badge to setup a ready to code dev env in the cloud.
 
@@ -20,22 +24,72 @@ Click the Gitpod badge to setup a ready to code dev env in the cloud.
    git clone <forked-repo>
    ```
 
-2. Install the dependencies
+2. Install the dependencies for each package in the mono repo
 
    ```shell
-   # From the project directory, run
-   npm i
+   # install lerna and common deps
+   npm install 
+
+   # run lerna bootstrap to install module dependencies
+   # note: use lerna bootstrap, rather than npm install
+   lerna bootstrap && lerna run compile
    ```
+
+   _**Tip:**_ Run `lerna clean && lerna bootstrap && lerna run compile` to reset the project, e.g. clean, install, and compile all packages.
+
+3. Navigate to the package dir you'd like to modify
+
+   **Packages:**
+   - [express-openapi-validator](/packages/express-openapi-validator) - the express middleware 
+   - [koa-openapi-validator](/packages/koa-openapi-validator) - the koa middleware 
+   - [fastify-openapi-validator](/packages/fastify-openapi-validator) - the fastify middleware 
+   - [openapi-core](/packages/openapi-core) - core schema load and preprocess logic
    
-Be [Create a Pull Request](#create-a-pull-request) once you've written you code.
+
+   ```shell
+   # for example, navigate the express validator package
+   cd packages/express-openapi-validator
+   ```
+3a. Compile sources for each package in the mono repo
+
+```shell
+   lerna run compile
+```
+
+3b. Compile sources a single package
+
+```shell
+   cd packages express-openapi-validator
+   npm run compile
+```
+   
+4. Be [Create a Pull Request](#create-a-pull-request) once you've written you code.
 
 ## Run the tests
 
-3. Run the tests
+1a. Run all tests in the mono repo
 
    ```shell
-   npm test
+    # compile any changes
+   lerna run compile
+   lerna run test
    ```
+
+1b. Run tests in one package
+
+   Run tests in the current package:
+
+   ```shell
+   lerna run test --scope express-openapi-validator
+   # or if in the package directory, you can run
+   npm run test
+   ```
+
+## Debug
+
+If you are using VSCode, see the debugger. There are configurations:
+- Run Mocha Tests - allows to step through Mocha tests
+- 7-Fastify Attach - allows to start the fastify example and step through code
 
 ## Develop
 
@@ -58,11 +112,18 @@ Be [Create a Pull Request](#create-a-pull-request) once you've written you code.
 6. From the Github UI, Click Create pull request to open a new pull request
 7. Detailed steps with example here:
 
-## Project structure
+## Package
+Only maintainers have permissions to perform the publish actions:
 
-`src` contains the source code
-`test` contains the tests
+prerelease
+```shell
+lerna publish prerelease --dist-tag beta --preid beta
+```
 
+release
+```shell
+lerna publish patch # minor
+```
 ## Need help?
 
 Reach out on [gitter](https://gitter.im/cdimascio-oss/community).
