@@ -1,16 +1,21 @@
 const koa = require('koa');
 const koaRouter = require('koa-router');
+const koaBodyParser = require('koa-bodyparser');
 const OpenApiValidator = require('koa-openapi-validator');
-
 const app = new koa();
 const router = new koaRouter();
 
+// 1. add body parser
+app.use(koaBodyParser({}));
+
+// 2. add routes
 router.get('koala', '/v1/pets', (ctx) => {
   ctx.body = {
     message: 'Welcome! To the Koala Book of Everything!',
   };
 });
 
+// 3. add error handler
 app.use(async (ctx, next) => {
   try {
     await next();
@@ -24,6 +29,7 @@ app.use(async (ctx, next) => {
   }
 });
 
+// 4. install koa-openapi-validator
 app.use(
   OpenApiValidator.middleware({
     apiSpec: './openapi.yml',

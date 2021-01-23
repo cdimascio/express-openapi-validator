@@ -12,7 +12,6 @@ import {
   RequestValidatorOptions,
   ValidateRequestOpts,
   NotFound,
-  MethodNotAllowed,
   BadRequest,
   ParametersSchema,
   BodySchema,

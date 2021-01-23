@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.4",
+    "openapi-core": "^4.12.0-beta.0",
     "prettier": "^2.1.1"
   }
 }

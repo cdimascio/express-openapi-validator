@@ -7,7 +7,7 @@ import { IncomingMessage, ServerResponse } from 'http';
 type ConnectMiddleware = (
   req: IncomingMessage,
   res: ServerResponse,
-  callback: (...args: unknown[]) => void
+  callback: (...args: unknown[]) => void,
 ) => void;
 
 const noop = () => {};
@@ -19,7 +19,7 @@ const noop = () => {};
 function noCallbackHandler(
   ctx: Context,
   connectMiddleware: ConnectMiddleware,
-  next: (err?: unknown) => Promise<void>
+  next: (err?: unknown) => Promise<void>,
 ): Promise<void> {
   connectMiddleware(ctx.req, ctx.res, noop);
   return next();
@@ -33,10 +33,12 @@ function noCallbackHandler(
 function withCallbackHandler(
   ctx: Context,
   connectMiddleware: ConnectMiddleware,
-  next: (err?: unknown) => Promise<void>
+  next: (err?: unknown) => Promise<void>,
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    (<any>ctx.req).query = ctx.query;
+    ctx.req['body'] = ctx.request['body'];
+    ctx.req['query'] = ctx.request['query']
+    ctx.req['path'] = ctx.request['path']
     connectMiddleware(ctx.req, ctx.res, (err?: unknown) => {
       if (err) reject(err);
       else resolve(next());

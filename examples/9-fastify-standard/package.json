@@ -24,5 +24,8 @@
     "fastify-plugin": "^2.3.3",
     "koa-compose": "^4.1.0",
     "middie": "^5.1.0"
+  },
+  "devDependencies": {
+    "openapi-core": "^4.12.0-beta.0"
   }
 }
