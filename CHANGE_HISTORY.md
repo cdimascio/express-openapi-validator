@@ -1,3 +1,12 @@
+## <small>4.10.9 (2021-01-24)</small>
+
+* chore: increment patch version ([adf800c](https://github.com/cdimascio/express-openapi-validator/commit/adf800c))
+* fix: include missing multer type def ([7cf9196](https://github.com/cdimascio/express-openapi-validator/commit/7cf9196))
+* Update README.md ([719ae1c](https://github.com/cdimascio/express-openapi-validator/commit/719ae1c))
+* Update README.md ([b14b31d](https://github.com/cdimascio/express-openapi-validator/commit/b14b31d))
+
+
+
 ## <small>4.10.6 (2021-01-15)</small>
 
 * fix: #469 - Response validation skipped on status codes >=400 ([57d3c0e](https://github.com/cdimascio/express-openapi-validator/commit/57d3c0e)), closes [#469](https://github.com/cdimascio/express-openapi-validator/issues/469)
