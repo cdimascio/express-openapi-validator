@@ -76,6 +76,7 @@ export type Serializer = {
 
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
+  validateApiDoc?: boolean;
   validateResponses?: boolean | ValidateResponseOpts;
   validateRequests?: boolean | ValidateRequestOpts;
   validateSecurity?: boolean | ValidateSecurityOpts;

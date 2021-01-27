@@ -524,6 +524,13 @@ or
 }
 ```
 
+### ▪️ validateApiDoc (optional)
+
+Determines whether the validator should validate the OpenAPI specification.
+
+- `true` (**default**) - validate the OpenAPI specification.
+- `false` - do not validate the OpenAPI specification.
+
 ### ▪️ validateRequests (optional)
 
 Determines whether the validator should validate requests.
