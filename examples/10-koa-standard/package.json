@@ -14,6 +14,7 @@
     "koa": "^2.13.1",
     "koa-compose": "^4.1.0",
     "koa-connect": "^2.1.0",
+    "koa-bodyparser": "^4.3.0",
     "koa-openapi-validator": "^4.12.0-beta.3",
     "koa-router": "^10.0.0"
   },
