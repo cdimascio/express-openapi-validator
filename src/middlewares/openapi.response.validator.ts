@@ -31,12 +31,12 @@ export class ResponseValidator {
   private validatorsCache: {
     [key: string]: { [key: string]: ajv.ValidateFunction };
   } = {};
-  private eovOptions: ValidateResponseOpts
+  private eovOptions: ValidateResponseOpts;
 
   constructor(
-      openApiSpec: OpenAPIV3.Document,
-      options: ajv.Options = {},
-      eovOptions: ValidateResponseOpts = {}
+    openApiSpec: OpenAPIV3.Document,
+    options: ajv.Options = {},
+    eovOptions: ValidateResponseOpts = {},
   ) {
     this.spec = openApiSpec;
     this.ajvBody = createResponseAjv(openApiSpec, options);
@@ -80,7 +80,7 @@ export class ResponseValidator {
         } catch (err) {
           // If a custom error handler was provided, we call that
           if (err instanceof InternalServerError && this.eovOptions.onError) {
-            this.eovOptions.onError(err, body)
+            this.eovOptions.onError(err, body);
           } else {
             // No custom error handler, or something unexpected happen.
             throw err;
@@ -130,12 +130,21 @@ export class ResponseValidator {
       svalidator = validators[status];
     } else if (statusXX in validators) {
       svalidator = validators[statusXX];
-    } else if (validators.default) {
+    } else if (validators.default || status === 204) {
       svalidator = validators.default;
     } else {
       throw new InternalServerError({
         path: path,
         message: `no schema defined for status code '${status}' in the openapi spec`,
+      });
+    }
+
+    if (statusCode === 204 && (body === null || body === undefined)) {
+      return;
+    } else if (statusCode === 204 && body) {
+      throw new InternalServerError({
+        path: path,
+        message: `no schema allowed for status code '${statusCode}'`,
       });
     }
 
