@@ -87,7 +87,7 @@ export class OpenAPIFramework {
           return $refParser.mode === 'dereference'
             ? $RefParser.dereference(absolutePath)
             : $RefParser.bundle(absolutePath);
-        }
+        } finally {}
       } else {
         throw new Error(
           `${this.loggingPrefix}spec could not be read at ${filePath}`,
