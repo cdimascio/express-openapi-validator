@@ -84,12 +84,9 @@ export class OpenAPIFramework {
       if (fs.existsSync(absolutePath)) {
         // Get document, or throw exception on error
         try {
-          process.chdir(specDir);
           return $refParser.mode === 'dereference'
             ? $RefParser.dereference(absolutePath)
             : $RefParser.bundle(absolutePath);
-        } finally {
-          process.chdir(origCwd);
         }
       } else {
         throw new Error(
