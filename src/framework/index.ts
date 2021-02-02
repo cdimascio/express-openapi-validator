@@ -79,7 +79,6 @@ export class OpenAPIFramework {
     // We need this workaround ( use '$RefParser.dereference' instead of '$RefParser.bundle' ) if asked by user
     if (typeof filePath === 'string') {
       const origCwd = process.cwd();
-      const specDir = path.resolve(origCwd, path.dirname(filePath));
       const absolutePath = path.resolve(origCwd, filePath);
       if (fs.existsSync(absolutePath)) {
         // Get document, or throw exception on error
