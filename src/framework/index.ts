@@ -82,11 +82,9 @@ export class OpenAPIFramework {
       const absolutePath = path.resolve(origCwd, filePath);
       if (fs.existsSync(absolutePath)) {
         // Get document, or throw exception on error
-        try {
-          return $refParser.mode === 'dereference'
-            ? $RefParser.dereference(absolutePath)
-            : $RefParser.bundle(absolutePath);
-        } finally {}
+        return $refParser.mode === 'dereference'
+          ? $RefParser.dereference(absolutePath)
+          : $RefParser.bundle(absolutePath);
       } else {
         throw new Error(
           `${this.loggingPrefix}spec could not be read at ${filePath}`,
