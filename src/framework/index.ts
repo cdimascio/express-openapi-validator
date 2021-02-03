@@ -79,18 +79,12 @@ export class OpenAPIFramework {
     // We need this workaround ( use '$RefParser.dereference' instead of '$RefParser.bundle' ) if asked by user
     if (typeof filePath === 'string') {
       const origCwd = process.cwd();
-      const specDir = path.resolve(origCwd, path.dirname(filePath));
       const absolutePath = path.resolve(origCwd, filePath);
       if (fs.existsSync(absolutePath)) {
         // Get document, or throw exception on error
-        try {
-          process.chdir(specDir);
-          return $refParser.mode === 'dereference'
-            ? $RefParser.dereference(absolutePath)
-            : $RefParser.bundle(absolutePath);
-        } finally {
-          process.chdir(origCwd);
-        }
+        return $refParser.mode === 'dereference'
+          ? $RefParser.dereference(absolutePath)
+          : $RefParser.bundle(absolutePath);
       } else {
         throw new Error(
           `${this.loggingPrefix}spec could not be read at ${filePath}`,
