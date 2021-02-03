@@ -1,3 +1,12 @@
+## <small>4.10.10 (2021-02-03)</small>
+
+* Add validateApiDoc props in OpenApiValidatorOpts (#525) ([cfb9fb7](https://github.com/cdimascio/express-openapi-validator/commit/cfb9fb7)), closes [#525](https://github.com/cdimascio/express-openapi-validator/issues/525)
+* fix example ([edd4d24](https://github.com/cdimascio/express-openapi-validator/commit/edd4d24))
+* Fix: electron asar - failed to open spec dir (#531) ([d09f1a2](https://github.com/cdimascio/express-openapi-validator/commit/d09f1a2)), closes [#531](https://github.com/cdimascio/express-openapi-validator/issues/531)
+* fix: upgrade @types/multer from 1.4.4 to 1.4.5 (#524) ([17e923e](https://github.com/cdimascio/express-openapi-validator/commit/17e923e)), closes [#524](https://github.com/cdimascio/express-openapi-validator/issues/524)
+
+
+
 ## <small>4.10.9 (2021-01-24)</small>
 
 * chore: increment patch version ([adf800c](https://github.com/cdimascio/express-openapi-validator/commit/adf800c))
