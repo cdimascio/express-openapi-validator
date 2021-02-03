@@ -13,7 +13,7 @@ export default {
     pet ? res.json(pet) : res.status(404).json({ message: 'not found' });
   },
   'pets#delete': (req, res) => {
-    data = pets.delete(req.params.id);
+    pets.delete(req.params.id);
     res.status(204).end();
   },
   'pets#petPhotos': (req, res) => {

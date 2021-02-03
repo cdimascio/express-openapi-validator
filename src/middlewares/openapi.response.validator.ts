@@ -140,6 +140,7 @@ export class ResponseValidator {
     }
 
     if (statusCode === 204 && (body === null || body === undefined)) {
+      console.log('returning nothing');
       return;
     } else if (statusCode === 204 && body) {
       throw new InternalServerError({

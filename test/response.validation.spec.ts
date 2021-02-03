@@ -29,7 +29,7 @@ describe(packageJson.name, () => {
           return res.json({ id: 213, name: 'name', kids: [] });
         });
         app.get(`${app.basePath}/empty_response`, (req, res) => {
-          return res.status(204).send();
+          return res.status(204).end();
         });
         app.get(`${app.basePath}/boolean`, (req, res) => {
           return res.json(req.query.value);
@@ -167,7 +167,7 @@ describe(packageJson.name, () => {
         expect(r.body.message).to.include('required property');
       }));
 
-  it('should return 204 for endpoints that return empty response', async () =>
+  it.only('should return 204 for endpoints that return empty response', async () =>
     request(app)
       .get(`${app.basePath}/empty_response`)
       .expect(204)
