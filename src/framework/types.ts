@@ -76,7 +76,7 @@ export type Serializer = {
 
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
-  validateApiDoc?: boolean;
+  validateApiSpec?: boolean;
   validateResponses?: boolean | ValidateResponseOpts;
   validateRequests?: boolean | ValidateRequestOpts;
   validateSecurity?: boolean | ValidateSecurityOpts;
@@ -413,7 +413,7 @@ export interface OpenAPIFrameworkPathObject {
 
 interface OpenAPIFrameworkArgs {
   apiDoc: OpenAPIV3.Document | string;
-  validateApiDoc?: boolean;
+  validateApiSpec?: boolean;
   $refParser?: {
     mode: 'bundle' | 'dereference';
   };

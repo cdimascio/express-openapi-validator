@@ -478,6 +478,7 @@ OpenApiValidator.middleware({
   apiSpec: './openapi.yaml',
   validateRequests: true,
   validateResponses: true,
+  validateApiSpec: true,
   validateSecurity: {
     handlers: {
       ApiKeyAuth: (req, scopes, schema) => {
@@ -523,13 +524,6 @@ or
   }
 }
 ```
-
-### ▪️ validateApiDoc (optional)
-
-Determines whether the validator should validate the OpenAPI specification.
-
-- `true` (**default**) - validate the OpenAPI specification.
-- `false` - do not validate the OpenAPI specification.
 
 ### ▪️ validateRequests (optional)
 
@@ -653,6 +647,14 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
     }
   }
   ```
+
+### ▪️ validateApiSpec (optional)
+
+Determines whether the validator should validate the OpenAPI specification. Useful if you are certain that the api spec is syntactically correct and want to bypass this check.
+
+- `true` (**default**) - validate the OpenAPI specification.
+- `false` - do not validate the OpenAPI specification.
+
 
 ### ▪️ formats (optional)
 

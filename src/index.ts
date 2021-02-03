@@ -35,7 +35,7 @@ function openapiValidator(options: OpenApiValidatorOpts) {
   return oav.installMiddleware(
     new OpenApiSpecLoader({
       apiDoc: options.apiSpec,
-      validateApiDoc: options.validateApiDoc,
+      validateApiSpec: options.validateApiSpec,
       $refParser: options.$refParser,
     }).load(),
   );
