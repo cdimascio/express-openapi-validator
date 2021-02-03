@@ -31,14 +31,14 @@ export class OpenAPIFramework {
         return acc;
       }, new Set<string>()),
     );
-    const validateApiDoc =
-      'validateApiDoc' in args ? !!args.validateApiDoc : true;
+    const validateApiSpec =
+      'validateApiSpec' in args ? !!args.validateApiSpec : true;
     const validator = new OpenAPISchemaValidator({
       version: apiDoc.openapi,
       // extensions: this.apiDoc[`x-${args.name}-schema-extension`],
     });
 
-    if (validateApiDoc) {
+    if (validateApiSpec) {
       const apiDocValidation = validator.validate(apiDoc);
 
       if (apiDocValidation.errors.length) {
