@@ -50,7 +50,7 @@ export type ValidateRequestOpts = {
 };
 
 export type ValidateResponseOpts = {
-  removeAdditional?: 'failing' | boolean;
+  removeAdditional?: boolean | 'all' | 'failing';
   coerceTypes?: boolean | 'array';
   onError?: (err: InternalServerError, json: any) => void;
 };
