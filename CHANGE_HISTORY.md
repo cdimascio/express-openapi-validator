@@ -1,3 +1,12 @@
+## <small>4.10.12 (2021-02-14)</small>
+
+* chore: increment patch version ([4d2df86](https://github.com/cdimascio/express-openapi-validator/commit/4d2df86))
+* fix: upgrade json-schema-ref-parser from 9.0.6 to 9.0.7 (#534) ([1a8cdf0](https://github.com/cdimascio/express-openapi-validator/commit/1a8cdf0)), closes [#534](https://github.com/cdimascio/express-openapi-validator/issues/534)
+* add option removeAdditional to validateRequest options  (#501) ([acada10](https://github.com/cdimascio/express-openapi-validator/commit/acada10)), closes [#501](https://github.com/cdimascio/express-openapi-validator/issues/501)
+* Fix Mutation of API Spec (#537) ([2866ce6](https://github.com/cdimascio/express-openapi-validator/commit/2866ce6)), closes [#537](https://github.com/cdimascio/express-openapi-validator/issues/537)
+
+
+
 ## <small>4.10.10 (2021-02-03)</small>
 
 * Add validateApiDoc props in OpenApiValidatorOpts (#525) ([cfb9fb7](https://github.com/cdimascio/express-openapi-validator/commit/cfb9fb7)), closes [#525](https://github.com/cdimascio/express-openapi-validator/issues/525)
