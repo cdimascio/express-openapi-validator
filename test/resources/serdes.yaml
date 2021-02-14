@@ -1,0 +1,62 @@
+openapi: "3.0.0"
+info:
+  title: "Test for allOf"
+  version: "1"
+servers:
+  - url: /v1/
+paths:
+  /users/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/ObjectId"
+        - name: baddateresponse
+          in: query
+          schema:
+            type: string
+            enum: ['functionNotExists', 'functionBadFormat']
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /users:
+    post:
+      requestBody:
+        content :
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+components:
+  schemas:
+    ObjectId:
+      type: string
+      format: mongo-objectid
+      pattern: '^[0-9a-fA-F]{24}$'
+    Date:
+      type: string
+      format: date
+    DateTime:
+      type: string
+      format: date-time
+    User:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/ObjectId"
+        creationDateTime:
+          $ref: "#/components/schemas/DateTime"
+        creationDate:
+          $ref: "#/components/schemas/Date"

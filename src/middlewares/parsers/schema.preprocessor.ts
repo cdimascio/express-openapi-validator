@@ -5,7 +5,8 @@ import * as _get from 'lodash.get';
 import { createRequestAjv } from '../../framework/ajv';
 import {
   OpenAPIV3,
-  Serializer,
+  SerDesMap,
+  Options,
   ValidateResponseOpts,
 } from '../../framework/types';
 
@@ -48,20 +49,6 @@ class Root<T> extends Node<T, T> {
   }
 }
 
-const dateTime: Serializer = {
-  format: 'date-time',
-  serialize: (d: Date) => {
-    return d && d.toISOString();
-  },
-};
-
-const date: Serializer = {
-  format: 'date',
-  serialize: (d: Date) => {
-    return d && d.toISOString().split('T')[0];
-  },
-};
-
 type SchemaObject = OpenAPIV3.SchemaObject;
 type ReferenceObject = OpenAPIV3.ReferenceObject;
 type Schema = ReferenceObject | SchemaObject;
@@ -87,14 +74,16 @@ export class SchemaPreprocessor {
   private ajv: Ajv;
   private apiDoc: OpenAPIV3.Document;
   private apiDocRes: OpenAPIV3.Document;
+  private serDesMap: SerDesMap;
   private responseOpts: ValidateResponseOpts;
   constructor(
     apiDoc: OpenAPIV3.Document,
-    ajvOptions: ajv.Options,
+    ajvOptions: Options,
     validateResponsesOpts: ValidateResponseOpts,
   ) {
     this.ajv = createRequestAjv(apiDoc, ajvOptions);
     this.apiDoc = apiDoc;
+    this.serDesMap = ajvOptions.serDesMap;
     this.responseOpts = validateResponsesOpts;
   }
 
@@ -356,19 +345,9 @@ export class SchemaPreprocessor {
     schema: SchemaObject,
     state: TraversalState,
   ) {
-    if (state.kind === 'res') {
-      if (schema.type === 'string' && !!schema.format) {
-        switch (schema.format) {
-          case 'date-time':
-            (<any>schema).type = ['object', 'string'];
-            schema['x-eov-serializer'] = dateTime;
-            break;
-          case 'date':
-            (<any>schema).type = ['object', 'string'];
-            schema['x-eov-serializer'] = date;
-            break;
-        }
-      }
+    if (schema.type === 'string' && !!schema.format && this.serDesMap[schema.format]) {
+      (<any>schema).type = ['object', 'string'];
+      schema['x-eov-serdes'] = this.serDesMap[schema.format];
     }
   }
 
