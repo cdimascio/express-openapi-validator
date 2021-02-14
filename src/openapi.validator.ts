@@ -20,7 +20,9 @@ import {
 } from './framework/types';
 import { defaultResolver } from './resolvers';
 import { OperationHandlerOptions } from './framework/types';
+import { defaultSerDes } from './framework/base.serdes';
 import { SchemaPreprocessor } from './middlewares/parsers/schema.preprocessor';
+
 
 export {
   OpenApiValidatorOpts,
@@ -341,7 +343,27 @@ export class OpenApiValidator {
   }
 
   private normalizeOptions(options: OpenApiValidatorOpts): void {
-    // Modify the request
+    if(!options.serDes) {
+      options.serDes = defaultSerDes;
+    }
+    else {
+      if(!Array.isArray(options.unknownFormats)) {
+        options.unknownFormats = Array<string>();
+      }
+      options.serDes.forEach(currentSerDes => {
+        if((options.unknownFormats as string[]).indexOf(currentSerDes.format) === -1) {
+          (options.unknownFormats as string[]).push(currentSerDes.format)
+        }
+      });
+      defaultSerDes.forEach(currentDefaultSerDes => {
+        let defautSerDesOverride = options.serDes.find(currentOptionSerDes => {
+          return currentDefaultSerDes.format === currentOptionSerDes.format;
+        });
+        if(!defautSerDesOverride) {
+          options.serDes.push(currentDefaultSerDes);
+        }
+      });
+    }
   }
 
   private isOperationHandlerOptions(
@@ -393,7 +415,22 @@ class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const { coerceTypes, unknownFormats, validateFormats } = this.options;
+    const { coerceTypes, unknownFormats, validateFormats, serDes } = this.options;
+    const serDesMap = {};
+    for (const serDesObject of serDes) {
+      if(!serDesMap[serDesObject.format]) {
+        serDesMap[serDesObject.format] = serDesObject;
+      }
+      else {
+        if (serDesObject.serialize) {
+          serDesMap[serDesObject.format].serialize = serDesObject.serialize;
+        }
+        if (serDesObject.deserialize) {
+          serDesMap[serDesObject.format].deserialize = serDesObject.deserialize;
+        }
+      }
+    }
+
     return {
       nullable: true,
       coerceTypes,
@@ -408,6 +445,7 @@ class AjvOptions {
         };
         return acc;
       }, {}),
+      serDesMap : serDesMap,
     };
   }
 }

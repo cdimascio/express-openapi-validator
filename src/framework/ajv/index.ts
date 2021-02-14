@@ -36,6 +36,23 @@ function createAjv(
   ajv.removeKeyword('const');
 
   if (request) {
+    if (options.serDesMap) {
+      ajv.addKeyword('x-eov-serdes', {
+        modifying: true,
+        compile: (sch) => {
+          if (sch) {
+            return function validate(data, path, obj, propName) {
+              if (typeof data === 'object') return true;
+              if(!!sch.deserialize) {
+                obj[propName] = sch.deserialize(data);
+              }
+              return true;
+            };
+          }
+          return () => true;
+        },
+      });
+    }
     ajv.removeKeyword('readOnly');
     ajv.addKeyword('readOnly', {
       modifying: true,
@@ -62,20 +79,23 @@ function createAjv(
     });
   } else {
     // response
-    ajv.addKeyword('x-eov-serializer', {
-      modifying: true,
-      compile: (sch) => {
-        if (sch) {
-          const isDate = ['date', 'date-time'].includes(sch.format);
-          return function validate(data, path, obj, propName) {
-            if (typeof data === 'string' && isDate) return true
-            obj[propName] = sch.serialize(data);
-            return true;
-          };
-        }
-        return () => true;
-      },
-    });
+    if (options.serDesMap) {
+      ajv.addKeyword('x-eov-serdes', {
+        modifying: true,
+        compile: (sch) => {
+          if (sch) {
+            return function validate(data, path, obj, propName) {
+              if (typeof data === 'string') return true;
+              if(!!sch.serialize) {
+                obj[propName] = sch.serialize(data);
+              }
+              return true;
+            };
+          }
+          return () => true;
+        },
+      });
+    }
     ajv.removeKeyword('writeOnly');
     ajv.addKeyword('writeOnly', {
       modifying: true,

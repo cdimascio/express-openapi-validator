@@ -29,6 +29,8 @@ export const error = {
   Forbidden,
 };
 
+export * as serdes from './framework/base.serdes';
+
 function openapiValidator(options: OpenApiValidatorOpts) {
   const oav = new OpenApiValidator(options);
   exports.middleware._oav = oav;
