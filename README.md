@@ -111,7 +111,6 @@ app.use(
   OpenApiValidator.middleware({
     apiSpec: './api.yaml',
     validateResponses: true, // <-- to validate responses
-    // unknownFormats: ['my-format'] // <-- to provide custom formats
   }),
 );
 
@@ -755,7 +754,7 @@ serDes: [{
 ```
 
 To create custom serializers and/or deserializers, define:
-- `format` (required) - a custom schema format that triggers the serializer and/or deserializer
+- `format` (required) - a custom 'unknown' format that triggers the serializer and/or deserializer
 - `deserialize` (optional) - upon receiving a request, transform a string property to an object. Deserialization occurs _after_ request schema validation.
 - `serialize` (optional) - before sending a response, transform an object to string. Serialization occurs _after_ response schema validation
 
@@ -774,8 +773,14 @@ serDes: [{
   }
 }],
 ```
+
+The mongo serializers will trigger on the following schema:
+```yaml
+  type: string
+  format: mongo-objectid
+```
  
-The [mongo-serdes-js](https://github.com/pilerou/mongo-serdes-js) package provides additional (de)serializers including MongoDB `ObjectID`, `UUID`, ...
+See [mongo-serdes-js](https://github.com/pilerou/mongo-serdes-js) for additional (de)serializers including MongoDB `ObjectID`, `UUID`, ...
 
 ### ▪️ operationHandlers (optional)
 
