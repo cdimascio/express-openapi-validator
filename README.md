@@ -742,22 +742,31 @@ Defines how the validator should behave if an unknown or custom format is encoun
 
 ### ▪️ serDes (optional)
 
-Default behaviour convert `Date` objects to `string` when a field, in OpenAPI configuration, has a `format` setting set to `date` or `date-time`.
-This Date conversion only occurs before sending the response.
+Defines custom serialization and deserialization behavior for schemas of type `string` that declare a `format`. By default, `Date` objects are serialized as `string` when a schema's `type` is `string` and `format` is `date` or `date-time`.
 
-You can use `serDes` option to add custom mecanism that :
-- `deserialize` string to custom object (Date...) on request
-  - Deserialization is made after other schema validation (`pattern`...)
-- `serialize` object before sending the response 
-  - Serialization is made instead of other validation. No `pattern` or other rule is checked.
+e.g.
 
-The goal of `serDes` option is to focus route functions on feature and without having to cast data on request or before sending response.
+```javascript
+// If `serDes` is not specified, the following behavior is default
+serDes: [{
+  OpenApiValidator.serdes.dateTime.serializer, 
+  OpenApiValidator.serdes.date.serializer,
+}],
+```
 
-To both `deserialize` on request and `serialize` on response, both functions must be defined and are launched when schema `format` fields match. 
+To create custom serializers and/or deserializers, define:
+- `format` (required) - a custom schema format that triggers the serializer and/or deserializer
+- `deserialize` (optional) - upon receiving a request, transform a string property to an object. Deserialization occurs _after_ request schema validation.
+- `serialize` (optional) - before sending a response, transform an object to string. Serialization occurs _after_ response schema validation
+
+e.g.
 ```javascript
 serDes: [{
-  OpenApiValidator.serdes.dateTime, // used when 'format: date-time' 
-  OpenApiValidator.serdes.date, // used when 'format: date' 
+   // installs dateTime serializer and deserializer
+  OpenApiValidator.serdes.dateTime,
+  // installs date serializer and deserializer
+  OpenApiValidator.serdes.date, 
+  // custom serializer and deserializer for the custom format, mongo-objectid
   {
     format: 'mongo-objectid',
     deserialize: (s) => new ObjectID(s),
@@ -765,27 +774,8 @@ serDes: [{
   }
 }],
 ```
-
-If you ONLY want to `serialize` response data (and avoid to deserialize on request), the configuration must not define `deserialize` function.
-```javascript
-serDes: [{
-  // No need to declare date and dateTime. Those types deserialization is already done by default.
-  //OpenApiValidator.serdes.dateTime.serializer, 
-  //OpenApiValidator.serdes.date.serializer, 
-  {
-    format: 'mongo-objectid',
-    serialize: (o) => o.toString(),
-  }
-}],
-```
-So, in conclusion, you can use `OpenApiValidator.serdes.dateTime` if you can to serialize and deserialize dateTime.
-You can also use `OpenApiValidator.serdes.dateTime.serializer` if you only want to serialize or `OpenApiValidator.serdes.dateTime.deserializer` if you only want to deserialize.
-
-NOTE : If you add custom formats in serDes, they are automatically added as accepted custom formats in [unknownFormats](#unknownFormats-(optional)) option setting. 
-You don't need to add them in unknownFormats.
  
-You may want to use `serDes` option for MongoDB types (ObjectID, UUID...). 
-Then you can use the package [mongo-serdes-js](https://github.com/pilerou/mongo-serdes-js). It is designed to be a good addition to this package.
+The [mongo-serdes-js](https://github.com/pilerou/mongo-serdes-js) package provides additional (de)serializers including MongoDB `ObjectID`, `UUID`, ...
 
 ### ▪️ operationHandlers (optional)
 
