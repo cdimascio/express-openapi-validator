@@ -6,8 +6,15 @@ import { OpenAPIV3 } from './types.js';
 
 export class OpenAPISchemaValidator {
   private validator: Ajv.ValidateFunction;
-  constructor({ version }: { version: string; extensions?: object }) {
-    const v = new Ajv({ schemaId: 'auto', allErrors: true });
+  constructor({ version, validateApiSpec }: { version: string, validateApiSpec: boolean, extensions?: object  }) {
+    const options: any = {
+      schemaId: 'auto',
+      allErrors: true,
+    };
+    if (!validateApiSpec) {
+      options.validateSchema = false;
+    }
+    const v = new Ajv(options);
     v.addMetaSchema(draftSchema);
 
     const ver = version && parseInt(String(version), 10);

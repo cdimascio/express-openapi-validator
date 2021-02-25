@@ -36,6 +36,7 @@ export class OpenAPIFramework {
     const validator = new OpenAPISchemaValidator({
       version: apiDoc.openapi,
       // extensions: this.apiDoc[`x-${args.name}-schema-extension`],
+      validateApiSpec,
     });
 
     if (validateApiSpec) {

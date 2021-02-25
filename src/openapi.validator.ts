@@ -53,6 +53,7 @@ export class OpenApiValidator {
     if (options.unknownFormats == null) options.unknownFormats === true;
     if (options.validateFormats == null) options.validateFormats = 'fast';
     if (options.formats == null) options.formats = [];
+    if (options.validateApiSpec !== false) options.validateApiSpec = true;
 
     if (typeof options.operationHandlers === 'string') {
       /**
@@ -88,15 +89,28 @@ export class OpenApiValidator {
       options.validateSecurity = {};
     }
 
+    const ajvOptionsOverrides: any = {};
+    if (!options.validateApiSpec) {
+      ajvOptionsOverrides.validateSchema = false;
+    }
+
     this.options = options;
-    this.ajvOpts = new AjvOptions(options);
+    this.ajvOpts = new AjvOptions(
+        {
+          ...options,
+          ...ajvOptionsOverrides
+        }
+    );
   }
 
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
     const middlewares: OpenApiRequestHandler[] = [];
     const pContext = spec.then((spec) => {
       const apiDoc = spec.apiDoc;
-      const ajvOpts = this.ajvOpts.preprocessor;
+      const ajvOpts = {
+        ...this.ajvOpts.preprocessor,
+        ...{ validateSchema: this.options.validateApiSpec }
+      };
       const resOpts = this.options.validateResponses as ValidateRequestOpts;
       const sp = new SchemaPreprocessor(apiDoc, ajvOpts, resOpts).preProcess();
       return {
@@ -249,7 +263,10 @@ export class OpenApiValidator {
   private multipartMiddleware(apiDoc: OpenAPIV3.Document) {
     return middlewares.multipart(apiDoc, {
       multerOpts: this.options.fileUploader,
-      ajvOpts: this.ajvOpts.multipart,
+      ajvOpts: {
+        ...this.ajvOpts.multipart,
+        ...{ validateSchema: this.options.validateApiSpec }
+      },
     });
   }
 
@@ -263,7 +280,10 @@ export class OpenApiValidator {
   private requestValidationMiddleware(apiDoc: OpenAPIV3.Document) {
     const requestValidator = new middlewares.RequestValidator(
       apiDoc,
-      this.ajvOpts.request,
+        {
+          ...this.ajvOpts.request,
+          ...{ validateSchema: this.options.validateApiSpec }
+        },
     );
     return (req, res, next) => requestValidator.validate(req, res, next);
   }
@@ -271,7 +291,10 @@ export class OpenApiValidator {
   private responseValidationMiddleware(apiDoc: OpenAPIV3.Document) {
     return new middlewares.ResponseValidator(
       apiDoc,
-      this.ajvOpts.response,
+        {
+          ...this.ajvOpts.response,
+          ...{ validateSchema: this.options.validateApiSpec }
+        },
       // This has already been converted from boolean if required
       this.options.validateResponses as ValidateResponseOpts,
     ).validate();
