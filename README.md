@@ -679,7 +679,9 @@ Determines whether the validator should validate the OpenAPI specification. Usef
 
 - `true` (**default**) - validate the OpenAPI specification.
 - `false` - do not validate the OpenAPI specification.
-
+- `{ ... }`
+  - `suppressValidation` same as boolean false
+  - `deeplySuppress` also notify dependencies to not validate
 
 ### ▪️ formats (optional)
 

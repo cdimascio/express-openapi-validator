@@ -12,6 +12,7 @@ import {
   NotFound,
   Unauthorized,
   Forbidden,
+  ValidateApiSpecOpts,
 } from './framework/types';
 
 // export default openapiValidator;
@@ -35,10 +36,15 @@ function openapiValidator(options: OpenApiValidatorOpts) {
   const oav = new OpenApiValidator(options);
   exports.middleware._oav = oav;
 
+  const shouldValidate = (options): boolean => {
+    const { suppressValidation, deeplySuppress } = <ValidateApiSpecOpts>(options.validateApiSpec || {});
+    return !(suppressValidation || deeplySuppress || options.validateApiSpec === false);
+  }
+
   return oav.installMiddleware(
     new OpenApiSpecLoader({
       apiDoc: cloneDeep(options.apiSpec),
-      validateApiSpec: options.validateApiSpec,
+      validateApiSpec: shouldValidate(options),
       $refParser: options.$refParser,
     }).load(),
   );

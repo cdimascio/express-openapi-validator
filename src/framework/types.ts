@@ -49,6 +49,12 @@ export type ValidateRequestOpts = {
   removeAdditional?: boolean | 'all' | 'failing';
 };
 
+export type ValidateApiSpecOpts = {
+  suppressValidation?: boolean;
+  // suppress validation in ajv and apidevtools/json-schema-ref-parser
+  deeplySuppress?: boolean;
+};
+
 export type ValidateResponseOpts = {
   removeAdditional?: boolean | 'all' | 'failing';
   coerceTypes?: boolean | 'array';
@@ -108,7 +114,7 @@ export type SerDesMap = {
 
 export interface OpenApiValidatorOpts {
   apiSpec: OpenAPIV3.Document | string;
-  validateApiSpec?: boolean;
+  validateApiSpec?: boolean | ValidateApiSpecOpts;
   validateResponses?: boolean | ValidateResponseOpts;
   validateRequests?: boolean | ValidateRequestOpts;
   validateSecurity?: boolean | ValidateSecurityOpts;
