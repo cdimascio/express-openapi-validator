@@ -188,7 +188,6 @@ describe('serdes serialize response components only', () => {
           if(typeof req.params.id !== 'string') {
             throw new Error("Should be not be deserialized to ObjectId object");
           }
-          console.log(req.query.baddateresponse);
           let date = new Date("2020-12-20T07:28:19.213Z");
           let result = {
             id: new ObjectID(req.params.id),
@@ -219,7 +218,6 @@ describe('serdes serialize response components only', () => {
           req.body.id = new ObjectID(req.body.id);
           req.body.creationDateTime = new Date(req.body.creationDateTime);
           // We let creationDate as String and it should also work (either in Date Object ou String 'date' format)
-          console.log(req.body);
           res.json(req.body);
         });
         app.use((err, req, res, next) => {
