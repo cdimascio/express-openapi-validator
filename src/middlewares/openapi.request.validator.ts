@@ -13,7 +13,6 @@ import {
   ValidateRequestOpts,
   OpenApiRequestMetadata,
   NotFound,
-  MethodNotAllowed,
   BadRequest,
   ParametersSchema,
   BodySchema,
