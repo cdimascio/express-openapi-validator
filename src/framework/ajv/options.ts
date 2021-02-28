@@ -52,7 +52,6 @@ export class AjvOptions {
       serDes,
     } = this.options;
     const serDesMap = {};
-    console.log(serDes)
     for (const serDesObject of serDes) {
       if (!serDesMap[serDesObject.format]) {
         serDesMap[serDesObject.format] = serDesObject;

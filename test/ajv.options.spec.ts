@@ -11,6 +11,7 @@ describe('AjvOptions', () => {
     validateRequests: true,
     validateResponses: {
       coerceTypes: false,
+      removeAdditional: true,
     },
     serDes: [],
     formats: [],
@@ -87,4 +88,44 @@ describe('AjvOptions', () => {
     expect(options.serDesMap['custom-1']).has.property('serialize');
     expect(options.serDesMap['custom-1']).has.property('deserialize');
   });
+
+  it('should set serdes serialize and deserialize separately', () => {
+    const ajv = new AjvOptions({
+      ...baseOptions,
+      serDes: [
+        {
+          format: 'custom-1',
+          serialize: () => 'test',
+        },
+        {
+          format: 'custom-1',
+          deserialize: () => 'test',
+        },
+        {
+          format: 'custom-1',
+          serialize: () => 'test',
+        },
+      ],
+    });
+    const options = ajv.multipart;
+    expect(options.serDesMap).has.property('custom-1');
+    expect(options.serDesMap['custom-1']).has.property('serialize');
+    expect(options.serDesMap['custom-1']).has.property('deserialize');
+  });
+
+  // it.only('should have formats', () => {
+  //   const ajv = new AjvOptions({
+  //     ...baseOptions,
+  //     formats: [
+  //       {
+  //         name: 'test',
+  //         type: 'string',
+  //         validate: () => true,
+  //       },
+  //     ],
+  //   });
+  //   const options = ajv.response;
+  //   console.log(options)
+  //   expect(options.formats).to.be.an('array').with.length(1);
+  // });
 });
