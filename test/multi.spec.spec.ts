@@ -36,7 +36,7 @@ function createServer() {
   const path = require('path');
   const bodyParser = require('body-parser');
   const http = require('http');
-  const OpenApiValidator = require('../../src');
+  const OpenApiValidator = require('../src');
 
   const app = express();
   app.use(bodyParser.urlencoded({ extended: false }));
