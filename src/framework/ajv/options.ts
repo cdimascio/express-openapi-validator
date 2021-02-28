@@ -66,7 +66,7 @@ export class AjvOptions {
     }
 
     return {
-      validateSchema: false, // only needed on startup
+      validateSchema: false, // this is true for statup validation, thus it can be bypassed here
       nullable: true,
       coerceTypes,
       useDefaults: true,
