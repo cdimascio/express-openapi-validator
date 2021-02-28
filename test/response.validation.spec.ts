@@ -172,7 +172,6 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/empty_response`)
       .expect(204)
       .then((r) => {
-        console.log(r.body);
         expect(r.body).to.be.empty;
       }));
 
