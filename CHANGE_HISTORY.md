@@ -1,3 +1,15 @@
+## 4.12.0 (2021-02-28)
+
+* test: add multi-spec test ([1f50892](https://github.com/cdimascio/express-openapi-validator/commit/1f50892))
+* test: multi.spec test ([c8cf43e](https://github.com/cdimascio/express-openapi-validator/commit/c8cf43e))
+* test: remove console logs ([dccf760](https://github.com/cdimascio/express-openapi-validator/commit/dccf760))
+* chore: increment minor version ([7e77207](https://github.com/cdimascio/express-openapi-validator/commit/7e77207))
+* fix: observe validateApiSpec and avoid schema re-checks (performance) (#544) ([e794c59](https://github.com/cdimascio/express-openapi-validator/commit/e794c59)), closes [#544](https://github.com/cdimascio/express-openapi-validator/issues/544)
+* docs: add aaronluman as a contributor (#545) ([492e1f9](https://github.com/cdimascio/express-openapi-validator/commit/492e1f9)), closes [#545](https://github.com/cdimascio/express-openapi-validator/issues/545)
+* feat: example 2 deps ([8d27580](https://github.com/cdimascio/express-openapi-validator/commit/8d27580))
+
+
+
 ## <small>4.11.1 (2021-02-28)</small>
 
 * chore: update lockfile and patch version ([a7b8a2a](https://github.com/cdimascio/express-openapi-validator/commit/a7b8a2a))
