@@ -1,3 +1,10 @@
+## <small>4.11.1 (2021-02-28)</small>
+
+* chore: update lockfile and patch version ([a7b8a2a](https://github.com/cdimascio/express-openapi-validator/commit/a7b8a2a))
+* chore: update npmignore ([7f6eed8](https://github.com/cdimascio/express-openapi-validator/commit/7f6eed8))
+
+
+
 ## <small>4.10.12 (2021-02-14)</small>
 
 * chore: increment patch version ([4d2df86](https://github.com/cdimascio/express-openapi-validator/commit/4d2df86))
