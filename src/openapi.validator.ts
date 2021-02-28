@@ -15,14 +15,12 @@ import {
   OpenApiRequestMetadata,
   ValidateSecurityOpts,
   OpenAPIV3,
-  RequestValidatorOptions,
-  Options,
 } from './framework/types';
 import { defaultResolver } from './resolvers';
 import { OperationHandlerOptions } from './framework/types';
 import { defaultSerDes } from './framework/base.serdes';
 import { SchemaPreprocessor } from './middlewares/parsers/schema.preprocessor';
-
+import { AjvOptions } from './framework/ajv/options';
 
 export {
   OpenApiValidatorOpts,
@@ -343,23 +341,27 @@ export class OpenApiValidator {
   }
 
   private normalizeOptions(options: OpenApiValidatorOpts): void {
-    if(!options.serDes) {
+    if (!options.serDes) {
       options.serDes = defaultSerDes;
-    }
-    else {
-      if(!Array.isArray(options.unknownFormats)) {
+    } else {
+      if (!Array.isArray(options.unknownFormats)) {
         options.unknownFormats = Array<string>();
       }
-      options.serDes.forEach(currentSerDes => {
-        if((options.unknownFormats as string[]).indexOf(currentSerDes.format) === -1) {
-          (options.unknownFormats as string[]).push(currentSerDes.format)
+      options.serDes.forEach((currentSerDes) => {
+        if (
+          (options.unknownFormats as string[]).indexOf(currentSerDes.format) ===
+          -1
+        ) {
+          (options.unknownFormats as string[]).push(currentSerDes.format);
         }
       });
-      defaultSerDes.forEach(currentDefaultSerDes => {
-        let defautSerDesOverride = options.serDes.find(currentOptionSerDes => {
-          return currentDefaultSerDes.format === currentOptionSerDes.format;
-        });
-        if(!defautSerDesOverride) {
+      defaultSerDes.forEach((currentDefaultSerDes) => {
+        let defautSerDesOverride = options.serDes.find(
+          (currentOptionSerDes) => {
+            return currentDefaultSerDes.format === currentOptionSerDes.format;
+          },
+        );
+        if (!defautSerDesOverride) {
           options.serDes.push(currentDefaultSerDes);
         }
       });
@@ -374,78 +376,5 @@ export class OpenApiValidator {
     } else {
       return false;
     }
-  }
-}
-
-class AjvOptions {
-  private options: OpenApiValidatorOpts;
-  constructor(options: OpenApiValidatorOpts) {
-    this.options = options;
-  }
-  get preprocessor(): ajv.Options {
-    return this.baseOptions();
-  }
-
-  get response(): ajv.Options {
-    const { coerceTypes, removeAdditional } = <ValidateResponseOpts>(
-      this.options.validateResponses
-    );
-    return {
-      ...this.baseOptions(),
-      useDefaults: false,
-      coerceTypes,
-      removeAdditional,
-    };
-  }
-
-  get request(): RequestValidatorOptions {
-    const { allowUnknownQueryParameters, coerceTypes, removeAdditional } = <ValidateRequestOpts>(
-      this.options.validateRequests
-    );
-    return {
-      ...this.baseOptions(),
-      allowUnknownQueryParameters,
-      coerceTypes,
-      removeAdditional,
-    };
-  }
-
-  get multipart(): Options {
-    return this.baseOptions();
-  }
-
-  private baseOptions(): Options {
-    const { coerceTypes, unknownFormats, validateFormats, serDes } = this.options;
-    const serDesMap = {};
-    for (const serDesObject of serDes) {
-      if(!serDesMap[serDesObject.format]) {
-        serDesMap[serDesObject.format] = serDesObject;
-      }
-      else {
-        if (serDesObject.serialize) {
-          serDesMap[serDesObject.format].serialize = serDesObject.serialize;
-        }
-        if (serDesObject.deserialize) {
-          serDesMap[serDesObject.format].deserialize = serDesObject.deserialize;
-        }
-      }
-    }
-
-    return {
-      nullable: true,
-      coerceTypes,
-      useDefaults: true,
-      removeAdditional: false,
-      unknownFormats,
-      format: validateFormats,
-      formats: this.options.formats.reduce((acc, f) => {
-        acc[f.name] = {
-          type: f.type,
-          validate: f.validate,
-        };
-        return acc;
-      }, {}),
-      serDesMap : serDesMap,
-    };
   }
 }
