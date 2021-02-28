@@ -39,4 +39,52 @@ describe('AjvOptions', () => {
     const options = ajv.multipart;
     expect(options.validateSchema).to.be.false;
   });
+
+  it('should set serdes deserialize', () => {
+    const ajv = new AjvOptions({
+      ...baseOptions,
+      serDes: [
+        {
+          format: 'custom-1',
+          deserialize: () => 'test',
+        },
+      ],
+    });
+    const options = ajv.multipart;
+    expect(options.serDesMap['custom-1']).has.property('deserialize');
+    expect(options.serDesMap['custom-1']).does.not.have.property('serialize');
+  });
+
+  it('should set serdes serialize', () => {
+    const ajv = new AjvOptions({
+      ...baseOptions,
+      serDes: [
+        {
+          format: 'custom-1',
+          serialize: () => 'test',
+        },
+      ],
+    });
+    const options = ajv.multipart;
+    expect(options.serDesMap).has.property('custom-1');
+    expect(options.serDesMap['custom-1']).has.property('serialize');
+    expect(options.serDesMap['custom-1']).does.not.have.property('deserialize');
+  });
+
+  it('should set serdes serialize and deserialize', () => {
+    const ajv = new AjvOptions({
+      ...baseOptions,
+      serDes: [
+        {
+          format: 'custom-1',
+          serialize: () => 'test',
+          deserialize: (s) => {},
+        },
+      ],
+    });
+    const options = ajv.multipart;
+    expect(options.serDesMap).has.property('custom-1');
+    expect(options.serDesMap['custom-1']).has.property('serialize');
+    expect(options.serDesMap['custom-1']).has.property('deserialize');
+  });
 });
