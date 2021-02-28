@@ -439,6 +439,16 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "aaronluman",
+      "name": "Aaron Luman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1248177?v=4",
+      "profile": "https://github.com/aaronluman",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
