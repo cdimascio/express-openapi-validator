@@ -38,6 +38,12 @@ npm install express-openapi-validator
 const OpenApiValidator = require('express-openapi-validator');
 ```
 
+or 
+
+```javascript
+import * as OpenApiValidator from 'express-openapi-validator';
+```
+
 2. Install the middleware
 
 ```javascript
