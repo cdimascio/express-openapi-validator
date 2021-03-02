@@ -1,3 +1,12 @@
+## <small>4.12.1 (2021-03-02)</small>
+
+* chore: change log ([d950086](https://github.com/cdimascio/express-openapi-validator/commit/d950086))
+* chore: increment patch version ([22682ae](https://github.com/cdimascio/express-openapi-validator/commit/22682ae))
+* 547 make Array.flatMap not enumerable (#548) ([192d772](https://github.com/cdimascio/express-openapi-validator/commit/192d772)), closes [#548](https://github.com/cdimascio/express-openapi-validator/issues/548)
+* Update README.md ([92866af](https://github.com/cdimascio/express-openapi-validator/commit/92866af))
+
+
+
 ## 4.12.0 (2021-02-28)
 
 * test: add multi-spec test ([1f50892](https://github.com/cdimascio/express-openapi-validator/commit/1f50892))
