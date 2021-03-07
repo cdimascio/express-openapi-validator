@@ -418,7 +418,9 @@ export class SchemaPreprocessor {
     for (const [statusCode, response] of Object.entries(responses)) {
       const rschema = this.resolveSchema<OpenAPIV3.ResponseObject>(response);
       if (!rschema) {
-        // TODO we could resolve. Can occur with multi-file specs
+        // issue #553
+        // TODO the schema failed to resolve.
+        // This can occur with multi-file specs
         // improve resolution, so that rschema resolves (use json ref parser?)
         continue;
       }
