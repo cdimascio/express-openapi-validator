@@ -1,3 +1,11 @@
+## <small>4.12.4 (2021-03-07)</small>
+
+* chore: increment patch version ([e351cef](https://github.com/cdimascio/express-openapi-validator/commit/e351cef))
+* doc: update README ([35cad46](https://github.com/cdimascio/express-openapi-validator/commit/35cad46))
+* fix: #551 unhandled promise rejection on invalid api spec (#556) ([9314b09](https://github.com/cdimascio/express-openapi-validator/commit/9314b09)), closes [#551](https://github.com/cdimascio/express-openapi-validator/issues/551) [#556](https://github.com/cdimascio/express-openapi-validator/issues/556)
+
+
+
 ## <small>4.12.3 (2021-03-07)</small>
 
 * chore: change history ([b0be2d6](https://github.com/cdimascio/express-openapi-validator/commit/b0be2d6))
