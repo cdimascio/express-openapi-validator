@@ -249,7 +249,8 @@ export class SchemaPreprocessor {
       const options = opts[kind];
       options.path = node.path;
 
-      if (nschema) { // This null check should no longer be necessary
+      if (nschema) {
+        // This null check should no longer be necessary
         this.handleSerDes(pschema, nschema, options);
         this.handleReadonly(pschema, nschema, options);
         this.processDiscriminator(pschema, nschema, options);
@@ -346,7 +347,11 @@ export class SchemaPreprocessor {
     schema: SchemaObject,
     state: TraversalState,
   ) {
-    if (schema.type === 'string' && !!schema.format && this.serDesMap[schema.format]) {
+    if (
+      schema.type === 'string' &&
+      !!schema.format &&
+      this.serDesMap[schema.format]
+    ) {
       (<any>schema).type = ['object', 'string'];
       schema['x-eov-serdes'] = this.serDesMap[schema.format];
     }
@@ -412,6 +417,13 @@ export class SchemaPreprocessor {
     const schemas: Root<SchemaObject>[] = [];
     for (const [statusCode, response] of Object.entries(responses)) {
       const rschema = this.resolveSchema<OpenAPIV3.ResponseObject>(response);
+      if (!rschema) {
+        // issue #553
+        // TODO the schema failed to resolve.
+        // This can occur with multi-file specs
+        // improve resolution, so that rschema resolves (use json ref parser?)
+        continue;
+      }
       responses[statusCode] = rschema;
 
       if (rschema.content) {
