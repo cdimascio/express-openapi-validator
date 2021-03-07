@@ -1,3 +1,13 @@
+## <small>4.12.3 (2021-03-07)</small>
+
+* chore: change history ([b0be2d6](https://github.com/cdimascio/express-openapi-validator/commit/b0be2d6))
+* chore: increment patch version ([47cdd87](https://github.com/cdimascio/express-openapi-validator/commit/47cdd87))
+* chore: increment patch version ([7862ee7](https://github.com/cdimascio/express-openapi-validator/commit/7862ee7))
+* fix: validate api spec by default ([4637d2c](https://github.com/cdimascio/express-openapi-validator/commit/4637d2c))
+* doc: update README ([ce01bf8](https://github.com/cdimascio/express-openapi-validator/commit/ce01bf8))
+
+
+
 ## <small>4.12.2 (2021-03-07)</small>
 
 * doc: Add NestJS Example (#554) ([61ddf2b](https://github.com/cdimascio/express-openapi-validator/commit/61ddf2b)), closes [#554](https://github.com/cdimascio/express-openapi-validator/issues/554)
