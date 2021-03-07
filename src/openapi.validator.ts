@@ -43,6 +43,7 @@ export class OpenApiValidator {
     this.validateOptions(options);
     this.normalizeOptions(options);
 
+    if (options.validateApiSpec == null) options.validateApiSpec = true;
     if (options.validateRequests == null) options.validateRequests = true;
     if (options.validateResponses == null) options.validateResponses = false;
     if (options.validateSecurity == null) options.validateSecurity = true;
