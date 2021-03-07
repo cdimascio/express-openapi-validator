@@ -96,7 +96,6 @@ See the complete [source code](https://github.com/cdimascio/express-openapi-vali
 ```javascript
 const express = require('express');
 const path = require('path');
-const bodyParser = require('body-parser');
 const http = require('http');
 const app = express();
 
@@ -105,9 +104,9 @@ const OpenApiValidator = require('express-openapi-validator');
 
 // 2. Set up body parsers for the request body types you expect
 //    Must be specified prior to endpoints in 5.
-app.use(bodyParser.json());
-app.use(bodyParser.text());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.text());
+app.use(express.urlencoded({ extended: false }));
 
 // 3. (optionally) Serve the OpenAPI spec
 const spec = path.join(__dirname, 'api.yaml');
