@@ -22,6 +22,7 @@
 
 [![GitHub stars](https://img.shields.io/github/stars/cdimascio/express-openapi-validator.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/cdimascio/express-openapi-validator/stargazers/) [![Twitter URL](https://img.shields.io/twitter/url/https/github.com/cdimascio/express-openapi-validator.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20express-openapi-validator%20by%20%40CarmineDiMascio%20https%3A%2F%2Fgithub.com%2Fcdimascio%2Fexpress-openapi-validator%20%F0%9F%91%8D)
 
+[NestJS](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/9-nestjs)
 [Koa](https://github.com/cdimascio/express-openapi-validator/tree/lerna-fastify/packages/koa-openapi-validator) and [Fastify](https://github.com/cdimascio/express-openapi-validator/tree/lerna-fastify/packages/fastify-openapi-validator) now available! 🚀
 
 ## Install
@@ -38,7 +39,7 @@ npm install express-openapi-validator
 const OpenApiValidator = require('express-openapi-validator');
 ```
 
-or 
+or
 
 ```javascript
 import * as OpenApiValidator from 'express-openapi-validator';
@@ -597,7 +598,7 @@ Determines whether the validator should validate requests.
     coerceTypes: true;
   }
   ```
-  
+
   **removeAdditional:**
 
   Determines whether to keep or remove additional properties in request body or to fail validation if schema has `additionalProperties` set to `false`. For futher details, refer to [AJV documentation](https://ajv.js.org/docs/validation.html#removing-additional-properties)
@@ -686,7 +687,6 @@ Determines whether the validator should validate the OpenAPI specification. Usef
 - `true` (**default**) - validate the OpenAPI specification.
 - `false` - do not validate the OpenAPI specification.
 
-
 ### ▪️ formats (optional)
 
 Defines a list of custome formats.
@@ -754,23 +754,25 @@ e.g.
 ```javascript
 // If `serDes` is not specified, the following behavior is default
 serDes: [{
-  OpenApiValidator.serdes.dateTime.serializer, 
+  OpenApiValidator.serdes.dateTime.serializer,
   OpenApiValidator.serdes.date.serializer,
 }],
 ```
 
 To create custom serializers and/or deserializers, define:
+
 - `format` (required) - a custom 'unknown' format that triggers the serializer and/or deserializer
 - `deserialize` (optional) - upon receiving a request, transform a string property to an object. Deserialization occurs _after_ request schema validation.
 - `serialize` (optional) - before sending a response, transform an object to string. Serialization occurs _after_ response schema validation
 
 e.g.
+
 ```javascript
 serDes: [{
    // installs dateTime serializer and deserializer
   OpenApiValidator.serdes.dateTime,
   // installs date serializer and deserializer
-  OpenApiValidator.serdes.date, 
+  OpenApiValidator.serdes.date,
   // custom serializer and deserializer for the custom format, mongo-objectid
   {
     format: 'mongo-objectid',
@@ -781,11 +783,12 @@ serDes: [{
 ```
 
 The mongo serializers will trigger on the following schema:
+
 ```yaml
-  type: string
-  format: mongo-objectid
+type: string
+format: mongo-objectid
 ```
- 
+
 See [mongo-serdes-js](https://github.com/pilerou/mongo-serdes-js) for additional (de)serializers including MongoDB `ObjectID`, `UUID`, ...
 
 ### ▪️ operationHandlers (optional)
@@ -1220,10 +1223,11 @@ app.use(OpenApiValidator.middleware({
 In order to modify the `req.params`, express requires that a param handler be registered e.g. `app.param(...)` or `router.param(...)`. Since `app` is available to middleware functions, the validator registers an `app.param` handler to coerce and modify the values of `req.params` to their declared types. Unfortunately, express does not provide a means to determine the current router from a middleware function, hence the validator is unable to register the same param handler on an express router. Ultimately, this means if your handler function is defined on `app`, the values of `req.params` will be coerced to their declared types. If your handler function is declare on an `express.Router`, the values of `req.params` values will be of type `string` (You must coerce them e.g. `parseInt(req.params.id)`).
 
 ## Related Projects
+
 - [koa-openapi-validator](https://github.com/cdimascio/express-openapi-validator/tree/lerna-fastify/packages/koa-openapi-validator)
 - [fastify-openapi-validator](https://github.com/cdimascio/express-openapi-validator/tree/lerna-fastify/packages/fastify-openapi-validator)
 
-_Note: koa and fastify does not (yet) support response validation or operation handlers
+\_Note: koa and fastify does not (yet) support response validation or operation handlers
 
 ## Contributors ✨
 
