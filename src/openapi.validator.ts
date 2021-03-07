@@ -1,5 +1,4 @@
 import ono from 'ono';
-import ajv = require('ajv');
 import * as express from 'express';
 import * as _uniq from 'lodash.uniq';
 import * as middlewares from './middlewares';
@@ -93,22 +92,37 @@ export class OpenApiValidator {
 
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
     const middlewares: OpenApiRequestHandler[] = [];
-    const pContext = spec.then((spec) => {
-      const apiDoc = spec.apiDoc;
-      const ajvOpts = this.ajvOpts.preprocessor;
-      const resOpts = this.options.validateResponses as ValidateRequestOpts;
-      const sp = new SchemaPreprocessor(apiDoc, ajvOpts, resOpts).preProcess();
-      return {
-        context: new OpenApiContext(spec, this.options.ignorePaths),
-        responseApiDoc: sp.apiDocRes,
-      };
-    });
+    const pContext = spec
+      .then((spec) => {
+        const apiDoc = spec.apiDoc;
+        const ajvOpts = this.ajvOpts.preprocessor;
+        const resOpts = this.options.validateResponses as ValidateRequestOpts;
+        const sp = new SchemaPreprocessor(
+          apiDoc,
+          ajvOpts,
+          resOpts,
+        ).preProcess();
+        return {
+          context: new OpenApiContext(spec, this.options.ignorePaths),
+          responseApiDoc: sp.apiDocRes,
+          error: null,
+        };
+      })
+      .catch((e) => {
+        return {
+          context: null,
+          responseApiDoc: null,
+          error: e,
+        };
+      });
 
     let inited = false;
     // install path params
     middlewares.push((req, res, next) =>
       pContext
-        .then(({ context }) => {
+        .then(({ context, error }) => {
+          // Throw if any error occurred during spec load.
+          if (error) throw error;
           if (!inited) {
             // Would be nice to pass the current Router object here if the route
             // is attach to a Router and not the app.
