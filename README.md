@@ -684,6 +684,8 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
 
 Determines whether the validator should validate the OpenAPI specification. Useful if you are certain that the api spec is syntactically correct and want to bypass this check.
 
+*Warning:* e certain your spec is valid. And be sure you know what you're doing! express-openapi-validator _*expects*_ are valid spec. If incorrect, the validator will behave erradically and/or throw Javascript errors.
+
 - `true` (**default**) - validate the OpenAPI specification.
 - `false` - do not validate the OpenAPI specification.
 
