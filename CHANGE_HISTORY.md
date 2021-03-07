@@ -1,3 +1,12 @@
+## <small>4.12.2 (2021-03-07)</small>
+
+* doc: Add NestJS Example (#554) ([61ddf2b](https://github.com/cdimascio/express-openapi-validator/commit/61ddf2b)), closes [#554](https://github.com/cdimascio/express-openapi-validator/issues/554)
+* doc: update README ([ce01bf8](https://github.com/cdimascio/express-openapi-validator/commit/ce01bf8))
+* Updated info about import (#549) ([af84b47](https://github.com/cdimascio/express-openapi-validator/commit/af84b47)), closes [#549](https://github.com/cdimascio/express-openapi-validator/issues/549)
+* fix: throws on multi file spec where multiple responses share the same file ref (#555) ([22d88da](https://github.com/cdimascio/express-openapi-validator/commit/22d88da)), closes [#555](https://github.com/cdimascio/express-openapi-validator/issues/555)
+
+
+
 ## <small>4.12.1 (2021-03-02)</small>
 
 * chore: change log ([d950086](https://github.com/cdimascio/express-openapi-validator/commit/d950086))
