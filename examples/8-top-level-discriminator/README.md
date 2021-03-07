@@ -18,9 +18,9 @@ npm start
 
 ## Try
 
-### Discriminator with explict mapping
+### Discriminator with explicit mapping
 
-#### `"pet_type": "cat"
+#### `"pet_type": "cat"`
 
 ```shell
     curl -X POST 'http://localhost:3000/v1/pets/mapping' \
@@ -32,7 +32,8 @@ npm start
   "pet_type": "cat"
 }
 ```
-#### `"pet_type": "dog"
+
+#### `"pet_type": "dog"`
 
 ```shell
 curl -X POST 'http://localhost:3000/v1/pets/mapping' \
@@ -45,9 +46,9 @@ curl -X POST 'http://localhost:3000/v1/pets/mapping' \
 }
 ```
 
-### Discriminator with implict mapping
+### Discriminator with implicit mapping
 
-#### `"pet_type": "DogObject"
+#### `"pet_type": "DogObject"`
 
 ```shell
 curl -X POST 'http://localhost:3000/v1/pets/nomapping' \

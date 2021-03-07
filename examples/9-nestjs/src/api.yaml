@@ -1,0 +1,50 @@
+openapi: 3.0.3
+
+info:
+  title: Ping API
+  version: 1.0.0
+
+paths:
+  /ping:
+    post:
+      operationId: pingBody
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ping:
+                  type: string
+              required:
+                - ping
+      responses:
+        200:
+          description: Returns value of ping
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pong:
+                    type: string
+
+  /ping/{value}:
+    parameters:
+      - name: value
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: ping
+      responses:
+        200:
+          description: Returns value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pong:
+                    type: string

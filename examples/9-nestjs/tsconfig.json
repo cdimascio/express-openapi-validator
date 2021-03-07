@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+
+    "moduleResolution": "node",
+
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+
+    "outDir": "dist/",
+    "declaration": true,
+    "sourceMap": true,
+
+    // only needed in a mono-repo setup
+    "typeRoots": ["./node_modules/@types"]
+  },
+  "include": ["src"]
+}
