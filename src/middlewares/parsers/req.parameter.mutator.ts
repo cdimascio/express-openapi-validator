@@ -87,7 +87,7 @@ export class RequestParameterMutator {
           this.parseJsonAndMutateRequest(req, parameter.in, name);
           this.handleFormExplode(req, name, <SchemaObject>schema, parameter);
         } else if (style === 'deepObject') {
-          this.handleDeepObject(req, queryString, name);
+          this.handleDeepObject(req, queryString, name, schema);
         } else {
           this.parseJsonAndMutateRequest(req, parameter.in, name);
         }
@@ -103,9 +103,33 @@ export class RequestParameterMutator {
     });
   }
 
-  private handleDeepObject(req: Request, qs: string, name: string): void {
+  private handleDeepObject(req: Request, qs: string, name: string, schema: SchemaObject): void {
+    const getDefaultSchemaValue = () => {
+      let defaultValue;
+
+      if (schema.default !== undefined) {
+        defaultValue = schema.default
+      } else {
+        ['allOf', 'oneOf', 'anyOf'].forEach((key) => {
+          if (schema[key]) {
+            schema[key].forEach((s) => {
+              if (s.$ref) {
+                const compiledSchema = this.ajv.getSchema(s.$ref);
+                // as any -> https://stackoverflow.com/a/23553128
+                defaultValue = defaultValue === undefined ? (compiledSchema.schema as any).default : defaultValue;
+              } else {
+                defaultValue = defaultValue === undefined ? s.default : defaultValue;
+              }
+            });
+          }
+        });
+      }
+
+      return defaultValue;
+    };
+
     if (!req.query?.[name]) {
-      req.query[name] = {};
+      req.query[name] = getDefaultSchemaValue();
     }
     this.parseJsonAndMutateRequest(req, 'query', name);
     // TODO handle url encoded?
