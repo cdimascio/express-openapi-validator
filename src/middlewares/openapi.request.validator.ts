@@ -117,12 +117,12 @@ export class RequestValidator {
         req.params = openapi.pathParams ?? req.params;
       }
 
-      const schemaPoperties = validator.allSchemaProperties;
+      const schemaProperties = validator.allSchemaProperties;
       const mutator = new RequestParameterMutator(
         this.ajv,
         apiDoc,
         path,
-        schemaPoperties,
+        schemaProperties,
       );
 
       mutator.modifyRequest(req);
@@ -130,7 +130,7 @@ export class RequestValidator {
       if (!allowUnknownQueryParameters) {
         this.processQueryParam(
           req.query,
-          schemaPoperties.query,
+          schemaProperties.query,
           securityQueryParam,
         );
       }
@@ -151,15 +151,15 @@ export class RequestValidator {
       };
       const schemaBody = <any>validator?.schemaBody;
       const discriminator = schemaBody?.properties?.body?._discriminator;
-      const discriminatorValdiator = this.discriminatorValidator(
+      const discriminatorValidator = this.discriminatorValidator(
         req,
         discriminator,
       );
 
-      const validatorBody = discriminatorValdiator ?? validator.validatorBody;
+      const validatorBody = discriminatorValidator ?? validator.validatorBody;
       const valid = validator.validatorGeneral(data);
       const validBody = validatorBody(
-        discriminatorValdiator ? data.body : data,
+        discriminatorValidator ? data.body : data,
       );
 
       if (valid && validBody) {
@@ -185,7 +185,7 @@ export class RequestValidator {
   private discriminatorValidator(req, discriminator) {
     if (discriminator) {
       const { options, property, validators } = discriminator;
-      const discriminatorValue = req.body[property]; // TODO may not alwasy be in this position
+      const discriminatorValue = req.body[property]; // TODO may not always be in this position
       if (options.find((o) => o.option === discriminatorValue)) {
         return validators[discriminatorValue];
       } else {
