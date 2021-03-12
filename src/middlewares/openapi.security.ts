@@ -4,8 +4,6 @@ import {
   SecurityHandlers,
   OpenApiRequestMetadata,
   OpenApiRequestHandler,
-  NotFound,
-  MethodNotAllowed,
   InternalServerError,
   HttpError,
 } from '../framework/types';
