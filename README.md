@@ -1194,10 +1194,6 @@ properties:
     type: string
 ```
 
-**Q:** I upgraded from from v2 to v3 and validation no longer works. How do I fix it?
-
-**A**: In version 2.x.x, the `install` method was executed synchronously, in 3.x it's executed asynchronously. To get v2 behavior in v3, use the `installSync` method. See the [synchronous](#synchronous) section for details.
-
 **Q:** Can I use `express-openapi-validator` with `swagger-ui-express`?
 
 **A:** Yes. Be sure to `use` the `swagger-ui-express` serve middleware prior to installing `OpenApiValidator`. This will ensure that `swagger-ui-express` is able to fully prepare the spec before before OpenApiValidator attempts to use it. For example:
