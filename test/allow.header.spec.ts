@@ -18,12 +18,15 @@ describe(packageJson.name, () => {
     app.server.close();
   });
 
-  it('adds allow header to 405 - Method Not Allowed', async () =>
+  it('adds "Allow" header to 405 - Method Not Allowed', async () =>
     request(app)
       .put('/v1/pets/greebo')
       .expect(405)
       .then((response) => {
-        expect(response.header).to.include({ allow: 'POST, GET' });
+        expect(response.header.allow.split(', ')).to.have.members([
+          'GET',
+          'POST',
+        ]);
       }));
 });
 
