@@ -8,7 +8,7 @@ export class OpenApiExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    response.status(error.status).json(error);
+    response.status(error.status).header(error.headers).json(error);
   }
 }
 
@@ -22,4 +22,7 @@ interface ValidationError {
   }>;
   path?: string;
   name: string;
+  headers: {
+    [header: string]: string;
+  };
 }

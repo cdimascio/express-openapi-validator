@@ -533,17 +533,23 @@ export interface ValidationErrorItem {
   error_code?: string;
 }
 
+interface ErrorHeaders {
+  Allow?: string;
+}
+
 export class HttpError extends Error implements ValidationError {
   status!: number;
-  message!: string;
-  errors!: ValidationErrorItem[];
   path?: string;
   name!: string;
+  message!: string;
+  headers?: ErrorHeaders;
+  errors!: ValidationErrorItem[];
   constructor(err: {
     status: number;
     path: string;
     name: string;
     message?: string;
+    headers?: ErrorHeaders;
     errors?: ValidationErrorItem[];
   }) {
     super(err.name);
@@ -551,15 +557,13 @@ export class HttpError extends Error implements ValidationError {
     this.status = err.status;
     this.path = err.path;
     this.message = err.message;
-    this.errors =
-      err.errors == undefined
-        ? [
-            {
-              path: err.path,
-              message: err.message,
-            },
-          ]
-        : err.errors;
+    this.headers = err.headers;
+    this.errors = err.errors ?? [
+      {
+        path: err.path,
+        message: err.message,
+      },
+    ];
   }
 
   public static create(err: {
@@ -634,6 +638,7 @@ export class MethodNotAllowed extends HttpError {
   constructor(err: {
     path: string;
     message?: string;
+    headers?: ErrorHeaders;
     overrideStatus?: number;
   }) {
     super({
@@ -641,6 +646,7 @@ export class MethodNotAllowed extends HttpError {
       path: err.path,
       name: 'Method Not Allowed',
       message: err.message,
+      headers: err.headers,
     });
   }
 }

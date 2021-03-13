@@ -142,7 +142,7 @@ export class OpenApiValidator {
     middlewares.push((req, res, next) =>
       pContext
         .then(({ context, responseApiDoc }) => {
-          metamw = metamw || this.metadataMiddlware(context, responseApiDoc);
+          metamw = metamw || this.metadataMiddleware(context, responseApiDoc);
           return metamw(req, res, next);
         })
         .catch(next),
@@ -252,7 +252,7 @@ export class OpenApiValidator {
     }
   }
 
-  private metadataMiddlware(
+  private metadataMiddleware(
     context: OpenApiContext,
     responseApiDoc: OpenAPIV3.Document,
   ) {
@@ -371,12 +371,12 @@ export class OpenApiValidator {
         }
       });
       defaultSerDes.forEach((currentDefaultSerDes) => {
-        let defautSerDesOverride = options.serDes.find(
+        let defaultSerDesOverride = options.serDes.find(
           (currentOptionSerDes) => {
             return currentDefaultSerDes.format === currentOptionSerDes.format;
           },
         );
-        if (!defautSerDesOverride) {
+        if (!defaultSerDesOverride) {
           options.serDes.push(currentDefaultSerDes);
         }
       });
