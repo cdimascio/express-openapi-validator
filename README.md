@@ -172,7 +172,7 @@ Use express-openapi-validator's OpenAPI `x-eov-operation-*` vendor extensions. S
 
 **Here's the gist**
 
-- First, specifiy the `operationHandlers` option to set the base directory that contains your operation handler files.
+- First, specify the `operationHandlers` option to set the base directory that contains your operation handler files.
 
 ```javascript
 app.use(
@@ -205,7 +205,7 @@ app.use(
 
 ```javascript
 module.exports = {
-  // the express handler implementaiton for ping
+  // the express handler implementation for ping
   ping: (req, res) => res.status(200).send('pong'),
 };
 ```
@@ -275,7 +275,7 @@ module.exports = app;
     # OpenAPI's operationId may be used to to specify the operation id
     operationId: ping
     # x-eov-operation-id may be used to specify the operation id
-    # Used when operationId is omiited. Overrides operationId when both are specified
+    # Used when operationId is omitted. Overrides operationId when both are specified
     x-eov-operation-id: ping
     # specifies the path to the operation handler.
     # the path is relative to the operationHandlers option
@@ -518,7 +518,7 @@ OpenApiValidator.middleware({
 
 ### ▪️ apiSpec (required)
 
-Specifies the path to an OpenAPI 3 specification or a JSON object representing the OpenAPI 3 specificiation
+Specifies the path to an OpenAPI 3 specification or a JSON object representing the OpenAPI 3 specification
 
 ```javascript
 apiSpec: './path/to/my-openapi-spec.yaml';
@@ -600,7 +600,7 @@ Determines whether the validator should validate requests.
 
   **removeAdditional:**
 
-  Determines whether to keep or remove additional properties in request body or to fail validation if schema has `additionalProperties` set to `false`. For futher details, refer to [AJV documentation](https://ajv.js.org/docs/validation.html#removing-additional-properties)
+  Determines whether to keep or remove additional properties in request body or to fail validation if schema has `additionalProperties` set to `false`. For further details, refer to [AJV documentation](https://ajv.js.org/docs/validation.html#removing-additional-properties)
 
   - `false` (**default**) - not to remove additional properties
   - `"all"` - all additional properties are removed, regardless of additionalProperties keyword in schema (and no validation is made for them).
@@ -683,14 +683,14 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
 
 Determines whether the validator should validate the OpenAPI specification. Useful if you are certain that the api spec is syntactically correct and want to bypass this check.
 
-*Warning:* e certain your spec is valid. And be sure you know what you're doing! express-openapi-validator _*expects*_ are valid spec. If incorrect, the validator will behave erradically and/or throw Javascript errors.
+*Warning:* Be certain your spec is valid. And be sure you know what you're doing! express-openapi-validator _*expects*_ a valid spec. If incorrect, the validator will behave erratically and/or throw Javascript errors.
 
 - `true` (**default**) - validate the OpenAPI specification.
 - `false` - do not validate the OpenAPI specification.
 
 ### ▪️ formats (optional)
 
-Defines a list of custome formats.
+Defines a list of custom formats.
 
 - `[{ ... }]` - array of custom format objects. Each object must have the following properties:
   - name: string (required) - the format name
@@ -728,7 +728,7 @@ my_property:
 
 Specifies the strictness of validation of string formats.
 
-- `"fast"` (**default**) - only validate syntax, but not semantics. E.g. `2010-13-30T23:12:35Z` will pass validation eventhough it contains month 13.
+- `"fast"` (**default**) - only validate syntax, but not semantics. E.g. `2010-13-30T23:12:35Z` will pass validation even though it contains month 13.
 - `"full"` - validate both syntax and semantics. Illegal dates will not pass.
 - `false` - do not validate formats at all.
 
@@ -796,7 +796,7 @@ See [mongo-serdes-js](https://github.com/pilerou/mongo-serdes-js) for additional
 
 Defines the base directory for operation handlers. This is used in conjunction with express-openapi-validator's OpenAPI vendor extensions, `x-eov-operation-id`, `x-eov-operation-handler` and OpenAPI's `operationId`. See [example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/3-eov-operations).
 
-Additionally, if you want to change how modules are resolved e.g. use dot deliminted operation ids e.g. `path.to.module.myFunction`, you may optionally add a custom `resolver`. See [documentation and example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/5-custom-operation-resolver)
+Additionally, if you want to change how modules are resolved e.g. use dot delimited operation ids e.g. `path.to.module.myFunction`, you may optionally add a custom `resolver`. See [documentation and example](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/5-custom-operation-resolver)
 
 - `string` - the base directory containing operation handlers
 - `false` - (default) disable auto wired operation handlers
@@ -833,7 +833,7 @@ Complete example [here](https://github.com/cdimascio/express-openapi-validator/t
     # OpenAPI's operationId may be used to to specify the operation id
     operationId: ping
     # x-eov-operation-id may be used to specify the operation id
-    # Used when operationId is omiited. Overrides operationId when both are specified
+    # Used when operationId is omitted. Overrides operationId when both are specified
     x-eov-operation-id: ping
     # specifies the path to the operation handler.
     # the path is relative to the operationHandlers option
@@ -909,7 +909,7 @@ $refParser: {
 
 ### ▪️ coerceTypes (optional) - _deprecated_
 
-Determines whether the validator should coerce value types to match the those defined in the OpenAPI spec. This option applies **only** to path params, query strings, headers, and cookies. _It is **highly unlikley** that will want to disable this. As such this option is deprecated and will be removed in the next major version_
+Determines whether the validator should coerce value types to match the those defined in the OpenAPI spec. This option applies **only** to path params, query strings, headers, and cookies. _It is **highly unlikely** that you will want to disable this. As such this option is deprecated and will be removed in the next major version_
 
 - `true` (**default**) - coerce scalar data types.
 - `"array"` - in addition to coercions between scalar types, coerce scalar data to an array with one element and vice versa (as required by the schema).
@@ -939,7 +939,7 @@ In some cases, it may be necessary to _**skip validation** for paths **under the
 
 ## Security handlers
 
-> **Note:** security `handlers` are an optional component. security `handlers` provide a convenience, whereby the request, declared scopes, and the security schema itself are provided as parameters to each security `handlers` callback that you define. The code you write in each callback can then perform authentication and authorization checks. **_Note that the same can be achieved using standard Express middleware_. The difference** is that security `handlers` provide you the OpenAPI schema data described in your specification\_. Ulimately, this means, you don't have to duplicate that information in your code.
+> **Note:** security `handlers` are an optional component. security `handlers` provide a convenience, whereby the request, declared scopes, and the security schema itself are provided as parameters to each security `handlers` callback that you define. The code you write in each callback can then perform authentication and authorization checks. **_Note that the same can be achieved using standard Express middleware_. The difference** is that security `handlers` provide you the OpenAPI schema data described in your specification\_. Ultimately, this means, you don't have to duplicate that information in your code.
 
 > All in all, security `handlers` are purely optional and are provided as a convenience.
 
@@ -1144,7 +1144,7 @@ module.exports = app;
 
 **A:** OpenAPI 3.0 does not support RFC-6570. That said, we provide a minimalistic mechanism that conforms syntactically to OpenAPI 3 and accomplishes a common use case. For example, matching file paths and storing the matched path in `req.params`
 
-Using the following OpenAPI 3.x defintion
+Using the following OpenAPI 3.x definition
 
 ```yaml
 /files/{path}*:
@@ -1157,7 +1157,7 @@ Using the following OpenAPI 3.x defintion
           type: string
 ```
 
-With the following Express route defintion
+With the following Express route definition
 
 ```javascript
   app.get(`/files/:path(*)`, (req, res) => { /* do stuff */ }`
@@ -1193,10 +1193,6 @@ properties:
   type:
     type: string
 ```
-
-**Q:** I upgraded from from v2 to v3 and validation no longer works. How do I fix it?
-
-**A**: In version 2.x.x, the `install` method was executed synchronously, in 3.x it's executed asynchronously. To get v2 behavior in v3, use the `installSync` method. See the [synchronous](#synchronous) section for details.
 
 **Q:** Can I use `express-openapi-validator` with `swagger-ui-express`?
 
