@@ -61,7 +61,7 @@ if (!Array.prototype['flatMap']) {
   };
   Object.defineProperty(Array.prototype, 'flatMap', { enumerable: false });
 }
-const httpMethods = new Set([
+export const httpMethods = new Set([
   'get',
   'put',
   'post',

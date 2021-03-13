@@ -4,8 +4,6 @@ import {
   SecurityHandlers,
   OpenApiRequestMetadata,
   OpenApiRequestHandler,
-  NotFound,
-  MethodNotAllowed,
   InternalServerError,
   HttpError,
 } from '../framework/types';
@@ -29,7 +27,7 @@ export function security(
   securityHandlers: SecurityHandlers,
 ): OpenApiRequestHandler {
   return async (req, res, next) => {
-    // TODO move the folllowing 3 check conditions to a dedicated upstream middleware
+    // TODO move the following 3 check conditions to a dedicated upstream middleware
     if (!req.openapi) {
       // this path was not found in open api and
       // this path is not defined under an openapi base path
@@ -38,7 +36,7 @@ export function security(
     }
 
     const openapi = <OpenApiRequestMetadata>req.openapi;
-    // use the local security object or fallbac to api doc's security or undefined
+    // use the local security object or fallback to api doc's security or undefined
     const securities: OpenAPIV3.SecurityRequirementObject[] =
       openapi.schema.security ?? apiDoc.security;
 
@@ -152,7 +150,7 @@ class SecuritySchemes {
       : null;
     const promises = this.securities.map(async (s) => {
       if (Util.isEmptyObject(s)) {
-        // anonumous security
+        // anonymous security
         return [{ success: true }];
       }
       return Promise.all(

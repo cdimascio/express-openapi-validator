@@ -10,6 +10,7 @@ import {
   OpenApiRequestMetadata,
   OpenAPIV3,
 } from '../framework/types';
+import { httpMethods } from './parsers/schema.preprocessor';
 
 export function applyOpenApiMetadata(
   openApiContext: OpenApiContext,
@@ -30,6 +31,11 @@ export function applyOpenApiMetadata(
         throw new MethodNotAllowed({
           path: req.path,
           message: `${req.method} method not allowed`,
+          headers: {
+            Allow: Object.keys(openApiContext.openApiRouteMap[openApiRoute])
+              .filter((key) => httpMethods.has(key.toLowerCase()))
+              .join(', '),
+          },
         });
       }
       req.openapi = {
