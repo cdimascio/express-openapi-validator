@@ -3,7 +3,7 @@
 * fix: correctly handle default values of deepObject query params (#557) ([4ce0f89](https://github.com/cdimascio/express-openapi-validator/commit/4ce0f89)), closes [#557](https://github.com/cdimascio/express-openapi-validator/issues/557)
 * doc: Clean up README and Nestjs Example (#559) ([305d5db](https://github.com/cdimascio/express-openapi-validator/commit/305d5db)), closes [#559](https://github.com/cdimascio/express-openapi-validator/issues/559)
 * doc: update README ([09980a3](https://github.com/cdimascio/express-openapi-validator/commit/09980a3))
-* feat: Add Allow Header on 405 (#560) ([45a40b7](https://github.com/cdimascio/express-openapi-validator/commit/45a40b7)), closes [#560](https://github.com/cdimascio/express-openapi-validator/issues/560) [#467](https://github.com/cdimascio/express-openapi-validator/issues/467) [#467](https://github.com/cdimascio/express-openapi-validator/issues/467)
+* feat: Add Allow Header on 405 (#560) ([45a40b7](https://github.com/cdimascio/express-openapi-validator/commit/45a40b7)), closes [#560](https://github.com/cdimascio/express-openapi-validator/issues/560) [#467](https://github.com/cdimascio/express-openapi-validator/issues/467) 
 
 
 

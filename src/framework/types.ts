@@ -535,6 +535,7 @@ export interface ValidationErrorItem {
 
 interface ErrorHeaders {
   Allow?: string;
+  'WWW-Authenticate'?: string;
 }
 
 export class HttpError extends Error implements ValidationError {
@@ -570,6 +571,7 @@ export class HttpError extends Error implements ValidationError {
     status: number;
     path: string;
     message?: string;
+    headers?: ErrorHeaders;
     errors?: ValidationErrorItem[];
   }):
     | InternalServerError
@@ -719,6 +721,7 @@ export class Unauthorized extends HttpError {
   constructor(err: {
     path: string;
     message?: string;
+    headers?: ErrorHeaders;
     overrideStatus?: number;
   }) {
     super({
@@ -726,6 +729,7 @@ export class Unauthorized extends HttpError {
       path: err.path,
       name: 'Unauthorized',
       message: err.message,
+      headers: err.headers,
     });
   }
 }

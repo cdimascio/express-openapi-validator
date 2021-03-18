@@ -109,17 +109,17 @@ export function security(
       }
     } catch (e) {
       const message = e?.error?.message || 'unauthorized';
+      const headers =
+        e?.error?.type === 'http' &&
+        e?.error?.scheme === 'basic'
+          ? { 'WWW-Authenticate': 'Basic' }
+          : undefined;
       const err = HttpError.create({
         status: e.status,
         path: path,
         message: message,
+        headers,
       });
-      /*const err =
-        e.status == 500
-          ? new InternalServerError({ path: path, message: message })
-          : e.status == 403
-          ? new Forbidden({ path: path, message: message })
-          : new Unauthorized({ path: path, message: message });*/
       next(err);
     }
   };
@@ -245,21 +245,31 @@ class AuthValidator {
   private validateHttp(): void {
     const { req, scheme, path } = this;
     if (['http'].includes(scheme.type.toLowerCase())) {
-      const authHeader =
-        req.headers['authorization'] &&
-        req.headers['authorization'].toLowerCase();
+      const authHeader = req.headers['authorization']?.toLowerCase();
+      const type = scheme.scheme?.toLowerCase();
 
       if (!authHeader) {
-        throw Error(`Authorization header required`);
+        throw new SecurityError({
+          message: `Authorization header required`,
+          type: 'http',
+          scheme: type,
+        });
       }
 
-      const type = scheme.scheme && scheme.scheme.toLowerCase();
       if (type === 'bearer' && !authHeader.includes('bearer')) {
-        throw Error(`Authorization header with scheme 'Bearer' required`);
+        throw new SecurityError({
+          message: `Authorization header with scheme 'Bearer' required`,
+          type: 'http',
+          scheme: type,
+        });
       }
 
       if (type === 'basic' && !authHeader.includes('basic')) {
-        throw Error(`Authorization header with scheme 'Basic' required`);
+        throw new SecurityError({
+          message: `Authorization header with scheme 'Basic' required`,
+          type: 'http',
+          scheme: type,
+        });
       }
     }
   }
@@ -269,15 +279,24 @@ class AuthValidator {
     if (scheme.type === 'apiKey') {
       if (scheme.in === 'header') {
         if (!req.headers[scheme.name.toLowerCase()]) {
-          throw Error(`'${scheme.name}' header required`);
+          throw new SecurityError({
+            message: `'${scheme.name}' header required`,
+            type: 'apiKey',
+          });
         }
       } else if (scheme.in === 'query') {
         if (!req.query[scheme.name]) {
-          throw Error(`query parameter '${scheme.name}' required`);
+          throw new SecurityError({
+            message: `query parameter '${scheme.name}' required`,
+            type: 'apiKey',
+          });
         }
       } else if (scheme.in === 'cookie') {
         if (!req.cookies[scheme.name]) {
-          throw Error(`cookie '${scheme.name}' required`);
+          throw new SecurityError({
+            message: `cookie '${scheme.name}' required`,
+            type: 'apiKey',
+          });
         }
       }
     }
@@ -291,5 +310,21 @@ class Util {
       Object.entries(o).length === 0 &&
       o.constructor === Object
     );
+  }
+}
+
+type SecurityType = OpenAPIV3.SecuritySchemeObject['type'];
+type SecurityScheme = OpenAPIV3.HttpSecurityScheme['scheme'];
+class SecurityError extends Error {
+  type: SecurityType;
+  scheme?: SecurityScheme;
+  constructor(err: {
+    message: string;
+    type: SecurityType;
+    scheme?: SecurityScheme;
+  }) {
+    super(err.message);
+    this.type = err.type;
+    this.scheme = err.scheme;
   }
 }
