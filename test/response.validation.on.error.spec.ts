@@ -65,9 +65,12 @@ describe(packageJson.name, () => {
       .then((r: any) => {
         const data = [{ id: 'bad_id', name: 'name', tag: 'tag' }];
         expect(r.body).to.eql(data);
-        expect(onErrorArgs.length).to.equal(2);
+        expect(onErrorArgs.length).to.equal(3);
         expect(onErrorArgs[0].message).to.equal('.response[0].id should be integer');
         expect(onErrorArgs[1]).to.eql(data);
+        expect(onErrorArgs[2].query).to.eql({
+          mode: 'bad_type'
+        });
       }));
 
   it('custom error handler not invoked on valid response', async () =>
@@ -86,7 +89,7 @@ describe(packageJson.name, () => {
       .then((r: any) => {
         const data = [{ id: 'bad_id_throw', name: 'name', tag: 'tag' }];
         expect(r.body.message).to.equal('error in onError handler');
-        expect(onErrorArgs.length).to.equal(2);
+        expect(onErrorArgs.length).to.equal(3);
         expect(onErrorArgs[0].message).to.equal('.response[0].id should be integer');
         expect(onErrorArgs[1]).to.eql(data);
       }));

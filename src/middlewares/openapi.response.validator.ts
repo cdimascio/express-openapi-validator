@@ -80,7 +80,7 @@ export class ResponseValidator {
         } catch (err) {
           // If a custom error handler was provided, we call that
           if (err instanceof InternalServerError && this.eovOptions.onError) {
-            this.eovOptions.onError(err, body)
+            this.eovOptions.onError(err, body, req)
           } else {
             // No custom error handler, or something unexpected happen.
             throw err;
