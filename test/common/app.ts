@@ -4,7 +4,7 @@ import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as logger from 'morgan';
 
-import * as OpenApiValidator  from '../../src';
+import * as OpenApiValidator from '../../src';
 import { startServer, routes } from './app.common';
 import { OpenApiValidatorOpts } from '../../src/framework/types';
 
@@ -43,10 +43,13 @@ export async function createApp(
     // Register error handler
     app.use((err, req, res, next) => {
       // console.error(err);
-      res.status(err.status ?? 500).json({
-        message: err.message,
-        errors: err.errors,
-      });
+      res
+        .status(err.status ?? 500)
+        .header(err.headers)
+        .json({
+          message: err.message,
+          errors: err.errors,
+        });
     });
   }
 

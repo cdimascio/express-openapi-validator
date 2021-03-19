@@ -145,7 +145,7 @@ app.post('/v1/pets/:id/photos', function (req, res, next) {
       originalname: f.originalname,
       encoding: f.encoding,
       mimetype: f.mimetype,
-      // Buffer of file conents
+      // Buffer of file contents
       buffer: f.buffer,
     })),
   });
@@ -155,10 +155,13 @@ app.post('/v1/pets/:id/photos', function (req, res, next) {
 app.use((err, req, res, next) => {
   // 7. Customize errors
   console.error(err); // dump error to console for debug
-  res.status(err.status || 500).json({
-    message: err.message,
-    errors: err.errors,
-  });
+  res
+    .status(err.status ?? 500)
+    .header(err.headers)
+    .json({
+      message: err.message,
+      errors: err.errors,
+    });
 });
 
 http.createServer(app).listen(3000);
