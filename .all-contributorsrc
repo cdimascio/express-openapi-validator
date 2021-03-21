@@ -449,6 +449,16 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "0xCAFEADD1C7",
+      "name": "Aymeric Robini",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2291747?v=4",
+      "profile": "https://0xcafeadd1c7.github.io/",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
