@@ -643,14 +643,15 @@ Determines whether the validator should validate responses. Also accepts respons
 
   **onError:**
 
-  A function that will be invoked on response validation error, instead of the default handling. Useful if you want to log an error or emit a metric, but don't want to actually fail the request. Receives the validation error and offending response body.
+  A function that will be invoked on response validation error, instead of the default handling. Useful if you want to log an error or emit a metric, but don't want to actually fail the request. Receives the validation error, the offending response body, and the express request object.
 
   For example:
 
   ```
   validateResponses: {
-    onError: (error, body) => {
+    onError: (error, body, req) => {
       console.log(`Response body fails validation: `, error);
+      console.log(`Emitted from:`, req.originalUrl);
       console.debug(body);
     }
   }
