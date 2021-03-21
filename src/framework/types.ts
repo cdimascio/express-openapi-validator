@@ -52,7 +52,7 @@ export type ValidateRequestOpts = {
 export type ValidateResponseOpts = {
   removeAdditional?: boolean | 'all' | 'failing';
   coerceTypes?: boolean | 'array';
-  onError?: (err: InternalServerError, json: any) => void;
+  onError?: (err: InternalServerError, json: any, req: Request) => void;
 };
 
 export type ValidateSecurityOpts = {
