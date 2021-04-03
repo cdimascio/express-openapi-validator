@@ -3,6 +3,7 @@ import { pathToRegexp } from 'path-to-regexp';
 import { Response, NextFunction } from 'express';
 import { OpenApiContext } from '../framework/openapi.context';
 import {
+  BadRequest,
   MethodNotAllowed,
   NotFound,
   OpenApiRequest,
@@ -81,17 +82,24 @@ export function applyOpenApiMetadata(
 
       if (matchedRoute) {
         const paramKeys = keys.map((k) => k.name);
-        const paramsVals = matchedRoute.slice(1).map(decodeURIComponent);
-        const pathParams = _zipObject(paramKeys, paramsVals);
+        try {
+          const paramsVals = matchedRoute.slice(1).map(decodeURIComponent);
+          const pathParams = _zipObject(paramKeys, paramsVals);
 
-        const r = {
-          schema,
-          expressRoute,
-          openApiRoute,
-          pathParams,
-        };
-        (<any>r)._responseSchema = _schema;
-        return r;
+          const r = {
+            schema,
+            expressRoute,
+            openApiRoute,
+            pathParams,
+          };
+          (<any>r)._responseSchema = _schema;
+          return r;
+        } catch (error) {
+          throw new BadRequest({
+            path: req.path,
+            message: 'invalid URI',
+          })
+        }
       }
     }
 
