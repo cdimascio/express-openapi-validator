@@ -97,8 +97,8 @@ export function applyOpenApiMetadata(
         } catch (error) {
           throw new BadRequest({
             path: req.path,
-            message: 'invalid URI',
-          })
+            message: `malformed uri'`,
+          });
         }
       }
     }
