@@ -1,3 +1,21 @@
+## <small>4.12.7 (2021-04-04)</small>
+
+* chore: increment patch version ([810931b](https://github.com/cdimascio/express-openapi-validator/commit/810931b))
+* chore: increment patch version and update change log ([33bb0f1](https://github.com/cdimascio/express-openapi-validator/commit/33bb0f1))
+* chore: update deps ([510c5bb](https://github.com/cdimascio/express-openapi-validator/commit/510c5bb))
+* chore: update message ([ebb51af](https://github.com/cdimascio/express-openapi-validator/commit/ebb51af))
+* chore: v4.12.6 ([07ca93a](https://github.com/cdimascio/express-openapi-validator/commit/07ca93a))
+* Handle bad URI (#572) ([42baee3](https://github.com/cdimascio/express-openapi-validator/commit/42baee3)), closes [#572](https://github.com/cdimascio/express-openapi-validator/issues/572)
+* docs: add 0xCAFEADD1C7 as a contributor (#565) ([502b293](https://github.com/cdimascio/express-openapi-validator/commit/502b293)), closes [#565](https://github.com/cdimascio/express-openapi-validator/issues/565)
+* feat: Add Allow Header on 405 (#560) ([45a40b7](https://github.com/cdimascio/express-openapi-validator/commit/45a40b7)), closes [#560](https://github.com/cdimascio/express-openapi-validator/issues/560) [#467](https://github.com/cdimascio/express-openapi-validator/issues/467) [#467](https://github.com/cdimascio/express-openapi-validator/issues/467)
+* feat: add req to onError handler for response validation (#564) ([52d81a0](https://github.com/cdimascio/express-openapi-validator/commit/52d81a0)), closes [#564](https://github.com/cdimascio/express-openapi-validator/issues/564)
+* fix: correctly handle default values of deepObject query params (#557) ([4ce0f89](https://github.com/cdimascio/express-openapi-validator/commit/4ce0f89)), closes [#557](https://github.com/cdimascio/express-openapi-validator/issues/557)
+* fix: Relax Allow Header Test (#562) ([69cdc9f](https://github.com/cdimascio/express-openapi-validator/commit/69cdc9f)), closes [#562](https://github.com/cdimascio/express-openapi-validator/issues/562)
+* doc: Clean up README and Nestjs Example (#559) ([305d5db](https://github.com/cdimascio/express-openapi-validator/commit/305d5db)), closes [#559](https://github.com/cdimascio/express-openapi-validator/issues/559)
+* doc: update README ([09980a3](https://github.com/cdimascio/express-openapi-validator/commit/09980a3))
+
+
+
 ## <small>4.12.6 (2021-03-21)</small>
 
 * docs: add 0xCAFEADD1C7 as a contributor (#565) ([502b293](https://github.com/cdimascio/express-openapi-validator/commit/502b293)), closes [#565](https://github.com/cdimascio/express-openapi-validator/issues/565)
