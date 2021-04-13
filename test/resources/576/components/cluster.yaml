@@ -1,0 +1,12 @@
+type: object
+properties:
+  cluster_id:
+    type: string
+  cluster_name:
+    type: string
+required:
+  - cluster_id
+  - cluster_name
+example:
+  cluster_id: abcdefgh123456789
+  cluster_name: MyCluster
