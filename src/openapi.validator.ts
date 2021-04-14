@@ -116,6 +116,7 @@ export class OpenApiValidator {
         };
       });
 
+    const that = this;
     let inited = false;
     // install path params
     middlewares.push(function OpenApiValidatorPathParamsMiddleware(req, res, next) {
@@ -129,7 +130,7 @@ export class OpenApiValidator {
             // Doing so would enable path params to be type coerced when provided to
             // the final middleware.
             // Unfortunately, it is not possible to get the current Router from a handler function
-            this.installPathParams(req.app, context);
+            that.installPathParams(req.app, context);
             inited = true;
           }
           next();
@@ -142,7 +143,7 @@ export class OpenApiValidator {
     middlewares.push(function OpenApiValidatorMetadataMiddleware(req, res, next) {
       return pContext
         .then(({ context, responseApiDoc }) => {
-          metamw = metamw || this.metadataMiddleware(context, responseApiDoc);
+          metamw = metamw || that.metadataMiddleware(context, responseApiDoc);
           return metamw(req, res, next);
         })
         .catch(next);
@@ -154,7 +155,7 @@ export class OpenApiValidator {
       middlewares.push(function OpenApiValidatorMultipartMiddleware(req, res, next) {
         return pContext
           .then(({ context: { apiDoc } }) => {
-            fumw = fumw || this.multipartMiddleware(apiDoc);
+            fumw = fumw || that.multipartMiddleware(apiDoc);
             return fumw(req, res, next);
           })
           .catch(next);
@@ -167,8 +168,8 @@ export class OpenApiValidator {
       return pContext
         .then(({ context: { apiDoc } }) => {
           const components = apiDoc.components;
-          if (this.options.validateSecurity && components?.securitySchemes) {
-            scmw = scmw || this.securityMiddleware(apiDoc);
+          if (that.options.validateSecurity && components?.securitySchemes) {
+            scmw = scmw || that.securityMiddleware(apiDoc);
             return scmw(req, res, next);
           } else {
             next();
@@ -183,7 +184,7 @@ export class OpenApiValidator {
       middlewares.push(function OpenApiValidatorRequestMiddleware(req, res, next) {
         return pContext
           .then(({ context: { apiDoc } }) => {
-            reqmw = reqmw || this.requestValidationMiddleware(apiDoc);
+            reqmw = reqmw || that.requestValidationMiddleware(apiDoc);
             return reqmw(req, res, next);
           })
           .catch(next);
@@ -196,7 +197,7 @@ export class OpenApiValidator {
       middlewares.push(function OpenApiValidatorResponseMiddleware(req, res, next) {
         return pContext
           .then(({ responseApiDoc }) => {
-            resmw = resmw || this.responseValidationMiddleware(responseApiDoc);
+            resmw = resmw || that.responseValidationMiddleware(responseApiDoc);
             return resmw(req, res, next);
           })
           .catch(next);
@@ -211,7 +212,7 @@ export class OpenApiValidator {
         return pContext
           .then(
             ({ context }) =>
-              (router = this.installOperationHandlers(req.baseUrl, context)),
+              (router = that.installOperationHandlers(req.baseUrl, context)),
           )
           .then((router) => router(req, res, next))
           .catch(next);
