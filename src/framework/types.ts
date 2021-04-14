@@ -247,7 +247,7 @@ export namespace OpenAPIV3 {
   }
 
   export interface NonArraySchemaObject extends BaseSchemaObject {
-    type: NonArraySchemaObjectType;
+    type?: NonArraySchemaObjectType;
   }
 
   interface BaseSchemaObject {
