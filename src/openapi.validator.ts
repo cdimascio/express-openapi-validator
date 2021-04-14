@@ -116,7 +116,7 @@ export class OpenApiValidator {
         };
       });
 
-    const that = this;
+    const that = this; // using named functions instead of anonymous functions to allow traces to be more useful
     let inited = false;
     // install path params
     middlewares.push(function OpenApiValidatorPathParamsMiddleware(req, res, next) {
