@@ -103,12 +103,25 @@ export class RequestParameterMutator {
     });
   }
 
-  private handleDeepObject(req: Request, qs: string, name: string, schema: SchemaObject): void {
+  private handleDeepObject(
+    req: Request,
+    qs: string,
+    name: string,
+    schema: SchemaObject,
+  ): void {
     const getDefaultSchemaValue = () => {
       let defaultValue;
 
       if (schema.default !== undefined) {
-        defaultValue = schema.default
+        defaultValue = schema.default;
+      } else if (schema.properties) {
+        Object.entries(schema.properties).forEach(([k, v]) => {
+          // Handle recursive objects
+          defaultValue ??= {};
+          if (v['default']) {
+            defaultValue[k] = v['default'];
+          }
+        });
       } else {
         ['allOf', 'oneOf', 'anyOf'].forEach((key) => {
           if (schema[key]) {
@@ -116,9 +129,13 @@ export class RequestParameterMutator {
               if (s.$ref) {
                 const compiledSchema = this.ajv.getSchema(s.$ref);
                 // as any -> https://stackoverflow.com/a/23553128
-                defaultValue = defaultValue === undefined ? (compiledSchema.schema as any).default : defaultValue;
+                defaultValue =
+                  defaultValue === undefined
+                    ? (compiledSchema.schema as any).default
+                    : defaultValue;
               } else {
-                defaultValue = defaultValue === undefined ? s.default : defaultValue;
+                defaultValue =
+                  defaultValue === undefined ? s.default : defaultValue;
               }
             });
           }
