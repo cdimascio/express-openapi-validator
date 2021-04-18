@@ -295,10 +295,8 @@ class Security {
     apiDocs: OpenAPIV3.Document,
     schema: OperationObject,
   ): string[] {
-    const hasPathSecurity =
-      schema.hasOwnProperty('security') && schema.security.length > 0;
-    const hasRootSecurity =
-      apiDocs.hasOwnProperty('security') && apiDocs.security.length > 0;
+    const hasPathSecurity = schema.security?.length > 0 ?? false;
+    const hasRootSecurity = apiDocs.security?.length > 0 ?? false;
 
     let usedSecuritySchema: SecurityRequirementObject[] = [];
     if (hasPathSecurity) {
