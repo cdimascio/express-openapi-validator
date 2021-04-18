@@ -1,3 +1,10 @@
+## <small>4.12.8 (2021-04-18)</small>
+
+* fix: top level default values for deep objects (#586) ([ca16b42](https://github.com/cdimascio/express-openapi-validator/commit/ca16b42)), closes [#586](https://github.com/cdimascio/express-openapi-validator/issues/586)
+* fix: undefined when security is defined, but not used on path (#585) ([117d54b](https://github.com/cdimascio/express-openapi-validator/commit/117d54b)), closes [#585](https://github.com/cdimascio/express-openapi-validator/issues/585)
+
+
+
 ## <small>4.12.7 (2021-04-04)</small>
 
 * chore: increment patch version ([810931b](https://github.com/cdimascio/express-openapi-validator/commit/810931b))
