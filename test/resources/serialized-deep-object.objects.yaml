@@ -40,23 +40,47 @@ paths:
       responses:
         "200":
           description: the object
+  /deep_object_2:
+    get:
+      parameters:
+      - $ref: '#/components/parameters/pedestrian'
+      responses:
+        "200":
+          description: the object
 
 components:
   schemas:
-    Deep:
+    Pedestrian:
       type: object
       properties:
-        tag_ids:
-          type: array
-          items:
-            type: integer
-            minimum: 0
-          minItems: 1
-        state:
-          type: string
-          enum: ["default", "validated", "pending"]
-          default: "default"
-          description: "Filter the tags by their validity. The default value ('default') stands for no filtering."
-        greeting:
-          type: string
-          default: "hello"
+        speed:
+          type: number
+          format: double
+          minimum: 0.5
+          maximum: 2
+          default: 1
+    # Deep:
+    #   type: object
+    #   properties:
+    #     tag_ids:
+    #       type: array
+    #       items:
+    #         type: integer
+    #         minimum: 0
+    #       minItems: 1
+    #     state:
+    #       type: string
+    #       enum: ["default", "validated", "pending"]
+    #       default: "default"
+    #       description: "Filter the tags by their validity. The default value ('default') stands for no filtering."
+    #     greeting:
+    #       type: string
+    #       default: "hello"
+          
+  parameters:
+    pedestrian:
+      name: pedestrian
+      in: query
+      style: deepObject
+      schema:
+        $ref: '#/components/schemas/Pedestrian'

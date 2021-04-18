@@ -10,13 +10,18 @@ describe(packageJson.name, () => {
 
   before(async () => {
     // Set up the express app
-    const apiSpec = path.join('test', 'resources', 'serialized-deep-object.objects.yaml');
+    const apiSpec = path.join(
+      'test',
+      'resources',
+      'serialized-deep-object.objects.yaml',
+    );
     app = await createApp({ apiSpec }, 3005, (app) =>
       app.use(
         `${app.basePath}`,
         express
           .Router()
           .get(`/deep_object`, (req, res) => res.json(req.query))
+          .get(`/deep_object_2`, (req, res) => res.json(req.query)),
       ),
     );
   });
@@ -24,6 +29,16 @@ describe(packageJson.name, () => {
   after(() => {
     app.server.close();
   });
+
+  it('should explode deepObject and set default', async () =>
+    request(app)
+      .get(`${app.basePath}/deep_object_2`)
+      .expect(200)
+      .then((r) => {
+        expect(r.body).to.deep.equals({
+          pedestrian: { speed: 1 },
+        });
+      }));
 
   it('should explode deepObject query params', async () =>
     request(app)
@@ -33,8 +48,8 @@ describe(packageJson.name, () => {
         const expected = {
           settings: {
             greeting: 'hello',
-            state: 'default'
-          }
+            state: 'default',
+          },
         };
         expect(r.body).to.deep.equals(expected);
       }));
@@ -45,6 +60,11 @@ describe(packageJson.name, () => {
       .expect(200)
       .then((r) => {
         const expected = {};
-        expect(r.body).to.deep.equals(expected);
+        expect(r.body).to.deep.equals({
+          settings: {
+            greeting: 'hello',
+            state: 'default',
+          },
+        });
       }));
 });
