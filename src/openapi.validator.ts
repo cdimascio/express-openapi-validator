@@ -119,7 +119,7 @@ export class OpenApiValidator {
     const self = this; // using named functions instead of anonymous functions to allow traces to be more useful
     let inited = false;
     // install path params
-    middlewares.push(function PathParamsMiddleware(req, res, next) {
+    middlewares.push(function pathParamsMiddleware(req, res, next) {
       return pContext
         .then(({ context, error }) => {
           // Throw if any error occurred during spec load.
@@ -140,7 +140,7 @@ export class OpenApiValidator {
 
     // metadata middleware
     let metamw;
-    middlewares.push(function MetadataMiddleware(req, res, next) {
+    middlewares.push(function metadataMiddleware(req, res, next) {
       return pContext
         .then(({ context, responseApiDoc }) => {
           metamw = metamw || self.metadataMiddleware(context, responseApiDoc);
@@ -152,7 +152,7 @@ export class OpenApiValidator {
     if (this.options.fileUploader) {
       // multipart middleware
       let fumw;
-      middlewares.push(function MultipartMiddleware(req, res, next) {
+      middlewares.push(function multipartMiddleware(req, res, next) {
         return pContext
           .then(({ context: { apiDoc } }) => {
             fumw = fumw || self.multipartMiddleware(apiDoc);
@@ -164,7 +164,7 @@ export class OpenApiValidator {
 
     // security middlware
     let scmw;
-    middlewares.push(function SecurityMiddleware(req, res, next) {
+    middlewares.push(function securityMiddleware(req, res, next) {
       return pContext
         .then(({ context: { apiDoc } }) => {
           const components = apiDoc.components;
@@ -181,7 +181,7 @@ export class OpenApiValidator {
     // request middlweare
     if (this.options.validateRequests) {
       let reqmw;
-      middlewares.push(function RequestMiddleware(req, res, next) {
+      middlewares.push(function requestMiddleware(req, res, next) {
         return pContext
           .then(({ context: { apiDoc } }) => {
             reqmw = reqmw || self.requestValidationMiddleware(apiDoc);
@@ -194,7 +194,7 @@ export class OpenApiValidator {
     // response middleware
     if (this.options.validateResponses) {
       let resmw;
-      middlewares.push(function ResponseMiddleware(req, res, next) {
+      middlewares.push(function responseMiddleware(req, res, next) {
         return pContext
           .then(({ responseApiDoc }) => {
             resmw = resmw || self.responseValidationMiddleware(responseApiDoc);
@@ -207,7 +207,7 @@ export class OpenApiValidator {
     // op handler middleware
     if (this.options.operationHandlers) {
       let router: Router = null;
-      middlewares.push(function OperationHandlersMiddleware(req, res, next) {
+      middlewares.push(function operationHandlersMiddleware(req, res, next) {
         if (router) return router(req, res, next);
         return pContext
           .then(
