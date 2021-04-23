@@ -26,7 +26,6 @@ a_reference
 .nyc_output
 jest
 /coverage
-*.map
 .coverall.yml
 /uploads
 /greenkeeper.json
