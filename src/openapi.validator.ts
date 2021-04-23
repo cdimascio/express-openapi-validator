@@ -116,10 +116,11 @@ export class OpenApiValidator {
         };
       });
 
+    const self = this; // using named functions instead of anonymous functions to allow traces to be more useful
     let inited = false;
     // install path params
-    middlewares.push((req, res, next) =>
-      pContext
+    middlewares.push(function pathParamsMiddleware(req, res, next) {
+      return pContext
         .then(({ context, error }) => {
           // Throw if any error occurred during spec load.
           if (error) throw error;
@@ -129,61 +130,61 @@ export class OpenApiValidator {
             // Doing so would enable path params to be type coerced when provided to
             // the final middleware.
             // Unfortunately, it is not possible to get the current Router from a handler function
-            this.installPathParams(req.app, context);
+            self.installPathParams(req.app, context);
             inited = true;
           }
           next();
         })
-        .catch(next),
-    );
+        .catch(next);
+    });
 
     // metadata middleware
     let metamw;
-    middlewares.push((req, res, next) =>
-      pContext
+    middlewares.push(function metadataMiddleware(req, res, next) {
+      return pContext
         .then(({ context, responseApiDoc }) => {
-          metamw = metamw || this.metadataMiddleware(context, responseApiDoc);
+          metamw = metamw || self.metadataMiddleware(context, responseApiDoc);
           return metamw(req, res, next);
         })
-        .catch(next),
-    );
+        .catch(next);
+    });
 
     if (this.options.fileUploader) {
       // multipart middleware
       let fumw;
-      middlewares.push((req, res, next) =>
-        pContext
+      middlewares.push(function multipartMiddleware(req, res, next) {
+        return pContext
           .then(({ context: { apiDoc } }) => {
-            fumw = fumw || this.multipartMiddleware(apiDoc);
+            fumw = fumw || self.multipartMiddleware(apiDoc);
             return fumw(req, res, next);
           })
-          .catch(next),
-      );
+          .catch(next);
+      });
     }
 
     // security middlware
     let scmw;
-    middlewares.push((req, res, next) =>
-      pContext
+    middlewares.push(function securityMiddleware(req, res, next) {
+      return pContext
         .then(({ context: { apiDoc } }) => {
           const components = apiDoc.components;
-          if (this.options.validateSecurity && components?.securitySchemes) {
-            scmw = scmw || this.securityMiddleware(apiDoc);
+          if (self.options.validateSecurity && components?.securitySchemes) {
+            scmw = scmw || self.securityMiddleware(apiDoc);
             return scmw(req, res, next);
           } else {
             next();
           }
         })
-        .catch(next),
-    );
+        .catch(next);
+    });
 
     // request middlweare
     if (this.options.validateRequests) {
       let reqmw;
-      middlewares.push((req, res, next) => {
+      middlewares.push(function requestMiddleware(req, res, next) {
         return pContext
           .then(({ context: { apiDoc } }) => {
-            reqmw = reqmw || this.requestValidationMiddleware(apiDoc);
+            reqmw = reqmw || self.requestValidationMiddleware(apiDoc);
             return reqmw(req, res, next);
           })
           .catch(next);
@@ -193,25 +194,25 @@ export class OpenApiValidator {
     // response middleware
     if (this.options.validateResponses) {
       let resmw;
-      middlewares.push((req, res, next) =>
-        pContext
+      middlewares.push(function responseMiddleware(req, res, next) {
+        return pContext
           .then(({ responseApiDoc }) => {
-            resmw = resmw || this.responseValidationMiddleware(responseApiDoc);
+            resmw = resmw || self.responseValidationMiddleware(responseApiDoc);
             return resmw(req, res, next);
           })
-          .catch(next),
-      );
+          .catch(next);
+      })
     }
 
     // op handler middleware
     if (this.options.operationHandlers) {
       let router: Router = null;
-      middlewares.push((req, res, next) => {
+      middlewares.push(function operationHandlersMiddleware(req, res, next) {
         if (router) return router(req, res, next);
-        pContext
+        return pContext
           .then(
             ({ context }) =>
-              (router = this.installOperationHandlers(req.baseUrl, context)),
+              (router = self.installOperationHandlers(req.baseUrl, context)),
           )
           .then((router) => router(req, res, next))
           .catch(next);
