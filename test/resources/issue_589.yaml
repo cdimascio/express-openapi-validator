@@ -1,0 +1,54 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/babaliaris/test/1.0.0
+  - description: My Computer
+    url: http://localhost:1996
+  - description: Express Open Api Validator
+    url: /v1/
+info:
+  description: This is a simple API
+  version: "1.0.0"
+  title: Simple Inventory API
+  contact:
+    email: you@your-company.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+
+paths:
+  /user:
+    get:
+      tags:
+        - Users
+      summary: Get a user.
+      operationId: getUser
+
+      responses:
+        
+        '200':
+          description: Get the json user data.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          description: Something went wrong.
+
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - name
+        - date
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        date:
+          type: string
+          format: date
