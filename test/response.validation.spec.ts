@@ -29,7 +29,10 @@ describe(packageJson.name, () => {
           return res.json({ id: 213, name: 'name', kids: [] });
         });
         app.get(`${app.basePath}/empty_response`, (req, res) => {
-          return res.status(204).send();
+          if (req.query.mode === 'non_empty_response') {
+            return res.status(204).json({});
+          }
+          return res.status(204).json();
         });
         app.get(`${app.basePath}/boolean`, (req, res) => {
           return res.json(req.query.value);
@@ -173,6 +176,15 @@ describe(packageJson.name, () => {
       .expect(204)
       .then((r) => {
         expect(r.body).to.be.empty;
+      }));
+
+  it('should fail if response is not empty and an empty response is expected', async () =>
+    request(app)
+      .get(`${app.basePath}/empty_response?mode=non_empty_response`)
+      .expect(500)
+      .then((r) => {
+        expect(r.body.message).to.contain('response should NOT have a body');
+        expect(r.body).to.have.property('code').that.equals(500);
       }));
 
   it('should fail if additional properties are provided when set false', async () =>

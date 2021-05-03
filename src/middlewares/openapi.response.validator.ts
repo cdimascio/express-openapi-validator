@@ -144,6 +144,19 @@ export class ResponseValidator {
       findResponseContent(accepts, validatorContentTypes) ||
       validatorContentTypes[0]; // take first contentType, if none found
 
+    if (validatorContentTypes.length === 0) {
+      // spec specifies no content for this response
+      if (body !== undefined) {
+        // response contains content/body
+        throw new InternalServerError({
+          path: '.response',
+          message: 'response should NOT have a body',
+        });
+      }
+      // response contains no content/body so OK
+      return;
+    }
+
     if (!contentType) {
       // not contentType inferred, assume valid
       console.warn('no contentType found');
@@ -275,6 +288,9 @@ export class ResponseValidator {
 
     const validators = {};
     for (const [code, contentTypeSchemas] of Object.entries(responseSchemas)) {
+      if (Object.keys(contentTypeSchemas).length === 0) {
+          validators[code] = {};
+      }
       for (const contentType of Object.keys(contentTypeSchemas)) {
         const schema = contentTypeSchemas[contentType];
         schema.paths = this.spec.paths; // add paths for resolution with multi-file
