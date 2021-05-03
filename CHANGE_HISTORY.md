@@ -1,3 +1,12 @@
+## <small>4.12.9 (2021-05-03)</small>
+
+* docs: add lyndoh as a contributor (#593) ([d1d92d6](https://github.com/cdimascio/express-openapi-validator/commit/d1d92d6)), closes [#593](https://github.com/cdimascio/express-openapi-validator/issues/593)
+* Name middleware (#583) ([c921737](https://github.com/cdimascio/express-openapi-validator/commit/c921737)), closes [#583](https://github.com/cdimascio/express-openapi-validator/issues/583)
+* Publish generated source maps to NPM (#568) ([e983108](https://github.com/cdimascio/express-openapi-validator/commit/e983108)), closes [#568](https://github.com/cdimascio/express-openapi-validator/issues/568)
+* Throw error if spec specifies no content but actual response includes content/body (#591) ([98de680](https://github.com/cdimascio/express-openapi-validator/commit/98de680)), closes [#591](https://github.com/cdimascio/express-openapi-validator/issues/591)
+
+
+
 ## <small>4.12.8 (2021-04-18)</small>
 
 * fix: top level default values for deep objects (#586) ([ca16b42](https://github.com/cdimascio/express-openapi-validator/commit/ca16b42)), closes [#586](https://github.com/cdimascio/express-openapi-validator/issues/586)
