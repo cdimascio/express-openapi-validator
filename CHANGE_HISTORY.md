@@ -1,3 +1,9 @@
+## <small>4.12.10 (2021-05-08)</small>
+
+* fix undefined on explode form where value is parsed as array (#595) ([6e33d98](https://github.com/cdimascio/express-openapi-validator/commit/6e33d98)), closes [#595](https://github.com/cdimascio/express-openapi-validator/issues/595)
+
+
+
 ## <small>4.12.9 (2021-05-03)</small>
 
 * docs: add lyndoh as a contributor (#593) ([d1d92d6](https://github.com/cdimascio/express-openapi-validator/commit/d1d92d6)), closes [#593](https://github.com/cdimascio/express-openapi-validator/issues/593)
