@@ -254,6 +254,7 @@ export class RequestParameterMutator {
      */
     const field = REQUEST_FIELDS[$in];
     if (req[field]?.[name]) {
+      if (Array.isArray(req[field][name])) return;
       const value = req[field][name].split(delimiter);
       req[field][name] = value;
     }
