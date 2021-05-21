@@ -1,3 +1,11 @@
+## <small>4.12.11 (2021-05-21)</small>
+
+* upgrade deps (#602) ([2b2fb9f](https://github.com/cdimascio/express-openapi-validator/commit/2b2fb9f)), closes [#602](https://github.com/cdimascio/express-openapi-validator/issues/602)
+* chore(deps): bump hosted-git-info in /examples/9-nestjs (#597) ([53a85ed](https://github.com/cdimascio/express-openapi-validator/commit/53a85ed)), closes [#597](https://github.com/cdimascio/express-openapi-validator/issues/597)
+* chore(deps): bump lodash in /examples/4-eov-operations-babel (#596) ([534d7bf](https://github.com/cdimascio/express-openapi-validator/commit/534d7bf)), closes [#596](https://github.com/cdimascio/express-openapi-validator/issues/596)
+
+
+
 ## <small>4.12.10 (2021-05-08)</small>
 
 * fix undefined on explode form where value is parsed as array (#595) ([6e33d98](https://github.com/cdimascio/express-openapi-validator/commit/6e33d98)), closes [#595](https://github.com/cdimascio/express-openapi-validator/issues/595)
