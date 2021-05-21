@@ -104,6 +104,9 @@ components:
           # add CatObject as an option
           # so that the non-mapping / implied mapping tests can pass
           enum: [cat, kitty, CatObject]
+        color: 
+          type: string
+          default: gray
 
     Pet:
       type: object
