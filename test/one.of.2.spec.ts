@@ -48,6 +48,19 @@ describe('oneOf with discriminator', () => {
         })
         .expect(200));
 
+    it('should return 200 for cat and populate default color', async () =>
+      request(app)
+        .post(`${app.basePath}/discriminator_implied`)
+        .set('content-type', 'application/json')
+        .send({
+          pet_type: 'CatObject',
+          hunts: true,
+          age: 10,
+        })
+        .expect(200)
+        .then((r) => {
+          expect(r.body.color).to.eql('gray');
+        }));
     it('should return 400 for dog with cat props', async () =>
       request(app)
         .post(`${app.basePath}/discriminator_implied`)
