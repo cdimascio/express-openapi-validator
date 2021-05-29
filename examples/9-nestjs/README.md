@@ -46,6 +46,15 @@ curl --request POST \
   --data '{"ping": "GNU Terry Pratchett"}'
 ```
 
+validation error
+
+```shell
+curl --request POST \
+  --url http://localhost:3000/ping \
+  --header 'Content-Type: application/json' \
+  --data '{"pingoo": "GNU Terry Pratchett"}'|jq
+```
+
 ## Tests
 
 ```shell
