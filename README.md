@@ -498,7 +498,7 @@ OpenApiValidator.middleware({
     validate: (value: any) => boolean,
   }],
   unknownFormats: ['phone-number', 'uuid'],
-  serDes: [{
+  serDes: [
     OpenApiValidator.serdes.dateTime,
     OpenApiValidator.serdes.date,
     {
@@ -506,7 +506,7 @@ OpenApiValidator.middleware({
       deserialize: (s) => new ObjectID(s),
       serialize: (o) => o.toString(),
     },
-  }],
+  ],
   operationHandlers: false | 'operations/base/path' | { ... },
   ignorePaths: /.*\/pets$/,
   fileUploader: { ... } | true | false,
@@ -521,7 +521,7 @@ OpenApiValidator.middleware({
 Specifies the path to an OpenAPI 3 specification or a JSON object representing the OpenAPI 3 specification
 
 ```javascript
-apiSpec: './path/to/my-openapi-spec.yaml';
+apiSpec: './path/to/my-openapi-spec.yaml',
 ```
 
 or
@@ -556,7 +556,7 @@ Determines whether the validator should validate requests.
 
   ```javascript
   validateRequests: {
-    allowUnknownQueryParameters: true;
+    allowUnknownQueryParameters: true,
   }
   ```
 
@@ -594,7 +594,7 @@ Determines whether the validator should validate requests.
 
   ```javascript
   validateRequests: {
-    coerceTypes: true;
+    coerceTypes: true,
   }
   ```
 
@@ -611,7 +611,7 @@ Determines whether the validator should validate requests.
 
   ```javascript
   validateRequests: {
-    removeAdditional: true;
+    removeAdditional: true,
   }
   ```
 
@@ -637,7 +637,7 @@ Determines whether the validator should validate responses. Also accepts respons
 
   ```javascript
   validateResponses: {
-    removeAdditional: 'failing';
+    removeAdditional: 'failing',
   }
   ```
 
@@ -742,7 +742,7 @@ Defines how the validator should behave if an unknown or custom format is encoun
   e.g.
 
   ```javascript
-  unknownFormats: ['phone-number', 'uuid'];
+  unknownFormats: ['phone-number', 'uuid'],
   ```
 
 - `"ignore"` - to log warning during schema compilation and always pass validation. This option is not recommended, as it allows to mistype format name and it won't be validated without any error message.
@@ -755,10 +755,10 @@ e.g.
 
 ```javascript
 // If `serDes` is not specified, the following behavior is default
-serDes: [{
+serDes: [
   OpenApiValidator.serdes.dateTime.serializer,
   OpenApiValidator.serdes.date.serializer,
-}],
+],
 ```
 
 To create custom serializers and/or deserializers, define:
@@ -887,7 +887,7 @@ Specifies the options to passthrough to multer. express-openapi-validator uses m
 
   ```javascript
   fileUploader: {
-    dest: 'uploads/';
+    dest: 'uploads/',
   }
   ```
 
@@ -904,7 +904,7 @@ e.g.
 
 ```javascript
 $refParser: {
-  mode: 'bundle';
+  mode: 'bundle',
 }
 ```
 
