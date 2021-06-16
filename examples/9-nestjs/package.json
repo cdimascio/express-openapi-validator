@@ -21,7 +21,7 @@
     "@nestjs/common": "^7.6.17",
     "@nestjs/core": "^7.6.17",
     "@nestjs/platform-express": "^7.6.17",
-    "express-openapi-validator": "^4.12.11",
+    "express-openapi-validator": "^4.12.12",
     "reflect-metadata": "^0.1.13",
     "shx": "^0.3.3"
   },
