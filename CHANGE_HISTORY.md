@@ -1,3 +1,25 @@
+## <small>4.12.12 (2021-06-16)</small>
+
+* chore(deps): bump browserslist in /examples/4-eov-operations-babel (#605) ([36d6271](https://github.com/cdimascio/express-openapi-validator/commit/36d6271)), closes [#605](https://github.com/cdimascio/express-openapi-validator/issues/605)
+* chore(deps): bump browserslist in /examples/9-nestjs (#606) ([6482612](https://github.com/cdimascio/express-openapi-validator/commit/6482612)), closes [#606](https://github.com/cdimascio/express-openapi-validator/issues/606)
+* chore(deps): bump glob-parent in /examples/1-standard (#614) ([ec3cb88](https://github.com/cdimascio/express-openapi-validator/commit/ec3cb88)), closes [#614](https://github.com/cdimascio/express-openapi-validator/issues/614)
+* chore(deps): bump glob-parent in /examples/3-eov-operations (#618) ([aa343e3](https://github.com/cdimascio/express-openapi-validator/commit/aa343e3)), closes [#618](https://github.com/cdimascio/express-openapi-validator/issues/618)
+* chore(deps): bump glob-parent in /examples/5-custom-operation-resolver (#621) ([9e357dd](https://github.com/cdimascio/express-openapi-validator/commit/9e357dd)), closes [#621](https://github.com/cdimascio/express-openapi-validator/issues/621)
+* chore(deps): bump glob-parent in /examples/6-multi-file-spec (#623) ([50db5fb](https://github.com/cdimascio/express-openapi-validator/commit/50db5fb)), closes [#623](https://github.com/cdimascio/express-openapi-validator/issues/623)
+* chore(deps): bump glob-parent in /examples/7-response-date-serialization (#624) ([76827fc](https://github.com/cdimascio/express-openapi-validator/commit/76827fc)), closes [#624](https://github.com/cdimascio/express-openapi-validator/issues/624)
+* chore(deps): bump normalize-url (#622) ([ccff28e](https://github.com/cdimascio/express-openapi-validator/commit/ccff28e)), closes [#622](https://github.com/cdimascio/express-openapi-validator/issues/622)
+* chore(deps): bump normalize-url in /examples/1-standard (#615) ([916dd85](https://github.com/cdimascio/express-openapi-validator/commit/916dd85)), closes [#615](https://github.com/cdimascio/express-openapi-validator/issues/615)
+* chore(deps): bump normalize-url in /examples/3-eov-operations (#616) ([df58720](https://github.com/cdimascio/express-openapi-validator/commit/df58720)), closes [#616](https://github.com/cdimascio/express-openapi-validator/issues/616)
+* chore(deps): bump normalize-url in /examples/4-eov-operations-babel (#617) ([6c73e28](https://github.com/cdimascio/express-openapi-validator/commit/6c73e28)), closes [#617](https://github.com/cdimascio/express-openapi-validator/issues/617)
+* chore(deps): bump normalize-url in /examples/5-custom-operation-resolver (#619) ([26a5341](https://github.com/cdimascio/express-openapi-validator/commit/26a5341)), closes [#619](https://github.com/cdimascio/express-openapi-validator/issues/619)
+* chore(deps): bump normalize-url in /examples/6-multi-file-spec (#620) ([706e479](https://github.com/cdimascio/express-openapi-validator/commit/706e479)), closes [#620](https://github.com/cdimascio/express-openapi-validator/issues/620)
+* docs: fix Javascript syntax (#611) ([d124f80](https://github.com/cdimascio/express-openapi-validator/commit/d124f80)), closes [#611](https://github.com/cdimascio/express-openapi-validator/issues/611)
+* add default to oneOf schema ([d506da0](https://github.com/cdimascio/express-openapi-validator/commit/d506da0))
+* oneOf test default value ([f93ba97](https://github.com/cdimascio/express-openapi-validator/commit/f93ba97))
+* update nest example ([b18f73e](https://github.com/cdimascio/express-openapi-validator/commit/b18f73e))
+
+
+
 ## <small>4.12.11 (2021-05-21)</small>
 
 * upgrade deps (#602) ([2b2fb9f](https://github.com/cdimascio/express-openapi-validator/commit/2b2fb9f)), closes [#602](https://github.com/cdimascio/express-openapi-validator/issues/602)
