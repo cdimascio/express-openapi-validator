@@ -469,6 +469,15 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "Dakota628",
+      "name": "Dakota",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1666312?v=4",
+      "profile": "https://github.com/Dakota628",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
