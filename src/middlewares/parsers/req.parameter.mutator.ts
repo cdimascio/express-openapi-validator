@@ -333,9 +333,9 @@ export class RequestParameterMutator {
 
   private validateReservedCharacters(
     name: string,
-    pairs: { [key: string]: string[] },
+    pairs: Map<string, string[]>,
   ) {
-    const vs = pairs[name];
+    const vs = pairs.get(name);
     if (!vs) return;
     for (const v of vs) {
       if (v?.match(RESERVED_CHARS)) {
@@ -345,14 +345,14 @@ export class RequestParameterMutator {
     }
   }
 
-  private parseQueryStringUndecoded(qs: string) {
-    if (!qs) return {};
+  private parseQueryStringUndecoded(qs: string): Map<string, string[]> {
+    if (!qs) return new Map<string, string[]>();
     const q = qs.replace('?', '');
     return q.split('&').reduce((m, p) => {
       const [k, v] = p.split('=');
-      m[k] = m[k] ?? [];
-      m[k].push(v);
+      m.set(k, m.get(k) ?? []);
+      m.get(k)!.push(v);
       return m;
-    }, {});
+    }, new Map<string, string[]>());
   }
 }
