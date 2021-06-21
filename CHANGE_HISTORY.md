@@ -1,3 +1,13 @@
+## <small>4.12.14 (2021-06-21)</small>
+
+* increment patch version ([3d21e55](https://github.com/cdimascio/express-openapi-validator/commit/3d21e55))
+* update example deps ([5e4588b](https://github.com/cdimascio/express-openapi-validator/commit/5e4588b))
+* update validator dep ([0745436](https://github.com/cdimascio/express-openapi-validator/commit/0745436))
+* Use Map instead of Object for parsing query strings (#608) ([a22abf8](https://github.com/cdimascio/express-openapi-validator/commit/a22abf8)), closes [#608](https://github.com/cdimascio/express-openapi-validator/issues/608)
+* docs: add Dakota628 as a contributor for code (#625) ([1a67cde](https://github.com/cdimascio/express-openapi-validator/commit/1a67cde)), closes [#625](https://github.com/cdimascio/express-openapi-validator/issues/625)
+
+
+
 ## <small>4.12.12 (2021-06-16)</small>
 
 * chore(deps): bump browserslist in /examples/4-eov-operations-babel (#605) ([36d6271](https://github.com/cdimascio/express-openapi-validator/commit/36d6271)), closes [#605](https://github.com/cdimascio/express-openapi-validator/issues/605)
