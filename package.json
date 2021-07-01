@@ -32,7 +32,7 @@
   "author": "Carmine DiMascio <cdimascio@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@types/multer": "^1.4.5",
+    "@types/multer": "^1.4.6",
     "ajv": "^6.12.6",
     "content-type": "^1.0.4",
     "json-schema-ref-parser": "^9.0.7",
