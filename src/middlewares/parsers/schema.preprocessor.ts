@@ -352,7 +352,7 @@ export class SchemaPreprocessor {
       !!schema.format &&
       this.serDesMap[schema.format]
     ) {
-      (<any>schema).type = ['object', 'string'];
+      (<any>schema).type = [this.serDesMap[schema.format].jsonType || 'object', 'string'];
       schema['x-eov-serdes'] = this.serDesMap[schema.format];
     }
   }

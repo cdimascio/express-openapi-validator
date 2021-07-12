@@ -766,6 +766,7 @@ To create custom serializers and/or deserializers, define:
 - `format` (required) - a custom 'unknown' format that triggers the serializer and/or deserializer
 - `deserialize` (optional) - upon receiving a request, transform a string property to an object. Deserialization occurs _after_ request schema validation.
 - `serialize` (optional) - before sending a response, transform an object to string. Serialization occurs _after_ response schema validation
+- `jsonType` (optional, default 'object') - set to override for deserialized types that are not 'object', eg 'array' 
 
 e.g.
 
