@@ -416,7 +416,6 @@ describe('serdes with jsonType array type string-list', () => {
       .get(`${app.basePath}/users/5fdefd13a6640bb5fb5fa925`)
       .expect(200)
       .then((r) => {
-        debugger;
         expect(r.body.id).to.equal('5fdefd13a6640bb5fb5fa925');
         expect(r.body.creationDate).to.equal('2020-12-20');
         expect(r.body.creationDateTime).to.equal("2020-12-20T07:28:19.213Z");
@@ -471,6 +470,21 @@ describe('serdes with jsonType array type string-list', () => {
       .expect(400)
       .then((r) => {
         expect(r.body.message).to.equal('request.body.creationDate should match format "date"');
+      }));
+
+  it('should POST throw error for deserialize on request of non-string format', async () =>
+    request(app)
+      .post(`${app.basePath}/users`)
+      .send({
+        id: '5fdefd13a6640bb5fb5fa925',
+        tags: ['aa', 'bb', 'cc'],
+        creationDateTime: '2020-12-20T07:28:19.213Z',
+        creationDate: '2020-12-20'
+      })
+      .set('Content-Type', 'application/json')
+      .expect(400)
+      .then((r) => {
+        expect(r.body.message).to.equal('request.body.tags must be a string');
       }));
 
 });
