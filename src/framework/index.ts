@@ -83,18 +83,22 @@ export class OpenAPIFramework {
       const absolutePath = path.resolve(origCwd, filePath);
       if (fs.existsSync(absolutePath)) {
         // Get document, or throw exception on error
-        return $refParser.mode === 'dereference'
-          ? $RefParser.dereference(absolutePath)
-          : $RefParser.bundle(absolutePath);
+        const doc =
+          $refParser.mode === 'dereference'
+            ? $RefParser.dereference(absolutePath)
+            : $RefParser.bundle(absolutePath);
+        return doc as Promise<OpenAPIV3.Document>;
       } else {
         throw new Error(
           `${this.loggingPrefix}spec could not be read at ${filePath}`,
         );
       }
     }
-    return $refParser.mode === 'dereference'
-      ? $RefParser.dereference(filePath)
-      : $RefParser.bundle(filePath);
+    const doc =
+      $refParser.mode === 'dereference'
+        ? $RefParser.dereference(filePath)
+        : $RefParser.bundle(filePath);
+    return doc as Promise<OpenAPIV3.Document>;
   }
 
   private sortApiDocTags(apiDoc: OpenAPIV3.Document): void {

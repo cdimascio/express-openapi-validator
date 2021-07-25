@@ -331,9 +331,8 @@ export class SchemaPreprocessor {
         };
 
         for (const option of options) {
-          ancestor._discriminator.validators[option] = this.ajv.compile(
-            newSchema,
-          );
+          ancestor._discriminator.validators[option] =
+            this.ajv.compile(newSchema);
         }
       }
       //reset data
@@ -477,10 +476,18 @@ export class SchemaPreprocessor {
     if (v === parameters) return;
     v.parameters = v.parameters || [];
 
+    const match = (
+      pathParam: OpenAPIV3.ReferenceObject | OpenAPIV3.ParameterObject,
+      opParam: OpenAPIV3.ReferenceObject | OpenAPIV3.OperationObject,
+    ) =>
+      // if name or ref exists and are equal
+      (opParam['name'] && opParam['name'] === pathParam['name']) ||
+      (opParam['$ref'] && opParam['$ref'] === pathParam['$ref']);
+
     // Add Path level query param to list ONLY if there is not already an operation-level query param by the same name.
     for (const param of parameters) {
-      if (!(v.parameters.some(vparam => vparam["name"] === param["name"]))){
-          v.parameters.push(param);
+      if (!v.parameters.some((vparam) => match(param, vparam))) {
+        v.parameters.push(param);
       }
     }
   }
