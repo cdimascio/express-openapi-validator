@@ -477,8 +477,11 @@ export class SchemaPreprocessor {
     if (v === parameters) return;
     v.parameters = v.parameters || [];
 
+    // Add Path level query param to list ONLY if there is not already an operation-level query param by the same name.
     for (const param of parameters) {
-      v.parameters.push(param);
+      if (!(v.parameters.some(vparam => vparam["name"] === param["name"]))){
+          v.parameters.push(param);
+      }
     }
   }
 
