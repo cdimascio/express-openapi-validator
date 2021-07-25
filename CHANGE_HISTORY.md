@@ -1,3 +1,12 @@
+## <small>4.12.15 (2021-07-25)</small>
+
+* fix: #626 op level params override path level ([688105b](https://github.com/cdimascio/express-openapi-validator/commit/688105b)), closes [#626](https://github.com/cdimascio/express-openapi-validator/issues/626)
+* fix: upgrade @types/multer from 1.4.5 to 1.4.6 (#629) ([6114f08](https://github.com/cdimascio/express-openapi-validator/commit/6114f08)), closes [#629](https://github.com/cdimascio/express-openapi-validator/issues/629)
+* fix: upgrade json-schema-ref-parser from 9.0.7 to 9.0.9 (#628) ([c5c963c](https://github.com/cdimascio/express-openapi-validator/commit/c5c963c)), closes [#628](https://github.com/cdimascio/express-openapi-validator/issues/628)
+* Add Path level query param to list ONLY if there is not already an operation-level query param by th ([5268177](https://github.com/cdimascio/express-openapi-validator/commit/5268177)), closes [#631](https://github.com/cdimascio/express-openapi-validator/issues/631)
+
+
+
 ## <small>4.12.14 (2021-06-21)</small>
 
 * increment patch version ([3d21e55](https://github.com/cdimascio/express-openapi-validator/commit/3d21e55))
