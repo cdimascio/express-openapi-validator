@@ -509,6 +509,7 @@ OpenApiValidator.middleware({
   ],
   operationHandlers: false | 'operations/base/path' | { ... },
   ignorePaths: /.*\/pets$/,
+  ignoreUndocumented: false,
   fileUploader: { ... } | true | false,
   $refParser: {
     mode: 'bundle'
@@ -874,6 +875,12 @@ or as a function:
 ```
 ignorePaths: (path) => path.endsWith('/pets')
 ```
+
+### ▪️ ignoreUndocumented (optional)
+
+Disables any form of validation for requests which are not documented in the OpenAPI spec.
+
+Defaults to `false`
 
 ### ▪️ fileUploader (optional)
 
