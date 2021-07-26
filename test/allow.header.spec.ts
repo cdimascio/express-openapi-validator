@@ -1,17 +1,21 @@
 import { expect } from 'chai';
 import * as express from 'express';
-import { Server } from 'http';
 import * as request from 'supertest';
-import * as packageJson from '../package.json';
-import * as OpenApiValidator from '../src';
 import { OpenAPIV3 } from '../src/framework/types';
-import { startServer } from './common/app.common';
+import { createApp } from './common/app';
 
-describe(packageJson.name, () => {
+describe('Allow Header', () => {
   let app = null;
 
   before(async () => {
-    app = await createApp();
+    app = await createApp({ apiSpec: createApiSpec() }, 3001, (app) =>
+      app.use(
+        express
+          .Router()
+          .get('/v1/pets/:petId', () => ['cat', 'dog'])
+          .post('/v1/pets/:petId', (req, res) => res.json(req.body)),
+      ),
+    );
   });
 
   after(() => {
@@ -29,26 +33,6 @@ describe(packageJson.name, () => {
         ]);
       }));
 });
-
-async function createApp(): Promise<express.Express & { server?: Server }> {
-  const app = express();
-
-  app.use(
-    OpenApiValidator.middleware({
-      apiSpec: createApiSpec(),
-      validateRequests: true,
-    }),
-  );
-  app.use(
-    express
-      .Router()
-      .get('/v1/pets/:petId', () => ['cat', 'dog'])
-      .post('/v1/pets/:petId', (req, res) => res.json(req.body)),
-  );
-
-  await startServer(app, 3001);
-  return app;
-}
 
 function createApiSpec(): OpenAPIV3.Document {
   return {

@@ -8,7 +8,8 @@ export class OpenApiExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    response.status(error.status).header(error.headers).json(error);
+    const { status, headers, ...data } = error;
+    response.status(status).header(headers).json(data);
   }
 }
 
