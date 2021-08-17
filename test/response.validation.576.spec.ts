@@ -14,6 +14,9 @@ describe('response validation for multiple responses', () => {
       {
         apiSpec: apiSpecPath,
         validateResponses: true,
+        $refParser: {
+          mode: 'dereference',
+        },
       },
       3005,
       (app) => {
