@@ -127,8 +127,9 @@ export class RequestValidator {
 
       mutator.modifyRequest(req);
 
+      let unknownQueryParameterError;
       if (!allowUnknownQueryParameters) {
-        this.processQueryParam(
+        unknownQueryParameterError = this.processQueryParam(
           req.query,
           schemaProperties.query,
           securityQueryParam,
@@ -137,9 +138,9 @@ export class RequestValidator {
 
       const cookies = req.cookies
         ? {
-            ...req.cookies,
-            ...req.signedCookies,
-          }
+          ...req.cookies,
+          ...req.signedCookies,
+        }
         : undefined;
 
       const data = {
@@ -162,9 +163,12 @@ export class RequestValidator {
         discriminatorValidator ? data.body : data,
       );
 
-      if (valid && validBody) {
+      if (valid && validBody && !unknownQueryParameterError) {
         next();
-      } else {
+      } else if (valid && validBody) {
+        throw new BadRequest(unknownQueryParameterError);
+      } else
+      {
         const errors = augmentAjvErrors(
           []
             .concat(validator.validatorGeneral.errors ?? [])
@@ -177,6 +181,9 @@ export class RequestValidator {
           message: message,
         });
         error.errors = err.errors;
+        if (unknownQueryParameterError) {
+          error.errors.push(unknownQueryParameterError);
+        }
         throw error;
       }
     };
@@ -199,7 +206,8 @@ export class RequestValidator {
     }
     return null;
   }
-  private processQueryParam(query: object, schema, whiteList: string[] = []) {
+
+  private processQueryParam(query: object, schema, whiteList: string[] = []): { path: string; message: string; } {
     const entries = Object.entries(schema.properties ?? {});
     let keys = [];
     for (const [key, prop] of entries) {
@@ -215,15 +223,15 @@ export class RequestValidator {
     const allowedEmpty = schema.allowEmptyValue;
     for (const q of queryParams) {
       if (!knownQueryParams.has(q)) {
-        throw new BadRequest({
+        return {
           path: `.query.${q}`,
           message: `Unknown query parameter '${q}'`,
-        });
+        };
       } else if (!allowedEmpty?.has(q) && (query[q] === '' || null)) {
-        throw new BadRequest({
+        return {
           path: `.query.${q}`,
           message: `Empty value found for query parameter '${q}'`,
-        });
+        };
       }
     }
   }
@@ -319,13 +327,13 @@ class Security {
   ): string[] {
     return usedSecuritySchema && securitySchema
       ? usedSecuritySchema
-          .filter((obj) => Object.entries(obj).length !== 0)
-          .map((sec) => {
-            const securityKey = Object.keys(sec)[0];
-            return <SecuritySchemeObject>securitySchema[securityKey];
-          })
-          .filter((sec) => sec?.type === 'apiKey' && sec?.in == 'query')
-          .map((sec: ApiKeySecurityScheme) => sec.name)
+        .filter((obj) => Object.entries(obj).length !== 0)
+        .map((sec) => {
+          const securityKey = Object.keys(sec)[0];
+          return <SecuritySchemeObject>securitySchema[securityKey];
+        })
+        .filter((sec) => sec?.type === 'apiKey' && sec?.in == 'query')
+        .map((sec: ApiKeySecurityScheme) => sec.name)
       : [];
   }
 }
