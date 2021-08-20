@@ -103,7 +103,7 @@ export class OpenApiValidator {
           resOpts,
         ).preProcess();
         return {
-          context: new OpenApiContext(spec, this.options.ignorePaths),
+          context: new OpenApiContext(spec, this.options.ignorePaths, this.options.ignoreUndocumented),
           responseApiDoc: sp.apiDocRes,
           error: null,
         };

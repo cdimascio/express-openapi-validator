@@ -29,6 +29,10 @@ export function applyOpenApiMetadata(
     if (matched) {
       const { expressRoute, openApiRoute, pathParams, schema } = matched;
       if (!schema) {
+        // Prevents validation for routes which match on path but mismatch on method
+        if(openApiContext.ignoreUndocumented) {
+          return next();
+        }
         throw new MethodNotAllowed({
           path: req.path,
           message: `${req.method} method not allowed`,
@@ -50,7 +54,7 @@ export function applyOpenApiMetadata(
         // add the response schema if validating responses
         (<any>req.openapi)._responseSchema = (<any>matched)._responseSchema;
       }
-    } else if (openApiContext.isManagedRoute(path)) {
+    } else if (openApiContext.isManagedRoute(path) && !openApiContext.ignoreUndocumented) {
       throw new NotFound({
         path: req.path,
         message: 'not found',
