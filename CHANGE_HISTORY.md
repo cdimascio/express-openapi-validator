@@ -1,3 +1,16 @@
+## 4.13.0 (2021-08-20)
+
+* fix: #626 op level params override path level ([688105b](https://github.com/cdimascio/express-openapi-validator/commit/688105b)), closes [#626](https://github.com/cdimascio/express-openapi-validator/issues/626)
+* fix: search in req.signedCookies (#644) (#645) ([356fb18](https://github.com/cdimascio/express-openapi-validator/commit/356fb18)), closes [#644](https://github.com/cdimascio/express-openapi-validator/issues/644) [#645](https://github.com/cdimascio/express-openapi-validator/issues/645)
+* fix: upgrade @types/multer from 1.4.5 to 1.4.6 (#629) ([6114f08](https://github.com/cdimascio/express-openapi-validator/commit/6114f08)), closes [#629](https://github.com/cdimascio/express-openapi-validator/issues/629)
+* fix: upgrade @types/multer from 1.4.6 to 1.4.7 (#638) ([30a4d37](https://github.com/cdimascio/express-openapi-validator/commit/30a4d37)), closes [#638](https://github.com/cdimascio/express-openapi-validator/issues/638)
+* fix: upgrade json-schema-ref-parser from 9.0.7 to 9.0.9 (#628) ([c5c963c](https://github.com/cdimascio/express-openapi-validator/commit/c5c963c)), closes [#628](https://github.com/cdimascio/express-openapi-validator/issues/628)
+* add option to ignore undocumented #577 (#637) ([a760af6](https://github.com/cdimascio/express-openapi-validator/commit/a760af6)), closes [#577](https://github.com/cdimascio/express-openapi-validator/issues/577) [#637](https://github.com/cdimascio/express-openapi-validator/issues/637)
+* Add Path level query param to list ONLY if there is not already an operation-level query param by th ([5268177](https://github.com/cdimascio/express-openapi-validator/commit/5268177)), closes [#631](https://github.com/cdimascio/express-openapi-validator/issues/631)
+* v4.12.15 ([32d2299](https://github.com/cdimascio/express-openapi-validator/commit/32d2299))
+
+
+
 ## <small>4.12.15 (2021-07-25)</small>
 
 * fix: #626 op level params override path level ([688105b](https://github.com/cdimascio/express-openapi-validator/commit/688105b)), closes [#626](https://github.com/cdimascio/express-openapi-validator/issues/626)
