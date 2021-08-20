@@ -276,7 +276,7 @@ class AuthValidator {
           throw Error(`query parameter '${scheme.name}' required`);
         }
       } else if (scheme.in === 'cookie') {
-        if (!req.cookies[scheme.name]) {
+        if (!req.cookies[scheme.name] && !req.signedCookies?.[scheme.name]) {
           throw Error(`cookie '${scheme.name}' required`);
         }
       }
