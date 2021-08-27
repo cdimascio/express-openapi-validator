@@ -30,6 +30,7 @@ export const error = {
 };
 
 export * as serdes from './framework/base.serdes';
+export * from './framework/types';
 
 function openapiValidator(options: OpenApiValidatorOpts) {
   const oav = new OpenApiValidator(options);
