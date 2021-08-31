@@ -1,4 +1,4 @@
-import * as Ajv from 'ajv';
+import type { ErrorObject } from 'ajv-draft-04';
 import { Request } from 'express';
 import { ValidationError } from '../framework/types';
 
@@ -11,7 +11,9 @@ export class ContentType {
   private constructor(contentType: string | null) {
     this.contentType = contentType;
     if (contentType) {
-      this.withoutBoundary = contentType.replace(/;\s{0,}boundary.*/, '').toLowerCase();
+      this.withoutBoundary = contentType
+        .replace(/;\s{0,}boundary.*/, '')
+        .toLowerCase();
       this.mediaType = this.withoutBoundary.split(';')[0].toLowerCase().trim();
       this.charSet = this.withoutBoundary.split(';')[1]?.toLowerCase();
       this.isWildCard = RegExp(/^[a-z]+\/\*$/).test(this.contentType);
@@ -42,9 +44,7 @@ export class ContentType {
  * TODO - do this some other way
  * @param errors
  */
-export function augmentAjvErrors(
-  errors: Ajv.ErrorObject[] = [],
-): Ajv.ErrorObject[] {
+export function augmentAjvErrors(errors: ErrorObject[] = []): ErrorObject[] {
   errors.forEach((e) => {
     if (e.keyword === 'enum') {
       const params: any = e.params;
@@ -58,18 +58,20 @@ export function augmentAjvErrors(
 }
 export function ajvErrorsToValidatorError(
   status: number,
-  errors: Ajv.ErrorObject[],
+  errors: ErrorObject[],
 ): ValidationError {
   return {
     status,
     errors: errors.map((e) => {
       const params: any = e.params;
       const required =
-        params?.missingProperty && e.dataPath + '.' + params.missingProperty;
+        params?.missingProperty &&
+        e.instancePath + '.' + params.missingProperty;
       const additionalProperty =
         params?.additionalProperty &&
-        e.dataPath + '.' + params.additionalProperty;
-      const path = required ?? additionalProperty ?? e.dataPath ?? e.schemaPath;
+        e.instancePath + '.' + params.additionalProperty;
+      const path =
+        required ?? additionalProperty ?? e.instancePath ?? e.schemaPath;
       return {
         path,
         message: e.message,

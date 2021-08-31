@@ -33,6 +33,7 @@ async function createApp(
   app.use(OpenApiValidator.middleware(opts));
   app.use(
     express.Router().get('/dev/hello/echo', (req, res) => {
+      // @ts-expect-error
       res.status(200).send(req.params.value);
     }),
   );

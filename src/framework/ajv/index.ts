@@ -1,5 +1,4 @@
-import * as Ajv from 'ajv';
-import * as draftSchema from 'ajv/lib/refs/json-schema-draft-04.json';
+import Ajv from 'ajv-draft-04';
 import { formats } from './formats';
 import { OpenAPIV3, Options } from '../types';
 import ajv = require('ajv');
@@ -7,14 +6,14 @@ import ajv = require('ajv');
 export function createRequestAjv(
   openApiSpec: OpenAPIV3.Document,
   options: Options = {},
-): Ajv.Ajv {
+): Ajv {
   return createAjv(openApiSpec, options);
 }
 
 export function createResponseAjv(
   openApiSpec: OpenAPIV3.Document,
   options: Options = {},
-): Ajv.Ajv {
+): Ajv {
   return createAjv(openApiSpec, options, false);
 }
 
@@ -22,14 +21,10 @@ function createAjv(
   openApiSpec: OpenAPIV3.Document,
   options: Options = {},
   request = true,
-): Ajv.Ajv {
+): Ajv {
   const ajv = new Ajv({
     ...options,
-    schemaId: 'auto',
     allErrors: true,
-    meta: draftSchema,
-    formats: { ...formats, ...options.formats },
-    unknownFormats: options.unknownFormats,
   });
   ajv.removeKeyword('propertyNames');
   ajv.removeKeyword('contains');
@@ -39,11 +34,12 @@ function createAjv(
     if (options.serDesMap) {
       ajv.addKeyword('x-eov-serdes', {
         modifying: true,
+        // @ts-ignore
         compile: (sch) => {
           if (sch) {
             return function validate(data, path, obj, propName) {
               if (typeof data === 'object') return true;
-              if(!!sch.deserialize) {
+              if (!!sch.deserialize) {
                 obj[propName] = sch.deserialize(data);
               }
               return true;
@@ -56,6 +52,7 @@ function createAjv(
     ajv.removeKeyword('readOnly');
     ajv.addKeyword('readOnly', {
       modifying: true,
+      // @ts-ignore
       compile: (sch) => {
         if (sch) {
           return function validate(data, path, obj, propName) {
@@ -65,6 +62,7 @@ function createAjv(
               {
                 keyword: 'readOnly',
                 schemaPath: data,
+                // @ts-ignore
                 dataPath: path,
                 message: `is read-only`,
                 params: { readOnly: propName },
@@ -82,11 +80,12 @@ function createAjv(
     if (options.serDesMap) {
       ajv.addKeyword('x-eov-serdes', {
         modifying: true,
+        // @ts-ignore
         compile: (sch) => {
           if (sch) {
             return function validate(data, path, obj, propName) {
               if (typeof data === 'string') return true;
-              if(!!sch.serialize) {
+              if (!!sch.serialize) {
                 obj[propName] = sch.serialize(data);
               }
               return true;
@@ -99,6 +98,7 @@ function createAjv(
     ajv.removeKeyword('writeOnly');
     ajv.addKeyword('writeOnly', {
       modifying: true,
+      // @ts-ignore
       compile: (sch) => {
         if (sch) {
           return function validate(data, path, obj, propName) {
@@ -106,6 +106,7 @@ function createAjv(
             (<ajv.ValidateFunction>validate).errors = [
               {
                 keyword: 'writeOnly',
+                // @ts-ignore
                 dataPath: path,
                 schemaPath: path,
                 message: `is write-only`,

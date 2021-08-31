@@ -1,4 +1,4 @@
-import { Ajv } from 'ajv';
+import Ajv from 'ajv';
 import { OpenAPIV3 } from '../../framework/types';
 import ajv = require('ajv');
 import { OpenAPIFramework } from '../../framework';

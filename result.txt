@@ -1,0 +1,931 @@
+openapi.validator: Validating schema
+openapi.validator: validation errors [
+  {
+    "instancePath": "/paths/~1boards~1{slug}/get/parameters/0/schema",
+    "schemaPath": "#/oneOf/0/required",
+    "keyword": "required",
+    "params": {
+      "missingProperty": "schema"
+    },
+    "message": "must have required property 'schema'"
+  },
+  {
+    "instancePath": "/paths/~1boards~1{slug}/get/parameters/0/schema",
+    "schemaPath": "#/oneOf/1/required",
+    "keyword": "required",
+    "params": {
+      "missingProperty": "content"
+    },
+    "message": "must have required property 'content'"
+  },
+  {
+    "instancePath": "/paths/~1boards~1{slug}/get/parameters/0/schema",
+    "schemaPath": "#/oneOf",
+    "keyword": "oneOf",
+    "params": {
+      "passingSchemas": null
+    },
+    "message": "must match exactly one schema in oneOf"
+  },
+  {
+    "instancePath": "/paths/~1boards~1{slug}/get/parameters/0/schema",
+    "schemaPath": "#/required",
+    "keyword": "required",
+    "params": {
+      "missingProperty": "in"
+    },
+    "message": "must have required property 'in'"
+  },
+  {
+    "instancePath": "/paths/~1boards~1{slug}/get/parameters/0/schema",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths/~1boards~1{slug}/get/parameters/0",
+    "schemaPath": "#/if",
+    "keyword": "if",
+    "params": {
+      "failingKeyword": "else"
+    },
+    "message": "must match \"else\" schema"
+  },
+  {
+    "instancePath": "/paths/~1boards~1{slug}/get/responses/200/content/application~1json/schema",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "oneOf"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths/~1boards~1{slug}/get/responses/200",
+    "schemaPath": "#/if",
+    "keyword": "if",
+    "params": {
+      "failingKeyword": "else"
+    },
+    "message": "must match \"else\" schema"
+  },
+  {
+    "instancePath": "/paths/~1boards~1{slug}/get/security/1",
+    "schemaPath": "#/$defs/security-requirement/type",
+    "keyword": "type",
+    "params": {
+      "type": "object"
+    },
+    "message": "must be object"
+  },
+  {
+    "instancePath": "/paths",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "boards/{slug}/metadata/update"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "boards/{slug}/visits"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "boards/{slug}/mute"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "boards/{slug}/pin"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "boards/{slug}/notifications/dismiss"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "feeds/boards/{slug}"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "feeds/users/@me"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "posts/{post_id}/contribution"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "posts/{post_id}/comment"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "realms/slug/{realm_slug}/"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "realms/{realm_id}/activity"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "threads/{thread_id}"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "users/@me"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/paths",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "users/@me/notifications"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BoardActivity",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BoardActivity",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BoardActivitySummary",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BoardActivitySummary",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BoardActivitySummary",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BoardSummary",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BoardSummary",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BoardSummary",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/LoggedInBoardSummary",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "allOf"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/LoggedInBoardSummary",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BoardMetadata",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "allOf"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/LoggedInBoardMetadata",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "allOf"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Comment",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Comment",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Comment",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Contribution",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "description"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Contribution",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Contribution",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Contribution",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Cursor",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Cursor",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Cursor",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Description",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "oneOf"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Description",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "discriminator"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BaseDescription",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BaseDescription",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BaseDescription",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/TextDescription",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "allOf"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/CategoryFilterDescription",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "allOf"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Feed",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Feed",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Identity",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Identity",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Identity",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/SecretIdentity",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/SecretIdentity",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/SecretIdentity",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Accessory",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Accessory",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Accessory",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/PostingIdentity",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/PostingIdentity",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/PostingIdentity",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BoardNotifications",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BoardNotifications",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BoardNotifications",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Permissions",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Permissions",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Permissions",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BoardPermissions",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/BoardPermissions",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "items"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/PostPermissions",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/PostPermissions",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "items"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/ThreadPermission",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/ThreadPermission",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "items"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/RealmSettings",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/RealmSettings",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/RealmSettings",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Realm",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Realm",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Realm",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/RealmActivity",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/RealmActivity",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Setting",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Setting",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Tags",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "description"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Tags",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Tags",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/ThreadActivitySummary",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "type"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/ThreadActivitySummary",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "properties"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/ThreadActivitySummary",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "required"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/ThreadSummary",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "allOf"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/schemas/Thread",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "allOf"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/examples/BoardsParam",
+    "schemaPath": "#/type",
+    "keyword": "type",
+    "params": {
+      "type": "object"
+    },
+    "message": "must be object"
+  },
+  {
+    "instancePath": "/components/examples/BoardsParam",
+    "schemaPath": "#/if",
+    "keyword": "if",
+    "params": {
+      "failingKeyword": "then"
+    },
+    "message": "must match \"then\" schema"
+  },
+  {
+    "instancePath": "/components/securitySchemes/firebase",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "in"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/components/securitySchemes/firebase",
+    "schemaPath": "#/if",
+    "keyword": "if",
+    "params": {
+      "failingKeyword": "else"
+    },
+    "message": "must match \"else\" schema"
+  },
+  {
+    "instancePath": "/components",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "params"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/tags/6",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "tags"
+    },
+    "message": "must NOT have unevaluated properties"
+  },
+  {
+    "instancePath": "/tags/7",
+    "schemaPath": "#/unevaluatedProperties",
+    "keyword": "unevaluatedProperties",
+    "params": {
+      "unevaluatedProperty": "tags"
+    },
+    "message": "must NOT have unevaluated properties"
+  }
+]
+[2K[1G[31merror[39m Command failed with exit code 1.
