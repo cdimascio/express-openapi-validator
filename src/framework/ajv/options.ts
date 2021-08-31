@@ -1,4 +1,4 @@
-import ajv = require('ajv');
+import { Options as AjvLibOptions } from 'ajv';
 import {
   OpenApiValidatorOpts,
   Options,
@@ -12,11 +12,11 @@ export class AjvOptions {
   constructor(options: OpenApiValidatorOpts) {
     this.options = options;
   }
-  get preprocessor(): ajv.Options {
+  get preprocessor(): AjvLibOptions {
     return this.baseOptions();
   }
 
-  get response(): ajv.Options {
+  get response(): AjvLibOptions {
     const { coerceTypes, removeAdditional } = <ValidateResponseOpts>(
       this.options.validateResponses
     );
@@ -45,12 +45,8 @@ export class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const {
-      coerceTypes,
-      unknownFormats,
-      validateFormats,
-      serDes,
-    } = this.options;
+    const { coerceTypes, unknownFormats, validateFormats, serDes } =
+      this.options;
     const serDesMap = {};
     for (const serDesObject of serDes) {
       if (!serDesMap[serDesObject.format]) {
@@ -67,13 +63,22 @@ export class AjvOptions {
 
     return {
       validateSchema: false, // this is true for statup validation, thus it can be bypassed here
-      nullable: true,
+      // nullable: true,
       coerceTypes,
       useDefaults: true,
       removeAdditional: false,
-      unknownFormats,
-      format: validateFormats,
-      formats: this.options.formats.reduce((acc, f) => {
+      validateFormats: false,
+      formats: [
+        ...this.options.formats,
+        ...(Array.isArray(unknownFormats) ? unknownFormats : []),
+      ].reduce((acc, f) => {
+        if (typeof f === 'string') {
+          acc[f] = {
+            type: f,
+            validate: () => true,
+          };
+          return acc;
+        }
         acc[f.name] = {
           type: f.type,
           validate: f.validate,

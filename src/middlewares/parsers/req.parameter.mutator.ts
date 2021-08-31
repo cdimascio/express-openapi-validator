@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { Ajv } from 'ajv';
+import Ajv from 'ajv';
 import {
   OpenAPIV3,
   OpenApiRequest,

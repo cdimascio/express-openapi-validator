@@ -36,6 +36,7 @@ export const sortRoutes = (r1, r2) => {
 export class OpenApiSpecLoader {
   private readonly framework: OpenAPIFramework;
   constructor(opts: OpenAPIFrameworkArgs) {
+    debugger;
     this.framework = new OpenAPIFramework(opts);
   }
 
@@ -104,7 +105,7 @@ export class OpenApiSpecLoader {
 
     // instead create our own syntax that is compatible with express' pathToRegex
     // /{path}* => /:path*)
-    // /{path}(*) => /:path*) 
+    // /{path}(*) => /:path*)
     const pass1 = part.replace(/\/{([^\*]+)}\({0,1}(\*)\){0,1}/g, '/:$1$2');
     // substitute params with express equivalent
     // /path/{id} => /path/:id

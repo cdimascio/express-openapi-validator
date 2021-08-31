@@ -1,6 +1,6 @@
 import { OpenAPIV3, ParametersSchema, BadRequest } from '../../framework/types';
 import { dereferenceParameter, normalizeParameter } from './util';
-import { Ajv } from 'ajv';
+import Ajv from 'ajv';
 
 const PARAM_TYPE = {
   query: 'query',
