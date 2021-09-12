@@ -1308,6 +1308,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/lyndoh"><img src="https://avatars.githubusercontent.com/u/20314316?v=4?s=100" width="100px;" alt=""/><br /><sub><b>lyndoh</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=lyndoh" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=lyndoh" title="Tests">⚠️</a></td>
     <td align="center"><a href="https://github.com/Dakota628"><img src="https://avatars.githubusercontent.com/u/1666312?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Dakota</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=Dakota628" title="Code">💻</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/alonsohki"><img src="https://avatars.githubusercontent.com/u/165835?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Alberto Alonso</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=alonsohki" title="Code">💻</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-restore -->
