@@ -487,6 +487,14 @@
       "contributions": [
         "code",
         "test"
+    },
+    {
+      "login": "alonsohki",
+      "name": "Alberto Alonso",
+      "avatar_url": "https://avatars.githubusercontent.com/u/165835?v=4",
+      "profile": "https://github.com/alonsohki",
+      "contributions": [
+        "code"
       ]
     }
   ],
