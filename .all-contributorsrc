@@ -478,6 +478,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "robertjustjones",
+      "name": "Robert Jones",
+      "avatar_url": "https://avatars.githubusercontent.com/u/969390?v=4",
+      "profile": "https://github.com/robertjustjones",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
