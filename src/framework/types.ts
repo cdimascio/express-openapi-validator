@@ -72,6 +72,7 @@ export type Format = {
 
 export type SerDes = {
   format: string;
+  jsonType?: string;
   serialize?: (o: unknown) => string;
   deserialize?: (s: string) => unknown;
 };
@@ -80,24 +81,29 @@ export class SerDesSingleton implements SerDes {
   serializer: SerDes;
   deserializer: SerDes;
   format: string;
+  jsonType: string;
   serialize?: (o: unknown) => string;
   deserialize?: (s: string) => unknown;
 
   constructor(param: {
     format: string;
+    jsonType?: string;
     serialize: (o: unknown) => string;
     deserialize: (s: string) => unknown;
   }) {
     this.format = param.format;
+    this.jsonType = param.jsonType || 'object';
     this.serialize = param.serialize;
     this.deserialize = param.deserialize;
     this.deserializer = {
-      format : param.format,
-      deserialize : param.deserialize
+      format: param.format,
+      jsonType: param.jsonType || 'object',
+      deserialize: param.deserialize
     }
     this.serializer = {
-      format : param.format,
-      serialize : param.serialize
+      format: param.format,
+      jsonType: param.jsonType || 'object',
+      serialize: param.serialize
     }
   }
 };

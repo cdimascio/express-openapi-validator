@@ -51,11 +51,16 @@ components:
     DateTime:
       type: string
       format: date-time
+    StringList:
+      type: string
+      format: string-list
     User:
       type: object
       properties:
         id:
           $ref: "#/components/schemas/ObjectId"
+        tags:
+          $ref: "#/components/schemas/StringList"
         creationDateTime:
           $ref: "#/components/schemas/DateTime"
         creationDate:
