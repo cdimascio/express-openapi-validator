@@ -1,3 +1,28 @@
+## <small>4.13.1 (2021-09-12)</small>
+
+* Fix ajv logging warnings when discriminators are combined with 's (#651) ([522c3ec](https://github.com/cdimascio/express-openapi-validator/commit/522c3ec)), closes [#651](https://github.com/cdimascio/express-openapi-validator/issues/651)
+* Implement SerDes.jsonType option for non-object internal types. (#632) ([01f5b5c](https://github.com/cdimascio/express-openapi-validator/commit/01f5b5c)), closes [#632](https://github.com/cdimascio/express-openapi-validator/issues/632)
+* update nest to 8.x ([55972c7](https://github.com/cdimascio/express-openapi-validator/commit/55972c7))
+* docs: add alonsohki as a contributor for code (#658) ([5ab6acb](https://github.com/cdimascio/express-openapi-validator/commit/5ab6acb)), closes [#658](https://github.com/cdimascio/express-openapi-validator/issues/658)
+* fix: upgrade multer from 1.4.2 to 1.4.3 (#652) ([fe86595](https://github.com/cdimascio/express-openapi-validator/commit/fe86595)), closes [#652](https://github.com/cdimascio/express-openapi-validator/issues/652)
+* chore: update deps ([fc603f7](https://github.com/cdimascio/express-openapi-validator/commit/fc603f7))
+
+
+
+## 4.13.0 (2021-08-20)
+
+* add option to ignore undocumented #577 (#637) ([a760af6](https://github.com/cdimascio/express-openapi-validator/commit/a760af6)), closes [#577](https://github.com/cdimascio/express-openapi-validator/issues/577) [#637](https://github.com/cdimascio/express-openapi-validator/issues/637)
+* Add Path level query param to list ONLY if there is not already an operation-level query param by th ([5268177](https://github.com/cdimascio/express-openapi-validator/commit/5268177)), closes [#631](https://github.com/cdimascio/express-openapi-validator/issues/631)
+* v4.12.15 ([32d2299](https://github.com/cdimascio/express-openapi-validator/commit/32d2299))
+* v4.13.0 ([7f8e0f2](https://github.com/cdimascio/express-openapi-validator/commit/7f8e0f2))
+* fix: #626 op level params override path level ([688105b](https://github.com/cdimascio/express-openapi-validator/commit/688105b)), closes [#626](https://github.com/cdimascio/express-openapi-validator/issues/626)
+* fix: search in req.signedCookies (#644) (#645) ([356fb18](https://github.com/cdimascio/express-openapi-validator/commit/356fb18)), closes [#644](https://github.com/cdimascio/express-openapi-validator/issues/644) [#645](https://github.com/cdimascio/express-openapi-validator/issues/645)
+* fix: upgrade @types/multer from 1.4.5 to 1.4.6 (#629) ([6114f08](https://github.com/cdimascio/express-openapi-validator/commit/6114f08)), closes [#629](https://github.com/cdimascio/express-openapi-validator/issues/629)
+* fix: upgrade @types/multer from 1.4.6 to 1.4.7 (#638) ([30a4d37](https://github.com/cdimascio/express-openapi-validator/commit/30a4d37)), closes [#638](https://github.com/cdimascio/express-openapi-validator/issues/638)
+* fix: upgrade json-schema-ref-parser from 9.0.7 to 9.0.9 (#628) ([c5c963c](https://github.com/cdimascio/express-openapi-validator/commit/c5c963c)), closes [#628](https://github.com/cdimascio/express-openapi-validator/issues/628)
+
+
+
 ## 4.13.0 (2021-08-20)
 
 * fix: #626 op level params override path level ([688105b](https://github.com/cdimascio/express-openapi-validator/commit/688105b)), closes [#626](https://github.com/cdimascio/express-openapi-validator/issues/626)
