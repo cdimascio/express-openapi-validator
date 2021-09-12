@@ -33,7 +33,7 @@ async function createApp(
   app.use(OpenApiValidator.middleware(opts));
   app.use(
     express.Router().get('/dev/hello/echo', (req, res) => {
-      res.status(200).send(req.params.value);
+      res.status(200).send((<any>req.params).value);
     }),
   );
 
