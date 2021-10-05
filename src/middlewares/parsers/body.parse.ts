@@ -57,6 +57,9 @@ export class BodySchemaParser {
     }
 
     if (!content) {
+      if (requestBody.required === false) { // user has explicitly set body required to false
+        return {};
+      }
       const msg =
         contentType.contentType === 'not_provided'
           ? 'media type not specified'
