@@ -24,7 +24,6 @@ app.use(
 );
 // 3. Add routes
 app.post(`/v1/pets/mapping`, (req, res) => {
-  console.log('here', req.body);
   res.json(req.body);
 });
 app.post(`/v1/pets/nomapping`, (req, res) => {
