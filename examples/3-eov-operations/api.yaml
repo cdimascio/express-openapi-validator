@@ -199,31 +199,31 @@ paths:
                   success:
                     type: boolean
 
-  "/pets:lookup":
-    get:
-      description: |
-        Returns all pets
-      x-eov-operation-id: pets#list
-      x-eov-operation-handler: routes/pets
-      parameters:
-        - name: type
-          in: query
-          description: maximum number of results to return
-          required: true
-          schema:
-            type: string
-            enum:
-              - dog
-              - cat
-      responses:
-        '200':
-          description: pet response
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Pet'
+  # "/pets:lookup":
+  #   get:
+  #     description: |
+  #       Returns all pets
+  #     x-eov-operation-id: pets#list
+  #     x-eov-operation-handler: routes/pets
+  #     parameters:
+  #       - name: type
+  #         in: query
+  #         description: maximum number of results to return
+  #         required: true
+  #         schema:
+  #           type: string
+  #           enum:
+  #             - dog
+  #             - cat
+  #     responses:
+  #       '200':
+  #         description: pet response
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: array
+  #               items:
+  #                 $ref: '#/components/schemas/Pet'
 
 components:
   schemas:
