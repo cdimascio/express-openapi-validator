@@ -10,6 +10,7 @@ paths:
     post:
       summary: Create a document
       requestBody:
+        required: false
         content:
           application/json:
             schema:
