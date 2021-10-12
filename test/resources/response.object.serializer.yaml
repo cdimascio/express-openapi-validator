@@ -21,6 +21,27 @@ paths:
                   id:
                     type: number
 
+  /array-of-date-times:
+    get:
+      responses:
+        200:
+          description: date-time handler
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        created_at:
+                          type: string
+                          format: date-time
+                        id:
+                          type: number
+
   /date:
     get:
       responses:
