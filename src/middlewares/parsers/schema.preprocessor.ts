@@ -205,6 +205,9 @@ export class SchemaPreprocessor {
           const child = new Node(node, cschema, path);
           recurse(node, child, opts);
         });
+      } else if (schema.type === 'array' && !!schema.items) {
+        const child = new Node(node, schema.items, [...node.path, 'items']);
+        recurse(node, child, opts);
       }
     };
 
