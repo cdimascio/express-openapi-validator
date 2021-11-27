@@ -585,6 +585,8 @@ Determines whether the validator should validate requests.
 
   Determines whether the validator will coerce the request body. Request query and path params, headers, cookies are coerced by default and this setting does not affect that.
 
+  See [additional details](assets/docs/coercion.md) on coercion and limitiations.
+
   Options:
 
   - `true` - coerce scalar data types.
@@ -685,7 +687,7 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
 
 Determines whether the validator should validate the OpenAPI specification. Useful if you are certain that the api spec is syntactically correct and want to bypass this check.
 
-*Warning:* Be certain your spec is valid. And be sure you know what you're doing! express-openapi-validator _*expects*_ a valid spec. If incorrect, the validator will behave erratically and/or throw Javascript errors.
+_Warning:_ Be certain your spec is valid. And be sure you know what you're doing! express-openapi-validator _*expects*_ a valid spec. If incorrect, the validator will behave erratically and/or throw Javascript errors.
 
 - `true` (**default**) - validate the OpenAPI specification.
 - `false` - do not validate the OpenAPI specification.
@@ -767,7 +769,7 @@ To create custom serializers and/or deserializers, define:
 - `format` (required) - a custom 'unknown' format that triggers the serializer and/or deserializer
 - `deserialize` (optional) - upon receiving a request, transform a string property to an object. Deserialization occurs _after_ request schema validation.
 - `serialize` (optional) - before sending a response, transform an object to string. Serialization occurs _after_ response schema validation
-- `jsonType` (optional, default 'object') - set to override for deserialized types that are not 'object', eg 'array' 
+- `jsonType` (optional, default 'object') - set to override for deserialized types that are not 'object', eg 'array'
 
 e.g.
 
