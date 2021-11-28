@@ -33,18 +33,16 @@ export function defaultResolver(
     const modulePath = path.join(handlersPath, baseName);
     if (!tmpModules[modulePath]) {
       tmpModules[modulePath] = require(modulePath);
-      if (!tmpModules[modulePath][oId]) {
-        // if oId is not found only module, try the module's default export
-        tmpModules[modulePath] = tmpModules[modulePath].default;
-      }
     }
-    if (!tmpModules[modulePath][oId]) {
+
+    const handler = tmpModules[modulePath][oId] || tmpModules[modulePath].default;
+
+    if (!handler) {
       throw Error(
-        `Could not find 'x-eov-operation-handler' with id ${oId} in module '${modulePath}'. Make sure operation '${oId}' defined in your API spec exists as a handler function in '${modulePath}'.`,
+        `Could not find 'x-eov-operation-handler' with id ${oId} in module '${modulePath}'. Make sure operation '${oId}' defined in your API spec exists as a handler function (or module has a default export) in '${modulePath}'.`,
       );
     }
 
-    const handler = tmpModules[modulePath][oId];
     cache[cacheKey] = handler;
     return handler;
   }
