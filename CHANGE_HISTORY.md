@@ -1,3 +1,13 @@
+## <small>4.13.4 (2021-11-29)</small>
+
+* default export in handler #671 (#675) ([e68a604](https://github.com/cdimascio/express-openapi-validator/commit/e68a604)), closes [#671](https://github.com/cdimascio/express-openapi-validator/issues/671) [#675](https://github.com/cdimascio/express-openapi-validator/issues/675)
+* Update openapi.validator.ts ([a979e53](https://github.com/cdimascio/express-openapi-validator/commit/a979e53))
+* v.4.13.4 ([7a6fbf4](https://github.com/cdimascio/express-openapi-validator/commit/7a6fbf4))
+* chore(deps): bump glob-parent in /examples/8-top-level-discriminator (#674) ([8db56ae](https://github.com/cdimascio/express-openapi-validator/commit/8db56ae)), closes [#674](https://github.com/cdimascio/express-openapi-validator/issues/674)
+* chore(deps): bump normalize-url in /examples/8-top-level-discriminator (#673) ([260c926](https://github.com/cdimascio/express-openapi-validator/commit/260c926)), closes [#673](https://github.com/cdimascio/express-openapi-validator/issues/673)
+
+
+
 ## <small>4.13.2 (2021-10-09)</small>
 
 - change log ([710284a](https://github.com/cdimascio/express-openapi-validator/commit/710284a))
