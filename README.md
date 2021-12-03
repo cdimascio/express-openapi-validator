@@ -1313,6 +1313,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/robertjustjones"><img src="https://avatars.githubusercontent.com/u/969390?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Robert Jones</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=robertjustjones" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=robertjustjones" title="Tests">⚠️</a></td>
     <td align="center"><a href="https://github.com/alonsohki"><img src="https://avatars.githubusercontent.com/u/165835?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Alberto Alonso</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=alonsohki" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/zzgab"><img src="https://avatars.githubusercontent.com/u/3754439?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Gabriel Zerbib</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=zzgab" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=zzgab" title="Tests">⚠️</a></td>
   </tr>
 </table>
 

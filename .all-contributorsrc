@@ -497,6 +497,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "zzgab",
+      "name": "Gabriel Zerbib",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3754439?v=4",
+      "profile": "https://github.com/zzgab",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
