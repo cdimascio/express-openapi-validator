@@ -774,7 +774,7 @@ To create custom serializers and/or deserializers, define:
 e.g.
 
 ```javascript
-serDes: [{
+serDes: [
    // installs dateTime serializer and deserializer
   OpenApiValidator.serdes.dateTime,
   // installs date serializer and deserializer
@@ -784,8 +784,8 @@ serDes: [{
     format: 'mongo-objectid',
     deserialize: (s) => new ObjectID(s),
     serialize: (o) => o.toString(),
-  }
-}],
+  },
+],
 ```
 
 The mongo serializers will trigger on the following schema:
