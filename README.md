@@ -1156,17 +1156,35 @@ Instead of initialize OpenApiValidator with middleware, you can get a configured
 
 
 ```javascript
-const ajv = await OpenApiValidator.ajv({
+const ajvs = await OpenApiValidator.ajv({
   apiSpec: './openapi.yaml',
   validateRequests: true, // (default)
   validateResponses: true, // false by default
 });
 
-const req : ReqClass = {
+const customObj = {
   id : '507f191e810c19729de860ea',
 }
 
-ajv.validate(
+const isReqValid = ajvs.req.validate(
+  {
+    type: 'object',
+    properties: {
+      id: {
+        $ref: '#/components/schemas/ObjectId',
+      },
+    },
+    required: ['token'],
+    additionalProperties: false,
+  }, 
+  customObj
+);
+
+// isReqValid = true
+// No error in ajvs.req.errors
+
+
+const isResValid = ajvs.res.validate(
   {
     type: 'object',
     properties: {
@@ -1177,8 +1195,11 @@ ajv.validate(
     required: ['token'],
     additionalProperties: false,
   },
-  req
+  customObj
 );
+
+// isResValid = true
+// No error in ajvs.res.errors
 ```
 
 ## FAQ
