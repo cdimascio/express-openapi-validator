@@ -21,6 +21,7 @@ import { defaultSerDes } from './framework/base.serdes';
 import { SchemaPreprocessor } from './middlewares/parsers/schema.preprocessor';
 import { AjvOptions } from './framework/ajv/options';
 import { Ajv } from 'ajv';
+import Ajvs = OpenAPIV3.Ajvs;
 
 export {
   OpenApiValidatorOpts,
@@ -91,7 +92,7 @@ export class OpenApiValidator {
     this.ajvOpts = new AjvOptions(options);
   }
 
-  installAjv(spec: Promise<Spec>): Promise<Ajv> {
+  installAjv(spec: Promise<Spec>): Promise<Ajvs> {
     return spec
       .then((spec) => {
         const apiDoc = spec.apiDoc;
@@ -107,7 +108,15 @@ export class OpenApiValidator {
           responseApiDoc: sp.apiDocRes,
           error: null,
         };*/
-        return new middlewares.RequestValidator(apiDoc, this.ajvOpts.request).getAJV();
+        return {
+          req : new middlewares.RequestValidator(apiDoc, this.ajvOpts.request).getAJV(),
+          res : new middlewares.ResponseValidator(
+            apiDoc,
+            this.ajvOpts.response,
+            // This has already been converted from boolean if required
+            this.options.validateResponses as ValidateResponseOpts,)
+            .getAJV(),
+        };
       });
   }
 
