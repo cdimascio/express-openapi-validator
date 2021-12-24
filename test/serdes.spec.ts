@@ -307,13 +307,13 @@ describe('serdes serialize response components only', () => {
       .expect(500)
       .then((r) => {
         console.log(r);
-        expect(r.body.message).to.equal('d.toISOString is not a function');
+        expect(r.body.message).to.equal('.response.creationDate format is invalid');
       }));
 
   /*
   FIXME Manage format validation after serialize ? I can serialize using a working serialize method but that respond a bad format
   it('should throw error 500 on an object that serialize to a bad string format', async () =>
- 
+
     request(app)
       .get(`${app.basePath}/users/5fdefd13a6640bb5fb5fa925`)
       .query({baddateresponse : 'functionBadFormat'})
@@ -322,7 +322,7 @@ describe('serdes serialize response components only', () => {
         console.log(r.body);
         expect(r.body.message).to.equal('Something saying that date is not date-time format');
       }));
- 
+
    */
 
 });

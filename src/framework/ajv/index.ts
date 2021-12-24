@@ -59,6 +59,15 @@ function createAjv(
                   obj[propName] = sch.deserialize(data);
                 }
                 catch(e) {
+                  (<ajv.ValidateFunction>validate).errors = [
+                    {
+                      keyword: 'serdes',
+                      schemaPath: data,
+                      dataPath: path,
+                      message: `format is invalid`,
+                      params: { 'x-eov-serdes': propName },
+                    },
+                  ];
                   return false;
                 }
               }
@@ -108,6 +117,15 @@ function createAjv(
                   obj[propName] = sch.serialize(data);
                 }
                 catch(e) {
+                  (<ajv.ValidateFunction>validate).errors = [
+                    {
+                      keyword: 'serdes',
+                      schemaPath: data,
+                      dataPath: path,
+                      message: `format is invalid`,
+                      params: { 'x-eov-serdes': propName },
+                    },
+                  ];
                   return false;
                 }
               }
