@@ -1,3 +1,12 @@
+## <small>4.13.5 (2021-12-26)</small>
+
+* fix json syntax in allcontributors file (#676) ([5dc6d22](https://github.com/cdimascio/express-openapi-validator/commit/5dc6d22)), closes [#676](https://github.com/cdimascio/express-openapi-validator/issues/676)
+* Fixes on SerDes (#682) ([56f778b](https://github.com/cdimascio/express-openapi-validator/commit/56f778b)), closes [#682](https://github.com/cdimascio/express-openapi-validator/issues/682) [#601](https://github.com/cdimascio/express-openapi-validator/issues/601) [#569](https://github.com/cdimascio/express-openapi-validator/issues/569)
+* Patch on serdes test and allow to use generated AJV out of Express usage (#684) ([3744cdd](https://github.com/cdimascio/express-openapi-validator/commit/3744cdd)), closes [#684](https://github.com/cdimascio/express-openapi-validator/issues/684) [#601](https://github.com/cdimascio/express-openapi-validator/issues/601) [#569](https://github.com/cdimascio/express-openapi-validator/issues/569) [#601](https://github.com/cdimascio/express-openapi-validator/issues/601) [#683](https://github.com/cdimascio/express-openapi-validator/issues/683) [#683](https://github.com/cdimascio/express-openapi-validator/issues/683) [#683](https://github.com/cdimascio/express-openapi-validator/issues/683) [#601](https://github.com/cdimascio/express-openapi-validator/issues/601) [#683](https://github.com/cdimascio/express-openapi-validator/issues/683) [#683](https://github.com/cdimascio/express-openapi-validator/issues/683) [#683](https://github.com/cdimascio/express-openapi-validator/issues/683) [#601](https://github.com/cdimascio/express-openapi-validator/issues/601) [#683](https://github.com/cdimascio/express-openapi-validator/issues/683)
+* docs: add zzgab as a contributor for code, test (#680) ([3f0de5d](https://github.com/cdimascio/express-openapi-validator/commit/3f0de5d)), closes [#680](https://github.com/cdimascio/express-openapi-validator/issues/680)
+
+
+
 ## <small>4.13.4 (2021-11-29)</small>
 
 * default export in handler #671 (#675) ([e68a604](https://github.com/cdimascio/express-openapi-validator/commit/e68a604)), closes [#671](https://github.com/cdimascio/express-openapi-validator/issues/671) [#675](https://github.com/cdimascio/express-openapi-validator/issues/675)
