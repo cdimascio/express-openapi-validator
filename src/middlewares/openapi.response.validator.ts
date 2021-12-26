@@ -17,7 +17,6 @@ import {
 } from '../framework/types';
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
-import { Ajv } from 'ajv';
 
 interface ValidateResult {
   validators: { [key: string]: ajv.ValidateFunction };
@@ -318,9 +317,5 @@ export class ResponseValidator {
     return (
       mediaTypeParsed.subtype === 'json' || mediaTypeParsed.suffix === 'json'
     );
-  }
-
-  public getAJV() : Ajv {
-    return this.ajvBody;
   }
 }

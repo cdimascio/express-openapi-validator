@@ -1,7 +1,6 @@
 import * as ajv from 'ajv';
 import * as multer from 'multer';
 import { Request, Response, NextFunction } from 'express';
-import { Ajv } from 'ajv';
 export { OpenAPIFrameworkArgs };
 
 export type BodySchema =
@@ -154,11 +153,6 @@ export namespace OpenAPIV3 {
     contact?: ContactObject;
     license?: LicenseObject;
     version: string;
-  }
-
-  export interface Ajvs {
-    req?: Ajv,
-    res?: Ajv
   }
 
   export interface ContactObject {
