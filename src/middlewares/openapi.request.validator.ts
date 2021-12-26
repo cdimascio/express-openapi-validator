@@ -227,10 +227,6 @@ export class RequestValidator {
       }
     }
   }
-
-  public getAJV () : Ajv {
-    return this.ajv;
-  }
 }
 
 class Validator {

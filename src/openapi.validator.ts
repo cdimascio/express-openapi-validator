@@ -20,7 +20,6 @@ import { OperationHandlerOptions } from './framework/types';
 import { defaultSerDes } from './framework/base.serdes';
 import { SchemaPreprocessor } from './middlewares/parsers/schema.preprocessor';
 import { AjvOptions } from './framework/ajv/options';
-import { Ajv } from 'ajv';
 
 export {
   OpenApiValidatorOpts,
@@ -90,27 +89,6 @@ export class OpenApiValidator {
     this.options = options;
     this.ajvOpts = new AjvOptions(options);
   }
-
-  installAjv(spec: Promise<Spec>): Promise<Ajv> {
-    return spec
-      .then((spec) => {
-        const apiDoc = spec.apiDoc;
-        const ajvOpts = this.ajvOpts.preprocessor;
-        const resOpts = this.options.validateResponses as ValidateRequestOpts;
-        const sp = new SchemaPreprocessor(
-          apiDoc,
-          ajvOpts,
-          resOpts,
-        ).preProcess();
-        /*return {
-          context: new OpenApiContext(spec, this.options.ignorePaths, this.options.ignoreUndocumented),
-          responseApiDoc: sp.apiDocRes,
-          error: null,
-        };*/
-        return new middlewares.RequestValidator(apiDoc, this.ajvOpts.request).getAJV();
-      });
-  }
-
 
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
     const middlewares: OpenApiRequestHandler[] = [];

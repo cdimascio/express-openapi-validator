@@ -17,7 +17,6 @@ import {
 // export default openapiValidator;
 export const resolvers = res;
 export const middleware = openapiValidator;
-export const ajv = ajvInstances;
 export const error = {
   InternalServerError,
   UnsupportedMediaType,
@@ -37,19 +36,6 @@ function openapiValidator(options: OpenApiValidatorOpts) {
   exports.middleware._oav = oav;
 
   return oav.installMiddleware(
-    new OpenApiSpecLoader({
-      apiDoc: cloneDeep(options.apiSpec),
-      validateApiSpec: options.validateApiSpec,
-      $refParser: options.$refParser,
-    }).load(),
-  );
-}
-
-function ajvInstances(options: OpenApiValidatorOpts) {
-  const oav = new OpenApiValidator(options);
-  exports.middleware._oav = oav;
-
-  return oav.installAjv(
     new OpenApiSpecLoader({
       apiDoc: cloneDeep(options.apiSpec),
       validateApiSpec: options.validateApiSpec,
