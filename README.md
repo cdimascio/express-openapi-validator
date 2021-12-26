@@ -1148,6 +1148,38 @@ function routesV2(app) {
 
 module.exports = app;
 ```
+## Use OpenAPIValidator AJV out of express usage
+
+You can get an AJV module as OpenAPIValidator generates it for express.
+Then you can use it for other usages such as websocket request validation...
+Instead of initialize OpenApiValidator with middleware, you can get a configured AJV object with all OpenApiValidator mecanisms (serdes...) and loaded schemas.
+
+
+```javascript
+const ajv = await OpenApiValidator.ajv({
+  apiSpec: './openapi.yaml',
+  validateRequests: true, // (default)
+  validateResponses: true, // false by default
+});
+
+const req : ReqClass = {
+  id : '507f191e810c19729de860ea',
+}
+
+ajv.validate(
+  {
+    type: 'object',
+    properties: {
+      id: {
+        $ref: '#/components/schemas/ObjectId',
+      },
+    },
+    required: ['token'],
+    additionalProperties: false,
+  },
+  req
+);
+```
 
 ## FAQ
 
