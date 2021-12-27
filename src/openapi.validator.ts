@@ -103,17 +103,11 @@ export class OpenApiValidator {
           ajvOpts,
           resOpts,
         ).preProcess();
-        /*return {
-          context: new OpenApiContext(spec, this.options.ignorePaths, this.options.ignoreUndocumented),
-          responseApiDoc: sp.apiDocRes,
-          error: null,
-        };*/
         return {
           req : new middlewares.RequestValidator(apiDoc, this.ajvOpts.request).getAJV(),
           res : new middlewares.ResponseValidator(
             apiDoc,
             this.ajvOpts.response,
-            // This has already been converted from boolean if required
             this.options.validateResponses as ValidateResponseOpts,)
             .getAJV(),
         };
