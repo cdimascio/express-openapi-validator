@@ -191,19 +191,6 @@ export class OpenApiValidator {
       });
     }
 
-    // response middleware
-    if (this.options.validateResponses) {
-      let resmw;
-      middlewares.push(function responseMiddleware(req, res, next) {
-        return pContext
-          .then(({ responseApiDoc }) => {
-            resmw = resmw || self.responseValidationMiddleware(responseApiDoc);
-            return resmw(req, res, next);
-          })
-          .catch(next);
-      })
-    }
-
     // op handler middleware
     if (this.options.operationHandlers) {
       let router: Router = null;
@@ -217,6 +204,19 @@ export class OpenApiValidator {
           .then((router) => router(req, res, next))
           .catch(next);
       });
+    }
+
+    // response middleware
+    if (this.options.validateResponses) {
+      let resmw;
+      middlewares.push(function responseMiddleware(req, res, next) {
+        return pContext
+          .then(({ responseApiDoc }) => {
+            resmw = resmw || self.responseValidationMiddleware(responseApiDoc);
+            return resmw(req, res, next);
+          })
+          .catch(next);
+      })
     }
 
     return middlewares;
