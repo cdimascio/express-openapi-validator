@@ -183,7 +183,7 @@ export class RequestParameterMutator {
   ): void {
     // fetch the keys used for this kind of explode
     const type = schema.type;
-    const hasXOf = schema.allOf || schema.oneOf || schema.anyOf;
+    const hasXOf = schema['allOf'] || schema['oneOf'] || schema['anyOf'];
     const properties = hasXOf
       ? xOfProperties(schema)
       : type === 'object'
