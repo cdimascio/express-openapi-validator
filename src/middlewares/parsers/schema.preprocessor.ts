@@ -56,7 +56,7 @@ type Schema = ReferenceObject | SchemaObject;
 if (!Array.prototype['flatMap']) {
   // polyfill flatMap
   // TODO remove me when dropping node 10 support
-  Array.prototype['flatMap'] = function (lambda) {
+  Array.prototype['flatMap'] = function(lambda) {
     return Array.prototype.concat.apply([], this.map(lambda));
   };
   Object.defineProperty(Array.prototype, 'flatMap', { enumerable: false });
@@ -199,6 +199,9 @@ export class SchemaPreprocessor {
           const child = new Node(node, s, [...node.path, 'anyOf', i + '']);
           recurse(node, child, opts);
         });
+      } else if (schema.type === 'array' && schema.items) {
+        const child = new Node(node, schema.items, [...node.path, 'items']);
+        recurse(node, child, opts);
       } else if (schema.properties) {
         Object.entries(schema.properties).forEach(([id, cschema]) => {
           const path = [...node.path, 'properties', id];
@@ -320,7 +323,7 @@ export class SchemaPreprocessor {
           ...(o.properties ?? {}),
           ...(newSchema.properties ?? {}),
         };
-        if(Object.keys(newProperties).length > 0) {
+        if (Object.keys(newProperties).length > 0) {
           newSchema.properties = newProperties;
         }
 
