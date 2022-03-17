@@ -478,6 +478,35 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "robertjustjones",
+      "name": "Robert Jones",
+      "avatar_url": "https://avatars.githubusercontent.com/u/969390?v=4",
+      "profile": "https://github.com/robertjustjones",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "alonsohki",
+      "name": "Alberto Alonso",
+      "avatar_url": "https://avatars.githubusercontent.com/u/165835?v=4",
+      "profile": "https://github.com/alonsohki",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "zzgab",
+      "name": "Gabriel Zerbib",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3754439?v=4",
+      "profile": "https://github.com/zzgab",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,

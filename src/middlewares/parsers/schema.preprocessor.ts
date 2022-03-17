@@ -315,10 +315,15 @@ export class SchemaPreprocessor {
 
       if (options.length > 0) {
         const newSchema = JSON.parse(JSON.stringify(schemaObj));
-        newSchema.properties = {
+
+        const newProperties = {
           ...(o.properties ?? {}),
           ...(newSchema.properties ?? {}),
         };
+        if(Object.keys(newProperties).length > 0) {
+          newSchema.properties = newProperties;
+        }
+
         newSchema.required = o.required;
         if (newSchema.required.length === 0) {
           delete newSchema.required;
@@ -351,7 +356,7 @@ export class SchemaPreprocessor {
       !!schema.format &&
       this.serDesMap[schema.format]
     ) {
-      (<any>schema).type = ['object', 'string'];
+      (<any>schema).type = [this.serDesMap[schema.format].jsonType || 'object', 'string'];
       schema['x-eov-serdes'] = this.serDesMap[schema.format];
     }
   }

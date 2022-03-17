@@ -57,8 +57,13 @@ export class BodySchemaParser {
     }
 
     if (!content) {
+      // check if required is false, if so allow request when no content type is supplied
+      const contentNotProvided = contentType.contentType === 'not_provided';
+      if ((contentType.contentType === undefined || contentNotProvided) && requestBody.required === false) {
+        return {};
+      }
       const msg =
-        contentType.contentType === 'not_provided'
+        contentNotProvided
           ? 'media type not specified'
           : `unsupported media type ${contentType.contentType}`;
       throw new UnsupportedMediaType({ path: path, message: msg });

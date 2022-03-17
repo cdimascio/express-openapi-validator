@@ -585,6 +585,8 @@ Determines whether the validator should validate requests.
 
   Determines whether the validator will coerce the request body. Request query and path params, headers, cookies are coerced by default and this setting does not affect that.
 
+  See [additional details](assets/docs/coercion.md) on coercion and limitiations.
+
   Options:
 
   - `true` - coerce scalar data types.
@@ -685,7 +687,7 @@ Determines whether the validator should validate securities e.g. apikey, basic, 
 
 Determines whether the validator should validate the OpenAPI specification. Useful if you are certain that the api spec is syntactically correct and want to bypass this check.
 
-*Warning:* Be certain your spec is valid. And be sure you know what you're doing! express-openapi-validator _*expects*_ a valid spec. If incorrect, the validator will behave erratically and/or throw Javascript errors.
+_Warning:_ Be certain your spec is valid. And be sure you know what you're doing! express-openapi-validator _*expects*_ a valid spec. If incorrect, the validator will behave erratically and/or throw Javascript errors.
 
 - `true` (**default**) - validate the OpenAPI specification.
 - `false` - do not validate the OpenAPI specification.
@@ -767,11 +769,12 @@ To create custom serializers and/or deserializers, define:
 - `format` (required) - a custom 'unknown' format that triggers the serializer and/or deserializer
 - `deserialize` (optional) - upon receiving a request, transform a string property to an object. Deserialization occurs _after_ request schema validation.
 - `serialize` (optional) - before sending a response, transform an object to string. Serialization occurs _after_ response schema validation
+- `jsonType` (optional, default 'object') - set to override for deserialized types that are not 'object', eg 'array'
 
 e.g.
 
 ```javascript
-serDes: [{
+serDes: [
    // installs dateTime serializer and deserializer
   OpenApiValidator.serdes.dateTime,
   // installs date serializer and deserializer
@@ -781,8 +784,8 @@ serDes: [{
     format: 'mongo-objectid',
     deserialize: (s) => new ObjectID(s),
     serialize: (o) => o.toString(),
-  }
-}],
+  },
+],
 ```
 
 The mongo serializers will trigger on the following schema:
@@ -1306,6 +1309,11 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://0xcafeadd1c7.github.io/"><img src="https://avatars.githubusercontent.com/u/2291747?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Aymeric Robini</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=0xCAFEADD1C7" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=0xCAFEADD1C7" title="Tests">⚠️</a></td>
     <td align="center"><a href="https://github.com/lyndoh"><img src="https://avatars.githubusercontent.com/u/20314316?v=4?s=100" width="100px;" alt=""/><br /><sub><b>lyndoh</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=lyndoh" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=lyndoh" title="Tests">⚠️</a></td>
     <td align="center"><a href="https://github.com/Dakota628"><img src="https://avatars.githubusercontent.com/u/1666312?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Dakota</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=Dakota628" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/robertjustjones"><img src="https://avatars.githubusercontent.com/u/969390?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Robert Jones</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=robertjustjones" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=robertjustjones" title="Tests">⚠️</a></td>
+    <td align="center"><a href="https://github.com/alonsohki"><img src="https://avatars.githubusercontent.com/u/165835?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Alberto Alonso</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=alonsohki" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/zzgab"><img src="https://avatars.githubusercontent.com/u/3754439?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Gabriel Zerbib</b></sub></a><br /><a href="https://github.com/cdimascio/express-openapi-validator/commits?author=zzgab" title="Code">💻</a> <a href="https://github.com/cdimascio/express-openapi-validator/commits?author=zzgab" title="Tests">⚠️</a></td>
   </tr>
 </table>
 

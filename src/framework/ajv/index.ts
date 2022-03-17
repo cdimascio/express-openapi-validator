@@ -38,15 +38,41 @@ function createAjv(
         compile: (sch) => {
           if (sch) {
             return function validate(data, path, obj, propName) {
-              if (typeof data === 'object') return true;
               if (!!sch.deserialize) {
-                obj[propName] = sch.deserialize(data);
+                if (typeof data !== 'string') {
+                  (<ajv.ValidateFunction>validate).errors = [
+                    {
+                      keyword: 'serdes',
+                      schemaPath: data,
+                      dataPath: path,
+                      message: `must be a string`,
+                      params: { 'x-eov-serdes': propName },
+                    },
+                  ];
+                  return false;
+                }
+                try {
+                  obj[propName] = sch.deserialize(data);
+                }
+                catch(e) {
+                  (<ajv.ValidateFunction>validate).errors = [
+                    {
+                      keyword: 'serdes',
+                      schemaPath: data,
+                      dataPath: path,
+                      message: `format is invalid`,
+                      params: { 'x-eov-serdes': propName },
+                    },
+                  ];
+                  return false;
+                }
               }
               return true;
             };
           }
           return () => true;
         },
+        // errors: 'full',
       });
     }
     ajv.removeKeyword('readOnly');
@@ -86,7 +112,21 @@ function createAjv(
             return function validate(data, path, obj, propName) {
               if (typeof data === 'string') return true;
               if (!!sch.serialize) {
-                obj[propName] = sch.serialize(data);
+                try {
+                  obj[propName] = sch.serialize(data);
+                }
+                catch(e) {
+                  (<ajv.ValidateFunction>validate).errors = [
+                    {
+                      keyword: 'serdes',
+                      schemaPath: data,
+                      dataPath: path,
+                      message: `format is invalid`,
+                      params: { 'x-eov-serdes': propName },
+                    },
+                  ];
+                  return false;
+                }
               }
               return true;
             };
