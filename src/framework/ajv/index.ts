@@ -86,26 +86,27 @@ function createAjv(
       });
     }
     ajv.removeKeyword('readOnly');
-    ajv.addKeyword('readOnly', {
+    ajv.addKeyword({
+      keyword: 'readOnly',
       modifying: true,
-      // @ts-ignore
-      compile: (sch) => {
+      compile: (sch, p, it) => {
         if (sch) {
-          return function validate(data, path, obj, propName) {
-            const isValid = !(sch === true && data != null);
-            delete obj[propName];
-            (<ajv.ValidateFunction>validate).errors = [
-              {
-                keyword: 'readOnly',
-                schemaPath: data,
-                // @ts-ignore
-                dataPath: path,
-                message: `is read-only`,
-                params: { readOnly: propName },
-              },
-            ];
-            return isValid;
+          const validate: DataValidateFunction = (data, ctx) => {
+            const isValid = data == null;
+            if (!isValid) {
+              validate.errors = [
+                {
+                  keyword: 'readOnly',
+                  instancePath: ctx.instancePath,
+                  schemaPath: it.schemaPath.str,
+                  message: `is read-only`,
+                  params: { writeOnly: ctx.parentDataProperty },
+                },
+              ];
+            }
+            return false;
           };
+          return validate;
         }
 
         return () => true;
@@ -149,25 +150,28 @@ function createAjv(
       });
     }
     ajv.removeKeyword('writeOnly');
-    ajv.addKeyword('writeOnly', {
+    ajv.addKeyword({
+      keyword: 'writeOnly',
       modifying: true,
-      // @ts-ignore
-      compile: (sch) => {
+      schemaType: 'boolean',
+      compile: (sch, p, it) => {
         if (sch) {
-          return function validate(data, path, obj, propName) {
-            const isValid = !(sch === true && data != null);
-            (<ajv.ValidateFunction>validate).errors = [
-              {
-                keyword: 'writeOnly',
-                // @ts-ignore
-                dataPath: path,
-                schemaPath: path,
-                message: `is write-only`,
-                params: { writeOnly: propName },
-              },
-            ];
-            return isValid;
+          const validate: DataValidateFunction = (data, ctx) => {
+            const isValid = data == null;
+            if (!isValid) {
+              validate.errors = [
+                {
+                  keyword: 'writeOnly',
+                  instancePath: ctx.instancePath,
+                  schemaPath: it.schemaPath.str,
+                  message: `is write-only`,
+                  params: { writeOnly: ctx.parentDataProperty },
+                },
+              ];
+            }
+            return false;
           };
+          return validate;
         }
 
         return () => true;
