@@ -32,36 +32,39 @@ function createAjv(
 
   if (request) {
     if (options.serDesMap) {
-      ajv.addKeyword('x-eov-serdes', {
+      ajv.addKeyword({
+        keyword: 'x-eov-serdes',
         modifying: true,
-        // @ts-ignore
-        compile: (sch) => {
+        compile: (sch, p, it) => {
           if (sch) {
-            return function validate(data, path, obj, propName) {
+            if (sch.kind === 'res') {
+              return () => false;
+            }
+            const validate: DataValidateFunction = (data, ctx) => {
               if (!!sch.deserialize) {
                 if (typeof data !== 'string') {
-                  (<ajv.ValidateFunction>validate).errors = [
+                  validate.errors = [
                     {
                       keyword: 'serdes',
-                      schemaPath: data,
-                      dataPath: path,
+                      instancePath: ctx.instancePath,
+                      schemaPath: it.schemaPath.str,
                       message: `must be a string`,
-                      params: { 'x-eov-serdes': propName },
+                      params: { 'x-eov-serdes': ctx.parentDataProperty },
                     },
                   ];
                   return false;
                 }
                 try {
-                  obj[propName] = sch.deserialize(data);
-                }
-                catch(e) {
-                  (<ajv.ValidateFunction>validate).errors = [
+                  ctx.parentData[ctx.parentDataProperty] =
+                    sch.deserialize(data);
+                } catch (e) {
+                  validate.errors = [
                     {
                       keyword: 'serdes',
-                      schemaPath: data,
-                      dataPath: path,
+                      instancePath: ctx.instancePath,
+                      schemaPath: it.schemaPath.str,
                       message: `format is invalid`,
-                      params: { 'x-eov-serdes': propName },
+                      params: { 'x-eov-serdes': ctx.parentDataProperty },
                     },
                   ];
                   return false;
@@ -69,6 +72,7 @@ function createAjv(
               }
               return true;
             };
+            return validate;
           }
           return () => true;
         },
@@ -104,25 +108,27 @@ function createAjv(
   } else {
     // response
     if (options.serDesMap) {
-      ajv.addKeyword('x-eov-serdes', {
+      ajv.addKeyword({
+        keyword: 'x-eov-serdes',
         modifying: true,
-        // @ts-ignore
-        compile: (sch) => {
+        compile: (sch, p, it) => {
           if (sch) {
-            return function validate(data, path, obj, propName) {
+            if (sch.kind === 'req') {
+              return () => false;
+            }
+            const validate: DataValidateFunction = (data, ctx) => {
               if (typeof data === 'string') return true;
               if (!!sch.serialize) {
                 try {
-                  obj[propName] = sch.serialize(data);
-                }
-                catch(e) {
-                  (<ajv.ValidateFunction>validate).errors = [
+                  ctx.parentData[ctx.parentDataProperty] = sch.serialize(data);
+                } catch (e) {
+                  validate.errors = [
                     {
                       keyword: 'serdes',
-                      schemaPath: data,
-                      dataPath: path,
+                      instancePath: ctx.instancePath,
+                      schemaPath: it.schemaPath.str,
                       message: `format is invalid`,
-                      params: { 'x-eov-serdes': propName },
+                      params: { 'x-eov-serdes': ctx.parentDataProperty },
                     },
                   ];
                   return false;
@@ -130,6 +136,7 @@ function createAjv(
               }
               return true;
             };
+            return validate;
           }
           return () => true;
         },

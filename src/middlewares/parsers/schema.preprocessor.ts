@@ -352,16 +352,71 @@ export class SchemaPreprocessor {
 
   private handleSerDes(
     parent: SchemaObject,
-    schema: SchemaObject,
+    schema: SchemaObject & { _serDesInternal?: boolean },
     state: TraversalState,
   ) {
     if (
       schema.type === 'string' &&
       !!schema.format &&
-      this.serDesMap[schema.format]
+      this.serDesMap[schema.format] &&
+      !schema._serDesInternal
     ) {
-      (<any>schema).type = [this.serDesMap[schema.format].jsonType || 'object', 'string'];
-      schema['x-eov-serdes'] = this.serDesMap[schema.format];
+      const { format, nullable, ...schemaClone } = schema;
+      schema.allOf ??= [];
+      delete schema.type;
+      delete schema.nullable;
+      const cloned = { ...schemaClone, type: 'string', format };
+      // Prevent infinite loop where clonedSchema is inspected later in traversal
+      Object.defineProperty(cloned, '_serDesInternal', {
+        enumerable: false,
+        value: true,
+      });
+      const serDes = this.serDesMap[format];
+      const serDesType = {
+        type: this.serDesMap[schema.format].jsonType || 'object',
+      };
+      const serDesSchema = {
+        oneOf: [
+          // request
+          {
+            allOf: [
+              // Ensure validations happen in order
+              // e.g. string type + patterns + format... -> serdes -> object ype
+              cloned,
+              {
+                'x-eov-serdes': {
+                  ...serDes,
+                  kind: 'req',
+                },
+              },
+              serDes.deserialize ? serDesType : null,
+            ].filter((x) => x),
+          },
+          // response
+          {
+            allOf: [
+              {
+                'x-eov-serdes': {
+                  ...serDes,
+                  kind: 'res',
+                },
+              },
+              cloned,
+            ],
+          },
+        ],
+      };
+      schema.allOf.push(
+        <any>(nullable
+          ? {
+              anyOf: [
+                // Allow `null` to validate immediately, instead of potentially coalescing to ''
+                { type: 'null' },
+                serDesSchema,
+              ],
+            }
+          : serDesSchema),
+      );
     }
   }
 
