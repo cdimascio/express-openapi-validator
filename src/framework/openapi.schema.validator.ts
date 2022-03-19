@@ -1,9 +1,11 @@
-import Ajv2020, { Options } from 'ajv/dist/2020';
+import AjvDraft4, {
+  ErrorObject,
+  Options,
+  ValidateFunction,
+} from 'ajv-draft-04';
 import addFormats from 'ajv-formats';
-import Ajv from 'ajv-draft-04';
-import type { ErrorObject, ValidateFunction } from 'ajv';
 // https://github.com/OAI/OpenAPI-Specification/blob/master/schemas/v3.0/schema.json
-import * as openapi3Schema from './openapi.v3.1.schema.json';
+import * as openapi3Schema from './openapi.v3.schema.json';
 import { OpenAPIV3 } from './types.js';
 
 export interface OpenAPISchemaValidatorOpts {
@@ -15,21 +17,23 @@ export class OpenAPISchemaValidator {
   private validator: ValidateFunction;
   constructor(opts: OpenAPISchemaValidatorOpts) {
     const options: Options = {
-      schemaId: '$id',
+      schemaId: 'id',
       allErrors: true,
-      strictTypes: false,
-      validateFormats: false,
-      strictSchema: false,
+      validateFormats: true,
       coerceTypes: false,
-      useDefaults: true,
+      useDefaults: false,
       strict: false,
+      strictNumbers: true,
+      strictSchema: false,
+      strictTuples: true,
+      strictTypes: false,
     };
     if (!opts.validateApiSpec) {
       options.validateSchema = false;
     }
 
-    const v = new Ajv2020(options);
-    addFormats(v);
+    const v = new AjvDraft4(options);
+    addFormats(v, ['email', 'regex', 'uri', 'uri-reference']);
 
     const ver = opts.version && parseInt(String(opts.version), 10);
     if (!ver) throw Error('version missing from OpenAPI specification');

@@ -36,7 +36,6 @@ export const sortRoutes = (r1, r2) => {
 export class OpenApiSpecLoader {
   private readonly framework: OpenAPIFramework;
   constructor(opts: OpenAPIFrameworkArgs) {
-    debugger;
     this.framework = new OpenAPIFramework(opts);
   }
 
