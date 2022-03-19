@@ -35,6 +35,23 @@ function createAjv(
   ajv.removeKeyword('propertyNames');
   ajv.removeKeyword('contains');
   ajv.removeKeyword('const');
+  ajv.addKeyword({
+    keyword: 'components',
+    schemaType: 'object',
+  });
+  ajv.addKeyword({
+    keyword: 'deprecated',
+    schemaType: 'boolean',
+  });
+  ajv.addKeyword({
+    keyword: 'discriminator',
+    schemaType: 'object',
+  });
+  ajv.addKeyword('example');
+  ajv.addKeyword({
+    keyword: 'paths',
+    schemaType: 'object',
+  });
 
   if (request) {
     if (options.serDesMap) {
@@ -112,6 +129,10 @@ function createAjv(
         return () => true;
       },
     });
+    ajv.addKeyword({
+      keyword: 'writeOnly',
+      schemaType: 'boolean',
+    });
   } else {
     // response
     if (options.serDesMap) {
@@ -176,6 +197,10 @@ function createAjv(
 
         return () => true;
       },
+    });
+    ajv.addKeyword({
+      keyword: 'readOnly',
+      schemaType: 'boolean',
     });
   }
 
