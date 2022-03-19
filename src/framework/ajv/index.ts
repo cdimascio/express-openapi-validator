@@ -1,19 +1,20 @@
-import Ajv from 'ajv-draft-04';
+import AjvDraft4 from 'ajv-draft-04';
+import { DataValidateFunction } from 'ajv/dist/types';
+import addFormats from 'ajv-formats';
 import { formats } from './formats';
 import { OpenAPIV3, Options } from '../types';
-import ajv = require('ajv');
 
 export function createRequestAjv(
   openApiSpec: OpenAPIV3.Document,
   options: Options = {},
-): Ajv {
+): AjvDraft4 {
   return createAjv(openApiSpec, options);
 }
 
 export function createResponseAjv(
   openApiSpec: OpenAPIV3.Document,
   options: Options = {},
-): Ajv {
+): AjvDraft4 {
   return createAjv(openApiSpec, options, false);
 }
 
@@ -21,11 +22,16 @@ function createAjv(
   openApiSpec: OpenAPIV3.Document,
   options: Options = {},
   request = true,
-): Ajv {
-  const ajv = new Ajv({
-    ...options,
+): AjvDraft4 {
+  const { ajvFormatsMode, ...ajvOptions } = options;
+  const ajv = new AjvDraft4({
+    ...ajvOptions,
     allErrors: true,
+    formats: { ...formats, ...options.formats },
   });
+  if (ajvFormatsMode) {
+    addFormats(ajv, { mode: ajvFormatsMode });
+  }
   ajv.removeKeyword('propertyNames');
   ajv.removeKeyword('contains');
   ajv.removeKeyword('const');

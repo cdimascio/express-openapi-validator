@@ -48,9 +48,7 @@ export class OpenApiValidator {
     if (options.validateSecurity == null) options.validateSecurity = true;
     if (options.fileUploader == null) options.fileUploader = {};
     if (options.$refParser == null) options.$refParser = { mode: 'bundle' };
-    if (options.unknownFormats == null) options.unknownFormats === true;
     if (options.validateFormats == null) options.validateFormats = 'fast';
-    if (options.formats == null) options.formats = [];
 
     if (typeof options.operationHandlers === 'string') {
       /**
@@ -340,36 +338,42 @@ export class OpenApiValidator {
     }
 
     const unknownFormats = options.unknownFormats;
-    if (typeof unknownFormats === 'boolean') {
-      if (!unknownFormats) {
+    if (unknownFormats !== undefined) {
+      if (typeof unknownFormats === 'boolean') {
+        if (!unknownFormats) {
+          throw ono(
+            "unknownFormats must contain an array of unknownFormats, 'ignore' or true",
+          );
+        }
+      } else if (
+        typeof unknownFormats === 'string' &&
+        unknownFormats !== 'ignore' &&
+        !Array.isArray(unknownFormats)
+      )
         throw ono(
           "unknownFormats must contain an array of unknownFormats, 'ignore' or true",
         );
-      }
-    } else if (
-      typeof unknownFormats === 'string' &&
-      unknownFormats !== 'ignore' &&
-      !Array.isArray(unknownFormats)
-    )
-      throw ono(
-        "unknownFormats must contain an array of unknownFormats, 'ignore' or true",
-      );
+      console.warn('unknownFormats is deprecated.');
+    }
   }
 
   private normalizeOptions(options: OpenApiValidatorOpts): void {
+    if (Array.isArray(options.formats)) {
+      const formats = {};
+      for (const { name, ...format } of options.formats) {
+        formats[name] = format;
+      }
+      options.formats = formats;
+    } else {
+      options.formats ??= {};
+    }
+
     if (!options.serDes) {
       options.serDes = defaultSerDes;
     } else {
-      if (!Array.isArray(options.unknownFormats)) {
-        options.unknownFormats = Array<string>();
-      }
       options.serDes.forEach((currentSerDes) => {
-        if (
-          (options.unknownFormats as string[]).indexOf(currentSerDes.format) ===
-          -1
-        ) {
-          (options.unknownFormats as string[]).push(currentSerDes.format);
-        }
+        options.formats[currentSerDes.format] =
+          options.formats[currentSerDes.format] ?? true;
       });
       defaultSerDes.forEach((currentDefaultSerDes) => {
         let defaultSerDesOverride = options.serDes.find(

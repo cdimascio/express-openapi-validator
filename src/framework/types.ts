@@ -39,6 +39,7 @@ export interface MultipartOpts {
 export interface Options extends ajv.Options {
   // Specific options
   serDesMap?: SerDesMap;
+  ajvFormatsMode?: 'fast' | 'full';
 }
 
 export interface RequestValidatorOptions extends Options, ValidateRequestOpts {}
@@ -64,11 +65,17 @@ export type OperationHandlerOptions = {
   resolver: Function;
 };
 
-export type Format = {
-  name: string;
-  type?: 'number' | 'string';
-  validate: (v: any) => boolean;
-};
+export type Format =
+  | {
+      name: string;
+      type: 'number';
+      validate: (v: number) => boolean;
+    }
+  | {
+      name: string;
+      type: 'string';
+      validate: (v: string) => boolean;
+    };
 
 export type SerDes = {
   format: string;
@@ -122,16 +129,20 @@ export interface OpenApiValidatorOpts {
   ignoreUndocumented?: boolean;
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
+  /**
+   * @deprecated
+   * Use `formats` + `validateFormats` to ignore specified formats
+   */
   unknownFormats?: true | string[] | 'ignore';
   serDes?: SerDes[];
-  formats?: Format[];
+  formats?: Format[] | Record<string, ajv.Format>;
   fileUploader?: boolean | multer.Options;
   multerOpts?: multer.Options;
   $refParser?: {
     mode: 'bundle' | 'dereference';
   };
   operationHandlers?: false | string | OperationHandlerOptions;
-  validateFormats?: false | 'fast' | 'full';
+  validateFormats?: boolean | 'fast' | 'full';
 }
 
 export namespace OpenAPIV3 {

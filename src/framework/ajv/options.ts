@@ -1,4 +1,3 @@
-import { Options as AjvLibOptions } from 'ajv';
 import {
   OpenApiValidatorOpts,
   Options,
@@ -12,11 +11,11 @@ export class AjvOptions {
   constructor(options: OpenApiValidatorOpts) {
     this.options = options;
   }
-  get preprocessor(): AjvLibOptions {
+  get preprocessor(): Options {
     return this.baseOptions();
   }
 
-  get response(): AjvLibOptions {
+  get response(): Options {
     const { coerceTypes, removeAdditional } = <ValidateResponseOpts>(
       this.options.validateResponses
     );
@@ -45,7 +44,7 @@ export class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const { coerceTypes, unknownFormats, validateFormats, serDes } =
+    const { coerceTypes, formats, unknownFormats, validateFormats, serDes } =
       this.options;
     const serDesMap = {};
     for (const serDesObject of serDes) {
@@ -61,31 +60,32 @@ export class AjvOptions {
       }
     }
 
-    return {
-      validateSchema: false, // this is true for statup validation, thus it can be bypassed here
-      // nullable: true,
+    const options: Options = {
+      strict: false,
+      strictNumbers: true,
+      strictTuples: true,
+      allowUnionTypes: false,
+      validateSchema: false, // this is true for startup validation, thus it can be bypassed here
       coerceTypes,
       useDefaults: true,
       removeAdditional: false,
-      validateFormats: false,
-      formats: [
-        ...this.options.formats,
-        ...(Array.isArray(unknownFormats) ? unknownFormats : []),
-      ].reduce((acc, f) => {
-        if (typeof f === 'string') {
-          acc[f] = {
-            type: f,
-            validate: () => true,
-          };
-          return acc;
-        }
-        acc[f.name] = {
-          type: f.type,
-          validate: f.validate,
-        };
-        return acc;
-      }, {}),
-      serDesMap: serDesMap,
+      validateFormats: !!validateFormats,
+      formats: <Exclude<typeof formats, unknown[]>>formats,
+      serDesMap,
     };
+
+    if (Array.isArray(unknownFormats)) {
+      for (const format of unknownFormats) {
+        options.formats[format] = true;
+      }
+    } else if (unknownFormats === 'ignore') {
+      options.strictSchema = 'log';
+    }
+
+    if (typeof validateFormats === 'string') {
+      options.ajvFormatsMode = validateFormats;
+    }
+
+    return options;
   }
 }
