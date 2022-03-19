@@ -65,17 +65,11 @@ export type OperationHandlerOptions = {
   resolver: Function;
 };
 
-export type Format =
-  | {
-      name: string;
-      type: 'number';
-      validate: (v: number) => boolean;
-    }
-  | {
-      name: string;
-      type: 'string';
-      validate: (v: string) => boolean;
-    };
+export type Format = {
+  name: string;
+  type?: 'number' | 'string';
+  validate: (v: any) => boolean;
+};
 
 export type SerDes = {
   format: string;

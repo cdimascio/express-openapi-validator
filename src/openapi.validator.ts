@@ -1,3 +1,4 @@
+import { Options } from 'ajv';
 import ono from 'ono';
 import * as express from 'express';
 import * as _uniq from 'lodash.uniq';
@@ -359,9 +360,22 @@ export class OpenApiValidator {
 
   private normalizeOptions(options: OpenApiValidatorOpts): void {
     if (Array.isArray(options.formats)) {
-      const formats = {};
-      for (const { name, ...format } of options.formats) {
-        formats[name] = format;
+      const formats: Options['formats'] = {};
+      for (const { name, type, validate } of options.formats) {
+        if (type) {
+          const formatValidator:
+            | {
+                type: 'number';
+                validate: (x: number) => boolean;
+              }
+            | {
+                type: 'string';
+                validate: (x: string) => boolean;
+              } = { type, validate };
+          formats[name] = formatValidator;
+        } else {
+          formats[name] = validate;
+        }
       }
       options.formats = formats;
     } else {
