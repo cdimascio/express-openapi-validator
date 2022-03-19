@@ -75,7 +75,7 @@ describe(packageJson.name, () => {
       .expect(400)
       .then((response) => {
         expect(response.body.message).to.equal(
-          'request.query.settings should be object',
+          'request/query/settings must be object',
         );
       }));
 
@@ -90,7 +90,7 @@ describe(packageJson.name, () => {
       .then((r) => {
         expect(r.body)
           .to.have.property('message')
-          .that.equals('request.query.settings.tag_ids should be array');
+          .that.equals('request.query.settings.tag_ids must be array');
       }));
 
   it('should explode query param object e.g. tag_ids, state as query params', async () =>

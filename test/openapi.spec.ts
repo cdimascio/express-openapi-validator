@@ -37,8 +37,8 @@ describe(packageJson.name, () => {
           .then(r => {
             const e = r.body.errors;
             expect(e).to.have.length(2);
-            expect(e[0].path).to.equal('.query.limit');
-            expect(e[1].path).to.equal('.query.test');
+            expect(e[0].path).to.equal('/query.limit');
+            expect(e[1].path).to.equal('/query.test');
           }));
 
       it('should respond with json on proper get call', async () =>
@@ -78,7 +78,7 @@ describe(packageJson.name, () => {
             const e = r.body.errors;
             expect(e).to.have.length(1);
             expect(e[0].path).to.contain('limit');
-            expect(e[0].message).to.equal('should be >= 5');
+            expect(e[0].message).to.equal('must be >= 5');
           }));
 
       it('should return 400 when non-urlencoded JSON in query param', async () =>
@@ -123,7 +123,7 @@ describe(packageJson.name, () => {
             expect(e).to.have.length(1);
             expect(e[0].path).to.contain('testJson');
             expect(e[0].message).to.equal(
-              'should be equal to one of the allowed values: bar, baz',
+              'must be equal to one of the allowed values: bar, baz',
             );
           }));
 
@@ -180,7 +180,7 @@ describe(packageJson.name, () => {
             expect(e).to.have.length(1);
             expect(e[0].path).to.contain('testArray');
             expect(e[0].message).to.equal(
-              'should be equal to one of the allowed values: foo, bar, baz',
+              'must be equal to one of the allowed values: foo, bar, baz',
             );
           }));
 
@@ -206,7 +206,7 @@ describe(packageJson.name, () => {
             expect(e).to.have.length(1);
             expect(e[0].path).to.contain('testArrayExplode');
             expect(e[0].message).to.equal(
-              'should be equal to one of the allowed values: foo, bar, baz',
+              'must be equal to one of the allowed values: foo, bar, baz',
             );
           }));
     });
@@ -220,7 +220,7 @@ describe(packageJson.name, () => {
           .then(r => {
             const e = r.body.errors;
             expect(e[0].message).to.equal(
-              "should have required property 'name'",
+              "must have required property 'name'",
             );
           }));
 
@@ -232,7 +232,7 @@ describe(packageJson.name, () => {
           .then(r => {
             const e = r.body.errors;
             expect(e[0].message).to.equal(
-              "should have required property 'name'",
+              "must have required property 'name'",
             );
           }));
 
@@ -267,7 +267,7 @@ describe(packageJson.name, () => {
             .then(r => {
               const e = r.body.errors;
               expect(e[0].message).to.equal(
-                "should have required property 'name'",
+                "must have required property 'name'",
               );
             }),
       );
@@ -370,7 +370,7 @@ describe(packageJson.name, () => {
           .then(r => {
             const e = r.body.errors;
             expect(e[0].path).contains('id');
-            expect(e[0].message).equals('should be integer');
+            expect(e[0].message).equals('must be integer');
           });
       });
 
@@ -386,7 +386,7 @@ describe(packageJson.name, () => {
           .then(r => {
             const e = r.body.errors;
             expect(e[0].message).equals(
-              'should be equal to one of the allowed values: foo, bar, baz',
+              'must be equal to one of the allowed values: foo, bar, baz',
             );
           });
       });

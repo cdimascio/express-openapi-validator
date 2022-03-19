@@ -77,7 +77,7 @@ describe('ignorePaths as RegExp', () => {
         .then(r => {
           const e = r.body.errors;
           expect(e[0].path).contains('id');
-          expect(e[0].message).equals('should be integer');
+          expect(e[0].message).equals('must be integer');
         });
     });
 
@@ -87,7 +87,7 @@ describe('ignorePaths as RegExp', () => {
         .expect(400)
         .then(r => {
           const e = r.body.errors;
-          expect(e[0].message).to.equal("should have required property 'id'");
+          expect(e[0].message).to.equal("must have required property 'id'");
         }));
 
     it('should return 404 if route is defined in openapi but not express and params are valid', async () =>
@@ -176,7 +176,7 @@ describe('ignorePaths as Function', () => {
         .then(r => {
           const e = r.body.errors;
           expect(e[0].path).contains('id');
-          expect(e[0].message).equals('should be integer');
+          expect(e[0].message).equals('must be integer');
         });
     });
 
@@ -186,7 +186,7 @@ describe('ignorePaths as Function', () => {
         .expect(400)
         .then(r => {
           const e = r.body.errors;
-          expect(e[0].message).to.equal("should have required property 'id'");
+          expect(e[0].message).to.equal("must have required property 'id'");
         }));
 
     it('should return 404 if route is defined in openapi but not express and params are valid', async () =>

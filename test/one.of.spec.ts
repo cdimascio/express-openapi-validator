@@ -83,7 +83,7 @@ describe(packageJson.name, () => {
       .then(r => {
         const e = r.body;
         expect(e.message).to.contain(
-          'should match exactly one schema in oneOf',
+          'must match exactly one schema in oneOf',
         );
       });
   });
@@ -139,7 +139,7 @@ describe(packageJson.name, () => {
       .then(r => {
         const e = r.body;
         expect(e.message).to.contain(
-          'should match exactly one schema in oneOf',
+          'must match exactly one schema in oneOf',
         );
       });
   });

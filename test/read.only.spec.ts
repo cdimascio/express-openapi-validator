@@ -143,7 +143,7 @@ describe(packageJson.name, () => {
       .then((r) => {
         const body = r.body;
         // id is a readonly property and should not be allowed in the request
-        expect(body.message).to.contain('request.body.reviews[0].id');
+        expect(body.message).to.contain('request/body/reviews/0/id');
       }));
 
   it('should pass validation if required read only properties to be missing from request ($ref)', async () =>
@@ -205,7 +205,7 @@ describe(packageJson.name, () => {
       .then((r) => {
         expect(r.body.errors[0])
           .to.have.property('message')
-          .equals("should have required property 'id'");
+          .equals("must have required property 'id'");
       }));
 
   it('should require readonly required property in response', async () =>
@@ -224,6 +224,6 @@ describe(packageJson.name, () => {
       .set('content-type', 'application/json')
       .expect(500)
       .then((r) => {
-        expect(r.body.message).includes("should have required property 'id'");
+        expect(r.body.message).includes("must have required property 'id'");
       }));
 });

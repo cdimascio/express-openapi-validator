@@ -36,10 +36,10 @@ describe(packageJson.name, () => {
             .with.length(2);
           expect(e.body.errors[0])
             .has.property('message')
-            .equal("should have required property 'file'");
+            .equal("must have required property 'file'");
           expect(e.body.errors[1])
             .has.property('message')
-            .equal("should have required property 'metadata'");
+            .equal("must have required property 'metadata'");
         }));
 
     it('should throw 400 when required form field is missing during multipart upload', async () =>
@@ -106,7 +106,7 @@ describe(packageJson.name, () => {
           const e = r.body.errors;
           expect(e).to.have.length(1);
           expect(e[0].path).to.contain('number');
-          expect(e[0].message).to.equal('should be >= 5');
+          expect(e[0].message).to.equal('must be >= 5');
         }));
   });
 });

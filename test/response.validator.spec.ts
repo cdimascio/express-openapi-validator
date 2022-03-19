@@ -74,7 +74,7 @@ describe(packageJson.name, () => {
       });
     } catch (e) {
       expect(e).to.be.not.null;
-      expect(e.message).to.contain('should be integer');
+      expect(e.message).to.contain('must be integer');
       expect(e.message).to.not.contain('additional properties');
     }
 
@@ -88,7 +88,7 @@ describe(packageJson.name, () => {
       });
     } catch (e) {
       expect(e).to.be.not.null;
-      expect(e.message).to.contain('should be array');
+      expect(e.message).to.contain('must be array');
     }
 
     try {
@@ -101,7 +101,7 @@ describe(packageJson.name, () => {
       });
     } catch (e) {
       expect(e).to.be.not.null;
-      expect(e.message).to.contain('should be string');
+      expect(e.message).to.contain('must be string');
     }
   });
 });
