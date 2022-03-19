@@ -77,7 +77,6 @@ describe('serdes', () => {
           res.json(req.body);
         });
         app.use((err, req, res, next) => {
-          console.error(err)
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
@@ -222,7 +221,6 @@ describe('serdes serialize response components only', () => {
           res.json(req.body);
         });
         app.use((err, req, res, next) => {
-          console.error(err)
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
@@ -318,7 +316,6 @@ describe('serdes serialize response components only', () => {
       .query({baddateresponse : 'functionBadFormat'})
       .expect(200)
       .then((r) => {
-        console.log(r.body);
         expect(r.body.message).to.equal('Something saying that date is not date-time format');
       }));
 
@@ -386,7 +383,6 @@ describe('serdes with jsonType array type string-list', () => {
           res.json(req.body);
         });
         app.use((err, req, res, next) => {
-          console.error(err)
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
