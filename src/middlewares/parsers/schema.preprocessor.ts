@@ -329,11 +329,15 @@ export class SchemaPreprocessor {
           delete newSchema.required;
         }
 
-        ancestor._discriminator ??= {
-          validators: {},
-          options: o.options,
-          property: o.discriminator,
-        };
+        // Expose `_discriminator` to consumers without exposing to AJV
+        Object.defineProperty(ancestor, '_discriminator', {
+          enumerable: false,
+          value: ancestor._discriminator ?? {
+            validators: {},
+            options: o.options,
+            property: o.discriminator,
+          },
+        });
 
         for (const option of options) {
           ancestor._discriminator.validators[option] =
