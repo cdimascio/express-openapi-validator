@@ -191,7 +191,7 @@ export class RequestValidator {
       } else {
         throw new BadRequest({
           path: req.path,
-          message: `'${property}' should be equal to one of the allowed values: ${options
+          message: `'${property}' must be equal to one of the allowed values: ${options
             .map((o) => o.option)
             .join(', ')}.`,
         });
