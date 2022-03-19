@@ -304,11 +304,11 @@ module.exports = {
 ```shell
 curl -s http://localhost:3000/v1/pets/as |jq
 {
-  "message": "request.params.id should be integer",
+  "message": "request/params/id must be integer",
   "errors": [
     {
-      "path": ".params.id",
-      "message": "should be integer",
+      "path": "/params/id",
+      "message": "must be integer",
       "errorCode": "type.openapi.validation"
     }
   ]
@@ -320,16 +320,16 @@ curl -s http://localhost:3000/v1/pets/as |jq
 ```shell
  curl -s 'http://localhost:3000/v1/pets?limit=25' |jq
 {
-  "message": "request.query should have required property 'type', request.query.limit should be <= 20",
+  "message": "request.query must have required property 'type', request.query.limit must be <= 20",
   "errors": [
     {
-      "path": ".query.type",
-      "message": "should have required property 'type'",
+      "path": "/query.type",
+      "message": "must have required property 'type'",
       "errorCode": "required.openapi.validation"
     },
     {
-      "path": ".query.limit",
-      "message": "should be <= 20",
+      "path": "/query.limit",
+      "message": "must be <= 20",
       "errorCode": "maximum.openapi.validation"
     }
   ]
@@ -398,11 +398,11 @@ curl -s --request POST \
   --header 'x-api-key: XXXX' \
   --data '{}'|jq
 {
-  "message": "request.body should have required property 'name'",
+  "message": "request.body must have required property 'name'",
   "errors": [
     {
-      "path": ".body.name",
-      "message": "should have required property 'name'",
+      "path": "/body.name",
+      "message": "must have required property 'name'",
       "errorCode": "required.openapi.validation"
     }
   ]
@@ -433,16 +433,16 @@ Errors in response validation return `500`, not of `400`
 ```
  curl -s 'http://localhost:3000/v1/pets/99' |jq
 {
-  "message": ".response should have required property 'name', .response should have required property 'id'",
+  "message": ".response must have required property 'name', .response must have required property 'id'",
   "errors": [
     {
-      "path": ".response.name",
-      "message": "should have required property 'name'",
+      "path": "/response.name",
+      "message": "must have required property 'name'",
       "errorCode": "required.openapi.validation"
     },
     {
-      "path": ".response.id",
-      "message": "should have required property 'id'",
+      "path": "/response.id",
+      "message": "must have required property 'id'",
       "errorCode": "required.openapi.validation"
     }
   ]
