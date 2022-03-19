@@ -98,7 +98,7 @@ describe('serdes', () => {
       .get(`${app.basePath}/users/1234`)
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request.params.id should match pattern "^[0-9a-fA-F]{24}$"');
+        expect(r.body.message).to.contain('request/params/id must match pattern "^[0-9a-fA-F]{24}$"');
       }));
 
   it('should control GOOD id format and get a response in expected format', async () =>
@@ -138,7 +138,7 @@ describe('serdes', () => {
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request.body.id should match pattern "^[0-9a-fA-F]{24}$"');
+        expect(r.body.message).to.contain('request/body/id must match pattern "^[0-9a-fA-F]{24}$"');
       }));
 
   it('should POST throw error on invalid schema Date', async () =>
@@ -152,7 +152,7 @@ describe('serdes', () => {
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request.body.creationDate should match format "date"');
+        expect(r.body.message).to.contain('request/body/creationDate must match format "date"');
       }));
 
 });
@@ -243,7 +243,7 @@ describe('serdes serialize response components only', () => {
       .get(`${app.basePath}/users/1234`)
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request.params.id should match pattern "^[0-9a-fA-F]{24}$"');
+        expect(r.body.message).to.contain('request/params/id must match pattern "^[0-9a-fA-F]{24}$"');
       }));
 
   it('should control GOOD id format and get a response in expected format', async () =>
@@ -283,7 +283,7 @@ describe('serdes serialize response components only', () => {
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request.body.id should match pattern "^[0-9a-fA-F]{24}$"');
+        expect(r.body.message).to.contain('request/body/id must match pattern "^[0-9a-fA-F]{24}$"');
       }));
 
   it('should POST throw error on invalid schema Date', async () =>
@@ -297,7 +297,7 @@ describe('serdes serialize response components only', () => {
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request.body.creationDate should match format "date"');
+        expect(r.body.message).to.contain('request/body/creationDate must match format "date"');
       }));
 
   it('should throw error 500 on invalid object type instead of Date expected', async () =>
@@ -306,8 +306,7 @@ describe('serdes serialize response components only', () => {
       .query({ baddateresponse: 'functionNotExists' })
       .expect(500)
       .then((r) => {
-        console.log(r);
-        expect(r.body.message).to.equal('.response.creationDate format is invalid');
+        expect(r.body.message).to.contain('/response/creationDate format is invalid');
       }));
 
   /*
@@ -408,7 +407,7 @@ describe('serdes with jsonType array type string-list', () => {
       .get(`${app.basePath}/users/1234`)
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request.params.id should match pattern "^[0-9a-fA-F]{24}$"');
+        expect(r.body.message).to.contain('request/params/id must match pattern "^[0-9a-fA-F]{24}$"');
       }));
 
   it('should control GOOD id format and get a response in expected format', async () => {
@@ -454,7 +453,7 @@ describe('serdes with jsonType array type string-list', () => {
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request.body.id should match pattern "^[0-9a-fA-F]{24}$"');
+        expect(r.body.message).to.contain('request/body/id must match pattern "^[0-9a-fA-F]{24}$"');
       }));
 
   it('should POST throw error on invalid schema Date', async () =>
@@ -469,7 +468,7 @@ describe('serdes with jsonType array type string-list', () => {
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request.body.creationDate should match format "date"');
+        expect(r.body.message).to.contain('request/body/creationDate must match format "date"');
       }));
 
   it('should POST throw error for deserialize on request of non-string format', async () =>
@@ -484,7 +483,7 @@ describe('serdes with jsonType array type string-list', () => {
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request.body.tags must be a string');
+        expect(r.body.message).to.contain('request/body/tags must be a string');
       }));
 
 });
