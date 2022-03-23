@@ -1230,6 +1230,12 @@ app.use(OpenApiValidator.middleware({
 
 In order to modify the `req.params`, express requires that a param handler be registered e.g. `app.param(...)` or `router.param(...)`. Since `app` is available to middleware functions, the validator registers an `app.param` handler to coerce and modify the values of `req.params` to their declared types. Unfortunately, express does not provide a means to determine the current router from a middleware function, hence the validator is unable to register the same param handler on an express router. Ultimately, this means if your handler function is defined on `app`, the values of `req.params` will be coerced to their declared types. If your handler function is declare on an `express.Router`, the values of `req.params` values will be of type `string` (You must coerce them e.g. `parseInt(req.params.id)`).
 
+**Q:** Can I use my own vendor extensions?
+
+**A:** Yes, any `x-*` properties are allowed (per [OpenApi Specification](https://swagger.io/docs/specification/openapi-extensions/)) and are ignored by this library.
+
+The exception is any `x-eov-*` prefixed properties, which this library reserves for its own custom vendor extensions. Some of these keywords are documented in this README, such as `x-eov-operation-id`.
+
 ## Related Projects
 
 - [koa-openapi-validator](https://github.com/cdimascio/express-openapi-validator/tree/lerna-fastify/packages/koa-openapi-validator)
