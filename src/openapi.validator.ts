@@ -357,6 +357,18 @@ export class OpenApiValidator {
         );
       console.warn('unknownFormats is deprecated.');
     }
+
+    if (Array.isArray(options.formats)) {
+      console.warn(
+        'formats as an array is deprecated. Use object instead https://ajv.js.org/options.html#formats',
+      );
+    }
+
+    if (typeof options.validateFormats === 'string') {
+      console.warn(
+        `"validateFormats" as a string is deprecated. Set to a boolean and use "ajvFormats"`,
+      );
+    }
   }
 
   private normalizeOptions(
