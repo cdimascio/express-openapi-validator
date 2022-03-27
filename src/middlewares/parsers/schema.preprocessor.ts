@@ -350,73 +350,105 @@ export class SchemaPreprocessor {
     }
   }
 
+  /**
+   * Attach custom `x-eov-serdes` vendor extension for performing
+   * serialization (response) and deserialization (request) of data.
+   *
+   * This only applies to `type=string` schemas with a `format` that was flagged for serdes.
+   *
+   * The goal of this function is to define a JSON schema that:
+   * 1) Only performs the method for matching req/res (e.g. never deserialize a response)
+   * 2) Validates initial data THEN performs serdes THEN validates output. In that order.
+   * 3) Hide complex schema (and its validation errors) from user.
+   *
+   * AJV makes no guarantees about order of keyword validations, with exception of array subschemas
+   * like allOf, anyOf, and oneOf, which are validated in-order.
+   *
+   * The solution is to split the schema into two `anyOf` subschemas, both with an `x-eov-serdes`
+   * that will only validate their matching `kind` (req or res).
+   *
+   * A custom `xEovAnyOf` is used in place of `anyOf` to support redacting/modifying the validation errors
+   * to seem as though failures came from original unmodified schema.
+   *
+   * The base schema is "replaced" in-place with only the `xEovAnyOf` keyword. The actual string validating
+   * schema is cloned and placed within each `anyOf`.
+   *
+   * See `augmentAjvErrors` for redaction logic.
+   *
+   * @param {object} parent - parent schema
+   * @param {object} schema - schema
+   * @param {object} state - traversal state
+   */
   private handleSerDes(
     parent: SchemaObject,
-    schema: SchemaObject & { _serDesInternal?: boolean },
+    schema: SchemaObject & {
+      // Custom alias for `allOf` to all redacting schema validation errors
+      xEovAnyOf?: unknown[];
+      // Attached+checked internally
+      _serDesInternal?: boolean;
+    },
     state: TraversalState,
   ) {
     if (
       schema.type === 'string' &&
       !!schema.format &&
       this.serDesMap[schema.format] &&
+      (this.serDesMap[schema.format].serialize ||
+        this.serDesMap[schema.format].deserialize) &&
+      // Attached to sub-schema in this method,
+      // prevents infinite loop where clonedSchema is now being inspected
       !schema._serDesInternal
     ) {
-      const { format, nullable, ...schemaClone } = schema;
-      schema.allOf ??= [];
-      delete schema.type;
-      delete schema.nullable;
-      const cloned = { ...schemaClone, type: 'string', format };
-      // Prevent infinite loop where clonedSchema is inspected later in traversal
+      const { ...schemaClone } = schema;
+      const serDes = this.serDesMap[schema.format];
+      for (const key of Object.keys(schema)) {
+        delete schema[key];
+      }
+      const cloned = { ...schemaClone, type: 'string' };
       Object.defineProperty(cloned, '_serDesInternal', {
         enumerable: false,
         value: true,
       });
-      const serDes = this.serDesMap[format];
-      const serDesType = {
-        type: this.serDesMap[schema.format].jsonType || 'object',
-      };
-      const serDesSchema = {
-        oneOf: [
-          // request
-          {
+
+      // If deserialization is enabled, modify data after validation.
+      // If it does not exist, string validation is enough.
+      // The string-only subschema may be applied to responses as well, which is acceptable as
+      // this schema is placed _AFTER_ the response in `anyOf`.
+      // So either the response has been fully validated and AJV will skip the second anyOf subschema,
+      // or it failed and the string invalidation will still be applied.
+      const requestSchema = serDes.deserialize
+        ? {
+            // Ensure validations happen in order
+            // e.g. is request -> string type + patterns + format... -> serdes -> object type
             allOf: [
-              // Ensure validations happen in order
-              // e.g. string type + patterns + format... -> serdes -> object ype
-              cloned,
               {
                 'x-eov-serdes': {
-                  ...serDes,
                   kind: 'req',
                 },
               },
-              serDes.deserialize ? serDesType : null,
-            ].filter((x) => x),
-          },
-          // response
-          {
-            allOf: [
-              {
-                'x-eov-serdes': {
-                  ...serDes,
-                  kind: 'res',
-                },
-              },
               cloned,
+              {
+                'x-eov-serdes': serDes,
+              },
             ],
-          },
-        ],
-      };
-      schema.allOf.push(
-        <any>(nullable
-          ? {
-              anyOf: [
-                // Allow `null` to validate immediately, instead of potentially coalescing to ''
-                { type: 'null' },
-                serDesSchema,
-              ],
-            }
-          : serDesSchema),
-      );
+          }
+        : cloned;
+
+      schema.xEovAnyOf = [
+        // response
+        {
+          allOf: [
+            {
+              'x-eov-serdes': {
+                ...serDes,
+                kind: 'res',
+              },
+            },
+            cloned,
+          ],
+        },
+        requestSchema,
+      ];
     }
   }
 

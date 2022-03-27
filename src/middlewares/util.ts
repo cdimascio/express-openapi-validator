@@ -54,7 +54,23 @@ export function augmentAjvErrors(errors: ErrorObject[] = []): ErrorObject[] {
         : e.message;
     }
   });
-  return errors;
+  const serDesPrefixes: string[] = [];
+  return errors.filter((e) => {
+    if (
+      e.message === 'REDACT-THIS-ERROR' ||
+      e.message === 'must pass "x-eov-serdes" keyword validation' ||
+      serDesPrefixes.some((prefix) => e.schemaPath.startsWith(prefix))
+    ) {
+      return false;
+    }
+    // In the case of multiple x-eov-serdes validation failures, take the first one
+    // and flag the prefix to be ignored on any future errors.
+    const xEovAnyOf = e.schemaPath.indexOf('/xEovAnyOf/');
+    if (xEovAnyOf !== -1) {
+      serDesPrefixes.push(e.schemaPath.slice(0, xEovAnyOf + 11));
+    }
+    return true;
+  });
 }
 export function ajvErrorsToValidatorError(
   status: number,

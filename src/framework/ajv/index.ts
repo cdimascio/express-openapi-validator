@@ -41,6 +41,15 @@ function createAjv(
   ajv.removeKeyword('contains');
   ajv.removeKeyword('const');
 
+  if (options.serDesMap) {
+    // Alias for `anyOf` with redactable message
+    ajv.addKeyword({
+      ...anyOf,
+      keyword: 'xEovAnyOf',
+      error: { message: 'REDACT-THIS-ERROR' },
+    });
+  }
+
   if (request) {
     if (options.serDesMap) {
       ajv.addKeyword({
