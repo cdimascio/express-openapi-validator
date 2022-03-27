@@ -78,7 +78,7 @@ describe(packageJson.name, () => {
         expect(r.body.errors).to.be.an('array');
       }));
 
-  it('should return 200 if operation overrides x-allow-unknown-query-parameters=true', async () =>
+  it('should return 200 if operation overrides x-eov-allow-unknown-query-parameters=true', async () =>
     request(app)
       .get(`${app.basePath}/unknown_query_params/allow`)
       .query({

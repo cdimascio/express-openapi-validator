@@ -76,6 +76,20 @@ export class RequestValidator {
     return this.middlewareCache[key](req, res, next);
   }
 
+  private warnUnknownQueryParametersKeyword(
+    reqSchema: OperationObject,
+  ): boolean {
+    if (typeof reqSchema['x-allow-unknown-query-parameters'] === 'boolean') {
+      console.warn(
+        '"x-allow-unknown-query-parameters" is deprecated. Use "x-eov-allow-unknown-query-parameters"',
+      );
+    }
+    return (
+      reqSchema['x-allow-unknown-query-parameters'] ??
+      this.requestOpts.allowUnknownQueryParameters
+    );
+  }
+
   private buildMiddleware(
     path: string,
     reqSchema: OperationObject,
@@ -92,8 +106,8 @@ export class RequestValidator {
     });
 
     const allowUnknownQueryParameters = !!(
-      reqSchema['x-allow-unknown-query-parameters'] ??
-      this.requestOpts.allowUnknownQueryParameters
+      reqSchema['x-eov-allow-unknown-query-parameters'] ??
+      this.warnUnknownQueryParametersKeyword(reqSchema)
     );
 
     return (req: OpenApiRequest, res: Response, next: NextFunction): void => {

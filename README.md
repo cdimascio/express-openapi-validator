@@ -562,7 +562,7 @@ Determines whether the validator should validate requests.
   ```
 
   `allowUnknownQueryParameters` is set for the entire validator. It can be overwritten per-operation using
-  a custom property `x-allow-unknown-query-parameters`.
+  a custom property `x-eov-allow-unknown-query-parameters`.
 
   For example to allow unknown query parameters on ONLY a single endpoint:
 
@@ -570,7 +570,7 @@ Determines whether the validator should validate requests.
   paths:
     /allow_unknown:
       get:
-        x-allow-unknown-query-parameters: true
+        x-eov-allow-unknown-query-parameters: true
         parameters:
           - name: value
             in: query
