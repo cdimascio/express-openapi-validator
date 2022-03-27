@@ -173,7 +173,7 @@ function createAjv(
     ajv.removeKeyword('readOnly');
     ajv.addKeyword({
       keyword: 'readOnly',
-      modifying: true,
+      errors: true,
       compile: (sch, p, it) => {
         if (sch) {
           const validate: DataValidateFunction = (data, ctx) => {
@@ -241,8 +241,8 @@ function createAjv(
     ajv.removeKeyword('writeOnly');
     ajv.addKeyword({
       keyword: 'writeOnly',
-      modifying: true,
       schemaType: 'boolean',
+      errors: true,
       compile: (sch, p, it) => {
         if (sch) {
           const validate: DataValidateFunction = (data, ctx) => {
