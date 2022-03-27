@@ -20,6 +20,7 @@ describe(packageJson.name, () => {
         formats: {
             'date-time': true,
         },
+        strict: false,
     });
     const responses = petsResponseSchema();
     const validators = v._getOrBuildValidator(fakeReq, responses);
@@ -44,6 +45,7 @@ describe(packageJson.name, () => {
         formats: {
             'date-time': true,
         },
+        strict: false,
     });
     const responses = petsResponseSchema();
     const validators = v._getOrBuildValidator(fakeReq, responses);
@@ -72,6 +74,7 @@ describe(packageJson.name, () => {
         formats: {
             'date-time': true,
         },
+        strict: false,
     });
     const responses = petsResponseSchema();
     const validators = v._getOrBuildValidator(fakeReq, responses);
