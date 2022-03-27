@@ -491,13 +491,16 @@ OpenApiValidator.middleware({
       }
     }
   },
-  validateFormats: 'fast',
-  formats: [{
-    name: 'my-custom-format',
-    type: 'string' | 'number',
-    validate: (value: any) => boolean,
-  }],
-  unknownFormats: ['phone-number', 'uuid'],
+  validateFormats: true,
+  formats: {
+    'my-custom-format': {
+        type: 'string' | 'number',
+        validate: (value: any) => boolean,
+    },
+    'phone-number': true,
+    uuid: true,
+  },
+  ajvFormats: { mode: 'fast' },
   serDes: [
     OpenApiValidator.serdes.dateTime,
     OpenApiValidator.serdes.date,
@@ -694,9 +697,10 @@ _Warning:_ Be certain your spec is valid. And be sure you know what you're doing
 
 ### ▪️ formats (optional)
 
-Defines a list of custom formats.
+Defines a dictionary of custom formats.
 
-- `[{ ... }]` - array of custom format objects. Each object must have the following properties:
+- `{formatName: { ... }}` - object with format name as key and validation logic as value. See [Ajv documentation](https://ajv.js.org/options.html#validateformats).
+- (**deprecated**) `[{ ... }]` - array of custom format objects. Each object must have the following properties:
   - name: string (required) - the format name
   - validate: (v: any) => boolean (required) - the validation function
   - type: 'string' | 'number' (optional) - the format's type
@@ -704,20 +708,18 @@ Defines a list of custom formats.
 e.g.
 
 ```javascript
-formats: [
-  {
-    name: 'my-three-digit-format',
+formats: {
+  'my-three-digit-format': {
     type: 'number',
     // validate returns true the number has 3 digits, false otherwise
     validate: (v) => /^\d{3}$/.test(v.toString()),
   },
-  {
-    name: 'my-three-letter-format',
+  'my-three-letter-format': {
     type: 'string',
     // validate returns true the string has 3 letters, false otherwise
     validate: (v) => /^[A-Za-z]{3}$/.test(v),
   },
-];
+};
 ```
 
 Then use it in a spec e.g.
@@ -731,12 +733,23 @@ my_property:
 ### ▪️ validateFormats (optional)
 
 Specifies the strictness of validation of string formats.
+See [Ajv documentation](https://ajv.js.org/options.html#validateformats).
 
-- `"fast"` (**default**) - only validate syntax, but not semantics. E.g. `2010-13-30T23:12:35Z` will pass validation even though it contains month 13.
-- `"full"` - validate both syntax and semantics. Illegal dates will not pass.
+- `true` (**default**) - validate formats. If `ajvFormats` is not set, it will be set to `{ mode: 'fast' }`. Although `ajvFormats` should be set explicitly, as this default behavior may be removed in a major version bump.
 - `false` - do not validate formats at all.
+- `"fast" | "full"` (**deprecated**) - Use `{ validateFormats: true, ajvFormats: { mode: 'fast' | 'full' } }` instead.
 
-### ▪️ unknownFormats (optional)
+### ▪️ unknownFormats (**deprecated**)
+
+Use `formats` + `validateFormats` instead:
+```diff
+- unknownFormats: ['phone-number', 'uuid'],
++ formats: { 'phone-number': true, uuid: true },
+```
+```diff
+- unknownFormats: true,
++ validateFormats: false,
+```
 
 Defines how the validator should behave if an unknown or custom format is encountered.
 
@@ -822,6 +835,14 @@ Additionally, if you want to change how modules are resolved e.g. use dot delimi
 ```
 operationHandlers: 'operations/base/path'
 ```
+
+### ▪️ ajvFormats (optional)
+
+Options to be passed to [Ajv Formats](https://www.npmjs.com/package/ajv-formats) to add extra format validations.
+
+Will not overwrite formats provided in `formats`.
+
+- `[string]` | `object` - See [Ajv Documentation](https://ajv.js.org/packages/ajv-formats.html#options).
 
 **Note** that the `x-eov-operation-handler` OpenAPI vendor extension specifies a path relative to `operationHandlers`. Thus if `operationHandlers` is `/handlers` and an `x-eov-operation-handler` has path `routes/ping`, then the handler file `/handlers/routes/ping.js` (or `ts`) is used.
 
