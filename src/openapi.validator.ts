@@ -47,7 +47,8 @@ export class OpenApiValidator {
     if (options.validateSecurity == null) options.validateSecurity = true;
     if (options.fileUploader == null) options.fileUploader = {};
     if (options.$refParser == null) options.$refParser = { mode: 'bundle' };
-    if (options.validateFormats == null) options.validateFormats = 'fast';
+    if (options.validateFormats == null) options.validateFormats = true;
+    if (options.formats == null) options.formats = {};
 
     if (typeof options.operationHandlers === 'string') {
       /**
@@ -380,8 +381,6 @@ export class OpenApiValidator {
         }
       }
       options.formats = formats;
-    } else {
-      options.formats ??= {};
     }
 
     if (!options.serDes) {
