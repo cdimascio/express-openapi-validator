@@ -37,8 +37,8 @@ describe(packageJson.name, () => {
           .then(r => {
             const e = r.body.errors;
             expect(e).to.have.length(2);
-            expect(e[0].path).to.equal('/query.limit');
-            expect(e[1].path).to.equal('/query.test');
+            expect(e[0].path).to.equal('/query/limit');
+            expect(e[1].path).to.equal('/query/test');
           }));
 
       it('should respond with json on proper get call', async () =>

@@ -197,11 +197,11 @@ describe('request bodies', () => {
       .then((r) => {
         const errors = r.body.errors;
         expect(errors).to.be.an('array').with.length(2);
-        expect(errors[0].path).to.equal('/body.invalidProperty');
+        expect(errors[0].path).to.equal('/body/invalidProperty');
         expect(errors[0].message).to.equal(
           'must NOT have additional properties',
         );
-        expect(errors[1].path).to.equal('/body.invalidProperty2');
+        expect(errors[1].path).to.equal('/body/invalidProperty2');
         expect(errors[1].message).to.equal(
           'must NOT have additional properties',
         );
