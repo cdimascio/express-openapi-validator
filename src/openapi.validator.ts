@@ -7,6 +7,7 @@ import { Application, Response, NextFunction, Router } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
 import { Spec } from './framework/openapi.spec.loader';
 import {
+  NormalizedOpenApiValidatorOpts,
   OpenApiValidatorOpts,
   ValidateRequestOpts,
   ValidateResponseOpts,
@@ -36,13 +37,10 @@ export {
 } from './framework/types';
 
 export class OpenApiValidator {
-  readonly options: OpenApiValidatorOpts;
+  readonly options: NormalizedOpenApiValidatorOpts;
   readonly ajvOpts: AjvOptions;
 
   constructor(options: OpenApiValidatorOpts) {
-    this.validateOptions(options);
-    this.normalizeOptions(options);
-
     if (options.validateApiSpec == null) options.validateApiSpec = true;
     if (options.validateRequests == null) options.validateRequests = true;
     if (options.validateResponses == null) options.validateResponses = false;
@@ -85,8 +83,10 @@ export class OpenApiValidator {
       options.validateSecurity = {};
     }
 
-    this.options = options;
-    this.ajvOpts = new AjvOptions(options);
+    this.validateOptions(options);
+
+    this.options = this.normalizeOptions(options);
+    this.ajvOpts = new AjvOptions(this.options);
   }
 
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
@@ -358,7 +358,9 @@ export class OpenApiValidator {
     }
   }
 
-  private normalizeOptions(options: OpenApiValidatorOpts): void {
+  private normalizeOptions(
+    options: OpenApiValidatorOpts,
+  ): NormalizedOpenApiValidatorOpts {
     if (Array.isArray(options.formats)) {
       const formats: Options['formats'] = {};
       for (const { name, type, validate } of options.formats) {
@@ -400,6 +402,8 @@ export class OpenApiValidator {
         }
       });
     }
+
+    return options as NormalizedOpenApiValidatorOpts;
   }
 
   private isOperationHandlerOptions(

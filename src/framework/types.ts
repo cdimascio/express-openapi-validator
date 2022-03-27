@@ -1,5 +1,6 @@
 import * as ajv from 'ajv';
 import * as multer from 'multer';
+import { FormatsPluginOptions, FormatOptions } from 'ajv-formats';
 import { Request, Response, NextFunction } from 'express';
 export { OpenAPIFrameworkArgs };
 
@@ -39,7 +40,7 @@ export interface MultipartOpts {
 export interface Options extends ajv.Options {
   // Specific options
   serDesMap?: SerDesMap;
-  ajvFormatsMode?: 'fast' | 'full';
+  ajvFormats?: FormatsPluginOptions;
 }
 
 export interface RequestValidatorOptions extends Options, ValidateRequestOpts {}
@@ -124,6 +125,7 @@ export interface OpenApiValidatorOpts {
   unknownFormats?: true | string[] | 'ignore';
   serDes?: SerDes[];
   formats?: Format[] | Record<string, ajv.Format>;
+  ajvFormats?: FormatsPluginOptions;
   fileUploader?: boolean | multer.Options;
   multerOpts?: multer.Options;
   $refParser?: {
@@ -131,6 +133,21 @@ export interface OpenApiValidatorOpts {
   };
   operationHandlers?: false | string | OperationHandlerOptions;
   validateFormats?: boolean | 'fast' | 'full';
+}
+
+export interface NormalizedOpenApiValidatorOpts extends OpenApiValidatorOpts {
+  validateApiSpec: boolean;
+  validateResponses: false | ValidateResponseOpts;
+  validateRequests: false | ValidateRequestOpts;
+  validateSecurity: false | ValidateSecurityOpts;
+  fileUploader: boolean | multer.Options;
+  $refParser: {
+    mode: 'bundle' | 'dereference';
+  };
+  operationHandlers: false | OperationHandlerOptions;
+  formats: Record<string, ajv.Format>;
+  validateFormats: boolean;
+  unknownFormats?: never;
 }
 
 export namespace OpenAPIV3 {

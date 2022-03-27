@@ -1,5 +1,5 @@
 import {
-  OpenApiValidatorOpts,
+  NormalizedOpenApiValidatorOpts,
   Options,
   RequestValidatorOptions,
   ValidateRequestOpts,
@@ -7,8 +7,8 @@ import {
 } from '../types';
 
 export class AjvOptions {
-  private options: OpenApiValidatorOpts;
-  constructor(options: OpenApiValidatorOpts) {
+  private options: NormalizedOpenApiValidatorOpts;
+  constructor(options: NormalizedOpenApiValidatorOpts) {
     this.options = options;
   }
   get preprocessor(): Options {
@@ -69,8 +69,8 @@ export class AjvOptions {
       coerceTypes,
       useDefaults: true,
       removeAdditional: false,
-      validateFormats: !!validateFormats,
-      formats: <Exclude<typeof formats, unknown[]>>formats,
+      validateFormats: validateFormats,
+      formats,
       serDesMap,
     };
 
