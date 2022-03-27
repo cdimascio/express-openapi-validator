@@ -1,8 +1,13 @@
 import AjvDraft4 from 'ajv-draft-04';
 import { DataValidateFunction } from 'ajv/dist/types';
+import anyOf from 'ajv/dist/vocabularies/applicator/anyOf';
 import addFormats from 'ajv-formats';
 import { formats } from './formats';
-import { OpenAPIV3, Options } from '../types';
+import { OpenAPIV3, Options, SerDes } from '../types';
+
+interface SerDesSchema extends Partial<SerDes> {
+  kind?: 'req' | 'res';
+}
 
 export function createRequestAjv(
   openApiSpec: OpenAPIV3.Document,
@@ -41,25 +46,14 @@ function createAjv(
       ajv.addKeyword({
         keyword: 'x-eov-serdes',
         modifying: true,
-        compile: (sch, p, it) => {
+        errors: true,
+        compile: (sch: SerDesSchema, p, it) => {
           if (sch) {
             if (sch.kind === 'res') {
               return () => false;
             }
-            const validate: DataValidateFunction = (data, ctx) => {
-              if (!!sch.deserialize) {
-                if (typeof data !== 'string') {
-                  validate.errors = [
-                    {
-                      keyword: 'serdes',
-                      instancePath: ctx.instancePath,
-                      schemaPath: it.schemaPath.str,
-                      message: `must be a string`,
-                      params: { 'x-eov-serdes': ctx.parentDataProperty },
-                    },
-                  ];
-                  return false;
-                }
+            if (sch.deserialize) {
+              const validate: DataValidateFunction = (data, ctx) => {
                 try {
                   ctx.parentData[ctx.parentDataProperty] =
                     sch.deserialize(data);
@@ -75,14 +69,14 @@ function createAjv(
                   ];
                   return false;
                 }
-              }
-              return true;
-            };
-            return validate;
+
+                return true;
+              };
+              return validate;
+            }
           }
           return () => true;
         },
-        // errors: 'full',
       });
     }
     ajv.removeKeyword('readOnly');
@@ -118,14 +112,16 @@ function createAjv(
       ajv.addKeyword({
         keyword: 'x-eov-serdes',
         modifying: true,
-        compile: (sch, p, it) => {
+        errors: true,
+        compile: (sch: SerDesSchema, p, it) => {
           if (sch) {
             if (sch.kind === 'req') {
               return () => false;
             }
-            const validate: DataValidateFunction = (data, ctx) => {
-              if (typeof data === 'string') return true;
-              if (!!sch.serialize) {
+            if (sch.serialize) {
+              const validate: DataValidateFunction = (data, ctx) => {
+                if (typeof data === 'string') return true;
+
                 try {
                   ctx.parentData[ctx.parentDataProperty] = sch.serialize(data);
                 } catch (e) {
@@ -140,10 +136,11 @@ function createAjv(
                   ];
                   return false;
                 }
-              }
-              return true;
-            };
-            return validate;
+
+                return true;
+              };
+              return validate;
+            }
           }
           return () => true;
         },
