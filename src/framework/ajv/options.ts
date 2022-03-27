@@ -78,8 +78,8 @@ export class AjvOptions {
       for (const format of unknownFormats) {
         options.formats[format] = true;
       }
-    } else if (unknownFormats === 'ignore') {
-      options.strictSchema = 'log';
+    } else if (unknownFormats) {
+      options.validateFormats = false;
     }
 
     if (typeof validateFormats === 'string') {

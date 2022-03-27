@@ -22,11 +22,8 @@ export class OpenAPISchemaValidator {
       validateFormats: true,
       coerceTypes: false,
       useDefaults: false,
+      // Strict enforcement is nice, but schema is controlled by this library and known to be valid
       strict: false,
-      strictNumbers: true,
-      strictSchema: false,
-      strictTuples: true,
-      strictTypes: false,
     };
     if (!opts.validateApiSpec) {
       options.validateSchema = false;

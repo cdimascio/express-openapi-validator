@@ -18,41 +18,6 @@ export function createResponseAjv(
   return createAjv(openApiSpec, options, false);
 }
 
-/**
- * Traverse a document and call a provided callback for each deeply contained object.
- *
- * @param {object} document - open api document
- * @param {Function} cb - callback called with each object
- */
-const traverseDocument = (
-  document: OpenAPIV3.Document,
-  cb: (obj: Record<string, unknown>) => void,
-): void => {
-  const seen = new Set();
-  const traverse = (obj: unknown): void => {
-    if (seen.has(obj)) {
-      return;
-    }
-    seen.add(obj);
-    if (typeof obj === 'object') {
-      if (obj === null) {
-        return;
-      }
-      if (Array.isArray(obj)) {
-        for (const item of obj) {
-          traverse(item);
-        }
-      } else {
-        cb(obj as Record<string, unknown>);
-        for (const property of Object.values(obj)) {
-          traverse(property);
-        }
-      }
-    }
-  };
-  traverse(document);
-};
-
 function createAjv(
   openApiSpec: OpenAPIV3.Document,
   options: Options = {},
@@ -70,56 +35,6 @@ function createAjv(
   ajv.removeKeyword('propertyNames');
   ajv.removeKeyword('contains');
   ajv.removeKeyword('const');
-  ajv.addKeyword({
-    keyword: 'components',
-    schemaType: 'object',
-  });
-  ajv.addKeyword({
-    keyword: 'deprecated',
-    schemaType: 'boolean',
-  });
-  ajv.addKeyword({
-    keyword: 'discriminator',
-    schemaType: 'object',
-  });
-  ajv.addKeyword('example');
-  ajv.addKeyword({
-    keyword: 'paths',
-    schemaType: 'object',
-  });
-
-  const customKeywords = new Set<string>();
-  const reservedKeywords = new Set<string>();
-  traverseDocument(
-    openApiSpec,
-    // Not necessarily a "schema" but worst case is accidentally allowing some `x-*` keywords
-    // that aren't ever actually exposed to AJV.
-    (schema) => {
-      for (const keyword of Object.keys(schema)) {
-        if (keyword.startsWith('x-')) {
-          if (keyword.startsWith('x-eov-')) {
-            reservedKeywords.add(keyword);
-          } else {
-            customKeywords.add(keyword);
-          }
-        }
-      }
-    },
-  );
-  // Keywords in use, defer validation
-  ['x-eov-serdes', 'x-eov-operation-handler', 'x-eov-operation-id'].map(
-    (keyword) => reservedKeywords.delete(keyword),
-  );
-  if (reservedKeywords.size > 0) {
-    throw new Error(
-      `Use of keyword(s) "${[...reservedKeywords].join(
-        '", "',
-      )}" are forbidden (reserved prefix x-eov-)`,
-    );
-  }
-  for (const customKeyword of customKeywords) {
-    ajv.addKeyword(customKeyword);
-  }
 
   if (request) {
     if (options.serDesMap) {
@@ -197,10 +112,6 @@ function createAjv(
         return () => true;
       },
     });
-    ajv.addKeyword({
-      keyword: 'writeOnly',
-      schemaType: 'boolean',
-    });
   } else {
     // response
     if (options.serDesMap) {
@@ -265,10 +176,6 @@ function createAjv(
 
         return () => true;
       },
-    });
-    ajv.addKeyword({
-      keyword: 'readOnly',
-      schemaType: 'boolean',
     });
   }
 
