@@ -399,8 +399,11 @@ export class OpenApiValidator {
       options.serDes = defaultSerDes;
     } else {
       options.serDes.forEach((currentSerDes) => {
+        // Usually `formats` takes priority over `ajvFormats`, but if format is being
+        // implicitly allowed, prefer `ajvFormats` instead.
         options.formats[currentSerDes.format] =
-          options.formats[currentSerDes.format] ?? true;
+          options.formats[currentSerDes.format] ??
+          '__EOV__FORMAT__ALLOW__OVERRIDE__';
       });
       defaultSerDes.forEach((currentDefaultSerDes) => {
         let defaultSerDesOverride = options.serDes.find(
@@ -412,6 +415,23 @@ export class OpenApiValidator {
           options.serDes.push(currentDefaultSerDes);
         }
       });
+    }
+
+    if (typeof options.validateFormats === 'string') {
+      if (!options.ajvFormats) {
+        options.ajvFormats = { mode: options.validateFormats };
+      }
+      options.validateFormats = true;
+    } else if (options.validateFormats && !options.ajvFormats) {
+      options.ajvFormats = { mode: 'fast' };
+    }
+
+    if (Array.isArray(options.unknownFormats)) {
+      for (const format of options.unknownFormats) {
+        options.formats[format] = true;
+      }
+    } else if (options.unknownFormats === 'ignore') {
+      options.validateFormats = false;
     }
 
     return options as NormalizedOpenApiValidatorOpts;

@@ -28,14 +28,23 @@ function createAjv(
   options: Options = {},
   request = true,
 ): AjvDraft4 {
-  const { ajvFormatsMode, ...ajvOptions } = options;
+  const { ajvFormats, ...ajvOptions } = options;
   const ajv = new AjvDraft4({
     ...ajvOptions,
     allErrors: true,
-    formats: { ...formats, ...options.formats },
+    formats: formats,
   });
-  if (ajvFormatsMode) {
-    addFormats(ajv, { mode: ajvFormatsMode });
+  if (ajvFormats) {
+    addFormats(ajv, ajvFormats);
+  }
+  for (let [formatName, formatDefinition] of Object.entries(options.formats)) {
+    if (formatDefinition === '__EOV__FORMAT__ALLOW__OVERRIDE__') {
+      if (ajv.formats[formatName]) {
+        continue;
+      }
+      formatDefinition = true;
+    }
+    ajv.addFormat(formatName, formatDefinition);
   }
   ajv.removeKeyword('propertyNames');
   ajv.removeKeyword('contains');

@@ -44,7 +44,7 @@ export class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const { coerceTypes, formats, unknownFormats, validateFormats, serDes } =
+    const { coerceTypes, formats, validateFormats, serDes, ajvFormats } =
       this.options;
     const serDesMap = {};
     for (const serDesObject of serDes) {
@@ -72,19 +72,8 @@ export class AjvOptions {
       validateFormats: validateFormats,
       formats,
       serDesMap,
+      ajvFormats,
     };
-
-    if (Array.isArray(unknownFormats)) {
-      for (const format of unknownFormats) {
-        options.formats[format] = true;
-      }
-    } else if (unknownFormats) {
-      options.validateFormats = false;
-    }
-
-    if (typeof validateFormats === 'string') {
-      options.ajvFormatsMode = validateFormats;
-    }
 
     return options;
   }
