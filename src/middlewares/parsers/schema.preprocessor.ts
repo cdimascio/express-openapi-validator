@@ -384,8 +384,6 @@ export class SchemaPreprocessor {
     schema: SchemaObject & {
       // Custom alias for `allOf` to all redacting schema validation errors
       xEovAnyOf?: unknown[];
-      // Attached+checked internally
-      _serDesInternal?: boolean;
     },
     state: TraversalState,
   ) {
@@ -394,10 +392,7 @@ export class SchemaPreprocessor {
       !!schema.format &&
       this.serDesMap[schema.format] &&
       (this.serDesMap[schema.format].serialize ||
-        this.serDesMap[schema.format].deserialize) &&
-      // Attached to sub-schema in this method,
-      // prevents infinite loop where clonedSchema is now being inspected
-      !schema._serDesInternal
+        this.serDesMap[schema.format].deserialize)
     ) {
       const { ...schemaClone } = schema;
       const serDes = this.serDesMap[schema.format];
@@ -405,10 +400,6 @@ export class SchemaPreprocessor {
         delete schema[key];
       }
       const cloned = { ...schemaClone, type: 'string' };
-      Object.defineProperty(cloned, '_serDesInternal', {
-        enumerable: false,
-        value: true,
-      });
 
       // If deserialization is enabled, modify data after validation.
       // If it does not exist, string validation is enough.
