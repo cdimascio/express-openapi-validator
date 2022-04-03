@@ -149,7 +149,7 @@ export class ResponseValidator {
       if (body !== undefined) {
         // response contains content/body
         throw new InternalServerError({
-          path: '.response',
+          path: '/response',
           message: 'response should NOT have a body',
         });
       }
@@ -173,7 +173,7 @@ export class ResponseValidator {
 
     if (body === undefined || body === null) {
       throw new InternalServerError({
-        path: '.response',
+        path: '/response',
         message: 'response body required.',
       });
     }

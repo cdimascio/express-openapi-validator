@@ -64,7 +64,7 @@ describe('PingController', () => {
           path: '/',
           errors: [
             {
-              path: '/body.ping',
+              path: '/body/ping',
               message: "must have required property 'ping'",
               errorCode: 'required.openapi.validation',
             },

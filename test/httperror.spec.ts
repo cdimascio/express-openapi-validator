@@ -7,10 +7,10 @@ describe(packageJson.name, () => {
   it('should be an instance of BadRequest', (done) => {
     console.log('Testing instaceof detection of BadRequest');
     const err = {
-      path: '/query.domain_id',
+      path: '/query/domain_id',
       errors: [
         {
-          path: '/query.domain_id',
+          path: '/query/domain_id',
           message: "must have required property 'domain_id'",
           error_code: 'required.openapi.validation',
         },

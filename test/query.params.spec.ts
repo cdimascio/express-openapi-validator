@@ -105,7 +105,7 @@ describe(packageJson.name, () => {
         expect(r.body.errors)
           .to.be.an('array')
           .with.length(1);
-        expect(r.body.errors[0].path).to.equal('.query.breed');
+        expect(r.body.errors[0].path).to.equal('/query/breed');
       }));
 
   it('should allow empty query param value with allowEmptyValue: true', async () =>

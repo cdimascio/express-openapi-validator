@@ -35,7 +35,7 @@ curl 'localhost:3000/v2/pets?type=cat' |jq
   "message": "Unknown query parameter 'type'",
   "errors": [
     {
-      "path": "/query.type",
+      "path": "/query/type",
       "message": "Unknown query parameter 'type'"
     }
   ]

@@ -62,7 +62,15 @@ describe(packageJson.name, () => {
           })
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
-          .expect(400));
+          .expect(400)
+          .then(r => {
+            expect(r.body.errors).to.deep.equal([
+              {
+                path: '/query/unknown_param',
+                message: "Unknown query parameter 'unknown_param'"
+              }
+            ]);
+          }));
 
       it('should return 400 when improper range specified', async () =>
         request(apps[i])

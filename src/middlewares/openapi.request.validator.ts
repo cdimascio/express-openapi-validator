@@ -230,12 +230,12 @@ export class RequestValidator {
     for (const q of queryParams) {
       if (!knownQueryParams.has(q)) {
         throw new BadRequest({
-          path: `.query.${q}`,
+          path: `/query/${q}`,
           message: `Unknown query parameter '${q}'`,
         });
       } else if (!allowedEmpty?.has(q) && (query[q] === '' || null)) {
         throw new BadRequest({
-          path: `.query.${q}`,
+          path: `/query/${q}`,
           message: `Empty value found for query parameter '${q}'`,
         });
       }
