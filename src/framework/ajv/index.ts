@@ -3,7 +3,7 @@ import { DataValidateFunction } from 'ajv/dist/types';
 import anyOf from 'ajv/dist/vocabularies/applicator/anyOf';
 import addFormats from 'ajv-formats';
 import { formats } from './formats';
-import { OpenAPIV3, Options, SerDes } from '../types';
+import { OpenAPIV3, Options, REDACT_THIS_ERROR, SerDes } from '../types';
 
 interface SerDesSchema extends Partial<SerDes> {
   kind?: 'req' | 'res';
@@ -59,7 +59,7 @@ function createAjv(
     ajv.addKeyword({
       ...anyOf,
       keyword: 'xEovAnyOf',
-      error: { message: 'REDACT-THIS-ERROR' },
+      error: { message: REDACT_THIS_ERROR },
     });
   }
 

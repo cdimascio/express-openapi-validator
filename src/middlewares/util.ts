@@ -1,6 +1,6 @@
 import type { ErrorObject } from 'ajv-draft-04';
 import { Request } from 'express';
-import { ValidationError } from '../framework/types';
+import { REDACT_THIS_ERROR, ValidationError } from '../framework/types';
 
 export class ContentType {
   public readonly contentType: string = null;
@@ -57,7 +57,7 @@ export function augmentAjvErrors(errors: ErrorObject[] = []): ErrorObject[] {
   const serDesMessages = new Set<string>();
   const errs = errors.filter((e) => {
     if (
-      e.message === 'REDACT-THIS-ERROR' ||
+      e.message === REDACT_THIS_ERROR ||
       e.message === 'must pass "x-eov-serdes" keyword validation' ||
       // In the case of multiple x-eov-serdes validation failures, take the first one
       // and flag the message to be ignored on any future errors.
