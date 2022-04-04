@@ -127,11 +127,18 @@ describe('a multipart request', () => {
     });
 
     it('should validate multipart file and metadata', async () => {
+      const array_with_objects = JSON.stringify([
+        {
+          foo: 'bar'
+        }
+      ]);
+
       await request(app)
         .post(`${app.basePath}/sample_2`)
         .set('Content-Type', 'multipart/form-data')
         .set('Accept', 'application/json')
         .attach('file', 'package.json')
+        .field('array_with_objects', array_with_objects)
         .field('metadata', 'some-metadata')
         .expect(200)
         .then((r) => {

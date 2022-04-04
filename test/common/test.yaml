@@ -160,6 +160,13 @@ paths:
                   description: The photo
                   type: string
                   format: binary
+                array_with_objects:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      foo:
+                        type: string
         required: true
       responses:
         201:
