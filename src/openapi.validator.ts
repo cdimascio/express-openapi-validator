@@ -398,13 +398,6 @@ export class OpenApiValidator {
     if (!options.serDes) {
       options.serDes = defaultSerDes;
     } else {
-      options.serDes.forEach((currentSerDes) => {
-        // Usually `formats` takes priority over `ajvFormats`, but if format is being
-        // implicitly allowed, prefer `ajvFormats` instead.
-        options.formats[currentSerDes.format] =
-          options.formats[currentSerDes.format] ??
-          '__EOV__FORMAT__ALLOW__OVERRIDE__';
-      });
       defaultSerDes.forEach((currentDefaultSerDes) => {
         let defaultSerDesOverride = options.serDes.find(
           (currentOptionSerDes) => {

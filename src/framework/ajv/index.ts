@@ -34,16 +34,20 @@ function createAjv(
     allErrors: true,
     formats: formats,
   });
+  // Formats will overwrite existing validation,
+  // so set in order of least->most important.
+  if (options.serDesMap) {
+    for (const serDesFormat of Object.keys(options.serDesMap)) {
+      ajv.addFormat(serDesFormat, true);
+    }
+  }
+  for (const [formatName, formatValidation] of Object.entries(formats)) {
+    ajv.addFormat(formatName, formatValidation);
+  }
   if (ajvFormats) {
     addFormats(ajv, ajvFormats);
   }
   for (let [formatName, formatDefinition] of Object.entries(options.formats)) {
-    if (formatDefinition === '__EOV__FORMAT__ALLOW__OVERRIDE__') {
-      if (ajv.formats[formatName]) {
-        continue;
-      }
-      formatDefinition = true;
-    }
     ajv.addFormat(formatName, formatDefinition);
   }
   ajv.removeKeyword('propertyNames');
