@@ -61,7 +61,8 @@ describe('serdes', () => {
           res.json({
             id: req.params.id,
             creationDateTime: date,
-            creationDate: date
+            creationDate: date,
+            shortOrLong: 'a',
           });
         });
         app.post([`${app.basePath}/users`], (req, res) => {
@@ -116,7 +117,8 @@ describe('serdes', () => {
       .send({
         id: '5fdefd13a6640bb5fb5fa925',
         creationDateTime: '2020-12-20T07:28:19.213Z',
-        creationDate: '2020-12-20'
+        creationDate: '2020-12-20',
+        shortOrLong: 'ab',
       })
       .set('Content-Type', 'application/json')
       .expect(200)
@@ -132,7 +134,8 @@ describe('serdes', () => {
       .send({
         id: '5fdefd13a6640bb5fb5fa',
         creationDateTime: '2020-12-20T07:28:19.213Z',
-        creationDate: '2020-12-20'
+        creationDate: '2020-12-20',
+        shortOrLong: 'abcd',
       })
       .set('Content-Type', 'application/json')
       .expect(400)
@@ -154,6 +157,26 @@ describe('serdes', () => {
         expect(r.body.message).to.equal('request/body/creationDate must match format "date"');
       }));
 
+  it('should enforce anyOf validations', async () =>
+    request(app)
+      .post(`${app.basePath}/users`)
+      .send({
+        id: '5fdefd13a6640bb5fb5fa925',
+        creationDateTime: '2020-12-20T07:28:19.213Z',
+        creationDate: '2020-12-20',
+        shortOrLong: 'abc',
+      })
+      .set('Content-Type', 'application/json')
+      .expect(400)
+      .then((r) => {
+        expect(r.body.message).to.equal(
+          [
+            'request/body/shortOrLong must NOT have more than 2 characters',
+            'request/body/shortOrLong must NOT have fewer than 4 characters',
+            'request/body/shortOrLong must match a schema in anyOf',
+          ].join(', '),
+        );
+      }));
 });
 
 
@@ -193,6 +216,7 @@ describe('serdes serialize response components only', () => {
             id: new ObjectID(req.params.id),
             creationDateTime: date,
             creationDate: undefined,
+            shortOrLong: 'a',
           };
           if (req.query.baddateresponse === 'functionNotExists') {
             result.creationDate = new ObjectID();
@@ -304,7 +328,33 @@ describe('serdes serialize response components only', () => {
       .query({ baddateresponse: 'functionNotExists' })
       .expect(500)
       .then((r) => {
-        expect(r.body.message).to.equal('/response/creationDate format is invalid');
+        expect(r.body.message).to.equal(
+          [
+            '/response/creationDate format is invalid',
+            '/response/creationDate must be string',
+          ].join(', '),
+        );
+      }));
+
+  it('should enforce anyOf validations', async () =>
+    request(app)
+      .post(`${app.basePath}/users`)
+      .send({
+        id: '5fdefd13a6640bb5fb5fa925',
+        creationDateTime: '2020-12-20T07:28:19.213Z',
+        creationDate: '2020-12-20',
+        shortOrLong: 'abc',
+      })
+      .set('Content-Type', 'application/json')
+      .expect(400)
+      .then((r) => {
+        expect(r.body.message).to.equal(
+          [
+            'request/body/shortOrLong must NOT have more than 2 characters',
+            'request/body/shortOrLong must NOT have fewer than 4 characters',
+            'request/body/shortOrLong must match a schema in anyOf',
+          ].join(', '),
+        );
       }));
 
   /*
@@ -425,7 +475,8 @@ describe('serdes with array type string-list', () => {
         id: '5fdefd13a6640bb5fb5fa925',
         tags: 'aa,bb,cc',
         creationDateTime: '2020-12-20T07:28:19.213Z',
-        creationDate: '2020-12-20'
+        creationDate: '2020-12-20',
+        shortOrLong: 'abcdef',
       })
       .set('Content-Type', 'application/json')
       .expect(200)
@@ -478,9 +529,34 @@ describe('serdes with array type string-list', () => {
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request/body/tags must be string');
+        expect(r.body.message).to.equal(
+          [
+            'request/body/tags must be string',
+            'request/body/tags format is invalid',
+          ].join(', '),
+        );
       }));
 
+  it('should enforce anyOf validations', async () =>
+    request(app)
+      .post(`${app.basePath}/users`)
+      .send({
+        id: '5fdefd13a6640bb5fb5fa925',
+        creationDateTime: '2020-12-20T07:28:19.213Z',
+        creationDate: '2020-12-20',
+        shortOrLong: 'abc',
+      })
+      .set('Content-Type', 'application/json')
+      .expect(400)
+      .then((r) => {
+        expect(r.body.message).to.equal(
+          [
+            'request/body/shortOrLong must NOT have more than 2 characters',
+            'request/body/shortOrLong must NOT have fewer than 4 characters',
+            'request/body/shortOrLong must match a schema in anyOf',
+          ].join(', '),
+        );
+      }));
 });
 
 
