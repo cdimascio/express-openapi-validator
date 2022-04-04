@@ -329,10 +329,7 @@ describe('serdes serialize response components only', () => {
       .expect(500)
       .then((r) => {
         expect(r.body.message).to.equal(
-          [
-            '/response/creationDate format is invalid',
-            '/response/creationDate must be string',
-          ].join(', '),
+          '/response/creationDate format is invalid',
         );
       }));
 
@@ -529,12 +526,7 @@ describe('serdes with array type string-list', () => {
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal(
-          [
-            'request/body/tags must be string',
-            'request/body/tags format is invalid',
-          ].join(', '),
-        );
+        expect(r.body.message).to.equal('request/body/tags must be string');
       }));
 
   it('should enforce anyOf validations', async () =>

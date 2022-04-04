@@ -76,6 +76,9 @@ function createAjv(
             }
             if (sch.deserialize) {
               const validate: DataValidateFunction = (data, ctx) => {
+                if (typeof data !== 'string') {
+                  return false;
+                }
                 try {
                   ctx.parentData[ctx.parentDataProperty] =
                     sch.deserialize(data);

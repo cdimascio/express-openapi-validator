@@ -55,17 +55,34 @@ export function augmentAjvErrors(errors: ErrorObject[] = []): ErrorObject[] {
     }
   });
   const serDesMessages = new Set<string>();
+  const serDesPathPrefixes = new Set<string>();
   const errs = errors.filter((e) => {
     if (
       e.message === REDACT_THIS_ERROR ||
-      e.message === 'must pass "x-eov-serdes" keyword validation' ||
-      // In the case of multiple x-eov-serdes validation failures, take the first one
-      // and flag the message to be ignored on any future errors.
-      (e.schemaPath.includes('/xEovAnyOf/') && serDesMessages.has(e.message))
+      e.message === 'must pass "x-eov-serdes" keyword validation'
     ) {
       return false;
     }
-    serDesMessages.add(e.message);
+
+    // In the case of multiple x-eov-serdes validation failures, take the first one
+    // and flag the message to be ignored on any future errors.
+    // Or in case of serdes failure, omit all other validation messages.
+    if (e.schemaPath.includes('/xEovAnyOf/')) {
+      const serDesPrefix = e.schemaPath.slice(
+        0,
+        e.schemaPath.indexOf('/xEovAnyOf/'),
+      );
+      if (serDesPathPrefixes.has(serDesPrefix)) {
+        return false;
+      }
+      if (e.params['x-eov-serdes']) {
+        serDesPathPrefixes.add(serDesPrefix);
+      }
+      if (serDesMessages.has(e.message)) {
+        return false;
+      }
+      serDesMessages.add(e.message);
+    }
     return true;
   });
   return errs;
