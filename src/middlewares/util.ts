@@ -1,6 +1,6 @@
 import type { ErrorObject } from 'ajv-draft-04';
 import { Request } from 'express';
-import { REDACT_THIS_ERROR, ValidationError } from '../framework/types';
+import { ValidationError } from '../framework/types';
 
 export class ContentType {
   public readonly contentType: string = null;
@@ -54,38 +54,18 @@ export function augmentAjvErrors(errors: ErrorObject[] = []): ErrorObject[] {
         : e.message;
     }
   });
-  const serDesMessages = new Set<string>();
-  const serDesPathPrefixes = new Set<string>();
-  const errs = errors.filter((e) => {
-    if (
-      e.message === REDACT_THIS_ERROR ||
-      e.message === 'must pass "x-eov-serdes" keyword validation'
-    ) {
+  const serDesPaths = new Set<string>();
+  return errors.filter((e) => {
+    if (serDesPaths.has(e.schemaPath)) {
       return false;
     }
-
-    // In the case of multiple x-eov-serdes validation failures, take the first one
-    // and flag the message to be ignored on any future errors.
-    // Or in case of serdes failure, omit all other validation messages.
-    if (e.schemaPath.includes('/xEovAnyOf/')) {
-      const serDesPrefix = e.schemaPath.slice(
-        0,
-        e.schemaPath.indexOf('/xEovAnyOf/'),
-      );
-      if (serDesPathPrefixes.has(serDesPrefix)) {
-        return false;
-      }
-      if (e.params['x-eov-serdes']) {
-        serDesPathPrefixes.add(serDesPrefix);
-      }
-      if (serDesMessages.has(e.message)) {
-        return false;
-      }
-      serDesMessages.add(e.message);
+    if (e.params['x-eov-res-serdes']) {
+      // If response serialization failed,
+      // silence additional errors about not being a string.
+      serDesPaths.add(e.schemaPath.replace('x-eov-res-serdes', 'x-eov-type'));
     }
     return true;
   });
-  return errs;
 }
 export function ajvErrorsToValidatorError(
   status: number,

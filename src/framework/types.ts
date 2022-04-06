@@ -4,14 +4,6 @@ import { FormatsPluginOptions, FormatOptions } from 'ajv-formats';
 import { Request, Response, NextFunction } from 'express';
 export { OpenAPIFrameworkArgs };
 
-/**
- * Used to flag AJV error messages as "redactable".
- * Serdes validation creates subschemas to achieve validation,
- * but some of the error messages expose this complication
- * and are not helpful for consumers.
- */
-export const REDACT_THIS_ERROR = '__REDACT_THIS_ERROR__';
-
 export type BodySchema =
   | OpenAPIV3.ReferenceObject
   | OpenAPIV3.SchemaObject

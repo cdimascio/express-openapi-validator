@@ -351,7 +351,7 @@ export class SchemaPreprocessor {
   }
 
   /**
-   * Attach custom `x-eov-serdes` vendor extension for performing
+   * Attach custom `x-eov-*-serdes` vendor extension for performing
    * serialization (response) and deserialization (request) of data.
    *
    * This only applies to `type=string` schemas with a `format` that was flagged for serdes.
@@ -359,21 +359,24 @@ export class SchemaPreprocessor {
    * The goal of this function is to define a JSON schema that:
    * 1) Only performs the method for matching req/res (e.g. never deserialize a response)
    * 2) Validates initial data THEN performs serdes THEN validates output. In that order.
-   * 3) Hide complex schema (and its validation errors) from user.
+   * 3) Hide internal schema keywords (and its validation errors) from user.
    *
-   * AJV makes no guarantees about order of keyword validations, with exception of array subschemas
-   * like allOf, anyOf, and oneOf, which are validated in-order.
+   * The solution is in three parts:
+   * 1) Remove the `type` keywords and replace it with a custom clone `x-eov-type`.
+   *    This ensures that we control the order of type validations,
+   *    and allows the response serialization to occur before AJV enforces the type.
+   * 2) Add an `x-eov-req-serdes` keyword.
+   *    This keyword will deserialize the request string AFTER all other validations occur,
+   *    ensuring that the string is valid before modifications.
+   *    This keyword is only attached when deserialization is enabled.
+   * 3) Add an `x-eov-res-serdes` keyword.
+   *    This keyword will serialize the response object BEFORE any other validations occur,
+   *    ensuring the output is validated as a string.
+   *    This keyword is only attached when serialization is enabled.
+   * 4) If `nullable` is set, set the type as every possible type.
+   *    Then initial type checking will _always_ pass and the `x-eov-type` will narrow it down later.
    *
-   * The solution is to split the schema into two `anyOf` subschemas, both with an `x-eov-serdes`
-   * that will only validate their matching `kind` (req or res).
-   *
-   * A custom `xEovAnyOf` is used in place of `anyOf` to support redacting/modifying the validation errors
-   * to seem as though failures came from original unmodified schema.
-   *
-   * The base schema is "replaced" in-place with only the `xEovAnyOf` keyword. The actual string validating
-   * schema is cloned and placed within each `anyOf`.
-   *
-   * See `augmentAjvErrors` for redaction logic.
+   * See [`createAjv`](../../framework/ajv/index.ts) for custom keyword definitions.
    *
    * @param {object} parent - parent schema
    * @param {object} schema - schema
@@ -381,65 +384,28 @@ export class SchemaPreprocessor {
    */
   private handleSerDes(
     parent: SchemaObject,
-    schema: SchemaObject & {
-      // Custom alias for `allOf` to all redacting schema validation errors
-      xEovAnyOf?: unknown[];
-    },
+    schema: SchemaObject,
     state: TraversalState,
   ) {
     if (
       schema.type === 'string' &&
       !!schema.format &&
-      this.serDesMap[schema.format] &&
-      (this.serDesMap[schema.format].serialize ||
-        this.serDesMap[schema.format].deserialize)
+      this.serDesMap[schema.format]
     ) {
-      const { ...schemaClone } = schema;
       const serDes = this.serDesMap[schema.format];
-      for (const key of Object.keys(schema)) {
-        delete schema[key];
+      (<any>schema)['x-eov-type'] = schema.type;
+      if ('nullable' in schema) {
+        // Ajv requires `type` keyword with `nullable` (regardless of value).
+        (<any>schema).type = ['string', 'number', 'boolean', 'object', 'array'];
+      } else {
+        delete schema.type;
       }
-      const cloned = { ...schemaClone, type: 'string' };
-
-      // If deserialization is enabled, modify data after validation.
-      // If it does not exist, string validation is enough.
-      // The string-only subschema may be applied to responses as well, which is acceptable as
-      // this schema is placed _AFTER_ the response in `anyOf`.
-      // So either the response has been fully validated and AJV will skip the second anyOf subschema,
-      // or it failed and the string invalidation will still be applied.
-      const requestSchema = serDes.deserialize
-        ? {
-            // Ensure validations happen in order
-            // e.g. is request -> string type + patterns + format... -> serdes -> object type
-            allOf: [
-              {
-                'x-eov-serdes': {
-                  kind: 'req',
-                },
-              },
-              cloned,
-              {
-                'x-eov-serdes': serDes,
-              },
-            ],
-          }
-        : cloned;
-
-      schema.xEovAnyOf = [
-        // response
-        {
-          allOf: [
-            {
-              'x-eov-serdes': {
-                ...serDes,
-                kind: 'res',
-              },
-            },
-            cloned,
-          ],
-        },
-        requestSchema,
-      ];
+      if (serDes.deserialize) {
+        schema['x-eov-req-serdes'] = serDes;
+      }
+      if (serDes.serialize) {
+        schema['x-eov-res-serdes'] = serDes;
+      }
     }
   }
 
