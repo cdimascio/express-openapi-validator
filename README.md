@@ -32,6 +32,9 @@
 
 ```shell
 npm install express-openapi-validator
+
+## latest beta
+npm install express-openapi-validator@4.14.0-beta.1
 ```
 
 ## Usage
