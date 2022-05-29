@@ -1,0 +1,34 @@
+openapi: 3.0.3
+info:
+  title: Keywords
+  version: 1.0.0
+servers:
+- url: /v1
+paths:
+  /persons:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+      responses:
+        200:
+          description: Invalid ID supplied
+          x-ignored-by-validator: true
+
+components:
+  schemas:
+    Person:
+      required:
+      - id
+      type: object
+      x-custom-keyword: Ignored by validator.
+      properties:
+        id:
+          x-internal-keyword: 123
+          type: integer
+          format: int64
+        name:
+          x-custom-keyword: [Still ignored by validator.]
+          type: string

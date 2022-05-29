@@ -54,7 +54,7 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/pets?mode=bad_type`)
       .expect(500)
       .then((r: any) => {
-        expect(r.body.message).to.contain('should be integer');
+        expect(r.body.message).to.contain('must be integer');
         expect(r.body).to.have.property('code').that.equals(500);
       }));
 

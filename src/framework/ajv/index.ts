@@ -1,20 +1,25 @@
-import * as Ajv from 'ajv';
-import * as draftSchema from 'ajv/lib/refs/json-schema-draft-04.json';
+import AjvDraft4 from 'ajv-draft-04';
+import { DataValidateFunction } from 'ajv/dist/types';
+import ajvType from 'ajv/dist/vocabularies/jtd/type';
+import addFormats from 'ajv-formats';
 import { formats } from './formats';
-import { OpenAPIV3, Options } from '../types';
-import ajv = require('ajv');
+import { OpenAPIV3, Options, SerDes } from '../types';
+
+interface SerDesSchema extends Partial<SerDes> {
+  kind?: 'req' | 'res';
+}
 
 export function createRequestAjv(
   openApiSpec: OpenAPIV3.Document,
   options: Options = {},
-): Ajv.Ajv {
+): AjvDraft4 {
   return createAjv(openApiSpec, options);
 }
 
 export function createResponseAjv(
   openApiSpec: OpenAPIV3.Document,
   options: Options = {},
-): Ajv.Ajv {
+): AjvDraft4 {
   return createAjv(openApiSpec, options, false);
 }
 
@@ -22,82 +27,102 @@ function createAjv(
   openApiSpec: OpenAPIV3.Document,
   options: Options = {},
   request = true,
-): Ajv.Ajv {
-  const ajv = new Ajv({
-    ...options,
-    schemaId: 'auto',
+): AjvDraft4 {
+  const { ajvFormats, ...ajvOptions } = options;
+  const ajv = new AjvDraft4({
+    ...ajvOptions,
     allErrors: true,
-    meta: draftSchema,
-    formats: { ...formats, ...options.formats },
-    unknownFormats: options.unknownFormats,
+    formats: formats,
   });
+  // Formats will overwrite existing validation,
+  // so set in order of least->most important.
+  if (options.serDesMap) {
+    for (const serDesFormat of Object.keys(options.serDesMap)) {
+      ajv.addFormat(serDesFormat, true);
+    }
+  }
+  for (const [formatName, formatValidation] of Object.entries(formats)) {
+    ajv.addFormat(formatName, formatValidation);
+  }
+  if (ajvFormats) {
+    addFormats(ajv, ajvFormats);
+  }
+  for (let [formatName, formatDefinition] of Object.entries(options.formats)) {
+    ajv.addFormat(formatName, formatDefinition);
+  }
   ajv.removeKeyword('propertyNames');
   ajv.removeKeyword('contains');
   ajv.removeKeyword('const');
 
+  if (options.serDesMap) {
+    // Alias for `type` that can execute AFTER x-eov-res-serdes
+    // There is a `type` keyword which this is positioned "next to",
+    // as well as high-level type assertion that runs before any keywords.
+    ajv.addKeyword({
+      ...ajvType,
+      keyword: 'x-eov-type',
+      before: 'type',
+    });
+  }
+
   if (request) {
     if (options.serDesMap) {
-      ajv.addKeyword('x-eov-serdes', {
+      ajv.addKeyword({
+        keyword: 'x-eov-req-serdes',
         modifying: true,
-        compile: (sch) => {
-          if (sch) {
-            return function validate(data, path, obj, propName) {
-              if (!!sch.deserialize) {
-                if (typeof data !== 'string') {
-                  (<ajv.ValidateFunction>validate).errors = [
-                    {
-                      keyword: 'serdes',
-                      schemaPath: data,
-                      dataPath: path,
-                      message: `must be a string`,
-                      params: { 'x-eov-serdes': propName },
-                    },
-                  ];
-                  return false;
-                }
-                try {
-                  obj[propName] = sch.deserialize(data);
-                }
-                catch(e) {
-                  (<ajv.ValidateFunction>validate).errors = [
-                    {
-                      keyword: 'serdes',
-                      schemaPath: data,
-                      dataPath: path,
-                      message: `format is invalid`,
-                      params: { 'x-eov-serdes': propName },
-                    },
-                  ];
-                  return false;
-                }
-              }
+        errors: true,
+        // Deserialization occurs AFTER all string validations
+        post: true,
+        compile: (sch: SerDesSchema, p, it) => {
+          const validate: DataValidateFunction = (data, ctx) => {
+            if (typeof data !== 'string') {
+              // Either null (possibly allowed, defer to nullable validation)
+              // or already failed string validation (no need to throw additional internal errors).
               return true;
-            };
-          }
-          return () => true;
+            }
+            try {
+              ctx.parentData[ctx.parentDataProperty] = sch.deserialize(data);
+            } catch (e) {
+              validate.errors = [
+                {
+                  keyword: 'serdes',
+                  instancePath: ctx.instancePath,
+                  schemaPath: it.schemaPath.str,
+                  message: `format is invalid`,
+                  params: { 'x-eov-req-serdes': ctx.parentDataProperty },
+                },
+              ];
+              return false;
+            }
+
+            return true;
+          };
+          return validate;
         },
-        // errors: 'full',
       });
     }
     ajv.removeKeyword('readOnly');
-    ajv.addKeyword('readOnly', {
-      modifying: true,
-      compile: (sch) => {
+    ajv.addKeyword({
+      keyword: 'readOnly',
+      errors: true,
+      compile: (sch, p, it) => {
         if (sch) {
-          return function validate(data, path, obj, propName) {
-            const isValid = !(sch === true && data != null);
-            delete obj[propName];
-            (<ajv.ValidateFunction>validate).errors = [
-              {
-                keyword: 'readOnly',
-                schemaPath: data,
-                dataPath: path,
-                message: `is read-only`,
-                params: { readOnly: propName },
-              },
-            ];
-            return isValid;
+          const validate: DataValidateFunction = (data, ctx) => {
+            const isValid = data == null;
+            if (!isValid) {
+              validate.errors = [
+                {
+                  keyword: 'readOnly',
+                  instancePath: ctx.instancePath,
+                  schemaPath: it.schemaPath.str,
+                  message: `is read-only`,
+                  params: { writeOnly: ctx.parentDataProperty },
+                },
+              ];
+            }
+            return false;
           };
+          return validate;
         }
 
         return () => true;
@@ -106,54 +131,59 @@ function createAjv(
   } else {
     // response
     if (options.serDesMap) {
-      ajv.addKeyword('x-eov-serdes', {
+      ajv.addKeyword({
+        keyword: 'x-eov-res-serdes',
         modifying: true,
-        compile: (sch) => {
-          if (sch) {
-            return function validate(data, path, obj, propName) {
-              if (typeof data === 'string') return true;
-              if (!!sch.serialize) {
-                try {
-                  obj[propName] = sch.serialize(data);
-                }
-                catch(e) {
-                  (<ajv.ValidateFunction>validate).errors = [
-                    {
-                      keyword: 'serdes',
-                      schemaPath: data,
-                      dataPath: path,
-                      message: `format is invalid`,
-                      params: { 'x-eov-serdes': propName },
-                    },
-                  ];
-                  return false;
-                }
-              }
-              return true;
-            };
-          }
-          return () => true;
+        errors: true,
+        // Serialization occurs BEFORE type validations
+        before: 'x-eov-type',
+        compile: (sch: SerDesSchema, p, it) => {
+          const validate: DataValidateFunction = (data, ctx) => {
+            if (typeof data === 'string') return true;
+            try {
+              ctx.parentData[ctx.parentDataProperty] = sch.serialize(data);
+            } catch (e) {
+              validate.errors = [
+                {
+                  keyword: 'serdes',
+                  instancePath: ctx.instancePath,
+                  schemaPath: it.schemaPath.str,
+                  message: `format is invalid`,
+                  params: { 'x-eov-res-serdes': ctx.parentDataProperty },
+                },
+              ];
+              return false;
+            }
+
+            return true;
+          };
+          return validate;
         },
       });
     }
     ajv.removeKeyword('writeOnly');
-    ajv.addKeyword('writeOnly', {
-      modifying: true,
-      compile: (sch) => {
+    ajv.addKeyword({
+      keyword: 'writeOnly',
+      schemaType: 'boolean',
+      errors: true,
+      compile: (sch, p, it) => {
         if (sch) {
-          return function validate(data, path, obj, propName) {
-            const isValid = !(sch === true && data != null);
-            (<ajv.ValidateFunction>validate).errors = [
-              {
-                keyword: 'writeOnly',
-                dataPath: path,
-                schemaPath: path,
-                message: `is write-only`,
-                params: { writeOnly: propName },
-              },
-            ];
-            return isValid;
+          const validate: DataValidateFunction = (data, ctx) => {
+            const isValid = data == null;
+            if (!isValid) {
+              validate.errors = [
+                {
+                  keyword: 'writeOnly',
+                  instancePath: ctx.instancePath,
+                  schemaPath: it.schemaPath.str,
+                  message: `is write-only`,
+                  params: { writeOnly: ctx.parentDataProperty },
+                },
+              ];
+            }
+            return false;
           };
+          return validate;
         }
 
         return () => true;

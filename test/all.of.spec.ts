@@ -61,5 +61,5 @@ describe(packageJson.name, () => {
   //     .post(`${app.basePath}/all_of`)
   //     .send([{ id: 1, name: 'jim' }])
   //     .expect(400)
-  //     .then((r: any) => expect(r.body.message).to.contain('should be object')));
+  //     .then((r: any) => expect(r.body.message).to.contain('must be object')));
 });

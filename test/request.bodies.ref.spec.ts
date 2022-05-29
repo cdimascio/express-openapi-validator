@@ -123,7 +123,7 @@ describe('request bodies', () => {
         expect(r.body.errors).to.have.length(1);
         const message = r.body.errors[0].message;
         expect(message).to.equal(
-          "should have required property 'testProperty'",
+          "must have required property 'testProperty'",
         );
       }));
 
@@ -148,7 +148,7 @@ describe('request bodies', () => {
         },
       ])
       .expect(400)
-      .then((r) => expect(r.body.message).to.include('should be object')));
+      .then((r) => expect(r.body.message).to.include('must be object')));
 
   it('should return 200 if a json suffex is used for content-type', async () =>
     request(app)
@@ -178,10 +178,10 @@ describe('request bodies', () => {
       .then((r) => {
         const { body } = r;
         expect(body.message).to.include(
-          '.response should NOT have additional properties',
+          '/response must NOT have additional properties',
         );
         expect(body.errors[0].message).to.equals(
-          'should NOT have additional properties',
+          'must NOT have additional properties',
         );
       }));
 
@@ -197,13 +197,13 @@ describe('request bodies', () => {
       .then((r) => {
         const errors = r.body.errors;
         expect(errors).to.be.an('array').with.length(2);
-        expect(errors[0].path).to.equal('.body.invalidProperty');
+        expect(errors[0].path).to.equal('/body/invalidProperty');
         expect(errors[0].message).to.equal(
-          'should NOT have additional properties',
+          'must NOT have additional properties',
         );
-        expect(errors[1].path).to.equal('.body.invalidProperty2');
+        expect(errors[1].path).to.equal('/body/invalidProperty2');
         expect(errors[1].message).to.equal(
-          'should NOT have additional properties',
+          'must NOT have additional properties',
         );
       }));
 });

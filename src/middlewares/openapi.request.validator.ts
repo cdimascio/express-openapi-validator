@@ -1,4 +1,4 @@
-import { Ajv, ValidateFunction } from 'ajv';
+import Ajv, { ValidateFunction } from 'ajv';
 import { createRequestAjv } from '../framework/ajv';
 import {
   ContentType,
@@ -76,6 +76,20 @@ export class RequestValidator {
     return this.middlewareCache[key](req, res, next);
   }
 
+  private warnUnknownQueryParametersKeyword(
+    reqSchema: OperationObject,
+  ): boolean {
+    if (typeof reqSchema['x-allow-unknown-query-parameters'] === 'boolean') {
+      console.warn(
+        '"x-allow-unknown-query-parameters" is deprecated. Use "x-eov-allow-unknown-query-parameters"',
+      );
+    }
+    return (
+      reqSchema['x-allow-unknown-query-parameters'] ??
+      this.requestOpts.allowUnknownQueryParameters
+    );
+  }
+
   private buildMiddleware(
     path: string,
     reqSchema: OperationObject,
@@ -92,8 +106,8 @@ export class RequestValidator {
     });
 
     const allowUnknownQueryParameters = !!(
-      reqSchema['x-allow-unknown-query-parameters'] ??
-      this.requestOpts.allowUnknownQueryParameters
+      reqSchema['x-eov-allow-unknown-query-parameters'] ??
+      this.warnUnknownQueryParametersKeyword(reqSchema)
     );
 
     return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
@@ -191,7 +205,7 @@ export class RequestValidator {
       } else {
         throw new BadRequest({
           path: req.path,
-          message: `'${property}' should be equal to one of the allowed values: ${options
+          message: `'${property}' must be equal to one of the allowed values: ${options
             .map((o) => o.option)
             .join(', ')}.`,
         });
@@ -216,12 +230,12 @@ export class RequestValidator {
     for (const q of queryParams) {
       if (!knownQueryParams.has(q)) {
         throw new BadRequest({
-          path: `.query.${q}`,
+          path: `/query/${q}`,
           message: `Unknown query parameter '${q}'`,
         });
       } else if (!allowedEmpty?.has(q) && (query[q] === '' || null)) {
         throw new BadRequest({
-          path: `.query.${q}`,
+          path: `/query/${q}`,
           message: `Empty value found for query parameter '${q}'`,
         });
       }

@@ -43,9 +43,9 @@ describe(packageJson.name, () => {
         expect(r.body.errors).to.be.an('array');
         expect(r.body.errors).to.have.length(2);
         const m1 = r.body.errors[0].message;
-        expect(m1).to.equal('should NOT have additional properties');
+        expect(m1).to.equal('must NOT have additional properties');
         const m2 = r.body.errors[1].message;
-        expect(m2).to.equal('should be number');
+        expect(m2).to.equal('must be number');
       }));
 
   it('should return 400 if additionalProperties=false, but extra props sent', async () =>
@@ -60,7 +60,7 @@ describe(packageJson.name, () => {
         expect(r.body.errors).to.be.an('array');
         expect(r.body.errors).to.have.length(1);
         const message = r.body.errors[0].message;
-        expect(message).to.equal('should NOT have additional properties');
+        expect(message).to.equal('must NOT have additional properties');
       }));
 
   it('should return 200 if additonalProperities=true and extra props are sent', async () =>

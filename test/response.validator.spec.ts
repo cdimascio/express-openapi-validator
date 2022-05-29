@@ -16,7 +16,12 @@ const fakeReq: OpenApiRequest = <any>{
 };
 describe(packageJson.name, () => {
   it('should validate the using default (in this case the error object)', async () => {
-    const v = new ResponseValidator(cloneDeep(apiSpec));
+    const v = new ResponseValidator(cloneDeep(apiSpec), {
+        formats: {
+            'date-time': true,
+        },
+        strict: false,
+    });
     const responses = petsResponseSchema();
     const validators = v._getOrBuildValidator(fakeReq, responses);
 
@@ -36,7 +41,12 @@ describe(packageJson.name, () => {
   });
 
   it('should throw error when default response is invalid', async () => {
-    const v = new ResponseValidator(apiSpec);
+    const v = new ResponseValidator(apiSpec, {
+        formats: {
+            'date-time': true,
+        },
+        strict: false,
+    });
     const responses = petsResponseSchema();
     const validators = v._getOrBuildValidator(fakeReq, responses);
 
@@ -55,12 +65,17 @@ describe(packageJson.name, () => {
     } catch (e) {
       expect(e.status).to.equal(500);
       expect(e.errors).to.be.an('array');
-      expect(e.errors[0].message).to.equal('should be string');
+      expect(e.errors[0].message).to.equal('must be string');
     }
   });
 
   it('should return an error if field type is invalid', async () => {
-    const v = new ResponseValidator(apiSpec);
+    const v = new ResponseValidator(apiSpec, {
+        formats: {
+            'date-time': true,
+        },
+        strict: false,
+    });
     const responses = petsResponseSchema();
     const validators = v._getOrBuildValidator(fakeReq, responses);
 
@@ -74,7 +89,7 @@ describe(packageJson.name, () => {
       });
     } catch (e) {
       expect(e).to.be.not.null;
-      expect(e.message).to.contain('should be integer');
+      expect(e.message).to.contain('must be integer');
       expect(e.message).to.not.contain('additional properties');
     }
 
@@ -88,7 +103,7 @@ describe(packageJson.name, () => {
       });
     } catch (e) {
       expect(e).to.be.not.null;
-      expect(e.message).to.contain('should be array');
+      expect(e.message).to.contain('must be array');
     }
 
     try {
@@ -101,7 +116,7 @@ describe(packageJson.name, () => {
       });
     } catch (e) {
       expect(e).to.be.not.null;
-      expect(e.message).to.contain('should be string');
+      expect(e.message).to.contain('must be string');
     }
   });
 });
