@@ -1,3 +1,4 @@
+import { Options } from 'ajv';
 import ono from 'ono';
 import * as express from 'express';
 import * as _uniq from 'lodash.uniq';
@@ -6,6 +7,7 @@ import { Application, Response, NextFunction, Router } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
 import { Spec } from './framework/openapi.spec.loader';
 import {
+  NormalizedOpenApiValidatorOpts,
   OpenApiValidatorOpts,
   ValidateRequestOpts,
   ValidateResponseOpts,
@@ -35,22 +37,18 @@ export {
 } from './framework/types';
 
 export class OpenApiValidator {
-  readonly options: OpenApiValidatorOpts;
+  readonly options: NormalizedOpenApiValidatorOpts;
   readonly ajvOpts: AjvOptions;
 
   constructor(options: OpenApiValidatorOpts) {
-    this.validateOptions(options);
-    this.normalizeOptions(options);
-
     if (options.validateApiSpec == null) options.validateApiSpec = true;
     if (options.validateRequests == null) options.validateRequests = true;
     if (options.validateResponses == null) options.validateResponses = false;
     if (options.validateSecurity == null) options.validateSecurity = true;
     if (options.fileUploader == null) options.fileUploader = {};
     if (options.$refParser == null) options.$refParser = { mode: 'bundle' };
-    if (options.unknownFormats == null) options.unknownFormats === true;
-    if (options.validateFormats == null) options.validateFormats = 'fast';
-    if (options.formats == null) options.formats = [];
+    if (options.validateFormats == null) options.validateFormats = true;
+    if (options.formats == null) options.formats = {};
 
     if (typeof options.operationHandlers === 'string') {
       /**
@@ -86,8 +84,10 @@ export class OpenApiValidator {
       options.validateSecurity = {};
     }
 
-    this.options = options;
-    this.ajvOpts = new AjvOptions(options);
+    this.validateOptions(options);
+
+    this.options = this.normalizeOptions(options);
+    this.ajvOpts = new AjvOptions(this.options);
   }
 
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
@@ -340,37 +340,64 @@ export class OpenApiValidator {
     }
 
     const unknownFormats = options.unknownFormats;
-    if (typeof unknownFormats === 'boolean') {
-      if (!unknownFormats) {
+    if (unknownFormats !== undefined) {
+      if (typeof unknownFormats === 'boolean') {
+        if (!unknownFormats) {
+          throw ono(
+            "unknownFormats must contain an array of unknownFormats, 'ignore' or true",
+          );
+        }
+      } else if (
+        typeof unknownFormats === 'string' &&
+        unknownFormats !== 'ignore' &&
+        !Array.isArray(unknownFormats)
+      )
         throw ono(
           "unknownFormats must contain an array of unknownFormats, 'ignore' or true",
         );
-      }
-    } else if (
-      typeof unknownFormats === 'string' &&
-      unknownFormats !== 'ignore' &&
-      !Array.isArray(unknownFormats)
-    )
-      throw ono(
-        "unknownFormats must contain an array of unknownFormats, 'ignore' or true",
+      console.warn('unknownFormats is deprecated.');
+    }
+
+    if (Array.isArray(options.formats)) {
+      console.warn(
+        'formats as an array is deprecated. Use object instead https://ajv.js.org/options.html#formats',
       );
+    }
+
+    if (typeof options.validateFormats === 'string') {
+      console.warn(
+        `"validateFormats" as a string is deprecated. Set to a boolean and use "ajvFormats"`,
+      );
+    }
   }
 
-  private normalizeOptions(options: OpenApiValidatorOpts): void {
+  private normalizeOptions(
+    options: OpenApiValidatorOpts,
+  ): NormalizedOpenApiValidatorOpts {
+    if (Array.isArray(options.formats)) {
+      const formats: Options['formats'] = {};
+      for (const { name, type, validate } of options.formats) {
+        if (type) {
+          const formatValidator:
+            | {
+                type: 'number';
+                validate: (x: number) => boolean;
+              }
+            | {
+                type: 'string';
+                validate: (x: string) => boolean;
+              } = { type, validate };
+          formats[name] = formatValidator;
+        } else {
+          formats[name] = validate;
+        }
+      }
+      options.formats = formats;
+    }
+
     if (!options.serDes) {
       options.serDes = defaultSerDes;
     } else {
-      if (!Array.isArray(options.unknownFormats)) {
-        options.unknownFormats = Array<string>();
-      }
-      options.serDes.forEach((currentSerDes) => {
-        if (
-          (options.unknownFormats as string[]).indexOf(currentSerDes.format) ===
-          -1
-        ) {
-          (options.unknownFormats as string[]).push(currentSerDes.format);
-        }
-      });
       defaultSerDes.forEach((currentDefaultSerDes) => {
         let defaultSerDesOverride = options.serDes.find(
           (currentOptionSerDes) => {
@@ -382,6 +409,25 @@ export class OpenApiValidator {
         }
       });
     }
+
+    if (typeof options.validateFormats === 'string') {
+      if (!options.ajvFormats) {
+        options.ajvFormats = { mode: options.validateFormats };
+      }
+      options.validateFormats = true;
+    } else if (options.validateFormats && !options.ajvFormats) {
+      options.ajvFormats = { mode: 'fast' };
+    }
+
+    if (Array.isArray(options.unknownFormats)) {
+      for (const format of options.unknownFormats) {
+        options.formats[format] = true;
+      }
+    } else if (options.unknownFormats === 'ignore') {
+      options.validateFormats = false;
+    }
+
+    return options as NormalizedOpenApiValidatorOpts;
   }
 
   private isOperationHandlerOptions(

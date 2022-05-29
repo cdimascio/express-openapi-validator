@@ -52,6 +52,6 @@ describe(packageJson.name, () => {
       .expect(500)
       .then((r: any) => {
         const e = r.body;
-        expect(e.message).to.contain(".response[0] should have required property 'id'");
+        expect(e.message).to.contain("/response/0 must have required property 'id'");
       }));
 });

@@ -38,7 +38,7 @@ describe(packageJson.name, () => {
         expect(r.body.errors).to.be.an('array');
         expect(r.body.errors).to.have.length(1);
         const message = r.body.errors[0].message;
-        expect(message).to.equal("should have required property 'pathLevel'");
+        expect(message).to.equal("must have required property 'pathLevel'");
       }));
 
   it('should return 400 if operationLevel query parameter is not provided', async () =>
@@ -51,7 +51,7 @@ describe(packageJson.name, () => {
         expect(r.body.errors).to.have.length(1);
         const message = r.body.errors[0].message;
         expect(message).to.equal(
-          "should have required property 'operationLevel'",
+          "must have required property 'operationLevel'",
         );
       }));
 
@@ -65,8 +65,8 @@ describe(packageJson.name, () => {
         expect(r.body.errors).to.have.length(2);
         const messages = r.body.errors.map(err => err.message);
         expect(messages).to.have.members([
-          "should have required property 'pathLevel'",
-          "should have required property 'operationLevel'",
+          "must have required property 'pathLevel'",
+          "must have required property 'operationLevel'",
         ]);
       }));
 

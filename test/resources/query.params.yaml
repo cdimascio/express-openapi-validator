@@ -120,7 +120,7 @@ paths:
                   $ref: '#/components/schemas/Pet'
   /unknown_query_params/allow:
     get:
-      x-allow-unknown-query-parameters: true
+      x-eov-allow-unknown-query-parameters: true
       parameters:
         - name: value
           in: query
@@ -132,7 +132,7 @@ paths:
           description: success
   /unknown_query_params/disallow:
     get:
-      x-allow-unknown-query-parameters: false
+      x-eov-allow-unknown-query-parameters: false
       parameters:
         - name: value
           in: query

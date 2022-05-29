@@ -71,7 +71,7 @@ describe(packageJson.name, () => {
       .then(r => {
         const body = r.body;
         expect(body.message).to.contain('role');
-        expect(body.errors[0].path).to.contain('.response.role');
+        expect(body.errors[0].path).to.contain('/response/role');
         expect(body.errors[0].message).to.contain('write-only');
       }));
 
@@ -106,7 +106,7 @@ describe(packageJson.name, () => {
       .then(r => {
         const body = r.body;
         expect(body.message).to.contain('role_x');
-        expect(body.errors[0].path).to.contain('.response.reviews[0].role_x');
+        expect(body.errors[0].path).to.contain('/response/reviews/0/role_x');
         expect(body.errors[0].message).to.contain('write-only');
       }));
 
@@ -131,6 +131,6 @@ describe(packageJson.name, () => {
       .expect(400)
       .then(r => {
         const body = r.body;
-        expect(body.message).to.contain('request.body.reviews[0].id');
+        expect(body.message).to.contain('request/body/reviews/0/id');
       }));
 });

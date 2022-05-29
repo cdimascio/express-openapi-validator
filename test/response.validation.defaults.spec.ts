@@ -51,6 +51,6 @@ describe('response validation with type coercion', () => {
       .get(`${app.basePath}/default_inline?q=400_bad`)
       .expect(500)
       .then((r) => {
-        expect(r.body.message).to.include('should have required property');
+        expect(r.body.message).to.include('must have required property');
       }));
 });

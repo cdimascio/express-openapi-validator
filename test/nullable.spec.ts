@@ -63,7 +63,7 @@ describe(packageJson.name, () => {
       .send({})
       .expect(400)
       .then((r) => {
-        expect(r.body.errors[0].path).to.equal('.body.name');
+        expect(r.body.errors[0].path).to.equal('/body/name');
       }));
 
   it('should fail if required and not provided (nullable false', async () =>
@@ -72,7 +72,7 @@ describe(packageJson.name, () => {
       .send({})
       .expect(400)
       .then((r) => {
-        expect(r.body.errors[0].path).to.equal('.body.name');
+        expect(r.body.errors[0].path).to.equal('/body/name');
       }));
 
   it('should fail if required and provided as null when nullable is false', async () =>
@@ -83,7 +83,7 @@ describe(packageJson.name, () => {
       })
       .expect(400)
       .then((r) => {
-        expect(r.body.errors[0].path).to.equal('.body.name');
+        expect(r.body.errors[0].path).to.equal('/body/name');
       }));
 
   it('should allow nullable object', async () =>
