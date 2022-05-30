@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { Ajv } from 'ajv';
+import Ajv from 'ajv';
 import {
   OpenAPIV3,
   OpenApiRequest,
@@ -340,7 +340,7 @@ export class RequestParameterMutator {
     for (const v of vs) {
       if (v?.match(RESERVED_CHARS)) {
         const message = `Parameter '${name}' must be url encoded. Its value may not contain reserved characters.`;
-        throw new BadRequest({ path: `.query.${name}`, message: message });
+        throw new BadRequest({ path: `/query/${name}`, message: message });
       }
     }
   }

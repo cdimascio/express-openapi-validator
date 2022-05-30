@@ -30,31 +30,31 @@ curl 'localhost:3000/v2/pets?pet_type=kitty' |jq
 ]
 
 ## invoke GET /v2/pets using `type` as specified in v1, but not v2
-curl 'localhost:3000/v2/pets?type=cat' |jq  
+curl 'localhost:3000/v2/pets?type=cat' |jq
 {
   "message": "Unknown query parameter 'type'",
   "errors": [
     {
-      "path": ".query.type",
+      "path": "/query/type",
       "message": "Unknown query parameter 'type'"
     }
   ]
 }
 
-## invoke GET /v1/pets using type='kitty'. kitty is not a valid v1 value. 
+## invoke GET /v1/pets using type='kitty'. kitty is not a valid v1 value.
 ## also limit is required in GET /v1/pets
 curl 'localhost:3000/v1/pets?type=kitty' |jq
 {
-  "message": "request.query.type should be equal to one of the allowed values: dog, cat, request.query should have required property 'limit'",
+  "message": "request/query/type must be equal to one of the allowed values: dog, cat, request.query must have required property 'limit'",
   "errors": [
     {
-      "path": ".query.type",
-      "message": "should be equal to one of the allowed values: dog, cat",
+      "path": "/query.type",
+      "message": "must be equal to one of the allowed values: dog, cat",
       "errorCode": "enum.openapi.validation"
     },
     {
-      "path": ".query.limit",
-      "message": "should have required property 'limit'",
+      "path": "/query.limit",
+      "message": "must have required property 'limit'",
       "errorCode": "required.openapi.validation"
     }
   ]

@@ -78,7 +78,7 @@ describe(packageJson.name, () => {
         expect(r.body.errors).to.be.an('array');
       }));
 
-  it('should return 200 if operation overrides x-allow-unknown-query-parameters=true', async () =>
+  it('should return 200 if operation overrides x-eov-allow-unknown-query-parameters=true', async () =>
     request(app)
       .get(`${app.basePath}/unknown_query_params/allow`)
       .query({
@@ -105,7 +105,7 @@ describe(packageJson.name, () => {
         expect(r.body.errors)
           .to.be.an('array')
           .with.length(1);
-        expect(r.body.errors[0].path).to.equal('.query.breed');
+        expect(r.body.errors[0].path).to.equal('/query/breed');
       }));
 
   it('should allow empty query param value with allowEmptyValue: true', async () =>

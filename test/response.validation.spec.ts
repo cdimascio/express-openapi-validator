@@ -114,7 +114,7 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/pets?mode=bad_type`)
       .expect(500)
       .then((r: any) => {
-        expect(r.body.message).to.contain('should be integer');
+        expect(r.body.message).to.contain('must be integer');
         expect(r.body).to.have.property('code').that.equals(500);
       }));
 
@@ -124,7 +124,7 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/object`)
       .expect(500)
       .then((r: any) => {
-        expect(r.body.message).to.contain('should be object');
+        expect(r.body.message).to.contain('must be object');
         expect(r.body).to.have.property('code').that.equals(500);
       }));
 
@@ -134,7 +134,7 @@ describe(packageJson.name, () => {
       .send({ id: 1, name: 'fido' })
       .expect(500)
       .then((r: any) => {
-        expect(r.body.message).to.contain('should be object');
+        expect(r.body.message).to.contain('must be object');
         expect(r.body).to.have.property('code').that.equals(500);
       }));
 
@@ -149,7 +149,7 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/pets?mode=empty_object`)
       .expect(500)
       .then((r: any) => {
-        expect(r.body.message).to.contain('should be array');
+        expect(r.body.message).to.contain('must be array');
         expect(r.body).to.have.property('code').that.equals(500);
       }));
 
@@ -203,7 +203,7 @@ describe(packageJson.name, () => {
       .expect(500)
       .then((r: any) => {
         const e = r.body;
-        expect(e.message).to.contain('should NOT have additional properties');
+        expect(e.message).to.contain('must NOT have additional properties');
         expect(e.code).to.equal(500);
       }));
 
@@ -223,7 +223,7 @@ describe(packageJson.name, () => {
       .expect(500)
       .then((r: any) => {
         const e = r.body;
-        expect(e.message).to.contain('should NOT have additional properties');
+        expect(e.message).to.contain('must NOT have additional properties');
         expect(e.code).to.equal(500);
       }));
 

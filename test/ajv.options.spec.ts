@@ -1,20 +1,29 @@
 import { expect } from 'chai';
+import { NormalizedOpenApiValidatorOpts } from '../src/framework/types';
 import { AjvOptions } from '../src/framework/ajv/options';
 
 describe('AjvOptions', () => {
   // hard code base options
   // These are normalized when express-openapi-validator parses options, however
   // this test bypasses that, thus we manually set them to expected values
-  const baseOptions = {
+  const baseOptions: NormalizedOpenApiValidatorOpts = {
     apiSpec: './spec',
     validateApiSpec: false,
-    validateRequests: true,
+    validateRequests: {
+        allowUnknownQueryParameters: false,
+        coerceTypes: false,
+    },
     validateResponses: {
       coerceTypes: false,
       removeAdditional: true,
     },
     serDes: [],
-    formats: [],
+    formats: {},
+    validateSecurity: false,
+    fileUploader: {},
+    $refParser: { mode: 'bundle' },
+    operationHandlers: false,
+    validateFormats: true,
   };
 
   it('should not validate schema for requests since schema is validated on startup', async () => {

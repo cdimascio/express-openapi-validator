@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import * as ajv from 'ajv';
+import Ajv, { ValidateFunction, Options } from 'ajv';
 import mung from '../framework/modded.express.mung';
 import { createResponseAjv } from '../framework/ajv';
 import {
@@ -19,24 +19,24 @@ import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
 
 interface ValidateResult {
-  validators: { [key: string]: ajv.ValidateFunction };
+  validators: { [key: string]: ValidateFunction };
   body: object;
   statusCode: number;
   path: string;
   accepts: string[];
 }
 export class ResponseValidator {
-  private ajvBody: ajv.Ajv;
+  private ajvBody: Ajv;
   private spec: OpenAPIV3.Document;
   private validatorsCache: {
-    [key: string]: { [key: string]: ajv.ValidateFunction };
+    [key: string]: { [key: string]: ValidateFunction };
   } = {};
-  private eovOptions: ValidateResponseOpts
+  private eovOptions: ValidateResponseOpts;
 
   constructor(
-      openApiSpec: OpenAPIV3.Document,
-      options: ajv.Options = {},
-      eovOptions: ValidateResponseOpts = {}
+    openApiSpec: OpenAPIV3.Document,
+    options: Options = {},
+    eovOptions: ValidateResponseOpts = {},
   ) {
     this.spec = openApiSpec;
     this.ajvBody = createResponseAjv(openApiSpec, options);
@@ -80,7 +80,7 @@ export class ResponseValidator {
         } catch (err) {
           // If a custom error handler was provided, we call that
           if (err instanceof InternalServerError && this.eovOptions.onError) {
-            this.eovOptions.onError(err, body, req)
+            this.eovOptions.onError(err, body, req);
           } else {
             // No custom error handler, or something unexpected happen.
             throw err;
@@ -96,7 +96,7 @@ export class ResponseValidator {
   public _getOrBuildValidator(
     req: OpenApiRequest,
     responses: OpenAPIV3.ResponsesObject,
-  ): { [key: string]: ajv.ValidateFunction } {
+  ): { [key: string]: ValidateFunction } {
     // get the request content type - used only to build the cache key
     const contentTypeMeta = ContentType.from(req);
     const contentType =
@@ -149,7 +149,7 @@ export class ResponseValidator {
       if (body !== undefined) {
         // response contains content/body
         throw new InternalServerError({
-          path: '.response',
+          path: '/response',
           message: 'response should NOT have a body',
         });
       }
@@ -173,7 +173,7 @@ export class ResponseValidator {
 
     if (body === undefined || body === null) {
       throw new InternalServerError({
-        path: '.response',
+        path: '/response',
         message: 'response body required.',
       });
     }
@@ -212,9 +212,9 @@ export class ResponseValidator {
    * @param responses
    * @returns a map of validators
    */
-  private buildValidators(
-    responses: OpenAPIV3.ResponsesObject,
-  ): { [key: string]: ajv.ValidateFunction } {
+  private buildValidators(responses: OpenAPIV3.ResponsesObject): {
+    [key: string]: ValidateFunction;
+  } {
     const validationTypes = (response) => {
       if (!response.content) {
         return ['no_content'];
@@ -289,7 +289,7 @@ export class ResponseValidator {
     const validators = {};
     for (const [code, contentTypeSchemas] of Object.entries(responseSchemas)) {
       if (Object.keys(contentTypeSchemas).length === 0) {
-          validators[code] = {};
+        validators[code] = {};
       }
       for (const contentType of Object.keys(contentTypeSchemas)) {
         const schema = contentTypeSchemas[contentType];

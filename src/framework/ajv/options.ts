@@ -1,6 +1,5 @@
-import ajv = require('ajv');
 import {
-  OpenApiValidatorOpts,
+  NormalizedOpenApiValidatorOpts,
   Options,
   RequestValidatorOptions,
   ValidateRequestOpts,
@@ -8,15 +7,15 @@ import {
 } from '../types';
 
 export class AjvOptions {
-  private options: OpenApiValidatorOpts;
-  constructor(options: OpenApiValidatorOpts) {
+  private options: NormalizedOpenApiValidatorOpts;
+  constructor(options: NormalizedOpenApiValidatorOpts) {
     this.options = options;
   }
-  get preprocessor(): ajv.Options {
+  get preprocessor(): Options {
     return this.baseOptions();
   }
 
-  get response(): ajv.Options {
+  get response(): Options {
     const { coerceTypes, removeAdditional } = <ValidateResponseOpts>(
       this.options.validateResponses
     );
@@ -45,12 +44,8 @@ export class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const {
-      coerceTypes,
-      unknownFormats,
-      validateFormats,
-      serDes,
-    } = this.options;
+    const { coerceTypes, formats, validateFormats, serDes, ajvFormats } =
+      this.options;
     const serDesMap = {};
     for (const serDesObject of serDes) {
       if (!serDesMap[serDesObject.format]) {
@@ -65,22 +60,21 @@ export class AjvOptions {
       }
     }
 
-    return {
-      validateSchema: false, // this is true for statup validation, thus it can be bypassed here
-      nullable: true,
+    const options: Options = {
+      strict: false,
+      strictNumbers: true,
+      strictTuples: true,
+      allowUnionTypes: false,
+      validateSchema: false, // this is true for startup validation, thus it can be bypassed here
       coerceTypes,
       useDefaults: true,
       removeAdditional: false,
-      unknownFormats,
-      format: validateFormats,
-      formats: this.options.formats.reduce((acc, f) => {
-        acc[f.name] = {
-          type: f.type,
-          validate: f.validate,
-        };
-        return acc;
-      }, {}),
-      serDesMap: serDesMap,
+      validateFormats: validateFormats,
+      formats,
+      serDesMap,
+      ajvFormats,
     };
+
+    return options;
   }
 }

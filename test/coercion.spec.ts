@@ -35,7 +35,7 @@ describe(packageJson.name, () => {
       })
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.contain('is_cat should be boolean');
+        expect(r.body.message).to.contain('request/body/is_cat must be boolean');
       }));
 
   it('should return 400 when age is passed as string, but number is expected', async () =>
@@ -48,7 +48,7 @@ describe(packageJson.name, () => {
       })
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.contain('age should be number');
+        expect(r.body.message).to.contain('request/body/age must be number');
       }));
 
   it('should return 400 when age (number) is null', async () =>
@@ -61,7 +61,7 @@ describe(packageJson.name, () => {
       })
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.contain('age should be number');
+        expect(r.body.message).to.contain('request/body/age must be number');
       }));
 
   it('should return 200 when all are typed correctly', async () =>
@@ -100,6 +100,6 @@ describe(packageJson.name, () => {
       })
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.contain('is_cat should be string');
+        expect(r.body.message).to.contain('request/body/is_cat must be string');
       }));
 });
