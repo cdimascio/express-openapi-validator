@@ -12,6 +12,7 @@ import {
   NotFound,
   Unauthorized,
   Forbidden,
+  HTTPError,
 } from './framework/types';
 
 // export default openapiValidator;
@@ -27,6 +28,7 @@ export const error = {
   NotFound,
   Unauthorized,
   Forbidden,
+  HTTPError,
 };
 
 export * as serdes from './framework/base.serdes';
