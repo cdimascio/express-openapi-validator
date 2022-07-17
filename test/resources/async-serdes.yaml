@@ -12,17 +12,17 @@ paths:
           in: path
           required: true
           schema:
-            $ref: "#/components/schemas/ObjectId"
-        - name: baddateresponse
-          in: query
-          schema:
-            type: string
-            enum: ['functionNotExists', 'functionBadFormat']
-        - name: shortOrLong
+            $ref: "#/components/schemas/UserId"
+        - name: managerId
           in: query
           required: false
           schema:
-            $ref: "#/components/schemas/ShortOrLong"
+            $ref: "#/components/schemas/UserId"
+        - name: anotherManagerId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserId"
       responses:
         200:
           description: ""
@@ -46,9 +46,9 @@ paths:
                 $ref: "#/components/schemas/User"
 components:
   schemas:
-    ObjectId:
+    UserId:
       type: string
-      format: mongo-objectid
+      format: user-id
       pattern: '^[0-9a-fA-F]{24}$'
     Date:
       type: string
@@ -56,12 +56,6 @@ components:
     DateTime:
       type: string
       format: date-time
-    ShortOrLong:
-      type: string
-      format: mongo-objectid
-      anyOf:
-        - maxLength: 2
-        - minLength: 4
     StringList:
       type: string
       format: string-list
@@ -69,14 +63,12 @@ components:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/ObjectId"
+          $ref: "#/components/schemas/UserId"
         id2:
-          $ref: "#/components/schemas/ObjectId"
+          $ref: "#/components/schemas/UserId"
         tags:
           $ref: "#/components/schemas/StringList"
         creationDateTime:
           $ref: "#/components/schemas/DateTime"
         creationDate:
           $ref: "#/components/schemas/Date"
-        shortOrLong:
-          $ref: "#/components/schemas/ShortOrLong"
