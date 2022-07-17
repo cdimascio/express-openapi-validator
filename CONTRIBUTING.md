@@ -96,7 +96,7 @@ See code notes below.
 
 ```mermaid
   graph LR;
-      A["Parse path parameters"]-->B["Attach req.openapi"]];
+      A["Parse path parameters"]-->B["Attach req.openapi"];
       B-->C["Multi-part parsing / validation"];
       C-->D["Security enforcement"];
       D-->E["Request validation"];
