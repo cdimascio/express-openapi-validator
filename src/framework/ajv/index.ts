@@ -142,7 +142,16 @@ function createAjv(
               // call passing `this` so the ajv passContext option can influence this invocation
               ctx.parentData[ctx.parentDataProperty] = sch.deserialize.call(this, data);
             } catch (e) {
-              return handleSerdesError(validate, e, ctx, it);
+              validate.errors = [
+                {
+                  keyword: 'serdes',
+                  instancePath: ctx.instancePath,
+                  schemaPath: it.schemaPath.str,
+                  message: `format is invalid`,
+                  params: { 'x-eov-req-serdes': ctx.parentDataProperty },
+                },
+              ];
+              return false;
             }
 
             return true;
@@ -196,7 +205,16 @@ function createAjv(
               // call passing `this` so the ajv passContext option can influence this invocation
               ctx.parentData[ctx.parentDataProperty] = sch.serialize.call(this, data);
             } catch (e) {
-              return handleSerdesError(validate, e, ctx, it);
+              validate.errors = [
+                {
+                  keyword: 'serdes',
+                  instancePath: ctx.instancePath,
+                  schemaPath: it.schemaPath.str,
+                  message: `format is invalid`,
+                  params: { 'x-eov-res-serdes': ctx.parentDataProperty },
+                },
+              ];
+              return false;
             }
 
             return true;
@@ -248,21 +266,4 @@ function createAjv(
   }
 
   return ajv;
-}
-
-function handleSerdesError(validate, err, ctx, it) {
-  if (err instanceof HttpError) {
-    validate.errors = [err];
-  } else {
-    validate.errors = [
-      {
-        keyword: 'serdes',
-        instancePath: ctx.instancePath,
-        schemaPath: it.schemaPath.str,
-        message: `format is invalid`,
-        params: { 'x-eov-res-serdes': ctx.parentDataProperty },
-      },
-    ];
-  }
-  return false;
 }
