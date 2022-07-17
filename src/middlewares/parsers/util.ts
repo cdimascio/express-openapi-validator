@@ -1,7 +1,5 @@
 import Ajv from 'ajv';
-import { OpenAPIV3, Options } from '../../framework/types';
-import ajv = require('ajv');
-import { OpenAPIFramework } from '../../framework';
+import { OpenAPIV3 } from '../../framework/types';
 
 export function dereferenceParameter(
   apiDocs: OpenAPIV3.Document,
@@ -85,33 +83,6 @@ export function dereferenceSchema(ajv: Ajv, ref: string) {
     return dereferenceSchema(ajv, '');
   }
   return derefSchema?.schema;
-}
-
-export function buildAsyncFormats(options: Options) {
-  const asyncFormats = {};
-
-  if (options.formats) {
-    for (const format in options.formats) {
-      const formatOptions = options.formats[format];
-      if (typeof formatOptions !== 'string' &&
-          typeof formatOptions !== 'boolean' &&
-          !(formatOptions instanceof RegExp) &&
-          formatOptions.hasOwnProperty('async')
-      ) {
-        asyncFormats[format] = true;
-      }
-    }
-  }
-
-  if (options.serDesMap) {
-    for (const format in options.serDesMap) {
-      if (options.serDesMap[format].async) {
-        asyncFormats[format] = true;
-      }
-    }
-  }
-
-  return asyncFormats;
 }
 
 function is$Ref(

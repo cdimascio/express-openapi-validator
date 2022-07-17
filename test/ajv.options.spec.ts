@@ -12,11 +12,25 @@ describe('AjvOptions', () => {
     validateRequests: {
       allowUnknownQueryParameters: false,
       coerceTypes: false,
+      /**
+       * Only works for serdes.deserialize.
+       * Ajv does not pass context to built-in validations
+       * If desired, could build an x-eov-string-format keyword and
+       * get Request/Response context to format.value.
+       * https://ajv.js.org/options.html#passcontext
+       */
       passContext: false
     },
     validateResponses: {
       coerceTypes: false,
       removeAdditional: true,
+      /**
+       * Only works for serdes.serialize.
+       * Ajv does not pass context to built-in validations
+       * If desired, could build an x-eov-string-format keyword and
+       * get Request/Response context to format.value.
+       * https://ajv.js.org/options.html#passcontext
+       */
       passContext: false
     },
     serDes: [],

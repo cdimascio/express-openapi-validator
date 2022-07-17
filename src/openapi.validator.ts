@@ -96,7 +96,7 @@ export class OpenApiValidator {
       .then((spec) => {
         const apiDoc = spec.apiDoc;
         const ajvOpts = this.ajvOpts.preprocessor;
-        const resOpts = this.options.validateResponses as ValidateRequestOpts;
+        const resOpts = this.options.validateResponses;
         const sp = new SchemaPreprocessor(
           apiDoc,
           ajvOpts,
@@ -107,7 +107,6 @@ export class OpenApiValidator {
             ...spec,
             apiDoc: sp.apiDoc
           }, this.options.ignorePaths, this.options.ignoreUndocumented),
-          // Should not contain any $async
           responseApiDoc: sp.apiDocRes,
           error: null,
         };

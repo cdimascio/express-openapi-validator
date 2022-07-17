@@ -1,16 +1,15 @@
 import Ajv from 'ajv';
-import ajv = require('ajv');
 import * as cloneDeep from 'lodash.clonedeep';
 import * as _get from 'lodash.get';
 import { createRequestAjv, createResponseAjv } from '../../framework/ajv';
-import { buildSchemasWithAsync } from '../../framework/ajv/build-async-schema';
+import { buildAsyncFormats } from '../../framework/ajv/async-util';
+import { buildSchemasWithAsync } from '../../framework/ajv/async-util';
 import {
   OpenAPIV3,
   SerDesMap,
   Options,
   ValidateResponseOpts,
 } from '../../framework/types';
-import { buildAsyncFormats } from './util';
 
 interface TraversalStates {
   req: TraversalState;
@@ -84,28 +83,34 @@ export class SchemaPreprocessor {
   constructor(
     apiDoc: OpenAPIV3.Document,
     ajvOptions: Options,
-    validateResponsesOpts: ValidateResponseOpts,
+    validateResponsesOpts: false | ValidateResponseOpts,
   ) {
-    // Start out with two pure copies of the api doc
+    // Start out with a pure copy of the api doc
     this.apiDoc = cloneDeep(apiDoc);
-    this.apiDocRes = cloneDeep(apiDoc);
-
     this.ajv = createRequestAjv(this.apiDoc, ajvOptions);
-    this.responseAjv = createResponseAjv(this.apiDocRes, ajvOptions);
+
+    if (validateResponsesOpts) {
+      this.apiDocRes = cloneDeep(apiDoc);
+      this.responseAjv = createResponseAjv(this.apiDocRes, ajvOptions);
+      this.responseOpts = validateResponsesOpts;
+    }
 
     this.serDesMap = ajvOptions.serDesMap;
-    this.responseOpts = validateResponsesOpts;
     this.ajvOptions = ajvOptions;
   }
 
   public preProcess() {
     this.mutateApiDocWithAjv(this.ajv, this.apiDoc, 'req');
-    // Only mutate components to contain $async in the request apiDoc.
     if (this.apiDoc?.components?.schemas) {
-      this.apiDoc.components.schemas = buildSchemasWithAsync(buildAsyncFormats(this.ajvOptions), this.apiDoc?.components.schemas);
+      // Only mutate components to contain $async in the request apiDoc.
+      this.apiDoc.components.schemas = buildSchemasWithAsync(
+        buildAsyncFormats(this.ajvOptions),
+        this.apiDoc?.components.schemas
+      );
     }
-    this.mutateApiDocWithAjv(this.responseAjv, this.apiDocRes, 'res');
-
+    if (this.apiDocRes) {
+      this.mutateApiDocWithAjv(this.responseAjv, this.apiDocRes, 'res');
+    }
     return {
       apiDoc: this.apiDoc,
       apiDocRes: this.apiDocRes,
@@ -286,13 +291,18 @@ export class SchemaPreprocessor {
       const $async = (ajvSchema && ajvSchema['$async']) ?? undefined;
       node.schema['$async'] = $async;
       ajv.removeSchema(key);
+      /**
+       * If this uses a new object, i.e.  {...node.schema, $async}
+       * then a very subtle assumption in processDiscriminator is violated
+       * such that one of the discriminator validator schemas gets a bad reference
+       * Causes failures in some of the oneOf tests.
+       *
+       * If this class does ever become entirely functional w/ no side effects,
+       * this will be one thing to fix.
+       */
       ajv.addSchema(node.schema, key);
     }
   }
-
-  // Bug
-
-  // DogObject.schema.properties.pet_type has the values for CatObject
 
   /**
    * Custom processing on discriminators.

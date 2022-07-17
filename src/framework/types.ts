@@ -89,6 +89,7 @@ export type SerDes = {
   deserialize?: (s: string) => unknown;
 };
 
+/** Only async deserialize functions are currently supported. */
 export type AsyncSerDes = {
   async: true;
   format: string;

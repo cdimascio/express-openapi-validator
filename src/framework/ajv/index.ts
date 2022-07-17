@@ -4,9 +4,8 @@ import ajvType from 'ajv/dist/vocabularies/jtd/type';
 import addFormats from 'ajv-formats';
 import { formats } from './formats';
 import { AsyncSerDes, HttpError, OpenAPIV3, Options, SerDes } from '../types';
-import { buildAsyncFormats } from '../../middlewares/parsers/util';
-import { buildSchemasWithAsync } from './build-async-schema';
-import { hasAnySchemaWithAsync } from './async-util';
+import { buildSchemasWithAsync } from './async-util';
+import { hasAnySchemaWithAsync, buildAsyncFormats } from './async-util';
 import Ajv from 'ajv';
 
 type SerDesSchema = Partial<SerDes> & {

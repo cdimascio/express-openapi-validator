@@ -1,6 +1,5 @@
 import type { ErrorObject } from 'ajv-draft-04';
 import { Request } from 'express';
-import { ComponentSchemas } from '../framework/ajv/build-async-schema';
 import { ValidationError } from '../framework/types';
 
 export class ContentType {
@@ -75,15 +74,7 @@ export function ajvErrorsToValidatorError(
   return {
     status,
     errors: errors.map((e) => {
-      const params: any = e.params;
-      const required =
-        params?.missingProperty &&
-        e.instancePath + '/' + params.missingProperty;
-      const additionalProperty =
-        params?.additionalProperty &&
-        e.instancePath + '/' + params.additionalProperty;
-      const path =
-        required ?? additionalProperty ?? e.instancePath ?? e.schemaPath;
+      const path = pathFromAjvValidationError(e);
       return {
         path,
         message: e.message,
@@ -91,6 +82,19 @@ export function ajvErrorsToValidatorError(
       };
     }),
   };
+}
+
+export function pathFromAjvValidationError(ajvValidationError: ErrorObject) {
+  const params: any = ajvValidationError.params;
+  const required =
+    params?.missingProperty &&
+    ajvValidationError.instancePath + '/' + params.missingProperty;
+  const additionalProperty =
+    params?.additionalProperty &&
+    ajvValidationError.instancePath + '/' + params.additionalProperty;
+  const path =
+    required ?? additionalProperty ?? ajvValidationError.instancePath ?? ajvValidationError.schemaPath;
+  return path;
 }
 
 export const deprecationWarning =

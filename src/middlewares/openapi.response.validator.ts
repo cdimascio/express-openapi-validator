@@ -58,7 +58,6 @@ export class ResponseValidator {
       if (req.openapi) {
         const openapi = <OpenApiRequestMetadata>req.openapi;
         // instead of openapi.schema, use openapi._responseSchema to get the response copy
-        // _responseSchema?.responses should not have any $async anywhere
         const responses: OpenAPIV3.ResponsesObject = (<any>openapi)
           ._responseSchema?.responses;
 
