@@ -1,5 +1,6 @@
 import type { ErrorObject } from 'ajv-draft-04';
 import { Request } from 'express';
+import { ComponentSchemas } from '../framework/ajv/build-async-schema';
 import { ValidationError } from '../framework/types';
 
 export class ContentType {

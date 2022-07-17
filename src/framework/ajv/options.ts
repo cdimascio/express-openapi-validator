@@ -16,7 +16,7 @@ export class AjvOptions {
   }
 
   get response(): Options {
-    const { coerceTypes, removeAdditional } = <ValidateResponseOpts>(
+    const { coerceTypes, removeAdditional, passContext } = <ValidateResponseOpts>(
       this.options.validateResponses
     );
     return {
@@ -24,11 +24,12 @@ export class AjvOptions {
       useDefaults: false,
       coerceTypes,
       removeAdditional,
+      passContext
     };
   }
 
   get request(): RequestValidatorOptions {
-    const { allowUnknownQueryParameters, coerceTypes, removeAdditional } = <
+    const { allowUnknownQueryParameters, coerceTypes, removeAdditional, passContext } = <
       ValidateRequestOpts
     >this.options.validateRequests;
     return {
@@ -36,6 +37,7 @@ export class AjvOptions {
       allowUnknownQueryParameters,
       coerceTypes,
       removeAdditional,
+      passContext
     };
   }
 
@@ -56,6 +58,9 @@ export class AjvOptions {
         }
         if (serDesObject.deserialize) {
           serDesMap[serDesObject.format].deserialize = serDesObject.deserialize;
+        }
+        if (serDesObject.async) {
+          serDesMap[serDesObject.format].async = serDesObject.async;
         }
       }
     }

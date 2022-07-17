@@ -49,11 +49,21 @@ export type ValidateRequestOpts = {
   allowUnknownQueryParameters?: boolean;
   coerceTypes?: boolean | 'array';
   removeAdditional?: boolean | 'all' | 'failing';
+  /**
+   * Exposes express.Request for current request as `this`
+   * in serdes.serialize, serdes.deserialize
+   */
+  passContext?: boolean;
 };
 
 export type ValidateResponseOpts = {
   removeAdditional?: boolean | 'all' | 'failing';
   coerceTypes?: boolean | 'array';
+  /**
+   * Exposes express.Response for current response as `this`
+   * in serdes[string].serialize, serdes[string].deserialize
+   */
+  passContext?: boolean;
   onError?: (err: InternalServerError, json: any, req: Request) => void;
 };
 
@@ -73,10 +83,18 @@ export type Format = {
 };
 
 export type SerDes = {
+  async?: false;
   format: string;
   serialize?: (o: unknown) => string;
   deserialize?: (s: string) => unknown;
 };
+
+export type AsyncSerDes = {
+  async: true;
+  format: string;
+  serialize?: (o: unknown) => string;
+  deserialize?: (s: string) => Promise<unknown>;
+}
 
 export class SerDesSingleton implements SerDes {
   serializer: SerDes;
@@ -105,7 +123,7 @@ export class SerDesSingleton implements SerDes {
 };
 
 export type SerDesMap = {
-  [format: string]: SerDes
+  [format: string]: SerDes | AsyncSerDes
 };
 
 export interface OpenApiValidatorOpts {
@@ -123,7 +141,7 @@ export interface OpenApiValidatorOpts {
    * Use `formats` + `validateFormats` to ignore specified formats
    */
   unknownFormats?: true | string[] | 'ignore';
-  serDes?: SerDes[];
+  serDes?: (SerDes | AsyncSerDes)[];
   formats?: Format[] | Record<string, ajv.Format>;
   ajvFormats?: FormatsPluginOptions;
   fileUploader?: boolean | multer.Options;

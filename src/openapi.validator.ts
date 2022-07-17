@@ -103,7 +103,11 @@ export class OpenApiValidator {
           resOpts,
         ).preProcess();
         return {
-          context: new OpenApiContext(spec, this.options.ignorePaths, this.options.ignoreUndocumented),
+          context: new OpenApiContext({
+            ...spec,
+            apiDoc: sp.apiDoc
+          }, this.options.ignorePaths, this.options.ignoreUndocumented),
+          // Should not contain any $async
           responseApiDoc: sp.apiDocRes,
           error: null,
         };

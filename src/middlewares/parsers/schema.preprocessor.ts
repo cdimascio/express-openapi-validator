@@ -2,13 +2,15 @@ import Ajv from 'ajv';
 import ajv = require('ajv');
 import * as cloneDeep from 'lodash.clonedeep';
 import * as _get from 'lodash.get';
-import { createRequestAjv } from '../../framework/ajv';
+import { createRequestAjv, createResponseAjv } from '../../framework/ajv';
+import { buildSchemasWithAsync } from '../../framework/ajv/build-async-schema';
 import {
   OpenAPIV3,
   SerDesMap,
   Options,
   ValidateResponseOpts,
 } from '../../framework/types';
+import { buildAsyncFormats } from './util';
 
 interface TraversalStates {
   req: TraversalState;
@@ -73,27 +75,46 @@ export const httpMethods = new Set([
 ]);
 export class SchemaPreprocessor {
   private ajv: Ajv;
+  private responseAjv: Ajv;
   private apiDoc: OpenAPIV3.Document;
   private apiDocRes: OpenAPIV3.Document;
   private serDesMap: SerDesMap;
   private responseOpts: ValidateResponseOpts;
+  private ajvOptions: Options;
   constructor(
     apiDoc: OpenAPIV3.Document,
     ajvOptions: Options,
     validateResponsesOpts: ValidateResponseOpts,
   ) {
-    this.ajv = createRequestAjv(apiDoc, ajvOptions);
-    this.apiDoc = apiDoc;
+    // Start out with two pure copies of the api doc
+    this.apiDoc = cloneDeep(apiDoc);
+    this.apiDocRes = cloneDeep(apiDoc);
+
+    this.ajv = createRequestAjv(this.apiDoc, ajvOptions);
+    this.responseAjv = createResponseAjv(this.apiDocRes, ajvOptions);
+
     this.serDesMap = ajvOptions.serDesMap;
     this.responseOpts = validateResponsesOpts;
+    this.ajvOptions = ajvOptions;
   }
 
   public preProcess() {
-    const componentSchemas = this.gatherComponentSchemaNodes();
-    const r = this.gatherSchemaNodesFromPaths();
+    this.mutateApiDocWithAjv(this.ajv, this.apiDoc, 'req');
+    // Only mutate components to contain $async in the request apiDoc.
+    if (this.apiDoc?.components?.schemas) {
+      this.apiDoc.components.schemas = buildSchemasWithAsync(buildAsyncFormats(this.ajvOptions), this.apiDoc?.components.schemas);
+    }
+    this.mutateApiDocWithAjv(this.responseAjv, this.apiDocRes, 'res');
 
-    // Now that we've processed paths, clone a response spec if we are validating responses
-    this.apiDocRes = !!this.responseOpts ? cloneDeep(this.apiDoc) : null;
+    return {
+      apiDoc: this.apiDoc,
+      apiDocRes: this.apiDocRes,
+    };
+  }
+
+  private mutateApiDocWithAjv(ajv: Ajv, apiDoc: OpenAPIV3.Document, kind: string) {
+    const componentSchemas = this.gatherComponentSchemaNodes(ajv, apiDoc);
+    const r = this.gatherSchemaNodesFromPaths(ajv, apiDoc);
 
     const schemaNodes = {
       schemas: componentSchemas,
@@ -102,22 +123,24 @@ export class SchemaPreprocessor {
     };
 
     // Traverse the schemas
-    this.traverseSchemas(schemaNodes, (parent, schema, opts) =>
-      this.schemaVisitor(parent, schema, opts),
+    this.traverseSchemas(
+      schemaNodes,
+      (parent, schema, opts) => this.schemaVisitor(parent, schema, opts, kind, ajv),
+      ajv,
+      apiDoc
     );
-
-    return {
-      apiDoc: this.apiDoc,
-      apiDocRes: this.apiDocRes,
-    };
   }
 
-  private gatherComponentSchemaNodes(): Root<SchemaObject>[] {
+  /**
+   * Sets ajv instance's component schema refs to the apiDoc's.
+   * Gets a list of component schema nodes.
+   */
+  private gatherComponentSchemaNodes(ajv: Ajv, apiDoc: OpenAPIV3.Document): Root<SchemaObject>[] {
     const nodes = [];
-    const componentSchemaMap = this.apiDoc?.components?.schemas ?? [];
+    const componentSchemaMap = apiDoc?.components?.schemas ?? [];
     for (const [id, s] of Object.entries(componentSchemaMap)) {
-      const schema = this.resolveSchema<SchemaObject>(s);
-      this.apiDoc.components.schemas[id] = schema;
+      const schema = this.resolveSchema<SchemaObject>(s, ajv, apiDoc);
+      apiDoc.components.schemas[id] =  schema;
       const path = ['components', 'schemas', id];
       const node = new Root(schema, path);
       nodes.push(node);
@@ -125,21 +148,24 @@ export class SchemaPreprocessor {
     return nodes;
   }
 
-  private gatherSchemaNodesFromPaths(): TopLevelPathNodes {
+  /**
+   * Gets all request bodies and response schemas
+   */
+  private gatherSchemaNodesFromPaths(ajv: Ajv, apiDoc: OpenAPIV3.Document): TopLevelPathNodes {
     const requestBodySchemas = [];
     const responseSchemas = [];
 
-    for (const [p, pi] of Object.entries(this.apiDoc.paths)) {
-      const pathItem = this.resolveSchema<OpenAPIV3.PathItemObject>(pi);
+    for (const [p, pi] of Object.entries(apiDoc.paths)) {
+      const pathItem = this.resolveSchema<OpenAPIV3.PathItemObject>(pi, ajv, apiDoc);
       for (const method of Object.keys(pathItem)) {
         if (httpMethods.has(method)) {
           const operation = <OpenAPIV3.OperationObject>pathItem[method];
           // Adds path declared parameters to the schema's parameters list
-          this.preprocessPathLevelParameters(method, pathItem);
+          this.preprocessPathLevelParameters(method, pathItem, ajv, apiDoc);
           const path = ['paths', p, method];
           const node = new Root<OpenAPIV3.OperationObject>(operation, path);
-          const requestBodies = this.extractRequestBodySchemaNodes(node);
-          const responseBodies = this.extractResponseSchemaNodes(node);
+          const requestBodies = this.extractRequestBodySchemaNodes(node, ajv, apiDoc);
+          const responseBodies = this.extractResponseSchemaNodes(node, ajv, apiDoc);
 
           requestBodySchemas.push(...requestBodies);
           responseSchemas.push(...responseBodies);
@@ -157,7 +183,7 @@ export class SchemaPreprocessor {
    * @param nodes the nodes to traverse
    * @param visit a function to invoke per node
    */
-  private traverseSchemas(nodes: TopLevelSchemaNodes, visit) {
+  private traverseSchemas(nodes: TopLevelSchemaNodes, visit, ajv: Ajv, apiDoc: OpenAPIV3.Document) {
     const seen = new Set();
     const recurse = (parent, node, opts: TraversalStates) => {
       const schema = node.schema;
@@ -167,7 +193,7 @@ export class SchemaPreprocessor {
       seen.add(schema);
 
       if (schema.$ref) {
-        const resolvedSchema = this.resolveSchema<SchemaObject>(schema);
+        const resolvedSchema = this.resolveSchema<SchemaObject>(schema, ajv, apiDoc);
         const path = schema.$ref.split('/').slice(1);
 
         (<any>opts).req.originalSchema = schema;
@@ -230,35 +256,50 @@ export class SchemaPreprocessor {
     parent: SchemaObjectNode,
     node: SchemaObjectNode,
     opts: TraversalStates,
+    kind: string,
+    ajv: Ajv
   ) {
-    const pschemas = [parent?.schema];
-    const nschemas = [node.schema];
+    const pschema = parent?.schema;
+    const nschema = node.schema;
 
-    if (this.apiDocRes) {
-      const p = _get(this.apiDocRes, parent?.path);
-      const n = _get(this.apiDocRes, node?.path);
-      pschemas.push(p);
-      nschemas.push(n);
-    }
+    const options = opts[kind];
+    options.path = node.path;
 
-    // visit the node in both the request and response schema
-    for (let i = 0; i < nschemas.length; i++) {
-      const kind = i === 0 ? 'req' : 'res';
-      const pschema = pschemas[i];
-      const nschema = nschemas[i];
-      const options = opts[kind];
-      options.path = node.path;
+    if (nschema) {
+      this.handleSerDes(pschema, nschema, options);
+      this.handleReadonly(pschema, nschema, options);
+      this.updateAjvAfterTampering(node, ajv);
 
-      if (nschema) {
-        // This null check should no longer be necessary
-        this.handleSerDes(pschema, nschema, options);
-        this.handleReadonly(pschema, nschema, options);
-        this.processDiscriminator(pschema, nschema, options);
-      }
+      this.processDiscriminator(pschema, nschema, options, ajv);
     }
   }
 
-  private processDiscriminator(parent: Schema, schema: Schema, opts: any = {}) {
+  /**
+   * Updates ajv with latest node schema so calls to this.resolveSchema
+   * will return schema's that reflect latest tampering for serdes/readOnly.
+   */
+  private updateAjvAfterTampering(node: SchemaObjectNode, ajv: Ajv) {
+    if (node.path && node.path[0] === 'components' && node.path.length === 3) {
+      const key = `#/${node.path.join('/')}`;
+      const ajvSchema =  ajv.getSchema(key)?.schema;
+      // Be sure not to lose the $async values if they were set for the schemas already.
+      const $async = (ajvSchema && ajvSchema['$async']) ?? undefined;
+      node.schema['$async'] = $async;
+      ajv.removeSchema(key);
+      ajv.addSchema(node.schema, key);
+    }
+  }
+
+  // Bug
+
+  // DogObject.schema.properties.pet_type has the values for CatObject
+
+  /**
+   * Custom processing on discriminators.
+   * Looks at the discriminator to handle "properties", "required" and configure
+   * ajv for proper validation. May not be needed anymore with v7 discriminator support in ajv.
+   */
+  private processDiscriminator(parent: Schema, schema: Schema, opts: any = {}, ajv: Ajv) {
     const o = opts.discriminator;
     const schemaObj = <SchemaObject>schema;
     const xOf = schemaObj.oneOf ? 'oneOf' : schemaObj.anyOf ? 'anyOf' : null;
@@ -341,7 +382,7 @@ export class SchemaPreprocessor {
 
         for (const option of options) {
           ancestor._discriminator.validators[option] =
-            this.ajv.compile(newSchema);
+            ajv.compile(newSchema);
         }
       }
       //reset data
@@ -401,7 +442,14 @@ export class SchemaPreprocessor {
         delete schema.type;
       }
       if (serDes.deserialize) {
-        schema['x-eov-req-serdes'] = serDes;
+        if (serDes.async) {
+          schema['x-eov-req-serdes-async'] = serDes;
+          if (schema['x-eov-req-serdes']) {
+            throw new Error('Cannot have async and sync req serdes.');
+          }
+        } else {
+          schema['x-eov-req-serdes'] = serDes;
+        }
       }
       if (serDes.serialize) {
         schema['x-eov-res-serdes'] = serDes;
@@ -432,14 +480,17 @@ export class SchemaPreprocessor {
 
   /**
    * extract all requestBodies' schemas from an operation
-   * @param op
    */
   private extractRequestBodySchemaNodes(
     node: Root<OpenAPIV3.OperationObject>,
+    ajv: Ajv,
+    apiDoc: OpenAPIV3.Document
   ): Root<SchemaObject>[] {
     const op = node.schema;
     const bodySchema = this.resolveSchema<OpenAPIV3.RequestBodyObject>(
       op.requestBody,
+      ajv,
+      apiDoc
     );
     op.requestBody = bodySchema;
 
@@ -450,6 +501,8 @@ export class SchemaPreprocessor {
     for (const [type, mediaTypeObject] of contentEntries) {
       const mediaTypeSchema = this.resolveSchema<SchemaObject>(
         mediaTypeObject.schema,
+        ajv,
+        apiDoc
       );
       op.requestBody.content[type].schema = mediaTypeSchema;
       const path = [...node.path, 'requestBody', 'content', type, 'schema'];
@@ -460,6 +513,8 @@ export class SchemaPreprocessor {
 
   private extractResponseSchemaNodes(
     node: Root<OpenAPIV3.OperationObject>,
+    ajv: Ajv,
+    apiDoc: OpenAPIV3.Document
   ): Root<SchemaObject>[] {
     const op = node.schema;
     const responses = op.responses;
@@ -468,7 +523,7 @@ export class SchemaPreprocessor {
 
     const schemas: Root<SchemaObject>[] = [];
     for (const [statusCode, response] of Object.entries(responses)) {
-      const rschema = this.resolveSchema<OpenAPIV3.ResponseObject>(response);
+      const rschema = this.resolveSchema<OpenAPIV3.ResponseObject>(response, ajv, apiDoc);
       if (!rschema) {
         // issue #553
         // TODO the schema failed to resolve.
@@ -480,7 +535,7 @@ export class SchemaPreprocessor {
 
       if (rschema.content) {
         for (const [type, mediaType] of Object.entries(rschema.content)) {
-          const schema = this.resolveSchema<SchemaObject>(mediaType?.schema);
+          const schema = this.resolveSchema<SchemaObject>(mediaType?.schema, ajv, apiDoc);
           if (schema) {
             rschema.content[type].schema = schema;
             const path = [
@@ -499,16 +554,20 @@ export class SchemaPreprocessor {
     return schemas;
   }
 
-  private resolveSchema<T>(schema): T {
+  private resolveSchema<T>(schema, ajv, apiDoc): T {
     if (!schema) return null;
     const ref = schema?.['$ref'];
-    let res = (ref ? this.ajv.getSchema(ref)?.schema : schema) as T;
-    if (ref && !res) {
-      const path = ref.split('/').join('.');
-      const p = path.substring(path.indexOf('.') + 1);
-      res = _get(this.apiDoc, p);
+    try {
+      let res = (ref ? ajv.getSchema(ref)?.schema : schema) as T;
+      if (ref && !res) {
+        const path = ref.split('/').join('.');
+        const p = path.substring(path.indexOf('.') + 1);
+        res = _get(apiDoc, p);
+      }
+      return res;
+    } catch (ex) {
+      throw ex;
     }
-    return res;
   }
   /**
    * add path level parameters to the schema's parameters list
@@ -518,6 +577,8 @@ export class SchemaPreprocessor {
   private preprocessPathLevelParameters(
     pathItemKey: string,
     pathItem: OpenAPIV3.PathItemObject,
+    ajv: Ajv,
+    apiDoc: OpenAPIV3.Document
   ) {
     const parameters = pathItem.parameters ?? [];
 
@@ -525,6 +586,8 @@ export class SchemaPreprocessor {
 
     const v = this.resolveSchema<OpenAPIV3.OperationObject>(
       pathItem[pathItemKey],
+      ajv,
+      apiDoc
     );
     if (v === parameters) return;
     v.parameters = v.parameters || [];

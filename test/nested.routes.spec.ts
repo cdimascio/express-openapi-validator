@@ -36,8 +36,7 @@ describe(packageJson.name, () => {
           return res.json(json);
         })
       },
-      true,
-      apiRoute
+      true
     );
   });
 

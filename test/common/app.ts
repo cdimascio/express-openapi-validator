@@ -13,7 +13,7 @@ export async function createApp(
   port = 3000,
   customRoutes = (app) => {},
   useRoutes = true,
-  apiRouter = undefined,
+  preValidationRoutes = (app) => {}
 ) {
   var app = express();
   (<any>app).basePath = '/v1';
@@ -29,6 +29,9 @@ export async function createApp(
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
 
+  // register pre-validation custom routes
+  preValidationRoutes(app);
+
   app.use(OpenApiValidator.middleware(opts));
 
   if (useRoutes) {
@@ -42,8 +45,11 @@ export async function createApp(
   if (useRoutes) {
     // Register error handler
     app.use((err, req, res, next) => {
-      // console.error(err);
-      res.status(err.status ?? 500).json({
+      const responseStatus = err.status ?? 500;
+      if (responseStatus === 500) {
+        console.error(err);
+      }
+      res.status(responseStatus).json({
         message: err.message,
         errors: err.errors,
       });

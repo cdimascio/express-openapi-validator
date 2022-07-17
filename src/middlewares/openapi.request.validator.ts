@@ -3,7 +3,7 @@ import { createRequestAjv } from '../framework/ajv';
 import {
   ContentType,
   ajvErrorsToValidatorError,
-  augmentAjvErrors,
+  augmentAjvErrors
 } from './util';
 import { NextFunction, RequestHandler, Response } from 'express';
 import {
@@ -17,10 +17,12 @@ import {
   ParametersSchema,
   BodySchema,
   ValidationSchema,
+  HttpError,
 } from '../framework/types';
 import { BodySchemaParser } from './parsers/body.parse';
 import { ParametersSchemaParser } from './parsers/schema.parse';
 import { RequestParameterMutator } from './parsers/req.parameter.mutator';
+import { PossiblyAsyncObject, schemaWithAsync } from '../framework/ajv/async-util';
 
 type OperationObject = OpenAPIV3.OperationObject;
 type SchemaObject = OpenAPIV3.SchemaObject;
@@ -110,7 +112,8 @@ export class RequestValidator {
       this.warnUnknownQueryParametersKeyword(reqSchema)
     );
 
-    return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
+    // TODO - this shouldn't always be async
+    return async (req: OpenApiRequest, res: Response, next: NextFunction): Promise<void> => {
       const openapi = <OpenApiRequestMetadata>req.openapi;
       const pathParams = Object.keys(openapi.pathParams);
       const hasPathParams = pathParams.length > 0;
@@ -132,6 +135,7 @@ export class RequestValidator {
       }
 
       const schemaProperties = validator.allSchemaProperties;
+
       const mutator = new RequestParameterMutator(
         this.ajv,
         apiDoc,
@@ -163,41 +167,81 @@ export class RequestValidator {
         cookies,
         body: req.body,
       };
+
+      // General validation (query/headers/params)
+      const valid = validator.isGeneralAsync
+        ? await this.callAndHandleErrors(validator.validatorGeneral, req, data)
+        : validator.validatorGeneral.call(req, data);
+
+      const generalErrors = [].concat(validator.validatorGeneral.errors ?? []);
+
+      // Body validation (body content)
       const schemaBody = <any>validator?.schemaBody;
       const discriminator = schemaBody?.properties?.body?._discriminator;
       const discriminatorValidator = this.discriminatorValidator(
         req,
         discriminator,
       );
-
       const validatorBody = discriminatorValidator ?? validator.validatorBody;
-      const valid = validator.validatorGeneral(data);
-      const validBody = validatorBody(
-        discriminatorValidator ? data.body : data,
-      );
+      const bodyDataToValidate = discriminatorValidator ? data.body : data;
+      const validBody = validator.isBodyAsync
+        ? await this.callAndHandleErrors(validatorBody, req, bodyDataToValidate)
+        : validatorBody.call(req, bodyDataToValidate);
+      const bodyErrors = [].concat(validatorBody.errors ?? []);
 
       if (valid && validBody) {
         next();
       } else {
-        const errors = augmentAjvErrors(
-          []
-            .concat(validator.validatorGeneral.errors ?? [])
-            .concat(validatorBody.errors ?? []),
-        );
-        const err = ajvErrorsToValidatorError(400, errors);
-        const message = this.ajv.errorsText(errors, { dataVar: 'request' });
-        const error: BadRequest = new BadRequest({
-          path: req.path,
-          message: message,
-        });
-        error.errors = err.errors;
-        throw error;
+        next(this._throwValidationError(req.path, generalErrors, bodyErrors));
       }
     };
   }
 
+  private async callAndHandleErrors(validator, req, data) {
+    try {
+      return await validator.call(req, data);
+    } catch (err) {
+      if (!(err instanceof Ajv.ValidationError)) {
+        throw err;
+      }
+      validator.errors = err.errors;
+      return false;
+    }
+  }
+
+  private _throwValidationError(path, generalErrors, bodyErrors) {
+    const errors = augmentAjvErrors(
+      []
+        .concat(generalErrors)
+        .concat(bodyErrors),
+    );
+
+    const allGeneralAreHttp = generalErrors.filter(e => e?.params?.isHttpError).length === generalErrors.length && generalErrors.length !== 0;
+    const allBodyAreHttp = bodyErrors.filter(e => e?.params?.isHttpError).length === bodyErrors.length && bodyErrors.length !== 0;
+
+    if (allGeneralAreHttp && generalErrors.length === 1) {
+      throw generalErrors[0].params.httpError;
+    }
+
+    if (allBodyAreHttp && bodyErrors.length === 1) {
+      throw bodyErrors[0].params.httpError;
+    }
+
+    // Otherwise - these are likely standard ajv errors, carry on.
+
+    const err = ajvErrorsToValidatorError(400, errors);
+    const message = this.ajv.errorsText(errors, { dataVar: 'request' });
+    const error: BadRequest = new BadRequest({
+      path: path,
+      message: message,
+    });
+    error.errors = err.errors;
+    throw error;
+  }
+
   private discriminatorValidator(req, discriminator) {
     if (discriminator) {
+      // TODO - the validators here seem to not be referencing schema that has readOnly/writeOnly modifications to required.
       const { options, property, validators } = discriminator;
       const discriminatorValue = req.body[property]; // TODO may not always be in this position
       if (options.find((o) => o.option === discriminatorValue)) {
@@ -245,11 +289,13 @@ export class RequestValidator {
 
 class Validator {
   private readonly apiDoc: OpenAPIV3.Document;
-  readonly schemaGeneral: object;
-  readonly schemaBody: object;
+  readonly schemaGeneral: PossiblyAsyncObject;
+  readonly schemaBody: PossiblyAsyncObject;
   readonly validatorGeneral: ValidateFunction;
   readonly validatorBody: ValidateFunction;
   readonly allSchemaProperties: ValidationSchema;
+  readonly isGeneralAsync: boolean;
+  readonly isBodyAsync: boolean;
 
   constructor(
     apiDoc: OpenAPIV3.Document,
@@ -261,12 +307,15 @@ class Validator {
     },
   ) {
     this.apiDoc = apiDoc;
-    this.schemaGeneral = this._schemaGeneral(parametersSchema);
-    this.schemaBody = this._schemaBody(bodySchema);
+    this.schemaGeneral = schemaWithAsync(this._schemaGeneral(parametersSchema));
+    this.isGeneralAsync = this.schemaGeneral['$async'] ?? false;
+    this.schemaBody = schemaWithAsync(this._schemaBody(bodySchema));
+    this.isBodyAsync = this.schemaBody['$async'] ?? false;
     this.allSchemaProperties = {
       ...(<any>this.schemaGeneral).properties, // query, header, params props
       body: (<any>this.schemaBody).properties.body, // body props
     };
+
     this.validatorGeneral = ajv.general.compile(this.schemaGeneral);
     this.validatorBody = ajv.body.compile(this.schemaBody);
   }

@@ -3,9 +3,13 @@ import { DataValidateFunction } from 'ajv/dist/types';
 import ajvType from 'ajv/dist/vocabularies/jtd/type';
 import addFormats from 'ajv-formats';
 import { formats } from './formats';
-import { OpenAPIV3, Options, SerDes } from '../types';
+import { AsyncSerDes, HttpError, OpenAPIV3, Options, SerDes } from '../types';
+import { buildAsyncFormats } from '../../middlewares/parsers/util';
+import { buildSchemasWithAsync } from './build-async-schema';
+import { hasAnySchemaWithAsync } from './async-util';
+import Ajv from 'ajv';
 
-interface SerDesSchema extends Partial<SerDes> {
+type SerDesSchema = Partial<SerDes> & {
   kind?: 'req' | 'res';
 }
 
@@ -28,12 +32,22 @@ function createAjv(
   options: Options = {},
   request = true,
 ): AjvDraft4 {
+  const asyncFormats = buildAsyncFormats(options);
+  const possiblyAsyncSchemas = openApiSpec.components?.schemas
+    ?  buildSchemasWithAsync(
+      asyncFormats,
+      openApiSpec.components.schemas
+    ) : undefined;
+  const hasAsyncComponentSchemas = hasAnySchemaWithAsync(possiblyAsyncSchemas);
+
   const { ajvFormats, ...ajvOptions } = options;
+
   const ajv = new AjvDraft4({
     ...ajvOptions,
     allErrors: true,
     formats: formats,
   });
+
   // Formats will overwrite existing validation,
   // so set in order of least->most important.
   if (options.serDesMap) {
@@ -67,36 +81,74 @@ function createAjv(
 
   if (request) {
     if (options.serDesMap) {
+      if (hasAsyncComponentSchemas) {
+        ajv.addKeyword({
+          keyword: 'x-eov-req-serdes-async',
+          modifying: true,
+          errors: true,
+          async: true,
+          post: true,
+          compile: (sch: SerDesSchema | AsyncSerDes, p, it) => {
+            // Do not use arrow function to allow .call(this) to work on this function
+            const validate: DataValidateFunction = async function asyncRequestSerdes(data, ctx) {
+              if (typeof data !== 'string') {
+                // Either null (possibly allowed, defer to nullable validation)
+                // or already failed string validation (no need to throw additional internal errors).
+                return true;
+              }
+              try {
+                // call passing `this` so the ajv passContext option can influence this invocation
+                ctx.parentData[ctx.parentDataProperty] = await sch.deserialize.call(this, data);
+              } catch (e) {
+                // If the async serdes through an HttpError record that
+                // so the request validator can make a decision on it.
+                const isHttpError = e instanceof HttpError;
+                throw new Ajv.ValidationError([{
+                  message: e.message,
+                  keyword: 'serdes',
+                  instancePath: ctx.instancePath,
+                  schemaPath: it.schemaPath.str,
+                  params: {
+                    isHttpError: e instanceof HttpError,
+                    httpError: e
+                  },
+                  data: data
+                }]);
+              }
+
+              return true;
+            };
+
+            return validate;
+          },
+        });
+      }
       ajv.addKeyword({
         keyword: 'x-eov-req-serdes',
         modifying: true,
         errors: true,
+        // Note there is no async: true here, any schema with this keyword
+        // has synchronous deserialization.
         // Deserialization occurs AFTER all string validations
         post: true,
-        compile: (sch: SerDesSchema, p, it) => {
-          const validate: DataValidateFunction = (data, ctx) => {
+        compile: (sch: SerDesSchema | AsyncSerDes, p, it) => {
+          // Do not use arrow function to allow .call(this) to work on this function
+          const validate: DataValidateFunction = function syncRequestDeserialize(data, ctx) {
             if (typeof data !== 'string') {
               // Either null (possibly allowed, defer to nullable validation)
               // or already failed string validation (no need to throw additional internal errors).
               return true;
             }
             try {
-              ctx.parentData[ctx.parentDataProperty] = sch.deserialize(data);
+              // call passing `this` so the ajv passContext option can influence this invocation
+              ctx.parentData[ctx.parentDataProperty] = sch.deserialize.call(this, data);
             } catch (e) {
-              validate.errors = [
-                {
-                  keyword: 'serdes',
-                  instancePath: ctx.instancePath,
-                  schemaPath: it.schemaPath.str,
-                  message: `format is invalid`,
-                  params: { 'x-eov-req-serdes': ctx.parentDataProperty },
-                },
-              ];
-              return false;
+              return handleSerdesError(validate, e, ctx, it);
             }
 
             return true;
           };
+
           return validate;
         },
       });
@@ -138,21 +190,14 @@ function createAjv(
         // Serialization occurs BEFORE type validations
         before: 'x-eov-type',
         compile: (sch: SerDesSchema, p, it) => {
-          const validate: DataValidateFunction = (data, ctx) => {
+          // Do not use arrow function to allow .call(this) to work on this function
+          const validate: DataValidateFunction = function syncResponseSerdes(data, ctx) {
             if (typeof data === 'string') return true;
             try {
-              ctx.parentData[ctx.parentDataProperty] = sch.serialize(data);
+              // call passing `this` so the ajv passContext option can influence this invocation
+              ctx.parentData[ctx.parentDataProperty] = sch.serialize.call(this, data);
             } catch (e) {
-              validate.errors = [
-                {
-                  keyword: 'serdes',
-                  instancePath: ctx.instancePath,
-                  schemaPath: it.schemaPath.str,
-                  message: `format is invalid`,
-                  params: { 'x-eov-res-serdes': ctx.parentDataProperty },
-                },
-              ];
-              return false;
+              return handleSerdesError(validate, e, ctx, it);
             }
 
             return true;
@@ -192,13 +237,33 @@ function createAjv(
   }
 
   if (openApiSpec.components?.schemas) {
-    Object.entries(openApiSpec.components.schemas).forEach(([id, schema]) => {
+    // We are only supporting async deserialize, which is on requests only.
+    // Use the components from the spec if this is a response, not the possiblyAsyncSchemas.
+    const sourceSchema = request ? possiblyAsyncSchemas : openApiSpec.components?.schemas;
+    Object.entries(sourceSchema).forEach(([id, schemaObject]) => {
       ajv.addSchema(
-        openApiSpec.components.schemas[id],
+        schemaObject,
         `#/components/schemas/${id}`,
       );
     });
   }
 
   return ajv;
+}
+
+function handleSerdesError(validate, err, ctx, it) {
+  if (err instanceof HttpError) {
+    validate.errors = [err];
+  } else {
+    validate.errors = [
+      {
+        keyword: 'serdes',
+        instancePath: ctx.instancePath,
+        schemaPath: it.schemaPath.str,
+        message: `format is invalid`,
+        params: { 'x-eov-res-serdes': ctx.parentDataProperty },
+      },
+    ];
+  }
+  return false;
 }
