@@ -26,6 +26,33 @@ export function createResponseAjv(
   return createAjv(openApiSpec, options, false);
 }
 
+const validatorErrorFromSerdesError = (
+  e: typeof Error,
+  keyword: string,
+  ctx,
+  it,
+  data
+) => {
+  // Let serdes function control the error a bit.
+  // If a developer intentionally threw an HttpError
+  // Then trust them to pass a reasonable message and
+  // use an appropriate subclass of HttpError
+  const isHttpError = e instanceof HttpError;
+
+  return {
+    message: isHttpError ? e.message : 'format is invalid',
+    keyword: 'serdes',
+    instancePath: ctx.instancePath,
+    schemaPath: it.schemaPath.str,
+    params: {
+      isHttpError: e instanceof HttpError,
+      httpError: e,
+      [keyword]: ctx.parentDataProperty
+    },
+    data: data
+  };
+};
+
 function createAjv(
   openApiSpec: OpenAPIV3.Document,
   options: Options = {},
@@ -95,24 +122,20 @@ function createAjv(
                 // or already failed string validation (no need to throw additional internal errors).
                 return true;
               }
+
               try {
                 // call passing `this` so the ajv passContext option can influence this invocation
                 ctx.parentData[ctx.parentDataProperty] = await sch.deserialize.call(this, data);
               } catch (e) {
-                // If the async serdes through an HttpError record that
-                // so the request validator can make a decision on it.
-                const isHttpError = e instanceof HttpError;
-                throw new Ajv.ValidationError([{
-                  message: e.message,
-                  keyword: 'serdes',
-                  instancePath: ctx.instancePath,
-                  schemaPath: it.schemaPath.str,
-                  params: {
-                    isHttpError: e instanceof HttpError,
-                    httpError: e
-                  },
-                  data: data
-                }]);
+                const validatorError = validatorErrorFromSerdesError(
+                  e,
+                  'x-eov-req-serdes-async',
+                  ctx,
+                  it,
+                  data
+                );
+
+                throw new Ajv.ValidationError([validatorError]);
               }
 
               return true;
@@ -142,15 +165,14 @@ function createAjv(
               // call passing `this` so the ajv passContext option can influence this invocation
               ctx.parentData[ctx.parentDataProperty] = sch.deserialize.call(this, data);
             } catch (e) {
-              validate.errors = [
-                {
-                  keyword: 'serdes',
-                  instancePath: ctx.instancePath,
-                  schemaPath: it.schemaPath.str,
-                  message: `format is invalid`,
-                  params: { 'x-eov-req-serdes': ctx.parentDataProperty },
-                },
-              ];
+              const validatorError = validatorErrorFromSerdesError(
+                e,
+                'x-eov-req-serdes',
+                ctx,
+                it,
+                data
+              );
+              validate.errors = [validatorError];
               return false;
             }
 
@@ -205,15 +227,14 @@ function createAjv(
               // call passing `this` so the ajv passContext option can influence this invocation
               ctx.parentData[ctx.parentDataProperty] = sch.serialize.call(this, data);
             } catch (e) {
-              validate.errors = [
-                {
-                  keyword: 'serdes',
-                  instancePath: ctx.instancePath,
-                  schemaPath: it.schemaPath.str,
-                  message: `format is invalid`,
-                  params: { 'x-eov-res-serdes': ctx.parentDataProperty },
-                },
-              ];
+              const validatorError = validatorErrorFromSerdesError(
+                e,
+                'x-eov-res-serdes',
+                ctx,
+                it,
+                data
+              );
+              validate.errors = [validatorError];
               return false;
             }
 
