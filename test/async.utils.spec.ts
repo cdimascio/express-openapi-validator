@@ -67,6 +67,117 @@ describe('async.utils', () => {
     expect(possiblyAsyncSchemas.E).to.have.property('$async');
   })
 
+  it('should buildSchemasWithAsync add $async to when dependent hiding in allOf/oneOf/anyOf', async () => {
+    const schemas = {
+      A: {
+        type: 'string',
+        format: 'no-async-format'
+      },
+      B: {
+        type: 'string',
+        format: 'async-format'
+      },
+      C: {
+        type: 'object',
+        allOf: [{
+          $ref: '#/components/schemas/B'
+        }]
+      },
+      D: {
+        type: 'object',
+        oneOf: [{
+          type: 'string',
+          format: 'async-format'
+        }]
+      },
+      E: {
+        type: 'object',
+        anyOf: [{
+          type: 'string',
+          format: 'async-format'
+        }]
+      },
+      F: {
+        type: 'object',
+        oneOf: [{
+          type: 'object',
+          properties: {
+            hiddenTiger: {
+              type: 'string',
+              format: 'async-format'
+            }
+          }
+        }]
+      },
+      G: {
+        $ref: '#/components/schemas/F'
+      }
+    }
+
+    const possiblyAsyncSchemas = buildSchemasWithAsync(
+      {
+      'async-format': true
+      },
+      schemas as Parameters<typeof buildSchemasWithAsync>[1]
+    )
+
+    expect(possiblyAsyncSchemas.A).not.to.have.property('$async');
+    expect(possiblyAsyncSchemas.B).to.have.property('$async');
+    expect(possiblyAsyncSchemas.C).to.have.property('$async');
+    expect(possiblyAsyncSchemas.D).to.have.property('$async');
+    expect(possiblyAsyncSchemas.E).to.have.property('$async');
+    expect(possiblyAsyncSchemas.F).to.have.property('$async');
+    expect(possiblyAsyncSchemas.G).to.have.property('$async');
+  })
+
+  it('should buildSchemasWithAsync add $async to when dependent hiding in array items', async () => {
+    const schemas = {
+      A: {
+        type: 'string',
+        format: 'no-async-format'
+      },
+      B: {
+        type: 'string',
+        format: 'async-format'
+      },
+      C: {
+        type: 'object',
+        properties: {
+          foos: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/B'
+            }
+          }
+        }
+      },
+      D: {
+        type: 'object',
+        properties: {
+          foos: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'async-format'
+            }
+          }
+        }
+      },
+    }
+
+    const possiblyAsyncSchemas = buildSchemasWithAsync(
+      {
+      'async-format': true
+      },
+      schemas as Parameters<typeof buildSchemasWithAsync>[1]
+    )
+
+    expect(possiblyAsyncSchemas.A).not.to.have.property('$async');
+    expect(possiblyAsyncSchemas.B).to.have.property('$async');
+    expect(possiblyAsyncSchemas.C).to.have.property('$async');
+    expect(possiblyAsyncSchemas.D).to.have.property('$async');
+  })
+
   it('should buildAsyncFormats error if async included in a format', () => {
     const invokeWithAsyncFormat = () => buildAsyncFormats({
       // @ts-expect-error
@@ -205,5 +316,4 @@ describe('async.utils', () => {
     expect(builtSchema['$async']).to.be.undefined;
     expect(builtSchema).to.eql(inSchema);
   });
-
 });

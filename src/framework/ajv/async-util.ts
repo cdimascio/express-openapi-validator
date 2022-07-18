@@ -217,7 +217,25 @@ const recordDependenciesAndAsync = (
           asyncFormats
         )
       });
+    } else if (schemaObject.allOf || schemaObject.oneOf || schemaObject.anyOf) {
+      const conditionalSchemas = schemaObject.allOf || schemaObject.oneOf || schemaObject.anyOf;
+      conditionalSchemas.forEach(conditionalSchema => {
+        recordDependenciesAndAsync(
+          componentId,
+          conditionalSchema,
+          dependentsMap,
+          componentsWithAsync,
+          asyncFormats
+        )
+      });
+    } else if (schemaObject.type === 'array' && schemaObject.items ) {
+      recordDependenciesAndAsync(
+        componentId,
+        schemaObject.items,
+        dependentsMap,
+        componentsWithAsync,
+        asyncFormats
+      );
     }
-    // TODO - array support
   }
 }
