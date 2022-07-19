@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 
-import { date, dateTime } from '../src/framework/base.serdes';
 import { Forbidden, NotFound } from '../src/openapi.validator';
 
 const apiSpecPath = path.join('test', 'resources', 'async-serdes.yaml');
@@ -61,6 +60,7 @@ describe('async serdes w/ context', () => {
             resolve(o);
           }
         } catch (err) {
+          debugger;
           reject(err);
         }
       });
@@ -87,10 +87,7 @@ describe('async serdes w/ context', () => {
           passContext: true
         },
         validateFormats: "full",
-        unknownFormats: ['string-list'],
         serDes: [
-          date,
-          dateTime,
           {
             format: "user-id",
             async: true,
@@ -111,24 +108,15 @@ describe('async serdes w/ context', () => {
           if (typeof req.params.id !== 'object') {
             throw new Error("Should be deserialized to ObjectId object");
           }
-          let date = new Date("2020-12-20T07:28:19.213Z");
           res.json({
             id: req.params.id,
-            creationDateTime: date,
-            creationDate: date,
-            shortOrLong: 'a',
-            tags: 'a, b, c'
+            type: 'PLUS',
+            plusUserId: req.params.id
           });
         });
         app.post([`${app.basePath}/users`], (req, res) => {
           if (typeof req.body.id !== 'object') {
             throw new Error("Should be deserialized to ObjectId object");
-          }
-          if (typeof req.body.creationDate !== 'object' || !(req.body.creationDate instanceof Date)) {
-            throw new Error("Should be deserialized to Date object");
-          }
-          if (typeof req.body.creationDateTime !== 'object' || !(req.body.creationDateTime instanceof Date)) {
-            throw new Error("Should be deserialized to Date object");
           }
           res.json(req.body);
         });
@@ -170,9 +158,11 @@ describe('async serdes w/ context', () => {
       .get(`${app.basePath}/users/${foundUserId}`)
       .expect(200)
       .then((r) => {
-        expect(r.body.id).to.equal(foundUserId);
-        expect(r.body.creationDate).to.equal('2020-12-20');
-        expect(r.body.creationDateTime).to.equal("2020-12-20T07:28:19.213Z");
+        expect(r.body).to.eql({
+          id: foundUserId,
+          type: 'PLUS',
+          plusUserId: foundUserId
+        });
       }));
 
   it('should return 404 when user id in path deserialization throws NotFound', async () =>
@@ -214,10 +204,8 @@ describe('async serdes w/ context', () => {
       .send({
         id: foundUserId,
         id2: notFoundUserId,
-        creationDateTime: '2020-12-20T07:28:19.213Z',
-        creationDate: '2020-12-20',
-        shortOrLong: 'ab',
-        tags: 'a, b, c'
+        type: 'PLUSPLUS',
+        plusPlusUserId: foundUserId
       })
       .set('Content-Type', 'application/json')
       .expect(400)
@@ -231,10 +219,8 @@ describe('async serdes w/ context', () => {
       .send({
         id: foundUserId,
         id2: forbiddenUserId,
-        creationDateTime: '2020-12-20T07:28:19.213Z',
-        creationDate: '2020-12-20',
-        shortOrLong: 'ab',
-        tags: 'a, b, c'
+        type: 'PLUSPLUS',
+        plusPlusUserId: foundUserId
       })
       .set('Content-Type', 'application/json')
       .expect(400)
@@ -256,17 +242,18 @@ describe('async serdes w/ context', () => {
       .send({
         id: foundUserId,
         id2: foundUserId,
-        creationDateTime: '2020-12-20T07:28:19.213Z',
-        creationDate: '2020-12-20',
-        shortOrLong: 'ab',
-        tags: 'a, b, c'
+        type: 'PLUS',
+        plusUserId: foundUserId
       })
       .set('Content-Type', 'application/json')
       .expect(200)
       .then((r) => {
-        expect(r.body.id).to.equal(foundUserId);
-        expect(r.body.creationDate).to.equal('2020-12-20');
-        expect(r.body.creationDateTime).to.equal("2020-12-20T07:28:19.213Z");
+        expect(r.body).to.eql({
+          id: foundUserId,
+          id2: foundUserId,
+          type: 'PLUS',
+          plusUserId: foundUserId
+        })
       }));
 
   it('should POST 400 when 1 user id not found, and 1 user id forbidden in body, with good messages', async () =>
@@ -275,10 +262,8 @@ describe('async serdes w/ context', () => {
       .send({
         id: notFoundUserId,
         id2: forbiddenUserId,
-        creationDateTime: '2020-12-20T07:28:19.213Z',
-        creationDate: '2020-12-20',
-        shortOrLong: 'ab',
-        tags: 'a, b, c'
+        type: 'PLUSPLUS',
+        plusPlusUserId: foundUserId
       })
       .set('Content-Type', 'application/json')
       .expect(400)

@@ -193,6 +193,20 @@ export class RequestValidator {
       if (valid && validBody) {
         next();
       } else {
+        if (discriminatorValidator) {
+          // If we use the discriminator validator, then we're not validating
+          // json with a data property (see a few lines above). Because of that,
+          // the error messages end up losing the leading /body json pointer path.
+          // Patch that here for consistent error messages even if body/response
+          // top level schema is a discriminator.
+          if (bodyErrors) {
+            bodyErrors.forEach(bodyError => {
+              if (bodyError?.instancePath.indexOf('/body') !== 0) {
+                bodyError.instancePath = `/body${bodyError.instancePath}`;
+              }
+            });
+          }
+        }
         next(this._throwValidationError(req.path, generalErrors, bodyErrors));
       }
     };
@@ -217,25 +231,31 @@ export class RequestValidator {
 
     const httpErrorsInPath = ajvValidationErrorsWithHttpError.filter(e => e.instancePath.indexOf('/params') === 0);
 
-    // Could happen if serdes.deserialize throws an HttpError from async deserialize.
-    let errorResponseStatus = 400;
-    if (httpErrorsInPath.length > 0) {
-      // Use the status of the http error was was thrown from first failing path validation.
-      // All failures will end up in errors array.
-      errorResponseStatus = httpErrorsInPath[0]?.params?.httpError?.status ?? errorResponseStatus;
-    }
-
     augmentAjvErrors(allValidationErrors);
-    // If the error is not in the path, fine to treat as-ias
-    const validatorError = ajvErrorsToValidatorError(errorResponseStatus, allValidationErrors);
     const message = this.ajv.errorsText(allValidationErrors, { dataVar: 'request' });
-    const error: BadRequest = new BadRequest({
+    const validatorError = ajvErrorsToValidatorError(400, allValidationErrors);
+    const errorParameterObject = {
       path: requestPath,
       message: message,
-      overrideStatus: errorResponseStatus,
+      overrideStatus: 400,
       errors: validatorError.errors
-    });
-    throw error;
+    };
+
+    // Could happen if serdes.deserialize throws an HttpError from async deserialize.
+    if (httpErrorsInPath.length > 0) {
+      const httpError = httpErrorsInPath[0].params.httpError;
+      const errorResponseStatus = httpError.status ?? 400;
+      const IntendedError = httpError.constructor;
+
+      // Here we're respecting the class type of the HttpError that was thrown
+      // by the user defined format/serialize/deserialize.
+      throw new IntendedError({
+        ...errorParameterObject,
+        overrideStatus: errorResponseStatus
+      });
+    } else {
+      throw new BadRequest(errorParameterObject);
+    }
   }
 
   private discriminatorValidator(req, discriminator) {
