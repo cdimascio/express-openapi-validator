@@ -53,9 +53,10 @@ type AsyncSchemaObject = (OpenAPIV3.SchemaObject & {
   $async: true
 });
 export type PossiblyAsyncSchemaObject = OpenAPIV3.SchemaObject | AsyncSchemaObject;
+export type PossiblyAsyncSchemaOrRefObject = PossiblyAsyncReferenceObject | PossiblyAsyncSchemaObject;
 
 export interface ComponentSchemas {
-  [key: string]: PossiblyAsyncReferenceObject | PossiblyAsyncSchemaObject
+  [key: string]: PossiblyAsyncSchemaOrRefObject
 }
 
 interface ReferenceMap { [key: string]: Array<string>}

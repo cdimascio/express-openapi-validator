@@ -69,18 +69,18 @@ describe('async.utils', () => {
 
   it('should buildSchemasWithAsync add $async to when dependent hiding in allOf/oneOf/anyOf', async () => {
     const schemas = {
-      A: {
+      ['not-async']: {
         type: 'string',
         format: 'no-async-format'
       },
-      B: {
+      ['async']: {
         type: 'string',
         format: 'async-format'
       },
       C: {
         type: 'object',
         allOf: [{
-          $ref: '#/components/schemas/B'
+          $ref: '#/components/schemas/async'
         }]
       },
       D: {
@@ -111,6 +111,61 @@ describe('async.utils', () => {
       },
       G: {
         $ref: '#/components/schemas/F'
+      },
+      H: {
+        type: 'object',
+        allOf: [{
+          $ref: '#/components/schemas/not-async'
+        }, {
+          type: 'object',
+          properties: {
+            hiddenTiger: {
+              $ref: '#/components/schemas/async'
+            }
+          }
+        }]
+      },
+      I: {
+        type: 'object',
+        oneOf: [{
+          $ref: '#/components/schemas/A'
+        }, {
+          $ref: '#/components/schemas/H'
+        },]
+      },
+      ArrayPropertyInline: {
+        type: 'object',
+        properties: {
+          data: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'async-format'
+            }
+          }
+        }
+      },
+      ArrayPropertyItemDirectRef: {
+        type: 'object',
+        properties: {
+          data: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/async'
+            }
+          }
+        }
+      },
+      ArrayPropertyItemXOfRef: {
+        type: 'object',
+        properties: {
+          data: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/I'
+            }
+          }
+        }
       }
     }
 
@@ -121,13 +176,18 @@ describe('async.utils', () => {
       schemas as Parameters<typeof buildSchemasWithAsync>[1]
     )
 
-    expect(possiblyAsyncSchemas.A).not.to.have.property('$async');
-    expect(possiblyAsyncSchemas.B).to.have.property('$async');
+    expect(possiblyAsyncSchemas['not-async']).not.to.have.property('$async');
+    expect(possiblyAsyncSchemas.async).to.have.property('$async');
     expect(possiblyAsyncSchemas.C).to.have.property('$async');
     expect(possiblyAsyncSchemas.D).to.have.property('$async');
     expect(possiblyAsyncSchemas.E).to.have.property('$async');
     expect(possiblyAsyncSchemas.F).to.have.property('$async');
     expect(possiblyAsyncSchemas.G).to.have.property('$async');
+    expect(possiblyAsyncSchemas.H).to.have.property('$async');
+    expect(possiblyAsyncSchemas.I).to.have.property('$async');
+    expect(possiblyAsyncSchemas.ArrayPropertyInline).to.have.property('$async');
+    expect(possiblyAsyncSchemas.ArrayPropertyItemDirectRef).to.have.property('$async');
+    expect(possiblyAsyncSchemas.ArrayPropertyItemXOfRef).to.have.property('$async');
   })
 
   it('should buildSchemasWithAsync add $async to when dependent hiding in array items', async () => {
