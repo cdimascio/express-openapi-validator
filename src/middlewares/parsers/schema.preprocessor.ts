@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 import * as cloneDeep from 'lodash.clonedeep';
 import * as _get from 'lodash.get';
 import { createRequestAjv, createResponseAjv } from '../../framework/ajv';
-import { buildAsyncFormats } from '../../framework/ajv/async-util';
+import { buildAsyncFormats, PossiblyAsyncSchemaObject, PossiblyAsyncSchemaOrRefObject } from '../../framework/ajv/async-util';
 import { buildSchemasWithAsync } from '../../framework/ajv/async-util';
 import {
   OpenAPIV3,
@@ -130,7 +130,7 @@ export class SchemaPreprocessor {
     // Traverse the schemas
     this.traverseSchemas(
       schemaNodes,
-      (parent, schema, opts) => this.schemaVisitor(parent, schema, opts, kind, ajv),
+      (parent, schema, opts) => this.schemaVisitor(parent, schema, opts, kind, ajv, apiDoc),
       ajv,
       apiDoc
     );
@@ -262,7 +262,8 @@ export class SchemaPreprocessor {
     node: SchemaObjectNode,
     opts: TraversalStates,
     kind: string,
-    ajv: Ajv
+    ajv: Ajv,
+    apiDoc: OpenAPIV3.Document
   ) {
     const pschema = parent?.schema;
     const nschema = node.schema;
@@ -275,7 +276,7 @@ export class SchemaPreprocessor {
       this.handleReadonly(pschema, nschema, options);
       this.updateAjvAfterTampering(node, ajv);
 
-      this.processDiscriminator(pschema, nschema, options, ajv);
+      this.processDiscriminator(pschema, nschema, options, ajv, apiDoc);
     }
   }
 
@@ -309,7 +310,7 @@ export class SchemaPreprocessor {
    * Looks at the discriminator to handle "properties", "required" and configure
    * ajv for proper validation. May not be needed anymore with v7 discriminator support in ajv.
    */
-  private processDiscriminator(parent: Schema, schema: Schema, opts: any = {}, ajv: Ajv) {
+  private processDiscriminator(parent: Schema, schema: Schema, opts: any = {}, ajv: Ajv, apiDoc: OpenAPIV3.Document) {
     const o = opts.discriminator;
     const schemaObj = <SchemaObject>schema;
     const xOf = schemaObj.oneOf ? 'oneOf' : schemaObj.anyOf ? 'anyOf' : null;
@@ -391,8 +392,20 @@ export class SchemaPreprocessor {
         });
 
         for (const option of options) {
+          /***
+           * If the discriminator schema contains a ref to a schema that is marked for $async
+           * then we need to compile this schema as async as well.
+           */
+          const shouldHaveAsync = this.resolveSchema<PossiblyAsyncSchemaOrRefObject>(
+            newSchema, ajv, apiDoc
+          )['$async'] ?? newSchema.$async ?? false;
+
+          const schemaToCompile = shouldHaveAsync ? {
+            ...newSchema,
+            $async: true
+          } : newSchema;
           ancestor._discriminator.validators[option] =
-            ajv.compile(newSchema);
+            ajv.compile(schemaToCompile);
         }
       }
       //reset data

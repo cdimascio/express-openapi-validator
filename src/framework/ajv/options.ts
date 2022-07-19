@@ -12,7 +12,15 @@ export class AjvOptions {
     this.options = options;
   }
   get preprocessor(): Options {
-    return this.baseOptions();
+    const { passContext  } = <ValidateRequestOpts>(
+      this.options.validateRequests
+    );
+    return {
+      ...this.baseOptions(),
+      // Need it for if serdes/validation functions are expecting
+      // 'this' when using compiled discriminator validators.
+      passContext
+    };
   }
 
   get response(): Options {
