@@ -170,7 +170,7 @@ describe('async serdes w/ context', () => {
       .get(`${app.basePath}/users/${notFoundUserId}`)
       .expect(404)
       .then((r) => {
-        expect(r.body.message).to.equal('request/params/id Could not find user');
+        expect(r.body.errors[0].message).to.equal('request/params/id Could not find user');
       }));
 
   it('should return 400 when user id in query throws NotFound', async () =>
@@ -233,7 +233,7 @@ describe('async serdes w/ context', () => {
       .get(`${app.basePath}/users/${forbiddenUserId}`)
       .expect(403)
       .then((r) => {
-        expect(r.body.message).to.equal('request/params/id Verboten');
+        expect(r.body.errors[0].message).to.equal('request/params/id Verboten');
       }));
 
   it('should POST works with deserialize on request then serialize en response', async () =>

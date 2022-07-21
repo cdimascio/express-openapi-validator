@@ -225,13 +225,14 @@ export class RequestValidator {
   }
 
   private _throwValidationError(requestPath, generalErrors, bodyErrors) {
-    const allValidationErrors = [...generalErrors, ...bodyErrors];
+    const allValidationErrors = [].concat(generalErrors).concat(bodyErrors);
 
     const ajvValidationErrorsWithHttpError = allValidationErrors.filter(e => !!e?.params?.isHttpError);
 
     const httpErrorsInPath = ajvValidationErrorsWithHttpError.filter(e => e.instancePath.indexOf('/params') === 0);
 
     augmentAjvErrors(allValidationErrors);
+
     const message = this.ajv.errorsText(allValidationErrors, { dataVar: 'request' });
     const validatorError = ajvErrorsToValidatorError(400, allValidationErrors);
     const errorParameterObject = {
@@ -244,15 +245,14 @@ export class RequestValidator {
     // Could happen if serdes.deserialize throws an HttpError from async deserialize.
     if (httpErrorsInPath.length > 0) {
       const httpError = httpErrorsInPath[0].params.httpError;
+      // Use the status code defined by serdes/validation
       const errorResponseStatus = httpError.status ?? 400;
-      const IntendedError = httpError.constructor;
-
       // Here we're respecting the class type of the HttpError that was thrown
       // by the user defined format/serialize/deserialize.
-      throw new IntendedError({
-        ...errorParameterObject,
-        overrideStatus: errorResponseStatus
-      });
+      const IntendedError = httpError.constructor;
+      // Leave the rest of the error as-is to preserve express/ajv information.
+      errorParameterObject.overrideStatus = errorResponseStatus;
+      throw new IntendedError(errorParameterObject);
     } else {
       throw new BadRequest(errorParameterObject);
     }
