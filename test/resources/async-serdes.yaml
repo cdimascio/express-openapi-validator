@@ -29,21 +29,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserOneOf"
+                $ref: "#/components/schemas/User"
   /users:
     post:
       requestBody:
         content :
           application/json:
             schema:
-              $ref: '#/components/schemas/UserOneOf'
+              $ref: '#/components/schemas/User'
       responses:
         200:
           description: ""
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserOneOf"
+                $ref: "#/components/schemas/User"
 components:
   schemas:
     UserId:
@@ -57,28 +57,16 @@ components:
           $ref: "#/components/schemas/UserId"
         id2:
           $ref: "#/components/schemas/UserId"
+        manager:
+          $ref: "#/components/schemas/UserOneOf"
     UserPlus:
       type: object
       allOf:
-        - $ref: "#/components/schemas/User"
-        - type: object
-          properties:
-            type:
-              type: string
-              enum: [PLUS]
-            plusUserId:
-              $ref: "#/components/schemas/UserId"
+        - $ref: "#/components/schemas/UserPlusProperties"
     UserPlusPlus:
       type: object
       allOf:
-        - $ref: "#/components/schemas/User"
-        - type: object
-          properties:
-            type:
-              type: string
-              enum: [PLUSPLUS]
-            plusPlusUserId:
-              $ref: "#/components/schemas/UserId"
+        - $ref: "#/components/schemas/UserPlusPlusProperties"
     UserOneOf:
       type: object
       oneOf:
@@ -89,4 +77,25 @@ components:
         mapping:
           PLUS: "#/components/schemas/UserPlus"
           PLUSPLUS: "#/components/schemas/UserPlusPlus"
-
+    UserPlusProperties:
+      type: object
+      required:
+        - type
+        - plusUserId
+      properties:
+        type:
+          type: string
+          enum: [PLUS]
+        plusUserId:
+          $ref: "#/components/schemas/UserId"
+    UserPlusPlusProperties:
+      type: object
+      required:
+        - type
+        - plusPlusUserId
+      properties:
+        type:
+          type: string
+          enum: [PLUSPLUS]
+        plusPlusUserId:
+          $ref: "#/components/schemas/UserId"

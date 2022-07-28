@@ -16,6 +16,25 @@ export interface ParametersSchema {
   cookies: object;
 }
 
+export interface BodyValidationSchema {
+  paths: OpenAPIV3.PathsObject,
+  components: OpenAPIV3.ComponentsObject,
+  required?: Array<string>,
+  properties: BodySchema & {
+    query: {},
+    headers: {},
+    params: {},
+    cookies: {}
+  }
+}
+
+export interface ParametersValidationSchema {
+  paths: OpenAPIV3.PathsObject,
+  components: OpenAPIV3.ComponentsObject,
+  required: Array<string>,
+  properties: ParametersSchema & { body: {}}
+}
+
 export interface ValidationSchema extends ParametersSchema {
   body: BodySchema;
 }

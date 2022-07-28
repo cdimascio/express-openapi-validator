@@ -70,6 +70,7 @@ function createAjv(
 
   const ajv = new AjvDraft4({
     ...ajvOptions,
+    verbose: true,
     allErrors: true,
     formats: formats,
   });

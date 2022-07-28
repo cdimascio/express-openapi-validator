@@ -19,7 +19,8 @@ export class AjvOptions {
       ...this.baseOptions(),
       // Need it for if serdes/validation functions are expecting
       // 'this' when using compiled discriminator validators.
-      passContext
+      passContext,
+      verbose: true
     };
   }
 
@@ -45,7 +46,8 @@ export class AjvOptions {
       allowUnknownQueryParameters,
       coerceTypes,
       removeAdditional,
-      passContext
+      passContext,
+      verbose: true
     };
   }
 

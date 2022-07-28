@@ -18,7 +18,8 @@ import {
   ParametersSchema,
   BodySchema,
   ValidationSchema,
-  HttpError,
+  ParametersValidationSchema,
+  BodyValidationSchema,
 } from '../framework/types';
 import { BodySchemaParser } from './parsers/body.parse';
 import { ParametersSchemaParser } from './parsers/schema.parse';
@@ -188,24 +189,76 @@ export class RequestValidator {
       const validBody = validator.isBodyAsync
         ? await this.callAndHandleErrors(validatorBody, req, bodyDataToValidate)
         : validatorBody.call(req, bodyDataToValidate);
-      const bodyErrors = [].concat(validatorBody.errors ?? []);
+      let bodyErrors = [].concat(validatorBody.errors ?? []);
 
       if (valid && validBody) {
         next();
       } else {
         if (discriminatorValidator) {
-          // If we use the discriminator validator, then we're not validating
-          // json with a data property (see a few lines above). Because of that,
-          // the error messages end up losing the leading /body json pointer path.
-          // Patch that here for consistent error messages even if body/response
-          // top level schema is a discriminator.
           if (bodyErrors) {
+            // If we use the discriminator validator, then we're not validating
+            // json with a data property (see a few lines above). Because of that,
+            // the error messages end up losing the leading /body json pointer path.
+            // Patch that here for consistent error messages even if body/response
+            // top level schema is a discriminator.
             bodyErrors.forEach(bodyError => {
               if (bodyError?.instancePath.indexOf('/body') !== 0) {
                 bodyError.instancePath = `/body${bodyError.instancePath}`;
               }
             });
           }
+        }
+
+        if (bodyErrors) {
+          /**
+             * Find nested oneOf errors from ajv, these will not make sense to api consumers
+             * As well as the errories from "not-mapped" schemas
+             */
+          const oneOfErrorInformation = bodyErrors.filter(error => {
+            return error.keyword === 'oneOf';
+          }).map(error => ({
+            instancePath: error.instancePath,
+            discriminator: error.parentSchema.discriminator,
+            discriminatorProperty: error.parentSchema.discriminator.propertyName,
+            discriminatorPropertyPath: `${error.instancePath}/${error.parentSchema.discriminator.propertyName}`,
+            data: error.data
+          }));
+
+          /**
+           * Filter out errors from nested oneOf schemas from ajv.
+           * Without this filtration, a violation of one of the discriminated schemas then causes
+           * validations errors from *every discriminated schema*. This is confusing when the user
+           * provides the `type` property and targets a specific schema.
+           */
+          bodyErrors = bodyErrors.filter(bodyError => {
+            let isOneOf = false,
+              isNotMappedSchema = false,
+              isDiscriminatorPropertyNameError = false;
+
+            oneOfErrorInformation.forEach(oneOf => {
+              // Squash validation saying nothing matches the oneOf schema
+              isOneOf = isOneOf || (bodyError.instancePath === oneOf.instancePath && bodyError.keyword === 'oneOf');
+
+              // An error coming from some property within the discriminated schemas
+              if (!isOneOf && bodyError.instancePath.indexOf(oneOf.instancePath) > -1) {
+                const parentSchemaProperties = bodyError.parentSchema?.properties;
+
+                // Squash validation where parentSchema is not the mapped schema
+                if (parentSchemaProperties) {
+                  const parentSchemaDiscriminatorSchema = parentSchemaProperties[oneOf.discriminatorProperty];
+                  const doesNotMatchDiscriminatorMapping = parentSchemaDiscriminatorSchema &&
+                                                              parentSchemaDiscriminatorSchema.enum &&
+                                                                oneOf.data[oneOf.discriminatorProperty] !== parentSchemaDiscriminatorSchema.enum[0];
+                  isNotMappedSchema = isNotMappedSchema || doesNotMatchDiscriminatorMapping;
+                }
+
+                // Squash validation on discriminator propertyName
+                isDiscriminatorPropertyNameError = isDiscriminatorPropertyNameError || bodyError.instancePath === oneOf.discriminatorPropertyPath;
+              }
+            });
+
+            return !isOneOf && !isNotMappedSchema && !isDiscriminatorPropertyNameError;
+          });
         }
         next(this._throwValidationError(req.path, generalErrors, bodyErrors));
       }
@@ -275,6 +328,7 @@ export class RequestValidator {
     }
     return null;
   }
+
   private processQueryParam(query: object, schema, whiteList: string[] = []) {
     const entries = Object.entries(schema.properties ?? {});
     let keys = [];
@@ -307,8 +361,8 @@ export class RequestValidator {
 
 class Validator {
   private readonly apiDoc: OpenAPIV3.Document;
-  readonly schemaGeneral: PossiblyAsyncObject;
-  readonly schemaBody: PossiblyAsyncObject;
+  readonly schemaGeneral: PossiblyAsyncObject<ParametersValidationSchema>;
+  readonly schemaBody: PossiblyAsyncObject<BodyValidationSchema>;
   readonly validatorGeneral: ValidateFunction;
   readonly validatorBody: ValidateFunction;
   readonly allSchemaProperties: ValidationSchema;
@@ -338,7 +392,7 @@ class Validator {
     this.validatorBody = ajv.body.compile(this.schemaBody);
   }
 
-  private _schemaGeneral(parameters: ParametersSchema): object {
+  private _schemaGeneral(parameters: ParametersSchema): ParametersValidationSchema {
     // $schema: "http://json-schema.org/draft-04/schema#",
     return {
       paths: this.apiDoc.paths,
@@ -348,7 +402,7 @@ class Validator {
     };
   }
 
-  private _schemaBody(body: BodySchema): object {
+  private _schemaBody(body: BodySchema): BodyValidationSchema {
     // $schema: "http://json-schema.org/draft-04/schema#"
     const isBodyBinary = body?.['format'] === 'binary';
     const bodyProps = isBodyBinary ? {} : body;

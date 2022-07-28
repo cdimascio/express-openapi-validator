@@ -60,7 +60,6 @@ describe('async serdes w/ context', () => {
             resolve(o);
           }
         } catch (err) {
-          debugger;
           reject(err);
         }
       });
@@ -68,7 +67,7 @@ describe('async serdes w/ context', () => {
 
     async function deserializeUserId(userId) {
       const req = this;
-      if (!req || !req.user || !req.openapi) {
+      if (!req || !req.user || !req.openapi || typeof userId !== 'string') {
         throw new Error('passContext did not result in "this" set to Request on deserialize.');
       }
       return await findUser(req, userId);
@@ -110,8 +109,11 @@ describe('async serdes w/ context', () => {
           }
           res.json({
             id: req.params.id,
-            type: 'PLUS',
-            plusUserId: req.params.id
+            id2: req.params.id,
+            manager: {
+              type: 'PLUS',
+              plusUserId: foundUserId
+            }
           });
         });
         app.post([`${app.basePath}/users`], (req, res) => {
@@ -160,8 +162,11 @@ describe('async serdes w/ context', () => {
       .then((r) => {
         expect(r.body).to.eql({
           id: foundUserId,
-          type: 'PLUS',
-          plusUserId: foundUserId
+          id2: foundUserId,
+          manager: {
+            type: 'PLUS',
+            plusUserId: foundUserId
+          }
         });
       }));
 
@@ -198,14 +203,35 @@ describe('async serdes w/ context', () => {
         expect(r.body.message).to.equal('request/query/managerId Verboten');
       }));
 
+  it('should return 400 with errors specific to PLUSPLUS', async () =>
+      request(app)
+        .post(`${app.basePath}/users`)
+        .send({
+          id: foundUserId,
+          id2: notFoundUserId,
+          manager: {
+            type: 'PLUSPLUS',
+            plusUserId: foundUserId
+          }
+        })
+        .set('Content-Type', 'application/json')
+        .expect(400)
+        .then((r) => {
+          // Expect only errors from oneOf subschemas with matching discriminator propertyName
+          expect(r.body.errors.length).to.equal(2);
+          expect(r.body.message).to.equal("request/body/id2 Could not find user, request/body/manager must have required property 'plusPlusUserId'");
+        }));
+
   it('should return 400 when only 1 user id in body throws NotFound', async () =>
     request(app)
       .post(`${app.basePath}/users`)
       .send({
         id: foundUserId,
         id2: notFoundUserId,
-        type: 'PLUSPLUS',
-        plusPlusUserId: foundUserId
+        manager: {
+          type: 'PLUS',
+          plusUserId: foundUserId
+        }
       })
       .set('Content-Type', 'application/json')
       .expect(400)
@@ -219,8 +245,10 @@ describe('async serdes w/ context', () => {
       .send({
         id: foundUserId,
         id2: forbiddenUserId,
-        type: 'PLUSPLUS',
-        plusPlusUserId: foundUserId
+        manager: {
+          type: 'PLUS',
+          plusUserId: foundUserId
+        }
       })
       .set('Content-Type', 'application/json')
       .expect(400)
@@ -242,8 +270,10 @@ describe('async serdes w/ context', () => {
       .send({
         id: foundUserId,
         id2: foundUserId,
-        type: 'PLUS',
-        plusUserId: foundUserId
+        manager: {
+          type: 'PLUS',
+          plusUserId: foundUserId
+        }
       })
       .set('Content-Type', 'application/json')
       .expect(200)
@@ -251,8 +281,10 @@ describe('async serdes w/ context', () => {
         expect(r.body).to.eql({
           id: foundUserId,
           id2: foundUserId,
-          type: 'PLUS',
-          plusUserId: foundUserId
+          manager: {
+            type: 'PLUS',
+            plusUserId: foundUserId
+          }
         })
       }));
 
@@ -262,8 +294,10 @@ describe('async serdes w/ context', () => {
       .send({
         id: notFoundUserId,
         id2: forbiddenUserId,
-        type: 'PLUSPLUS',
-        plusPlusUserId: foundUserId
+        manager: {
+          type: 'PLUS',
+          plusUserId: foundUserId
+        }
       })
       .set('Content-Type', 'application/json')
       .expect(400)

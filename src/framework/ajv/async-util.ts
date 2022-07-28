@@ -1,4 +1,4 @@
-import { Options } from "../types";
+import { BodySchema, BodyValidationSchema, Options, ParametersSchema, ParametersValidationSchema } from "../types";
 import { OpenAPIV3 } from '../types';
 import * as cloneDeep from 'lodash.clonedeep';
 
@@ -7,7 +7,8 @@ interface SchemaWithComponents {
   [key: string]: unknown;
 }
 
-export type PossiblyAsyncObject = object | (object & {$async: true});
+type AsyncObject<T> = T & {$async: true};
+export type PossiblyAsyncObject<T> = T | AsyncObject<T>;
 
 /**
  * A schema reference object that has an async format somewhere in
@@ -19,10 +20,8 @@ export type PossiblyAsyncObject = object | (object & {$async: true});
  *   $async: true
  * }
  */
-type AsyncReferenceObject = (OpenAPIV3.ReferenceObject & {
-  $async: true
-});
-export type PossiblyAsyncReferenceObject = OpenAPIV3.ReferenceObject | AsyncReferenceObject;
+type AsyncReferenceObject = AsyncObject<OpenAPIV3.ReferenceObject>;
+export type PossiblyAsyncReferenceObject = PossiblyAsyncObject<OpenAPIV3.ReferenceObject>;
 
 /**
  * A schema object that has an async format somewhere in
@@ -49,10 +48,8 @@ export type PossiblyAsyncReferenceObject = OpenAPIV3.ReferenceObject | AsyncRefe
  *   }
  * }
  */
-type AsyncSchemaObject = (OpenAPIV3.SchemaObject & {
-  $async: true
-});
-export type PossiblyAsyncSchemaObject = OpenAPIV3.SchemaObject | AsyncSchemaObject;
+type AsyncSchemaObject = AsyncObject<OpenAPIV3.SchemaObject>;
+export type PossiblyAsyncSchemaObject = PossiblyAsyncObject<OpenAPIV3.SchemaObject>;
 export type PossiblyAsyncSchemaOrRefObject = PossiblyAsyncReferenceObject | PossiblyAsyncSchemaObject;
 
 export interface ComponentSchemas {
@@ -87,7 +84,7 @@ export const hasAsync = (schema: object) => {
 /**
  * Builds schema wth top level $async if its components property contains subschemas with $async
  */
-export function buildSchemaWithAsync(schema: object): PossiblyAsyncObject {
+export function buildSchemaWithAsync<T extends BodyValidationSchema | ParametersValidationSchema>(schema: T): PossiblyAsyncObject<T> {
   if (hasAsync(schema)) {
     return {
       ...schema,
@@ -218,7 +215,17 @@ const recordDependenciesAndAsync = (
           asyncFormats
         )
       });
-    } else if (schemaObject.allOf || schemaObject.oneOf || schemaObject.anyOf) {
+    } else if (schemaObject.type === 'array' && schemaObject.items ) {
+      recordDependenciesAndAsync(
+        componentId,
+        schemaObject.items,
+        dependentsMap,
+        componentsWithAsync,
+        asyncFormats
+      );
+    }
+
+    if (schemaObject.allOf || schemaObject.oneOf || schemaObject.anyOf) {
       const conditionalSchemas = schemaObject.allOf || schemaObject.oneOf || schemaObject.anyOf;
       conditionalSchemas.forEach(conditionalSchema => {
         recordDependenciesAndAsync(
@@ -229,14 +236,6 @@ const recordDependenciesAndAsync = (
           asyncFormats
         )
       });
-    } else if (schemaObject.type === 'array' && schemaObject.items ) {
-      recordDependenciesAndAsync(
-        componentId,
-        schemaObject.items,
-        dependentsMap,
-        componentsWithAsync,
-        asyncFormats
-      );
     }
   }
 }
