@@ -171,7 +171,7 @@ const collectSubschemaInformation = (ajv: Ajv, schemaEnv: SchemaEnv, lastSchema:
 
 
   const refs = Object.keys(schemaEnv.refs);
-  const items = schemaObject.items || {};
+  const items = schemaObject.items || undefined;
   const properties = Object.keys(schemaObject.properties || {});
 
   refs.forEach(pointer => {
@@ -183,7 +183,7 @@ const collectSubschemaInformation = (ajv: Ajv, schemaEnv: SchemaEnv, lastSchema:
     }
   });
 
-  if (!items.$ref) {
+  if (items && !items.$ref) {
     schemas = schemas.concat(collectSubschemaInformation(ajv, {
       schema: items,
       baseId: schemaEnv.baseId,
