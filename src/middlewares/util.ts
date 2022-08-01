@@ -305,12 +305,22 @@ export const filterOneofSubschemaErrors = function (errors: Array<ErrorObject>, 
    * provides the `type` property and targets a specific schema.
    */
   let filteredErrors = errors.filter(error => {
-    let matchingOneOf: OneOfInformation | undefined;
-
+    let matchingOneOf;
+    let mostSpecificOneOf;
+    let mostSpecificOneOfLength = 0;
     oneOfErrorInformation.forEach(oneOf => {
-      const isErrorFromThisOneOf = error.instancePath.indexOf(oneOf.instancePath) > -1;
-      matchingOneOf = isErrorFromThisOneOf ? oneOf : undefined;
+        const isErrorFromThisOneOf = error.instancePath.indexOf(oneOf.instancePath) > -1;
+        if (isErrorFromThisOneOf && oneOf.instancePath.length > mostSpecificOneOfLength) {
+          mostSpecificOneOf = oneOf;
+          mostSpecificOneOfLength = oneOf.instancePath.length
+        }
     });
+    // Handle when there are two nested oneOfs in the sub-schema
+    // /a/b
+    // /a/b/c
+    if (mostSpecificOneOf) {
+      matchingOneOf = mostSpecificOneOf;
+    }
     // Only try to filter if we know what oneOf schema the error originates from.
     if (!matchingOneOf) return true;
 
