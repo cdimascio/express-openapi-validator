@@ -1,6 +1,6 @@
 import * as ajv from 'ajv';
 import * as multer from 'multer';
-import { FormatsPluginOptions, FormatOptions } from 'ajv-formats';
+import { FormatsPluginOptions } from 'ajv-formats';
 import { Request, Response, NextFunction } from 'express';
 export { OpenAPIFrameworkArgs };
 
@@ -60,6 +60,7 @@ export interface Options extends ajv.Options {
   // Specific options
   serDesMap?: SerDesMap;
   ajvFormats?: FormatsPluginOptions;
+  filterOneOf?: boolean;
 }
 
 export interface RequestValidatorOptions extends Options, ValidateRequestOpts {}
@@ -73,6 +74,11 @@ export type ValidateRequestOpts = {
    * in serdes.serialize, serdes.deserialize
    */
   passContext?: boolean;
+  /**
+   * Pass true to pair down error messages that come from a sub-schema
+   * containing oneOf.
+   */
+  filterOneOf?: boolean;
 };
 
 export type ValidateResponseOpts = {

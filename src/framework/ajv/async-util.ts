@@ -1,10 +1,9 @@
-import { BodySchema, BodyValidationSchema, Options, ParametersSchema, ParametersValidationSchema } from "../types";
+import { Options } from "../types";
 import { OpenAPIV3 } from '../types';
 import * as cloneDeep from 'lodash.clonedeep';
 
-interface SchemaWithComponents {
-  components?: ComponentSchemas;
-  [key: string]: unknown;
+interface SchemaWithComponents extends Record<string, unknown> {
+  components: OpenAPIV3.ComponentsObject;
 }
 
 type AsyncObject<T> = T & {$async: true};
@@ -62,7 +61,7 @@ interface AsyncComponentsMap {[key: string]: boolean}
 interface DependentsMap {[key: string]: Array<string>}
 
 function isSchemaWithComponents(schema: object): schema is SchemaWithComponents {
-  return (schema as SchemaWithComponents)?.components !== undefined;
+  return (schema as SchemaWithComponents).components !== undefined;
 }
 
 /**
@@ -78,13 +77,13 @@ export const hasAnySchemaWithAsync = (schemas: object) => {
  * Determines if top level OpenApi schema has async component schemas.
  */
 export const hasAsync = (schema: object) => {
-  return isSchemaWithComponents(schema) && hasAnySchemaWithAsync(schema.components?.schemas);
+  return isSchemaWithComponents(schema) && hasAnySchemaWithAsync(schema.components.schemas);
 };
 
 /**
  * Builds schema wth top level $async if its components property contains subschemas with $async
  */
-export function buildSchemaWithAsync<T extends BodyValidationSchema | ParametersValidationSchema>(schema: T): PossiblyAsyncObject<T> {
+export function buildSchemaWithAsync<T extends object>(schema: T): PossiblyAsyncObject<T> {
   if (hasAsync(schema)) {
     return {
       ...schema,

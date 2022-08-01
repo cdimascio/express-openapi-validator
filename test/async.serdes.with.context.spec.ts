@@ -79,7 +79,8 @@ describe('async serdes w/ context', () => {
         apiSpec: apiSpecPath,
         validateRequests: {
           coerceTypes: true,
-          passContext: true
+          passContext: true,
+          filterOneOf: true
         },
         validateResponses: {
           coerceTypes: true,
@@ -187,13 +188,13 @@ describe('async serdes w/ context', () => {
       }));
 
   it('should return 400 when both query params have errors', async () =>
-      request(app)
-        .get(`${app.basePath}/users/${foundUserId}?managerId=${notFoundUserId}&anotherManagerId=${forbiddenUserId}`)
-        .expect(400)
-        .then((r) => {
-          expect(r.body.errors.length).to.equal(2);
-          expect(r.body.message).to.equal('request/query/managerId Could not find user, request/query/anotherManagerId Verboten');
-        }));
+    request(app)
+      .get(`${app.basePath}/users/${foundUserId}?managerId=${notFoundUserId}&anotherManagerId=${forbiddenUserId}`)
+      .expect(400)
+      .then((r) => {
+        expect(r.body.errors.length).to.equal(2);
+        expect(r.body.message).to.equal('request/query/managerId Could not find user, request/query/anotherManagerId Verboten');
+      }));
 
   it('should return 400 when user id in query throws Forbidden', async () =>
     request(app)
@@ -204,23 +205,77 @@ describe('async serdes w/ context', () => {
       }));
 
   it('should return 400 with errors specific to PLUSPLUS', async () =>
-      request(app)
-        .post(`${app.basePath}/users`)
-        .send({
-          id: foundUserId,
-          id2: notFoundUserId,
-          manager: {
-            type: 'PLUSPLUS',
-            plusUserId: foundUserId
-          }
-        })
-        .set('Content-Type', 'application/json')
-        .expect(400)
-        .then((r) => {
-          // Expect only errors from oneOf subschemas with matching discriminator propertyName
-          expect(r.body.errors.length).to.equal(2);
-          expect(r.body.message).to.equal("request/body/id2 Could not find user, request/body/manager must have required property 'plusPlusUserId'");
-        }));
+    request(app)
+      .post(`${app.basePath}/users`)
+      .send({
+        id: foundUserId,
+        id2: notFoundUserId,
+        manager: {
+          type: 'PLUSPLUS',
+          plusPlusOnly: 123
+        }
+      })
+      .set('Content-Type', 'application/json')
+      .expect(400)
+      .then((r) => {
+        console.info(r.body);
+        // Expect only errors from oneOf subschemas with matching discriminator propertyName
+        expect(r.body.errors.length).to.equal(3);
+        expect(r.body.message).to.equal("request/body/id2 Could not find user, request/body/manager must have required property 'plusPlusUserId', request/body/manager/plusPlusOnly must match pattern \"/[A-Z]+/\"");
+      }));
+
+  it('should return 400 with error with invalid oneOf.mapping.propertyName and not found property', async () =>
+    request(app)
+      .post(`${app.basePath}/users`)
+      .send({
+        id: foundUserId,
+        id2: notFoundUserId,
+        manager: {
+          type: 'BAR'
+        }
+      })
+      .set('Content-Type', 'application/json')
+      .expect(400)
+      .then((r) => {
+        console.info(r.body);
+        // Expect only errors from oneOf subschemas with matching discriminator propertyName
+        expect(r.body.errors.length).to.equal(2);
+        expect(r.body.message).to.equal("request/body/id2 Could not find user, request/body/manager/type must be equal to one of the allowed values: PLUS, PLUSPLUS");
+      }));
+
+  it('should return 400 with error with only missing oneOf.mapping.propertyName event if some sub-schema properties are passed', async () =>
+    request(app)
+      .post(`${app.basePath}/users`)
+      .send({
+        id: foundUserId,
+        id2: notFoundUserId,
+        manager: {
+          plusPlusOnly: 123
+        }
+      })
+      .set('Content-Type', 'application/json')
+      .expect(400)
+      .then((r) => {
+        console.info(r.body);
+        expect(r.body.errors.length).to.equal(2);
+        expect(r.body.message).to.equal("request/body/id2 Could not find user, request/body/manager must have required property 'type'");
+      }));
+
+  it('should return 400 with error with missing oneOf.mapping.propertyName and not found property', async () =>
+    request(app)
+      .post(`${app.basePath}/users`)
+      .send({
+        id: foundUserId,
+        id2: notFoundUserId,
+        manager: {}
+      })
+      .set('Content-Type', 'application/json')
+      .expect(400)
+      .then((r) => {
+        console.info(r.body);
+        expect(r.body.errors.length).to.equal(2);
+        expect(r.body.message).to.equal("request/body/id2 Could not find user, request/body/manager must have required property 'type'");
+      }));
 
   it('should return 400 when only 1 user id in body throws NotFound', async () =>
     request(app)

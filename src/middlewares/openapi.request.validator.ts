@@ -4,7 +4,7 @@ import {
   ContentType,
   ajvErrorsToValidatorError,
   augmentAjvErrors,
-  pathFromAjvValidationError
+  filterOneofSubschemaErrors
 } from './util';
 import { NextFunction, RequestHandler, Response } from 'express';
 import {
@@ -48,6 +48,7 @@ export class RequestValidator {
     this.apiDoc = apiDoc;
     this.requestOpts.allowUnknownQueryParameters =
       options.allowUnknownQueryParameters;
+    this.requestOpts.filterOneOf = options.filterOneOf;
     this.ajv = createRequestAjv(apiDoc, { ...options, coerceTypes: true });
     this.ajvBody = createRequestAjv(apiDoc, options);
   }
@@ -108,6 +109,8 @@ export class RequestValidator {
       general: this.ajv,
       body: this.ajvBody,
     });
+    const ajvBody = this.ajvBody;
+    const filterOneOf = this.requestOpts.filterOneOf;
 
     const allowUnknownQueryParameters = !!(
       reqSchema['x-eov-allow-unknown-query-parameters'] ??
@@ -209,57 +212,10 @@ export class RequestValidator {
           }
         }
 
-        if (bodyErrors) {
-          /**
-             * Find nested oneOf errors from ajv, these will not make sense to api consumers
-             * As well as the errories from "not-mapped" schemas
-             */
-          const oneOfErrorInformation = bodyErrors.filter(error => {
-            return error.keyword === 'oneOf';
-          }).map(error => ({
-            instancePath: error.instancePath,
-            discriminator: error.parentSchema.discriminator,
-            discriminatorProperty: error.parentSchema.discriminator.propertyName,
-            discriminatorPropertyPath: `${error.instancePath}/${error.parentSchema.discriminator.propertyName}`,
-            data: error.data
-          }));
-
-          /**
-           * Filter out errors from nested oneOf schemas from ajv.
-           * Without this filtration, a violation of one of the discriminated schemas then causes
-           * validations errors from *every discriminated schema*. This is confusing when the user
-           * provides the `type` property and targets a specific schema.
-           */
-          bodyErrors = bodyErrors.filter(bodyError => {
-            let isOneOf = false,
-              isNotMappedSchema = false,
-              isDiscriminatorPropertyNameError = false;
-
-            oneOfErrorInformation.forEach(oneOf => {
-              // Squash validation saying nothing matches the oneOf schema
-              isOneOf = isOneOf || (bodyError.instancePath === oneOf.instancePath && bodyError.keyword === 'oneOf');
-
-              // An error coming from some property within the discriminated schemas
-              if (!isOneOf && bodyError.instancePath.indexOf(oneOf.instancePath) > -1) {
-                const parentSchemaProperties = bodyError.parentSchema?.properties;
-
-                // Squash validation where parentSchema is not the mapped schema
-                if (parentSchemaProperties) {
-                  const parentSchemaDiscriminatorSchema = parentSchemaProperties[oneOf.discriminatorProperty];
-                  const doesNotMatchDiscriminatorMapping = parentSchemaDiscriminatorSchema &&
-                                                              parentSchemaDiscriminatorSchema.enum &&
-                                                                oneOf.data[oneOf.discriminatorProperty] !== parentSchemaDiscriminatorSchema.enum[0];
-                  isNotMappedSchema = isNotMappedSchema || doesNotMatchDiscriminatorMapping;
-                }
-
-                // Squash validation on discriminator propertyName
-                isDiscriminatorPropertyNameError = isDiscriminatorPropertyNameError || bodyError.instancePath === oneOf.discriminatorPropertyPath;
-              }
-            });
-
-            return !isOneOf && !isNotMappedSchema && !isDiscriminatorPropertyNameError;
-          });
+        if (bodyErrors && bodyErrors.length > 0 && filterOneOf) {
+          bodyErrors = filterOneofSubschemaErrors(bodyErrors, ajvBody);
         }
+
         next(this._throwValidationError(req.path, generalErrors, bodyErrors));
       }
     };

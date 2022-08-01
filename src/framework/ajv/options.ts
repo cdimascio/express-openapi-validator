@@ -12,7 +12,7 @@ export class AjvOptions {
     this.options = options;
   }
   get preprocessor(): Options {
-    const { passContext  } = <ValidateRequestOpts>(
+    const { passContext, filterOneOf } = <ValidateRequestOpts>(
       this.options.validateRequests
     );
     return {
@@ -38,7 +38,7 @@ export class AjvOptions {
   }
 
   get request(): RequestValidatorOptions {
-    const { allowUnknownQueryParameters, coerceTypes, removeAdditional, passContext } = <
+    const { allowUnknownQueryParameters, coerceTypes, removeAdditional, passContext, filterOneOf } = <
       ValidateRequestOpts
     >this.options.validateRequests;
     return {
@@ -47,6 +47,7 @@ export class AjvOptions {
       coerceTypes,
       removeAdditional,
       passContext,
+      filterOneOf,
       verbose: true
     };
   }

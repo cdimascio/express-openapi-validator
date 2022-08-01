@@ -15,7 +15,7 @@ import {
 } from '../src/openapi.validator';
 
 describe('async.utils', () => {
-  const apiSpecPath = path.join('test', 'resources', 'async-serdes.yaml');
+  const apiSpecPath = path.join('test', 'resources', 'async-serdes-top-level-oneof.yaml');
   const specContent = fs.readFileSync(apiSpecPath);
   const initalApiDocument = safeLoad(specContent);
 
