@@ -1,8 +1,9 @@
-import Ajv from 'ajv';
-import type { ErrorObject } from 'ajv-draft-04';
+import Ajv, { AnySchema, SchemaObject } from 'ajv';
+import type { ErrorObject, SchemaCxt } from 'ajv-draft-04';
 import { Request } from 'express';
-import { PossiblyAsyncObject } from '../framework/ajv/async-util';
 import { OpenAPIV3, ValidationError } from '../framework/types';
+
+type SchemaEnv = SchemaCxt['schemaEnv'];
 
 export class ContentType {
   public readonly contentType: string = null;
@@ -151,7 +152,16 @@ const isErrorWithSchemaOfRefs = (error: ErrorObject) : error is ErrorWithSchemaO
     errorWithObjectSchema.schema.reduce !== undefined;
 }
 
-const collectSubschemaInformation = (ajv, schemaEnv, lastSchema, seenSchemas = {}) => {
+
+const isObjectSchema = (schema: AnySchema): schema is SchemaObject => {
+  return typeof schema !== 'boolean';
+}
+
+const collectSubschemaInformation = (ajv: Ajv, schemaEnv: SchemaEnv, lastSchema: string, seenSchemas = {}) => {
+  const schemaObject = schemaEnv.schema;
+
+  if (!isObjectSchema(schemaObject)) return [];
+
   let schemas = [];
 
   schemas.push({
@@ -161,8 +171,8 @@ const collectSubschemaInformation = (ajv, schemaEnv, lastSchema, seenSchemas = {
 
 
   const refs = Object.keys(schemaEnv.refs);
-  const items = schemaEnv.schema?.items || [];
-  const properties = Object.keys(schemaEnv.schema?.properties || {});
+  const items = schemaObject.items || {};
+  const properties = Object.keys(schemaObject.properties || {});
 
   refs.forEach(pointer => {
     // Only recurse if we have not seen this schema before.
@@ -173,17 +183,18 @@ const collectSubschemaInformation = (ajv, schemaEnv, lastSchema, seenSchemas = {
     }
   });
 
-  items.forEach(item => {
-    if (!item.$ref) {
-      schemas = schemas.concat(collectSubschemaInformation(ajv, {
-        schema: item,
-        baseId: schemaEnv.baseId
-      }, lastSchema, seenSchemas));
-    }
-  });
+  if (!items.$ref) {
+    schemas = schemas.concat(collectSubschemaInformation(ajv, {
+      schema: items,
+      baseId: schemaEnv.baseId,
+      root: schemaEnv.root,
+      refs: {},
+      dynamicAnchors: {}
+    }, lastSchema, seenSchemas));
+  }
 
   properties.forEach(property => {
-    const propertySchema = schemaEnv.schema?.properties[property];
+    const propertySchema = schemaObject.properties[property];
     // Can skip properties with refs,
     // Already considered from the SchemaEnv.refs
     if (!propertySchema.$ref) {
@@ -276,11 +287,6 @@ export const filterOneofSubschemaErrors = function (errors: Array<ErrorObject>, 
       allowedValues
     };
   });
-
-  const oneOfMap = oneOfErrorInformation.reduce((map, oneOf) => {
-    map[oneOf.instancePath] = oneOf;
-    return map;
-  }, {});
 
   type OneOfInformation = (typeof oneOfErrorInformation)[0];
   const discriminatorValueError: Record<string, {
