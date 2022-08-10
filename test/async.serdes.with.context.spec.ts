@@ -294,6 +294,42 @@ describe('async serdes w/ context', () => {
         expect(r.body.message).to.equal('request/body/id2 Could not find user');
       }));
 
+  it('should return 400 when inline property pattern does not match', async () =>
+      request(app)
+        .post(`${app.basePath}/users`)
+        .send({
+          id: foundUserId,
+          id2: foundUserId,
+          manager: {
+            type: 'PLUS',
+            plusUserId: foundUserId,
+            userPlusInline: ''
+          }
+        })
+        .set('Content-Type', 'application/json')
+        .expect(400)
+        .then((r) => {
+          expect(r.body.message).to.equal('request/body/manager/userPlusInline must NOT have fewer than 1 characters');
+        }));
+
+  it('should return 400 with only 1 error when common inline property validation fails', async () =>
+    request(app)
+      .post(`${app.basePath}/users`)
+      .send({
+        id: foundUserId,
+        id2: foundUserId,
+        manager: {
+          type: 'PLUS',
+          plusUserId: foundUserId,
+          userCommonInline: 'AAA'
+        }
+      })
+      .set('Content-Type', 'application/json')
+      .expect(400)
+      .then((r) => {
+        expect(r.body.message).to.equal('request/body/manager/userCommonInline must NOT have more than 2 characters');
+      }));
+
   it('should return 400 when only 1 user id in body throws Forbidden', async () =>
     request(app)
       .post(`${app.basePath}/users`)

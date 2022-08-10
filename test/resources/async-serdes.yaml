@@ -63,10 +63,24 @@ components:
       type: object
       allOf:
         - $ref: "#/components/schemas/UserPlusProperties"
+      properties:
+        userPlusInline:
+          type: string
+          minLength: 1
+        userCommonInline:
+            type: string
+            maxLength: 2
     UserPlusPlus:
       type: object
       allOf:
         - $ref: "#/components/schemas/UserPlusPlusProperties"
+      properties:
+        userPlusPlusInline:
+          type: string
+          minLength: 1
+        userCommonInline:
+          type: string
+          maxLength: 2
     UserOneOf:
       type: object
       oneOf:

@@ -237,8 +237,16 @@ const collectSubschemaInformation = (ajv: Ajv, schemaEnv: SchemaEnv, lastSchema:
  * As well as the errories from "not-mapped" schemas
  */
 export const filterOneofSubschemaErrors = function (errors: Array<ErrorObject>, ajv: Ajv) {
+  const knownOneOfPaths = {};
   const oneOfErrorInformation = errors.filter(error => {
-    return error.keyword === 'oneOf';
+    if (error.keyword === 'oneOf') {
+      // Could be many errors referencing same oneOf, dedupe here.
+      if (!knownOneOfPaths[error.instancePath]) {
+        knownOneOfPaths[error.instancePath] = true;
+        return true;
+      }
+      return false;
+    }
   }).filter(isErrorWithSchemaOfRefs).map(error => {
     const discriminatorPropertyPath = `${error.instancePath}/${error.parentSchema.discriminator.propertyName}`;
     const discriminatorProperty = error.parentSchema.discriminator.propertyName;
@@ -294,6 +302,10 @@ export const filterOneofSubschemaErrors = function (errors: Array<ErrorObject>, 
     error: ErrorObject
   }> = {};
   const discriminatorMissingError: Record<string, {
+    oneOf: OneOfInformation;
+    error: ErrorObject
+  }> = {};
+  const subSchemaError: Record<string, {
     oneOf: OneOfInformation;
     error: ErrorObject
   }> = {};
@@ -382,18 +394,52 @@ export const filterOneofSubschemaErrors = function (errors: Array<ErrorObject>, 
     const isInlineParentSchema = error.schemaPath.indexOf('#/components') === -1;
 
     if (isInlineParentSchema) {
-      const isDiscriminatedSchema = matchingOneOf.discriminatedSchemas.filter(subSchema => subSchema === error.parentSchema).length === 1;
-      return isDiscriminatedSchema;
+      // A subschema may be present twice in a discriminated schema
+      const numberOfMatchingSchemas = matchingOneOf.discriminatedSchemas.filter(subSchema => subSchema === error.parentSchema).length;
+      // Could have schema more than once in subschema
+      const isASubSchemaOfDiscriminatedSchmea = numberOfMatchingSchemas >= 1;
+
+      // Could catch a schema that is in inlined in two different discriminated schemas,
+      // but uses a different property name.
+      // "#/properties/plusPlusOnly/pattern"
+      const isPropertySchema = error.schemaPath.indexOf('#/properties') > -1;
+      if (isPropertySchema) {
+        const propertyName = error.schemaPath.split('/')[2];
+        // This property is not referenced by the matching discriminator ever.
+        if (!matchingOneOf.discriminatedPropertyNamesSet.has(propertyName)) {
+          return false;
+        }
+      }
+
+      // Record this error, but de-dupe on keyword/instancePath in case the disciminated
+      // sub-schemas contain a reference to the same property/schema.
+      if (isASubSchemaOfDiscriminatedSchmea) {
+        subSchemaError[`${error.keyword}-${error.instancePath}`] = {
+          oneOf: matchingOneOf,
+          error
+        }
+      }
+
+      return false;
     } else {
       // keyword error schemaPath like:
       // "#/components/schemas/UserId/x-eov-req-serdes-async"
       const schemaPathWithoutKeyword = error.schemaPath.split('/').slice(0, -1).join('/');
-      return matchingOneOf.discriminatedRefsSet.has(schemaPathWithoutKeyword);
+      const isSubSchema = matchingOneOf.discriminatedRefsSet.has(schemaPathWithoutKeyword);
+      if (isSubSchema) {
+        subSchemaError[`${error.keyword}-${error.instancePath}`] = {
+            oneOf: matchingOneOf,
+            error
+        };
+      }
+      return false;
     }
   });
 
+  // De-dupe errors if discriminated schemas happen to share exact same schema reference in a property with the same name
   const oneOfWithInvalidDiscriminatorPropertyname = Object.keys(discriminatorValueError);
   const oneOfWithMissingDiscriminatorPropertyname = Object.keys(discriminatorMissingError);
+  const subSchemaErrorKeywordInstance = Object.keys(subSchemaError);
 
   return filteredErrors
     .concat(
@@ -411,6 +457,11 @@ export const filterOneofSubschemaErrors = function (errors: Array<ErrorObject>, 
       oneOfWithMissingDiscriminatorPropertyname.map(oneOfSchema => {
         const errorAndOneOfInfo = discriminatorMissingError[oneOfSchema];
         return errorAndOneOfInfo.error;
+      })
+    )
+    .concat(
+      subSchemaErrorKeywordInstance.map(key => {
+        return subSchemaError[key].error;
       })
     );
 }
