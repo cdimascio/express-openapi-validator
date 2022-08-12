@@ -107,6 +107,40 @@ function createAjv(
   }
 
   if (request) {
+    /**
+     * For requests, if its a discriminated schema
+     * Apply the default of the schema containing the discriminator
+     * keyword if the discriminating property is missing and it is
+     * specified as a default.
+     */
+    ajv.addKeyword('discriminator', {
+      keyword: 'discriminator',
+      modifying: true,
+      errors: false,
+      compile: (sch, p, it) => {
+        const parentSchema = p;
+        const validate = function applyDiscriminatorDefault(data, ctx) {
+          // Set a default value for the discriminator property
+          // if the parent schema defines it, and the data does not have
+          // a value for it.
+          const discriminatorSchema = sch;
+          const discriminatorPropertyName = discriminatorSchema.propertyName;
+          if (!data[discriminatorPropertyName] &&
+                parentSchema.default &&
+                parentSchema.default[discriminatorPropertyName]) {
+            Object.keys(parentSchema.default).forEach(function (key) {
+              if (data[key] === undefined) {
+                data[key] = parentSchema.default[key];
+              }
+            });
+          }
+          return true;
+        };
+
+        return validate;
+      }
+    });
+
     if (options.serDesMap) {
       if (hasAsyncComponentSchemas) {
         ajv.addKeyword({
