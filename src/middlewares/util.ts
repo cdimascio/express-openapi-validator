@@ -424,7 +424,7 @@ export const filterOneofSubschemaErrors = function (errors: Array<ErrorObject>, 
     } else {
       // keyword error schemaPath like:
       // "#/components/schemas/UserId/x-eov-req-serdes-async"
-      const schemaPathWithoutKeyword = error.schemaPath.split('/').slice(0, -1).join('/');
+      const schemaPathWithoutKeyword = error.schemaPath.split('/').slice(0, 4).join('/');
       const isSubSchema = matchingOneOf.discriminatedRefsSet.has(schemaPathWithoutKeyword);
       if (isSubSchema) {
         subSchemaError[`${error.keyword}-${error.instancePath}`] = {
