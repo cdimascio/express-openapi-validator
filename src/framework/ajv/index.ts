@@ -41,7 +41,7 @@ const validatorErrorFromSerdesError = (
 
   return {
     message: isHttpError ? e.message : 'format is invalid',
-    keyword: 'serdes',
+    keyword: isHttpError ? e.name : 'serdes',
     instancePath: ctx.instancePath,
     schemaPath: it.schemaPath.str,
     params: {
