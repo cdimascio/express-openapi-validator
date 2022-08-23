@@ -104,23 +104,14 @@ function createAjv(
     ajv.removeKeyword('readOnly');
     ajv.addKeyword({
       keyword: 'readOnly',
+      modifying: true,
       errors: true,
       compile: (sch, p, it) => {
         if (sch) {
           const validate: DataValidateFunction = (data, ctx) => {
-            const isValid = data == null;
-            if (!isValid) {
-              validate.errors = [
-                {
-                  keyword: 'readOnly',
-                  instancePath: ctx.instancePath,
-                  schemaPath: it.schemaPath.str,
-                  message: `is read-only`,
-                  params: { writeOnly: ctx.parentDataProperty },
-                },
-              ];
-            }
-            return false;
+            // Remove readonly properties in request
+            delete ctx.parentData[ctx.parentDataProperty];
+            return true;
           };
           return validate;
         }

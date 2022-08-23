@@ -62,7 +62,7 @@ describe(packageJson.name, () => {
     app.server.close();
   });
 
-  it('should not allow read only properties in requests', async () =>
+  it('should remove read only properties in requests', async () =>
     request(app)
       .post(`${app.basePath}/products`)
       .set('content-type', 'application/json')
@@ -72,11 +72,11 @@ describe(packageJson.name, () => {
         price: 10.99,
         created_at: new Date().toISOString(),
       })
-      .expect(400)
+      .expect(200)
       .then((r) => {
         const body = r.body;
-        // id is a readonly property and should not be allowed in the request
-        expect(body.message).to.contain('id');
+        // id is a readonly property and should be allowed in the request but should be deleted before entering in route
+        expect(body.id).to.be.undefined;
       }));
 
   it('should allow read only properties in responses', async () =>
@@ -87,7 +87,7 @@ describe(packageJson.name, () => {
         expect(r.body).to.be.an('array').with.length(1);
       }));
 
-  it('should not allow read only inlined properties in requests', async () =>
+  it('should remove read only inlined properties in requests', async () =>
     request(app)
       .post(`${app.basePath}/products/inlined`)
       .set('content-type', 'application/json')
@@ -97,14 +97,13 @@ describe(packageJson.name, () => {
         price: 10.99,
         created_at: new Date().toUTCString(),
       })
-      .expect(400)
       .then((r) => {
         const body = r.body;
         // id is a readonly property and should not be allowed in the request
-        expect(body.message).to.contain('id');
+        expect(body.id).to.be.undefined;
       }));
 
-  it('should not allow read only properties in requests (nested schema $refs)', async () =>
+  it('should remove read only properties in requests (nested schema $refs)', async () =>
     request(app)
       .post(`${app.basePath}/products/nested`)
       .set('content-type', 'application/json')
@@ -113,19 +112,19 @@ describe(packageJson.name, () => {
         name: 'some name',
         price: 10.99,
         created_at: new Date().toISOString(),
-        reviews: {
-          id: 'review_id',
+        reviews: [{
+          id: 2,
           rating: 5,
-        },
+        }],
       })
-      .expect(400)
+      .expect(200)
       .then((r) => {
         const body = r.body;
-        // id is a readonly property and should not be allowed in the request
-        expect(body.message).to.contain('id');
+        // id is a readonly property and should be removed from the request
+        expect(body.id).to.be.equal('test');
       }));
 
-  it('should not allow read only properties in requests (deep nested schema $refs)', async () =>
+  it('should remove read only properties in requests (deep nested schema $refs)', async () =>
     request(app)
       .post(`${app.basePath}/products/nested`)
       .set('content-type', 'application/json')
@@ -139,11 +138,11 @@ describe(packageJson.name, () => {
           },
         ],
       })
-      .expect(400)
+      .expect(200)
       .then((r) => {
         const body = r.body;
         // id is a readonly property and should not be allowed in the request
-        expect(body.message).to.contain('request/body/reviews/0/id');
+        expect(body.reviews[0].id).to.be.undefined;
       }));
 
   it('should pass validation if required read only properties to be missing from request ($ref)', async () =>

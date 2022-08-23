@@ -42,7 +42,7 @@ describe(packageJson.name, () => {
     app.server.close();
   });
 
-  it('should not allow ready only inlined properties in requests', async () =>
+  it('should remove read only inlined properties in requests', async () =>
     request(app)
       .post(`${app.basePath}/products/inlined`)
       .set('content-type', 'application/json')
@@ -51,11 +51,12 @@ describe(packageJson.name, () => {
         price: 10.99,
         created_at: new Date().toUTCString(),
       })
-      .expect(400)
+      .expect(200)
       .then(r => {
         const body = r.body;
-        // id is a readonly property and should not be allowed in the request
-        expect(body.message).to.contain('created_at');
+        // created_at is a readonly property and should be removed form the request
+        expect(body.created_at).to.be.undefined;
+        expect(body.name).to.be.equal('some name');
       }));
 
   it('should not allow write only inlined properties in responses', async () =>
@@ -110,7 +111,7 @@ describe(packageJson.name, () => {
         expect(body.errors[0].message).to.contain('write-only');
       }));
 
-  it('should not allow read only properties in requests (deep nested schema $refs)', async () =>
+  it('should remove read only properties in requests (deep nested schema $refs)', async () =>
     request(app)
       .post(`${app.basePath}/products/nested`)
       .query({
@@ -128,9 +129,9 @@ describe(packageJson.name, () => {
           },
         ],
       })
-      .expect(400)
+      .expect(200)
       .then(r => {
         const body = r.body;
-        expect(body.message).to.contain('request/body/reviews/0/id');
+        expect(body.reviews[0].id).to.be.undefined;
       }));
 });
