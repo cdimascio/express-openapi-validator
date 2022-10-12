@@ -125,9 +125,11 @@ function createAjv(
           // a value for it.
           const discriminatorSchema = sch;
           const discriminatorPropertyName = discriminatorSchema.propertyName;
+          const isObject = typeof data === 'object' && data !== null;
           if (!data[discriminatorPropertyName] &&
                 parentSchema.default &&
-                parentSchema.default[discriminatorPropertyName]) {
+                parentSchema.default[discriminatorPropertyName] &&
+                isObject) {
             Object.keys(parentSchema.default).forEach(function (key) {
               if (data[key] === undefined) {
                 data[key] = parentSchema.default[key];
