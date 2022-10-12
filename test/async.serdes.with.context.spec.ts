@@ -224,6 +224,22 @@ describe('async serdes w/ context', () => {
         expect(r.body.message).to.equal("request/body/id2 Could not find user, request/body/manager must have required property 'plusPlusUserId', request/body/manager/plusPlusOnly must match pattern \"/[A-Z]+/\"");
       }));
 
+  it('should return 400 with string for object enum property', async () =>
+    request(app)
+      .post(`${app.basePath}/users`)
+      .send({
+        id: foundUserId,
+        id2: notFoundUserId,
+        director: 'invalid'
+      })
+      .set('Content-Type', 'application/json')
+      .expect(400)
+      .then((r) => {
+        console.info(r.body);
+        expect(r.body.errors.length).to.equal(2);
+        expect(r.body.message).to.equal("request/body/id2 Could not find user, request/body/director must be object");
+      }));
+
   it('should return 400 with error with invalid oneOf.mapping.propertyName and not found property', async () =>
     request(app)
       .post(`${app.basePath}/users`)

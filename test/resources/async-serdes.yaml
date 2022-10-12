@@ -59,6 +59,8 @@ components:
           $ref: "#/components/schemas/UserId"
         manager:
           $ref: "#/components/schemas/UserOneOf"
+        director:
+          $ref: "#/components/schemas/UserOneOfWithDefault"
     UserPlus:
       type: object
       allOf:
@@ -91,6 +93,19 @@ components:
         mapping:
           PLUS: "#/components/schemas/UserPlus"
           PLUSPLUS: "#/components/schemas/UserPlusPlus"
+    UserOneOfWithDefault:
+      type: object
+      oneOf: 
+        - $ref: "#/components/schemas/UserPlus"
+        - $ref: "#/components/schemas/UserPlusPlus"
+      discriminator: 
+        propertyName: type
+        mapping: 
+          PLUS: "#/components/schemas/UserPlus"
+          PLUSPLUS: "#/components/schemas/UserPlusPlus"
+      default:
+        type: PLUS
+        userPlusInLine: 'A' 
     UserPlusProperties:
       type: object
       required:

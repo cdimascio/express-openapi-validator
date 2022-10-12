@@ -399,6 +399,9 @@ export const filterOneofSubschemaErrors = function (errors: Array<ErrorObject>, 
       // Could have schema more than once in subschema
       const isASubSchemaOfDiscriminatedSchmea = numberOfMatchingSchemas >= 1;
 
+      const isObject = typeof error.data === 'object' && error.data !== null;
+      const isExpectingTypeObjectButNotObject = !isObject && error.keyword === 'type';
+
       // Could catch a schema that is in inlined in two different discriminated schemas,
       // but uses a different property name.
       // "#/properties/plusPlusOnly/pattern"
@@ -413,7 +416,7 @@ export const filterOneofSubschemaErrors = function (errors: Array<ErrorObject>, 
 
       // Record this error, but de-dupe on keyword/instancePath in case the disciminated
       // sub-schemas contain a reference to the same property/schema.
-      if (isASubSchemaOfDiscriminatedSchmea) {
+      if (isASubSchemaOfDiscriminatedSchmea || isExpectingTypeObjectButNotObject) {
         subSchemaError[`${error.keyword}-${error.instancePath}`] = {
           oneOf: matchingOneOf,
           error
