@@ -79,7 +79,7 @@ _**Important:** Ensure express is configured with all relevant body parsers. Bod
 
 ## [Documentation](https://github.com/cdimascio/express-openapi-validator/wiki/Documentation)
 
-See the [wiki](https://github.com/cdimascio/express-openapi-validator/wiki) for complete documenation
+See the [wiki](https://github.com/cdimascio/express-openapi-validator/wiki/Documentation) for complete documenation
 
 ## License
 
