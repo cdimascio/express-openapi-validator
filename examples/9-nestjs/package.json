@@ -26,7 +26,7 @@
     "shx": "^0.3.3"
   },
   "devDependencies": {
-    "@nestjs/cli": "^8.1.2",
+    "@nestjs/cli": "^8.2.8",
     "@nestjs/testing": "^8.0.11",
     "@types/jest": "^27.0.2",
     "@types/supertest": "^2.0.11",
