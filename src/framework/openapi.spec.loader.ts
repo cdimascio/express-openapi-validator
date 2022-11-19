@@ -64,7 +64,8 @@ export class OpenApiSpecLoader {
                 continue;
               }
               const pathParams = new Set<string>();
-              for (const param of schema.parameters ?? []) {
+              const parameters = [...schema.parameters ?? [], ...methods.parameters ?? []]
+              for (const param of parameters) {
                 if (param.in === 'path') {
                   pathParams.add(param.name);
                 }
