@@ -1,0 +1,102 @@
+openapi: "3.0.0"
+info:
+  title: "Test for allOf"
+  version: "1"
+servers:
+  - url: /v1/
+paths:
+  /users/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/ObjectId"
+        - name: baddateresponse
+          in: query
+          schema:
+            type: string
+            enum:
+              - functionNotExists
+              - functionBadFormat
+              - functionNotExistsWithoutRef
+              - functionBadFormatWithoutRef
+        - name: shortOrLong
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ShortOrLong"
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /users:
+    post:
+      requestBody:
+        content :
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+components:
+  schemas:
+    ObjectId:
+      type: string
+      format: mongo-objectid
+      pattern: '^[0-9a-fA-F]{24}$'
+    Date:
+      type: string
+      format: date
+    DateTime:
+      type: string
+      format: date-time
+    ShortOrLong:
+      type: string
+      format: mongo-objectid
+      anyOf:
+        - maxLength: 2
+        - minLength: 4
+    HistoryItem:
+      type: object
+      properties:
+        modificationDate:
+          $ref: "#/components/schemas/Date"
+    StringList:
+      type: string
+      format: string-list
+    User:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/ObjectId"
+        tags:
+          $ref: "#/components/schemas/StringList"
+        creationDateTime:
+          $ref: "#/components/schemas/DateTime"
+        creationDate:
+          $ref: "#/components/schemas/Date"
+        shortOrLong:
+          $ref: "#/components/schemas/ShortOrLong"
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/HistoryItem"
+        historyWithoutRef:
+          type: array
+          items:
+            type: object
+            properties:
+              modificationDate:
+                type: string
+                format: date
+
