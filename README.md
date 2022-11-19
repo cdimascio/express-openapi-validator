@@ -77,7 +77,7 @@ app.use((err, req, res, next) => {
 
 _**Important:** Ensure express is configured with all relevant body parsers. Body parser middleware functions must be specified prior to any validated routes. See an [example](#example-express-api-server)_.
 
-## [Documentation](https://github.com/cdimascio/express-openapi-validator/wiki)
+## [Documentation](https://github.com/cdimascio/express-openapi-validator/wiki/Documentation)
 
 See the [wiki](https://github.com/cdimascio/express-openapi-validator/wiki) for complete documenation
 
