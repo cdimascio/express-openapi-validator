@@ -10,12 +10,28 @@ describe('AjvOptions', () => {
     apiSpec: './spec',
     validateApiSpec: false,
     validateRequests: {
-        allowUnknownQueryParameters: false,
-        coerceTypes: false,
+      allowUnknownQueryParameters: false,
+      coerceTypes: false,
+      /**
+       * Only works for serdes.deserialize.
+       * Ajv does not pass context to built-in validations
+       * If desired, could build an x-eov-string-format keyword and
+       * get Request/Response context to format.value.
+       * https://ajv.js.org/options.html#passcontext
+       */
+      passContext: false
     },
     validateResponses: {
       coerceTypes: false,
       removeAdditional: true,
+      /**
+       * Only works for serdes.serialize.
+       * Ajv does not pass context to built-in validations
+       * If desired, could build an x-eov-string-format keyword and
+       * get Request/Response context to format.value.
+       * https://ajv.js.org/options.html#passcontext
+       */
+      passContext: false
     },
     serDes: [],
     formats: {},
@@ -120,5 +136,31 @@ describe('AjvOptions', () => {
     expect(options.serDesMap).has.property('custom-1');
     expect(options.serDesMap['custom-1']).has.property('serialize');
     expect(options.serDesMap['custom-1']).has.property('deserialize');
+  });
+
+  it('should set passContext on request and response', () => {
+    const ajv = new AjvOptions({
+      ...baseOptions,
+      serDes: [
+        {
+          format: 'custom-1',
+          serialize: () => 'test',
+        },
+        {
+          format: 'custom-1',
+          deserialize: () => 'test',
+        },
+        {
+          format: 'custom-1',
+          serialize: () => 'test',
+        },
+      ],
+    });
+    const requestOptions = ajv.request;
+    const responseOptions = ajv.response;
+    expect(requestOptions).has.property('passContext');
+    expect(requestOptions.passContext).equal(false);
+    expect(responseOptions).has.property('passContext');
+    expect(responseOptions.passContext).equal(false);
   });
 });

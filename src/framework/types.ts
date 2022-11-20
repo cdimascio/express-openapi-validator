@@ -1,6 +1,6 @@
 import * as ajv from 'ajv';
 import * as multer from 'multer';
-import { FormatsPluginOptions, FormatOptions } from 'ajv-formats';
+import { FormatsPluginOptions } from 'ajv-formats';
 import { Request, Response, NextFunction } from 'express';
 export { OpenAPIFrameworkArgs };
 
@@ -14,6 +14,25 @@ export interface ParametersSchema {
   headers: object;
   params: object;
   cookies: object;
+}
+
+export interface BodyValidationSchema {
+  paths: OpenAPIV3.PathsObject,
+  components: OpenAPIV3.ComponentsObject,
+  required?: Array<string>,
+  properties: BodySchema & {
+    query: {},
+    headers: {},
+    params: {},
+    cookies: {}
+  }
+}
+
+export interface ParametersValidationSchema {
+  paths: OpenAPIV3.PathsObject,
+  components: OpenAPIV3.ComponentsObject,
+  required: Array<string>,
+  properties: ParametersSchema & { body: {}}
 }
 
 export interface ValidationSchema extends ParametersSchema {
@@ -41,6 +60,7 @@ export interface Options extends ajv.Options {
   // Specific options
   serDesMap?: SerDesMap;
   ajvFormats?: FormatsPluginOptions;
+  filterOneOf?: boolean;
 }
 
 export interface RequestValidatorOptions extends Options, ValidateRequestOpts {}
@@ -49,11 +69,26 @@ export type ValidateRequestOpts = {
   allowUnknownQueryParameters?: boolean;
   coerceTypes?: boolean | 'array';
   removeAdditional?: boolean | 'all' | 'failing';
+  /**
+   * Exposes express.Request for current request as `this`
+   * in serdes.serialize, serdes.deserialize
+   */
+  passContext?: boolean;
+  /**
+   * Pass true to pair down error messages that come from a sub-schema
+   * containing oneOf.
+   */
+  filterOneOf?: boolean;
 };
 
 export type ValidateResponseOpts = {
   removeAdditional?: boolean | 'all' | 'failing';
   coerceTypes?: boolean | 'array';
+  /**
+   * Exposes express.Response for current response as `this`
+   * in serdes[string].serialize, serdes[string].deserialize
+   */
+  passContext?: boolean;
   onError?: (err: InternalServerError, json: any, req: Request) => void;
 };
 
@@ -73,10 +108,19 @@ export type Format = {
 };
 
 export type SerDes = {
+  async?: false;
   format: string;
   serialize?: (o: unknown) => string;
   deserialize?: (s: string) => unknown;
 };
+
+/** Only async deserialize functions are currently supported. */
+export type AsyncSerDes = {
+  async: true;
+  format: string;
+  serialize?: (o: unknown) => string;
+  deserialize?: (s: string) => Promise<unknown>;
+}
 
 export class SerDesSingleton implements SerDes {
   serializer: SerDes;
@@ -105,7 +149,7 @@ export class SerDesSingleton implements SerDes {
 };
 
 export type SerDesMap = {
-  [format: string]: SerDes
+  [format: string]: SerDes | AsyncSerDes
 };
 
 export interface OpenApiValidatorOpts {
@@ -123,7 +167,7 @@ export interface OpenApiValidatorOpts {
    * Use `formats` + `validateFormats` to ignore specified formats
    */
   unknownFormats?: true | string[] | 'ignore';
-  serDes?: SerDes[];
+  serDes?: (SerDes | AsyncSerDes)[];
   formats?: Format[] | Record<string, ajv.Format>;
   ajvFormats?: FormatsPluginOptions;
   fileUploader?: boolean | multer.Options;

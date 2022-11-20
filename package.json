@@ -6,8 +6,10 @@
   "scripts": {
     "compile": "rm -rf dist/ && tsc",
     "compile:windows": "rmdir dist /s /q & tsc",
-    "test": "TS_NODE_FILES=true mocha -r source-map-support/register -r ts-node/register  --files --recursive -R spec test/**/*.spec.ts",
-    "test:debug": "TS_NODE_FILES=true mocha -r source-map-support/register -r ts-node/register --inspect-brk --files --recursive test/**/*.spec.ts",
+    "test:base": "TS_NODE_FILES=true mocha -r source-map-support/register -r ts-node/register  --files --recursive -R spec",
+    "test": "npm run test:base test/**/*.spec.ts",
+    "test:debug:base": "TS_NODE_FILES=true mocha -r source-map-support/register -r ts-node/register --inspect-brk --files --recursive",
+    "test:debug": " npm run test:debug:base test/**/*.spec.ts",
     "test:windows": "set TS_NODE_FILES=true & mocha -r source-map-support/register -r ts-node/register  --files --recursive test/**/*.spec.ts",
     "test:coverage": "TS_NODE_FILES=true nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
     "test:coverage:windows": "set TS_NODE_FILES=true & nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
@@ -32,7 +34,6 @@
   "author": "Carmine DiMascio <cdimascio@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@types/multer": "^1.4.7",
     "ajv": "^8.6.2",
     "ajv-draft-04": "^1.0.0",
     "ajv-formats": "^2.1.1",
@@ -52,6 +53,7 @@
     "@types/express": "4.17.13",
     "@types/mocha": "^9.1.0",
     "@types/morgan": "^1.9.3",
+    "@types/multer": "^1.4.7",
     "@types/node": "^17.0.21",
     "@types/supertest": "^2.0.11",
     "body-parser": "^1.19.2",

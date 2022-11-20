@@ -1,0 +1,91 @@
+openapi: "3.0.0"
+info:
+  title: "Test for async serdes functionality"
+  version: "1"
+servers:
+  - url: /v1/
+paths:
+  /users/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UserId"
+        - name: managerId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserId"
+        - name: anotherManagerId
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/UserId"
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserOneOf"
+  /users:
+    post:
+      requestBody:
+        content :
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserOneOf'
+      responses:
+        200:
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserOneOf"
+components:
+  schemas:
+    UserId:
+      type: string
+      format: user-id
+      pattern: '^[0-9a-fA-F]{24}$'
+    User:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UserId"
+        id2:
+          $ref: "#/components/schemas/UserId"
+    UserPlus:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [PLUS]
+            plusUserId:
+              $ref: "#/components/schemas/UserId"
+    UserPlusPlus:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [PLUSPLUS]
+            plusPlusUserId:
+              $ref: "#/components/schemas/UserId"
+    UserOneOf:
+      type: object
+      oneOf:
+        - $ref: "#/components/schemas/UserPlus"
+        - $ref: "#/components/schemas/UserPlusPlus"
+      discriminator:
+        propertyName: type
+        mapping:
+          PLUS: "#/components/schemas/UserPlus"
+          PLUSPLUS: "#/components/schemas/UserPlusPlus"

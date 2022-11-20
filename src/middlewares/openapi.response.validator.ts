@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express';
+import { RequestHandler, Response } from 'express';
 import Ajv, { ValidateFunction, Options } from 'ajv';
 import mung from '../framework/modded.express.mung';
 import { createResponseAjv } from '../framework/ajv';
@@ -24,6 +24,10 @@ interface ValidateResult {
   statusCode: number;
   path: string;
   accepts: string[];
+  /**
+   * When passContext is set to true, response must be passed here
+   */
+  res?: Response
 }
 export class ResponseValidator {
   private ajvBody: Ajv;
@@ -76,6 +80,7 @@ export class ResponseValidator {
             statusCode,
             path,
             accepts, // return 406 if not acceptable
+            res
           });
         } catch (err) {
           // If a custom error handler was provided, we call that
@@ -122,6 +127,7 @@ export class ResponseValidator {
     statusCode,
     path,
     accepts, // optional
+    res
   }: ValidateResult): void {
     const status = statusCode ?? 'default';
     const statusXX = status.toString()[0] + 'XX';
@@ -189,7 +195,7 @@ export class ResponseValidator {
       // Do nothing. Move on and validate response
     }
 
-    const valid = validator({
+    const valid = validator.call(res, {
       response: body,
     });
 

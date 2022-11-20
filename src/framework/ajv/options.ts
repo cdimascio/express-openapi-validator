@@ -12,11 +12,20 @@ export class AjvOptions {
     this.options = options;
   }
   get preprocessor(): Options {
-    return this.baseOptions();
+    const { passContext, filterOneOf } = <ValidateRequestOpts>(
+      this.options.validateRequests
+    );
+    return {
+      ...this.baseOptions(),
+      // Need it for if serdes/validation functions are expecting
+      // 'this' when using compiled discriminator validators.
+      passContext,
+      verbose: true
+    };
   }
 
   get response(): Options {
-    const { coerceTypes, removeAdditional } = <ValidateResponseOpts>(
+    const { coerceTypes, removeAdditional, passContext } = <ValidateResponseOpts>(
       this.options.validateResponses
     );
     return {
@@ -24,11 +33,12 @@ export class AjvOptions {
       useDefaults: false,
       coerceTypes,
       removeAdditional,
+      passContext
     };
   }
 
   get request(): RequestValidatorOptions {
-    const { allowUnknownQueryParameters, coerceTypes, removeAdditional } = <
+    const { allowUnknownQueryParameters, coerceTypes, removeAdditional, passContext, filterOneOf } = <
       ValidateRequestOpts
     >this.options.validateRequests;
     return {
@@ -36,6 +46,9 @@ export class AjvOptions {
       allowUnknownQueryParameters,
       coerceTypes,
       removeAdditional,
+      passContext,
+      filterOneOf,
+      verbose: true
     };
   }
 
@@ -56,6 +69,9 @@ export class AjvOptions {
         }
         if (serDesObject.deserialize) {
           serDesMap[serDesObject.format].deserialize = serDesObject.deserialize;
+        }
+        if (serDesObject.async) {
+          serDesMap[serDesObject.format].async = serDesObject.async;
         }
       }
     }

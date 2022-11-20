@@ -96,14 +96,17 @@ export class OpenApiValidator {
       .then((spec) => {
         const apiDoc = spec.apiDoc;
         const ajvOpts = this.ajvOpts.preprocessor;
-        const resOpts = this.options.validateResponses as ValidateRequestOpts;
+        const resOpts = this.options.validateResponses;
         const sp = new SchemaPreprocessor(
           apiDoc,
           ajvOpts,
           resOpts,
         ).preProcess();
         return {
-          context: new OpenApiContext(spec, this.options.ignorePaths, this.options.ignoreUndocumented),
+          context: new OpenApiContext({
+            ...spec,
+            apiDoc: sp.apiDoc
+          }, this.options.ignorePaths, this.options.ignoreUndocumented),
           responseApiDoc: sp.apiDocRes,
           error: null,
         };
