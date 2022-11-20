@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express-openapi-validator": "4.13.2"
+    "express-openapi-validator": "4.13.8"
   },
   "devDependencies": {
     "nodemon": "^2.0.13"
