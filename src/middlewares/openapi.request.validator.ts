@@ -42,6 +42,8 @@ export class RequestValidator {
   ) {
     this.middlewareCache = {};
     this.apiDoc = apiDoc;
+    // Examples not needed for validation
+    delete this.apiDoc.components.examples;
     this.requestOpts.allowUnknownQueryParameters =
       options.allowUnknownQueryParameters;
     this.ajv = createRequestAjv(apiDoc, { ...options, coerceTypes: true });
