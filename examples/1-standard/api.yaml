@@ -8,7 +8,14 @@ info:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 servers:
-  - url: /v1
+  - url: http://{base_url}/{env_id}
+    variables:
+      base_url:
+        default: my.app.com
+        description: server
+      env_id:
+        default: v1
+        description: path selector
 paths:
   /ping:
     get:
