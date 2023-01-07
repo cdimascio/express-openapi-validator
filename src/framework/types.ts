@@ -262,19 +262,29 @@ export namespace OpenAPIV3 {
     | 'string'
     | 'integer';
   export type ArraySchemaObjectType = 'array';
-  export type SchemaObject = ArraySchemaObject | NonArraySchemaObject;
 
-  export interface ArraySchemaObject extends BaseSchemaObject {
-    type: ArraySchemaObjectType;
+  export type SchemaObject = ArraySchemaObject | NonArraySchemaObject | CompositionSchemaObject;
+
+  export interface ArraySchemaObject extends BaseSchemaObject<ArraySchemaObjectType> {
     items: ReferenceObject | SchemaObject;
   }
 
-  export interface NonArraySchemaObject extends BaseSchemaObject {
-    type: NonArraySchemaObjectType;
+  export interface NonArraySchemaObject extends BaseSchemaObject<NonArraySchemaObjectType> {
   }
 
-  interface BaseSchemaObject {
+  export interface CompositionSchemaObject extends BaseSchemaObject<undefined> {
     // JSON schema allowed properties, adjusted for OpenAPI
+    allOf?: Array<ReferenceObject | SchemaObject>;
+    oneOf?: Array<ReferenceObject | SchemaObject>;
+    anyOf?: Array<ReferenceObject | SchemaObject>;
+    not?: ReferenceObject | SchemaObject;
+    // OpenAPI-specific properties
+    discriminator?: DiscriminatorObject;
+  }
+
+  interface BaseSchemaObject<T> {
+    // JSON schema allowed properties, adjusted for OpenAPI
+    type?: T;
     title?: string;
     description?: string;
     format?: string;
@@ -298,14 +308,9 @@ export namespace OpenAPIV3 {
     properties?: {
       [name: string]: ReferenceObject | SchemaObject;
     };
-    allOf?: Array<ReferenceObject | SchemaObject>;
-    oneOf?: Array<ReferenceObject | SchemaObject>;
-    anyOf?: Array<ReferenceObject | SchemaObject>;
-    not?: ReferenceObject | SchemaObject;
 
     // OpenAPI-specific properties
     nullable?: boolean;
-    discriminator?: DiscriminatorObject;
     readOnly?: boolean;
     writeOnly?: boolean;
     xml?: XMLObject;

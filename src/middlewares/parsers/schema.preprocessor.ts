@@ -263,10 +263,10 @@ export class SchemaPreprocessor {
 
   private processDiscriminator(parent: Schema, schema: Schema, opts: any = {}) {
     const o = opts.discriminator;
-    const schemaObj = <SchemaObject>schema;
+    const schemaObj = <OpenAPIV3.CompositionSchemaObject>schema;
     const xOf = schemaObj.oneOf ? 'oneOf' : schemaObj.anyOf ? 'anyOf' : null;
 
-    if (xOf && schemaObj?.discriminator?.propertyName && !o.discriminator) {
+    if (xOf && schemaObj.discriminator?.propertyName && !o.discriminator) {
       const options = schemaObj[xOf].flatMap((refObject) => {
         if (refObject['$ref'] === undefined) {
           return [];
