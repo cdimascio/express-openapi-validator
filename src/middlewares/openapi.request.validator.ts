@@ -164,6 +164,11 @@ export class RequestValidator {
         body: req.body,
       };
       const schemaBody = <any>validator?.schemaBody;
+
+      if (contentType.mediaType === 'multipart/form-data') {
+        this.multipartNested(req, schemaBody);
+      }
+
       const discriminator = schemaBody?.properties?.body?._discriminator;
       const discriminatorValidator = this.discriminatorValidator(
         req,
@@ -194,6 +199,21 @@ export class RequestValidator {
         throw error;
       }
     };
+  }
+
+  private multipartNested(req, schemaBody) {
+    Object.keys(req.body).forEach((key) => {
+      const value = req.body[key];
+      const type = schemaBody?.properties?.body?.properties[key]?.type;
+      if (['array', 'object'].includes(type)) {
+        try {
+          req.body[key] = JSON.parse(value);
+        } catch (e) {
+          // NOOP
+        }
+      }
+    })
+    return null;
   }
 
   private discriminatorValidator(req, discriminator) {
