@@ -44,7 +44,11 @@ export class RequestValidator {
     this.apiDoc = apiDoc;
     this.requestOpts.allowUnknownQueryParameters =
       options.allowUnknownQueryParameters;
-    this.ajv = createRequestAjv(apiDoc, { ...options, coerceTypes: true });
+
+    this.ajv = createRequestAjv(
+      apiDoc,
+      !options.coerceTypes ? { ...options, coerceTypes: true } : options,
+    );
     this.ajvBody = createRequestAjv(apiDoc, options);
   }
 
@@ -212,7 +216,7 @@ export class RequestValidator {
           // NOOP
         }
       }
-    })
+    });
     return null;
   }
 
