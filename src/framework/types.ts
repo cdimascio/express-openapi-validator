@@ -558,7 +558,7 @@ export interface ValidationError {
 export interface ValidationErrorItem {
   path: string;
   message: string;
-  error_code?: string;
+  errorCode?: string;
 }
 
 interface ErrorHeaders {
