@@ -208,6 +208,9 @@ export class SchemaPreprocessor {
           const child = new Node(node, cschema, path);
           recurse(node, child, opts);
         });
+      } else if (schema.additionalProperties) {
+        const child = new Node(node, schema.additionalProperties, [...node.path, 'additionalProperties']);
+        recurse(node, child, opts);
       }
     };
 
