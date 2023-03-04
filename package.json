@@ -36,7 +36,7 @@
     "ajv": "^8.6.2",
     "ajv-draft-04": "^1.0.0",
     "ajv-formats": "^2.1.1",
-    "content-type": "^1.0.4",
+    "content-type": "^1.0.5",
     "json-schema-ref-parser": "^9.0.9",
     "lodash.clonedeep": "^4.5.0",
     "lodash.get": "^4.4.2",
