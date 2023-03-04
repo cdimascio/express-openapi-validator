@@ -1,5 +1,28 @@
+## <small>5.0.3 (2023-03-04)</small>
+
+* chore(deps): bump cookiejar from 2.1.2 to 2.1.4 in /examples/9-nestjs (#805) ([07d9879](https://github.com/cdimascio/express-openapi-validator/commit/07d9879)), closes [#805](https://github.com/cdimascio/express-openapi-validator/issues/805)
+* chore(deps): bump cookiejar from 2.1.3 to 2.1.4 (#806) ([0da34f8](https://github.com/cdimascio/express-openapi-validator/commit/0da34f8)), closes [#806](https://github.com/cdimascio/express-openapi-validator/issues/806)
+* chore(deps): bump http-cache-semantics (#811) ([7a779f6](https://github.com/cdimascio/express-openapi-validator/commit/7a779f6)), closes [#811](https://github.com/cdimascio/express-openapi-validator/issues/811)
+* chore(deps): bump http-cache-semantics (#813) ([336683d](https://github.com/cdimascio/express-openapi-validator/commit/336683d)), closes [#813](https://github.com/cdimascio/express-openapi-validator/issues/813)
+* chore(deps): bump http-cache-semantics (#814) ([3721092](https://github.com/cdimascio/express-openapi-validator/commit/3721092)), closes [#814](https://github.com/cdimascio/express-openapi-validator/issues/814)
+* chore(deps): bump http-cache-semantics (#816) ([466e337](https://github.com/cdimascio/express-openapi-validator/commit/466e337)), closes [#816](https://github.com/cdimascio/express-openapi-validator/issues/816)
+* chore(deps): bump http-cache-semantics (#817) ([582b395](https://github.com/cdimascio/express-openapi-validator/commit/582b395)), closes [#817](https://github.com/cdimascio/express-openapi-validator/issues/817)
+* chore(deps): bump http-cache-semantics in /examples/1-standard (#810) ([e6ef9d3](https://github.com/cdimascio/express-openapi-validator/commit/e6ef9d3)), closes [#810](https://github.com/cdimascio/express-openapi-validator/issues/810)
+* chore(deps): bump http-cache-semantics in /examples/3-eov-operations (#812) ([fd04b5e](https://github.com/cdimascio/express-openapi-validator/commit/fd04b5e)), closes [#812](https://github.com/cdimascio/express-openapi-validator/issues/812)
+* chore(deps): bump http-cache-semantics in /examples/6-multi-file-spec (#815) ([b2704b0](https://github.com/cdimascio/express-openapi-validator/commit/b2704b0)), closes [#815](https://github.com/cdimascio/express-openapi-validator/issues/815)
+* chore(deps): bump json5 from 1.0.1 to 1.0.2 in /examples/9-nestjs (#801) ([30defdc](https://github.com/cdimascio/express-openapi-validator/commit/30defdc)), closes [#801](https://github.com/cdimascio/express-openapi-validator/issues/801)
+* chore(deps): bump json5 in /examples/4-eov-operations-babel (#799) ([a100192](https://github.com/cdimascio/express-openapi-validator/commit/a100192)), closes [#799](https://github.com/cdimascio/express-openapi-validator/issues/799)
+* fix: upgrade ajv from 8.11.0 to 8.11.2 (#797) ([e774d4b](https://github.com/cdimascio/express-openapi-validator/commit/e774d4b)), closes [#797](https://github.com/cdimascio/express-openapi-validator/issues/797)
+* fix: upgrade body-parser from 1.19.0 to 1.20.1 (#798) ([87a2000](https://github.com/cdimascio/express-openapi-validator/commit/87a2000)), closes [#798](https://github.com/cdimascio/express-openapi-validator/issues/798)
+* fix: upgrade content-type from 1.0.4 to 1.0.5 (#818) ([541d5f9](https://github.com/cdimascio/express-openapi-validator/commit/541d5f9)), closes [#818](https://github.com/cdimascio/express-openapi-validator/issues/818)
+* FIx serialization/deserialization in additionalProperties (#822) ([a9067b8](https://github.com/cdimascio/express-openapi-validator/commit/a9067b8)), closes [#822](https://github.com/cdimascio/express-openapi-validator/issues/822)
+* Rename field `error_code` to `errorCode` in `ValidationErrorItem` (#819) ([1a1b2cc](https://github.com/cdimascio/express-openapi-validator/commit/1a1b2cc)), closes [#819](https://github.com/cdimascio/express-openapi-validator/issues/819)
+
+
+
 ## <small>5.0.2 (2023-02-11)</small>
 
+* v5.0.2 ([3b0e70c](https://github.com/cdimascio/express-openapi-validator/commit/3b0e70c))
 * v5.0.2 ([24ad64f](https://github.com/cdimascio/express-openapi-validator/commit/24ad64f))
 * fix: objects in form-data (#730) ([e5cb5d6](https://github.com/cdimascio/express-openapi-validator/commit/e5cb5d6)), closes [#730](https://github.com/cdimascio/express-openapi-validator/issues/730)
 
