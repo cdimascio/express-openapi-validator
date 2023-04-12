@@ -114,6 +114,7 @@ export interface OpenApiValidatorOpts {
   validateResponses?: boolean | ValidateResponseOpts;
   validateRequests?: boolean | ValidateRequestOpts;
   validateSecurity?: boolean | ValidateSecurityOpts;
+  lazyLoadApiSpec?: boolean;
   ignorePaths?: RegExp | Function;
   ignoreUndocumented?: boolean;
   securityHandlers?: SecurityHandlers;

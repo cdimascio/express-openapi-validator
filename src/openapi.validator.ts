@@ -5,7 +5,7 @@ import * as _uniq from 'lodash.uniq';
 import * as middlewares from './middlewares';
 import { Application, Response, NextFunction, Router } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
-import { Spec } from './framework/openapi.spec.loader';
+import { OpenApiSpecLoader, Spec } from './framework/openapi.spec.loader';
 import {
   NormalizedOpenApiValidatorOpts,
   OpenApiValidatorOpts,
@@ -22,6 +22,7 @@ import { OperationHandlerOptions } from './framework/types';
 import { defaultSerDes } from './framework/base.serdes';
 import { SchemaPreprocessor } from './middlewares/parsers/schema.preprocessor';
 import { AjvOptions } from './framework/ajv/options';
+import { createContext } from 'vm';
 
 export {
   OpenApiValidatorOpts,
@@ -90,9 +91,8 @@ export class OpenApiValidator {
     this.ajvOpts = new AjvOptions(this.options);
   }
 
-  installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
-    const middlewares: OpenApiRequestHandler[] = [];
-    const pContext = spec
+  private createContext(spec: Promise<Spec>) {
+    return spec
       .then((spec) => {
         const apiDoc = spec.apiDoc;
         const ajvOpts = this.ajvOpts.preprocessor;
@@ -115,12 +115,25 @@ export class OpenApiValidator {
           error: e,
         };
       });
+  }
+
+  installMiddleware(
+    spec: OpenApiSpecLoader,
+    options: { lazyLoad: boolean },
+  ): OpenApiRequestHandler[] {
+    const middlewares: OpenApiRequestHandler[] = [];
+    let cache = options.lazyLoad ? null : this.createContext(spec.load());
+    const pContext = () => {
+      if (cache) return cache;
+      cache = this.createContext(spec.load());
+      return cache;
+    };
 
     const self = this; // using named functions instead of anonymous functions to allow traces to be more useful
     let inited = false;
     // install path params
     middlewares.push(function pathParamsMiddleware(req, res, next) {
-      return pContext
+      return pContext()
         .then(({ context, error }) => {
           // Throw if any error occurred during spec load.
           if (error) throw error;
@@ -141,7 +154,7 @@ export class OpenApiValidator {
     // metadata middleware
     let metamw;
     middlewares.push(function metadataMiddleware(req, res, next) {
-      return pContext
+      return pContext()
         .then(({ context, responseApiDoc }) => {
           metamw = metamw || self.metadataMiddleware(context, responseApiDoc);
           return metamw(req, res, next);
@@ -153,7 +166,7 @@ export class OpenApiValidator {
       // multipart middleware
       let fumw;
       middlewares.push(function multipartMiddleware(req, res, next) {
-        return pContext
+        return pContext()
           .then(({ context: { apiDoc } }) => {
             fumw = fumw || self.multipartMiddleware(apiDoc);
             return fumw(req, res, next);
@@ -165,7 +178,7 @@ export class OpenApiValidator {
     // security middlware
     let scmw;
     middlewares.push(function securityMiddleware(req, res, next) {
-      return pContext
+      return pContext()
         .then(({ context: { apiDoc } }) => {
           const components = apiDoc.components;
           if (self.options.validateSecurity && components?.securitySchemes) {
@@ -182,7 +195,7 @@ export class OpenApiValidator {
     if (this.options.validateRequests) {
       let reqmw;
       middlewares.push(function requestMiddleware(req, res, next) {
-        return pContext
+        return pContext()
           .then(({ context: { apiDoc } }) => {
             reqmw = reqmw || self.requestValidationMiddleware(apiDoc);
             return reqmw(req, res, next);
@@ -195,7 +208,7 @@ export class OpenApiValidator {
     if (this.options.validateResponses) {
       let resmw;
       middlewares.push(function responseMiddleware(req, res, next) {
-        return pContext
+        return pContext()
           .then(({ responseApiDoc }) => {
             resmw = resmw || self.responseValidationMiddleware(responseApiDoc);
             return resmw(req, res, next);
@@ -209,7 +222,7 @@ export class OpenApiValidator {
       let router: Router = null;
       middlewares.push(function operationHandlersMiddleware(req, res, next) {
         if (router) return router(req, res, next);
-        return pContext
+        return pContext()
           .then(
             ({ context }) =>
               (router = self.installOperationHandlers(req.baseUrl, context)),

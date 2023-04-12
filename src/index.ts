@@ -40,6 +40,7 @@ function openapiValidator(options: OpenApiValidatorOpts) {
       apiDoc: cloneDeep(options.apiSpec),
       validateApiSpec: options.validateApiSpec,
       $refParser: options.$refParser,
-    }).load(),
+    }),
+    { lazyLoad: options.lazyLoadApiSpec },
   );
 }
