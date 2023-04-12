@@ -90,9 +90,8 @@ export class OpenApiValidator {
     this.ajvOpts = new AjvOptions(this.options);
   }
 
-  installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
-    const middlewares: OpenApiRequestHandler[] = [];
-    const pContext = spec
+  private createContext(spec: Promise<Spec>) {
+    return spec
       .then((spec) => {
         const apiDoc = spec.apiDoc;
         const ajvOpts = this.ajvOpts.preprocessor;
@@ -115,6 +114,11 @@ export class OpenApiValidator {
           error: e,
         };
       });
+  }
+
+  installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
+    const middlewares: OpenApiRequestHandler[] = [];
+    const pContext = this.createContext(spec);
 
     const self = this; // using named functions instead of anonymous functions to allow traces to be more useful
     let inited = false;
