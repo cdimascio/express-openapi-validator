@@ -41,5 +41,6 @@ function openapiValidator(options: OpenApiValidatorOpts) {
       validateApiSpec: options.validateApiSpec,
       $refParser: options.$refParser,
     }),
+    { lazyLoad: options.lazyLoadApiSpec },
   );
 }

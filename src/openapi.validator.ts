@@ -117,9 +117,12 @@ export class OpenApiValidator {
       });
   }
 
-  installMiddleware(spec: OpenApiSpecLoader): OpenApiRequestHandler[] {
+  installMiddleware(
+    spec: OpenApiSpecLoader,
+    options: { lazyLoad: boolean },
+  ): OpenApiRequestHandler[] {
     const middlewares: OpenApiRequestHandler[] = [];
-    let cache: null | ReturnType<typeof this.createContext> = null;
+    let cache = options.lazyLoad ? null : this.createContext(spec.load());
     const pContext = () => {
       if (cache) return cache;
       cache = this.createContext(spec.load());
