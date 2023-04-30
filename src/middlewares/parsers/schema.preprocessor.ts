@@ -23,6 +23,7 @@ interface TraversalState {
 
 interface TopLevelPathNodes {
   requestBodies: Root<SchemaObject>[];
+  requestParameters: Root<SchemaObject>[];
   responses: Root<SchemaObject>[];
 }
 interface TopLevelSchemaNodes extends TopLevelPathNodes {
@@ -43,14 +44,31 @@ class Node<T, P> {
 }
 type SchemaObjectNode = Node<SchemaObject, SchemaObject>;
 
+function isParameterObject(node: ParameterObject | ReferenceObject): node is ParameterObject {
+  return !((node as ReferenceObject).$ref);
+}
+function isReferenceObject(node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject): node is ReferenceObject {
+  return !!((node as ReferenceObject).$ref);
+}
+function isArraySchemaObject(node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject): node is ArraySchemaObject {
+  return !!((node as ArraySchemaObject).items);
+}
+function isNonArraySchemaObject(node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject): node is NonArraySchemaObject {
+  return !isArraySchemaObject(node) && !isReferenceObject(node);
+}
+
 class Root<T> extends Node<T, T> {
   constructor(schema: T, path: string[]) {
     super(null, schema, path);
   }
 }
 
-type SchemaObject = OpenAPIV3.SchemaObject;
+type ArraySchemaObject = OpenAPIV3.ArraySchemaObject;
+type NonArraySchemaObject = OpenAPIV3.NonArraySchemaObject;
+type OperationObject = OpenAPIV3.OperationObject;
+type ParameterObject = OpenAPIV3.ParameterObject;
 type ReferenceObject = OpenAPIV3.ReferenceObject;
+type SchemaObject = OpenAPIV3.SchemaObject;
 type Schema = ReferenceObject | SchemaObject;
 
 if (!Array.prototype['flatMap']) {
@@ -99,6 +117,7 @@ export class SchemaPreprocessor {
       schemas: componentSchemas,
       requestBodies: r.requestBodies,
       responses: r.responses,
+      requestParameters: r.requestParameters,
     };
 
     // Traverse the schemas
@@ -127,6 +146,7 @@ export class SchemaPreprocessor {
 
   private gatherSchemaNodesFromPaths(): TopLevelPathNodes {
     const requestBodySchemas = [];
+    const requestParameterSchemas = [];
     const responseSchemas = [];
 
     for (const [p, pi] of Object.entries(this.apiDoc.paths)) {
@@ -140,14 +160,18 @@ export class SchemaPreprocessor {
           const node = new Root<OpenAPIV3.OperationObject>(operation, path);
           const requestBodies = this.extractRequestBodySchemaNodes(node);
           const responseBodies = this.extractResponseSchemaNodes(node);
+          const requestParameters = this.extractRequestParameterSchemaNodes(node);
 
           requestBodySchemas.push(...requestBodies);
           responseSchemas.push(...responseBodies);
+          requestParameterSchemas.push(...requestParameters);
         }
       }
     }
+
     return {
       requestBodies: requestBodySchemas,
+      requestParameters: requestParameterSchemas,
       responses: responseSchemas,
     };
   }
@@ -228,6 +252,10 @@ export class SchemaPreprocessor {
     }
 
     for (const node of nodes.responses) {
+      recurse(null, node, initOpts());
+    }
+
+    for (const node of nodes.requestParameters) {
       recurse(null, node, initOpts());
     }
   }
@@ -505,6 +533,28 @@ export class SchemaPreprocessor {
     return schemas;
   }
 
+  private extractRequestParameterSchemaNodes(
+    operationNode: Root<OperationObject>,
+  ): Root<SchemaObject>[] {
+
+    return (operationNode.schema.parameters ?? []).flatMap((node) => {
+      const parameterObject = isParameterObject(node) ? node : undefined;
+      if (!parameterObject?.schema) return [];
+
+      const schema = isNonArraySchemaObject(parameterObject.schema) ?
+        parameterObject.schema :
+        undefined;
+      if (!schema) return [];
+
+      return new Root(schema, [
+        ...operationNode.path,
+        'parameters',
+        parameterObject.name,
+        parameterObject.in
+      ]);
+    });
+  }
+
   private resolveSchema<T>(schema): T {
     if (!schema) return null;
     const ref = schema?.['$ref'];
@@ -541,7 +591,7 @@ export class SchemaPreprocessor {
     ) =>
       // if name or ref exists and are equal
       (opParam['name'] && opParam['name'] === pathParam['name']) ||
-      (opParam['$ref'] && opParam['$ref'] === pathParam['$ref']);
+        (opParam['$ref'] && opParam['$ref'] === pathParam['$ref']);
 
     // Add Path level query param to list ONLY if there is not already an operation-level query param by the same name.
     for (const param of parameters) {
