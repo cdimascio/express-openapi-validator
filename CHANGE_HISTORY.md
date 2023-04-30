@@ -1,5 +1,15 @@
+## <small>5.0.4 (2023-04-30)</small>
+
+* fix: Deserialize custom types with inline schemas (#823) ([d53621d](https://github.com/cdimascio/express-openapi-validator/commit/d53621d)), closes [#823](https://github.com/cdimascio/express-openapi-validator/issues/823)
+* Switch json-schema-ref-parser to non-deprecated package (#829) ([f5bbce9](https://github.com/cdimascio/express-openapi-validator/commit/f5bbce9)), closes [#829](https://github.com/cdimascio/express-openapi-validator/issues/829)
+
+
+
 ## <small>5.0.3 (2023-03-04)</small>
 
+* FIx serialization/deserialization in additionalProperties (#822) ([a9067b8](https://github.com/cdimascio/express-openapi-validator/commit/a9067b8)), closes [#822](https://github.com/cdimascio/express-openapi-validator/issues/822)
+* Rename field `error_code` to `errorCode` in `ValidationErrorItem` (#819) ([1a1b2cc](https://github.com/cdimascio/express-openapi-validator/commit/1a1b2cc)), closes [#819](https://github.com/cdimascio/express-openapi-validator/issues/819)
+* v5.0.3 ([6e93a96](https://github.com/cdimascio/express-openapi-validator/commit/6e93a96))
 * chore(deps): bump cookiejar from 2.1.2 to 2.1.4 in /examples/9-nestjs (#805) ([07d9879](https://github.com/cdimascio/express-openapi-validator/commit/07d9879)), closes [#805](https://github.com/cdimascio/express-openapi-validator/issues/805)
 * chore(deps): bump cookiejar from 2.1.3 to 2.1.4 (#806) ([0da34f8](https://github.com/cdimascio/express-openapi-validator/commit/0da34f8)), closes [#806](https://github.com/cdimascio/express-openapi-validator/issues/806)
 * chore(deps): bump http-cache-semantics (#811) ([7a779f6](https://github.com/cdimascio/express-openapi-validator/commit/7a779f6)), closes [#811](https://github.com/cdimascio/express-openapi-validator/issues/811)
@@ -15,8 +25,6 @@
 * fix: upgrade ajv from 8.11.0 to 8.11.2 (#797) ([e774d4b](https://github.com/cdimascio/express-openapi-validator/commit/e774d4b)), closes [#797](https://github.com/cdimascio/express-openapi-validator/issues/797)
 * fix: upgrade body-parser from 1.19.0 to 1.20.1 (#798) ([87a2000](https://github.com/cdimascio/express-openapi-validator/commit/87a2000)), closes [#798](https://github.com/cdimascio/express-openapi-validator/issues/798)
 * fix: upgrade content-type from 1.0.4 to 1.0.5 (#818) ([541d5f9](https://github.com/cdimascio/express-openapi-validator/commit/541d5f9)), closes [#818](https://github.com/cdimascio/express-openapi-validator/issues/818)
-* FIx serialization/deserialization in additionalProperties (#822) ([a9067b8](https://github.com/cdimascio/express-openapi-validator/commit/a9067b8)), closes [#822](https://github.com/cdimascio/express-openapi-validator/issues/822)
-* Rename field `error_code` to `errorCode` in `ValidationErrorItem` (#819) ([1a1b2cc](https://github.com/cdimascio/express-openapi-validator/commit/1a1b2cc)), closes [#819](https://github.com/cdimascio/express-openapi-validator/issues/819)
 
 
 
