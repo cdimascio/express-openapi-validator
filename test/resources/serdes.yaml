@@ -13,6 +13,17 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/ObjectId"
+        - name: date-time-from-inline
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: date-time-from-schema
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/DateTime"
         - name: baddateresponse
           in: query
           schema:
@@ -29,21 +40,51 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                allOf:
+                  - $ref: "#/components/schemas/User"
+                  - type: object
+                    properties:
+                      summary:
+                        type: object
+                        additionalProperties:
+                          type: object
+                          properties:
+                            value:
+                              type: string
+                            typeof:
+                              type: string
   /users:
     post:
       requestBody:
         content :
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              allOf:
+                - $ref: '#/components/schemas/User'
+                - type: object
+                  properties:
+                    creationDateTimeInline:
+                      type: string
+                      format: date-time
       responses:
         200:
           description: ""
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                allOf:
+                  - $ref: "#/components/schemas/User"
+                  - type: object
+                    properties:
+                      summary:
+                        type: object
+                        additionalProperties:
+                          type: object
+                          properties:
+                            value:
+                              type: string
+                            typeof:
+                              type: string
 components:
   schemas:
     ObjectId:
