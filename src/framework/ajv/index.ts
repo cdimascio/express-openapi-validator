@@ -88,7 +88,7 @@ function createAjv(
                   keyword: 'serdes',
                   instancePath: ctx.instancePath,
                   schemaPath: it.schemaPath.str,
-                  message: `format is invalid`,
+                  message: e.message || `format is invalid`,
                   params: { 'x-eov-req-serdes': ctx.parentDataProperty },
                 },
               ];
