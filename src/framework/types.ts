@@ -118,6 +118,7 @@ export interface OpenApiValidatorOpts {
   ignoreUndocumented?: boolean;
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
+  useRequestUrl?: boolean;
   /**
    * @deprecated
    * Use `formats` + `validateFormats` to ignore specified formats

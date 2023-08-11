@@ -11,16 +11,23 @@ export class OpenApiContext {
   public readonly openApiRouteMap = {};
   public readonly routes: RouteMetadata[] = [];
   public readonly ignoreUndocumented: boolean;
+  public readonly useRequestUrl: boolean;
   private readonly basePaths: string[];
   private readonly ignorePaths: RegExp | Function;
 
-  constructor(spec: Spec, ignorePaths: RegExp | Function, ignoreUndocumented: boolean = false) {
+  constructor(
+    spec: Spec,
+    ignorePaths: RegExp | Function,
+    ignoreUndocumented: boolean = false,
+    useRequestUrl = false,
+  ) {
     this.apiDoc = spec.apiDoc;
     this.basePaths = spec.basePaths;
     this.routes = spec.routes;
     this.ignorePaths = ignorePaths;
     this.ignoreUndocumented = ignoreUndocumented;
     this.buildRouteMaps(spec.routes);
+    this.useRequestUrl = useRequestUrl;
   }
 
   public isManagedRoute(path: string): boolean {

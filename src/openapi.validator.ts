@@ -49,6 +49,7 @@ export class OpenApiValidator {
     if (options.$refParser == null) options.$refParser = { mode: 'bundle' };
     if (options.validateFormats == null) options.validateFormats = true;
     if (options.formats == null) options.formats = {};
+    if (options.useRequestUrl == null) options.useRequestUrl = false;
 
     if (typeof options.operationHandlers === 'string') {
       /**
@@ -103,7 +104,12 @@ export class OpenApiValidator {
           resOpts,
         ).preProcess();
         return {
-          context: new OpenApiContext(spec, this.options.ignorePaths, this.options.ignoreUndocumented),
+          context: new OpenApiContext(
+            spec,
+            this.options.ignorePaths,
+            this.options.ignoreUndocumented,
+            this.options.useRequestUrl,
+          ),
           responseApiDoc: sp.apiDocRes,
           error: null,
         };
@@ -201,7 +207,7 @@ export class OpenApiValidator {
             return resmw(req, res, next);
           })
           .catch(next);
-      })
+      });
     }
 
     // op handler middleware
