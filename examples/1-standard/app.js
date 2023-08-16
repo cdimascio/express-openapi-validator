@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const bodyParser = require('body-parser');
 const http = require('http');
 const { Pets } = require('./services');
 const OpenApiValidator = require('express-openapi-validator');
