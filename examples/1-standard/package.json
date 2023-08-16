@@ -12,7 +12,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.20.1",
     "express-openapi-validator": "4.13.2"
   },
   "devDependencies": {
