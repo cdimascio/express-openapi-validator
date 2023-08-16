@@ -35,7 +35,7 @@ export function defaultResolver(
       tmpModules[modulePath] = require(modulePath);
     }
 
-    const handler = tmpModules[modulePath][oId] || tmpModules[modulePath].default;
+    const handler = tmpModules[modulePath][oId] || tmpModules[modulePath].default[oId] || tmpModules[modulePath].default;
 
     if (!handler) {
       throw Error(
