@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const bodyParser = require('body-parser');
 const http = require('http');
 const OpenApiValidator = require('express-openapi-validator');
 
@@ -9,9 +8,9 @@ const app = express();
 const apiSpec = path.join(__dirname, 'api.yaml');
 
 // 1. Install bodyParsers for the request types your API will support
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.text());
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.text());
+app.use(express.json());
 
 // Optionally serve the API spec
 app.use('/spec', express.static(apiSpec));
