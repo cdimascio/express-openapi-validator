@@ -149,19 +149,6 @@ export class OpenApiValidator {
         .catch(next);
     });
 
-    if (this.options.fileUploader) {
-      // multipart middleware
-      let fumw;
-      middlewares.push(function multipartMiddleware(req, res, next) {
-        return pContext
-          .then(({ context: { apiDoc } }) => {
-            fumw = fumw || self.multipartMiddleware(apiDoc);
-            return fumw(req, res, next);
-          })
-          .catch(next);
-      });
-    }
-
     // security middlware
     let scmw;
     middlewares.push(function securityMiddleware(req, res, next) {
@@ -177,6 +164,19 @@ export class OpenApiValidator {
         })
         .catch(next);
     });
+
+    if (this.options.fileUploader) {
+      // multipart middleware
+      let fumw;
+      middlewares.push(function multipartMiddleware(req, res, next) {
+        return pContext
+          .then(({ context: { apiDoc } }) => {
+            fumw = fumw || self.multipartMiddleware(apiDoc);
+            return fumw(req, res, next);
+          })
+          .catch(next);
+      });
+    }
 
     // request middlweare
     if (this.options.validateRequests) {
