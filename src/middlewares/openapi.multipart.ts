@@ -127,6 +127,8 @@ function error(req: OpenApiRequest, err: Error): ValidationError {
       : !unexpected
       ? new BadRequest({ path: req.path, message: err.message })
       : new InternalServerError({ path: req.path, message: err.message });*/
+  } else if (err instanceof HttpError) {
+    return err;
   } else {
     // HACK
     // TODO improve multer error handling
