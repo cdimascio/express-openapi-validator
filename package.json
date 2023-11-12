@@ -1,6 +1,6 @@
 {
   "name": "express-openapi-validator",
-  "version": "5.0.5",
+  "version": "5.1.0",
   "description": "Automatically validate API requests and responses with OpenAPI 3 and Express.",
   "main": "dist/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "test:coverage": "nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
     "test:reset": "rimraf node_modules && npm i && npm run compile && npm t",
     "coveralls": "cat coverage/lcov.info | coveralls -v",
-    "codacy": "cat coverage/lcov.info | codacy-coverage",
+    "codacy": "bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage/lcov.info",
     "commit": "cz"
   },
   "repository": {
@@ -58,14 +58,13 @@
     "@types/supertest": "^2.0.11",
     "body-parser": "^1.19.2",
     "chai": "^4.3.6",
-    "codacy-coverage": "^3.4.0",
     "commitizen": "^4.2.5",
     "cookie-parser": "^1.4.6",
     "coveralls": "^3.1.1",
     "express": "^4.17.3",
     "mocha": "^9.2.2",
     "morgan": "^1.10.0",
-    "nodemon": "^2.0.20",
+    "nodemon": "^3.0.1",
     "nyc": "^15.1.0",
     "prettier": "^2.5.1",
     "rimraf": "^5.0.5",
