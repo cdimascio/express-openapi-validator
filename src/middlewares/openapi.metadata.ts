@@ -25,12 +25,12 @@ export function applyOpenApiMetadata(
     if (openApiContext.shouldIgnoreRoute(path)) {
       return next();
     }
-    const matched = lookupRoute(req);
+    const matched = lookupRoute(req, openApiContext.useRequestUrl);
     if (matched) {
       const { expressRoute, openApiRoute, pathParams, schema } = matched;
       if (!schema) {
         // Prevents validation for routes which match on path but mismatch on method
-        if(openApiContext.ignoreUndocumented) {
+        if (openApiContext.ignoreUndocumented) {
           return next();
         }
         throw new MethodNotAllowed({
@@ -54,7 +54,10 @@ export function applyOpenApiMetadata(
         // add the response schema if validating responses
         (<any>req.openapi)._responseSchema = (<any>matched)._responseSchema;
       }
-    } else if (openApiContext.isManagedRoute(path) && !openApiContext.ignoreUndocumented) {
+    } else if (
+      openApiContext.isManagedRoute(path) &&
+      !openApiContext.ignoreUndocumented
+    ) {
       throw new NotFound({
         path: req.path,
         message: 'not found',
@@ -63,8 +66,11 @@ export function applyOpenApiMetadata(
     next();
   };
 
-  function lookupRoute(req: OpenApiRequest): OpenApiRequestMetadata {
-    const path = req.originalUrl.split('?')[0];
+  function lookupRoute(
+    req: OpenApiRequest,
+    useRequestUrl: boolean,
+  ): OpenApiRequestMetadata {
+    const path = useRequestUrl ? req.url : req.originalUrl.split('?')[0];
     const method = req.method;
     const routeEntries = Object.entries(openApiContext.expressRouteMap);
     for (const [expressRoute, methods] of routeEntries) {
