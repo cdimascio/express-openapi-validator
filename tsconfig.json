@@ -10,6 +10,9 @@
     "resolveJsonModule": true,
     "typeRoots": ["./node_modules/@types", "./typings"]
   },
+  "ts-node": {
+    "files": true
+  },
   "exclude": ["node_modules"],
   "include": [
     "typings/**/*.d.ts",

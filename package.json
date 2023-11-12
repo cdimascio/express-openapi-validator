@@ -4,21 +4,22 @@
   "description": "Automatically validate API requests and responses with OpenAPI 3 and Express.",
   "main": "dist/index.js",
   "scripts": {
-    "compile": "rm -rf dist/ && tsc",
-    "compile:windows": "rmdir dist /s /q & tsc",
-    "test": "TS_NODE_FILES=true mocha -r source-map-support/register -r ts-node/register  --files --recursive -R spec test/**/*.spec.ts",
-    "test:debug": "TS_NODE_FILES=true mocha -r source-map-support/register -r ts-node/register --inspect-brk --files --recursive test/**/*.spec.ts",
-    "test:windows": "set TS_NODE_FILES=true & mocha -r source-map-support/register -r ts-node/register  --files --recursive test/**/*.spec.ts",
-    "test:coverage": "TS_NODE_FILES=true nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
-    "test:coverage:windows": "set TS_NODE_FILES=true & nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
+    "compile": "rimraf dist && tsc",
+    "compile:release": "rimraf dist && tsc --sourceMap false",
+    "test": "mocha -r source-map-support/register -r ts-node/register --files --recursive -R spec test/**/*.spec.ts",
+    "test:debug": "mocha -r source-map-support/register -r ts-node/register --inspect-brk --files --recursive test/**/*.spec.ts",
+    "test:coverage": "nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
+    "test:reset": "rimraf node_modules && npm i && npm run compile && npm t",
     "coveralls": "cat coverage/lcov.info | coveralls -v",
     "codacy": "cat coverage/lcov.info | codacy-coverage",
-    "test:reset": "rm -rf node_modules && npm i && npm run compile && npm t",
     "commit": "cz"
   },
   "repository": {
     "url": "https://github.com/cdimascio/express-openapi-validator"
   },
+  "files": [
+    "/dist"
+  ],
   "keywords": [
     "openapi",
     "openapi 3",
@@ -67,6 +68,7 @@
     "nodemon": "^2.0.20",
     "nyc": "^15.1.0",
     "prettier": "^2.5.1",
+    "rimraf": "^5.0.5",
     "source-map-support": "0.5.21",
     "supertest": "^6.2.2",
     "ts-node": "^10.7.0",
