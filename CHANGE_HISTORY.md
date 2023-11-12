@@ -1,3 +1,13 @@
+## 5.1.0 (2023-11-12)
+
+* Allow optional use of `req.url` (#857) ([f732379](https://github.com/cdimascio/express-openapi-validator/commit/f732379)), closes [#857](https://github.com/cdimascio/express-openapi-validator/issues/857)
+* Reorder upload and security middlewares (#866) ([95543d6](https://github.com/cdimascio/express-openapi-validator/commit/95543d6)), closes [#866](https://github.com/cdimascio/express-openapi-validator/issues/866) [#865](https://github.com/cdimascio/express-openapi-validator/issues/865)
+* Update build and packaging scripts (#872) ([dd4027f](https://github.com/cdimascio/express-openapi-validator/commit/dd4027f)), closes [#872](https://github.com/cdimascio/express-openapi-validator/issues/872)
+* update version locks ([bb8d6b8](https://github.com/cdimascio/express-openapi-validator/commit/bb8d6b8))
+* v5.1.0 ([839f859](https://github.com/cdimascio/express-openapi-validator/commit/839f859))
+
+
+
 ## <small>5.0.5 (2023-08-23)</small>
 
 * #841 return error thrown in serDes deserializer (#842) ([d029401](https://github.com/cdimascio/express-openapi-validator/commit/d029401)), closes [#841](https://github.com/cdimascio/express-openapi-validator/issues/841) [#842](https://github.com/cdimascio/express-openapi-validator/issues/842)
@@ -7,6 +17,7 @@
 * Remove body-parser deps in example (#845) ([c73b7c1](https://github.com/cdimascio/express-openapi-validator/commit/c73b7c1)), closes [#845](https://github.com/cdimascio/express-openapi-validator/issues/845)
 * Remove examples from apiDoc when validating requests (#774) ([950d429](https://github.com/cdimascio/express-openapi-validator/commit/950d429)), closes [#774](https://github.com/cdimascio/express-openapi-validator/issues/774)
 * Resolve "reference resolves to more than one schema" errors when AJV processes OpenAPI document and  ([9d215be](https://github.com/cdimascio/express-openapi-validator/commit/9d215be)), closes [#853](https://github.com/cdimascio/express-openapi-validator/issues/853)
+* v5.0.5 change history ([b5cc33a](https://github.com/cdimascio/express-openapi-validator/commit/b5cc33a))
 
 
 
@@ -119,16 +130,6 @@
 ## <small>4.13.6 (2022-03-13)</small>
 
 * v4.13.6 ([0deb38f](https://github.com/cdimascio/express-openapi-validator/commit/0deb38f))
-
-
-
-## <small>4.13.5 (2021-12-26)</small>
-
-* fix json syntax in allcontributors file (#676) ([5dc6d22](https://github.com/cdimascio/express-openapi-validator/commit/5dc6d22)), closes [#676](https://github.com/cdimascio/express-openapi-validator/issues/676)
-* Fixes on SerDes (#682) ([56f778b](https://github.com/cdimascio/express-openapi-validator/commit/56f778b)), closes [#682](https://github.com/cdimascio/express-openapi-validator/issues/682) [#601](https://github.com/cdimascio/express-openapi-validator/issues/601) [#569](https://github.com/cdimascio/express-openapi-validator/issues/569)
-* Patch on serdes test and allow to use generated AJV out of Express usage (#684) ([3744cdd](https://github.com/cdimascio/express-openapi-validator/commit/3744cdd)), closes [#684](https://github.com/cdimascio/express-openapi-validator/issues/684) [#601](https://github.com/cdimascio/express-openapi-validator/issues/601) [#569](https://github.com/cdimascio/express-openapi-validator/issues/569) [#601](https://github.com/cdimascio/express-openapi-validator/issues/601) [#683](https://github.com/cdimascio/express-openapi-validator/issues/683) [#683](https://github.com/cdimascio/express-openapi-validator/issues/683) [#683](https://github.com/cdimascio/express-openapi-validator/issues/683) [#601](https://github.com/cdimascio/express-openapi-validator/issues/601) [#683](https://github.com/cdimascio/express-openapi-validator/issues/683) [#683](https://github.com/cdimascio/express-openapi-validator/issues/683) [#683](https://github.com/cdimascio/express-openapi-validator/issues/683) [#601](https://github.com/cdimascio/express-openapi-validator/issues/601) [#683](https://github.com/cdimascio/express-openapi-validator/issues/683)
-* v4.13.5 ([51f5bfc](https://github.com/cdimascio/express-openapi-validator/commit/51f5bfc))
-* docs: add zzgab as a contributor for code, test (#680) ([3f0de5d](https://github.com/cdimascio/express-openapi-validator/commit/3f0de5d)), closes [#680](https://github.com/cdimascio/express-openapi-validator/issues/680)
 
 
 
