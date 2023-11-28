@@ -206,7 +206,8 @@ export class RequestValidator {
   private multipartNested(req, schemaBody) {
     Object.keys(req.body).forEach((key) => {
       const value = req.body[key];
-      const type = schemaBody?.properties?.body?.properties[key]?.type;
+      // TODO: Add support for oneOf, anyOf, allOf as the body schema
+      const type = schemaBody?.properties?.body?.properties?.[key]?.type;
       if (['array', 'object'].includes(type)) {
         try {
           req.body[key] = JSON.parse(value);
@@ -214,7 +215,7 @@ export class RequestValidator {
           // NOOP
         }
       }
-    })
+    });
     return null;
   }
 
