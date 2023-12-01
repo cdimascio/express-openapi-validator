@@ -31,9 +31,24 @@ export class BodySchemaParser {
     if (!requestBody?.content) return {};
 
     let content = null;
-    for (const type of contentType.equivalents()) {
-      content = requestBody.content[type];
-      if (content) break;
+    let requestBodyTypes = Object.keys(requestBody.content);
+    for (const type of requestBodyTypes) {
+      let openApiContentType = ContentType.fromString(type);
+      if (contentType.normalize() == openApiContentType.normalize()) {
+        content = requestBody.content[type];
+        break;
+      }
+    }
+
+    if (!content) {
+      const equivalentContentTypes = contentType.equivalents();
+      for (const type of requestBodyTypes) {
+        let openApiContentType = ContentType.fromString(type);
+        if (equivalentContentTypes.find((type2) => openApiContentType.normalize() === type2.normalize())) {
+          content = requestBody.content[type];
+          break;
+        }
+      }
     }
 
     if (!content) {
@@ -49,7 +64,7 @@ export class BodySchemaParser {
 
         const [type] = requestContentType.split('/', 1);
 
-        if (new RegExp(`^${type}\/.+$`).test(contentType.contentType)) {
+        if (new RegExp(`^${type}\/.+$`).test(contentType.normalize())) {
           content = requestBody.content[requestContentType];
           break;
         }
@@ -58,14 +73,14 @@ export class BodySchemaParser {
 
     if (!content) {
       // check if required is false, if so allow request when no content type is supplied
-      const contentNotProvided = contentType.contentType === 'not_provided';
-      if ((contentType.contentType === undefined || contentNotProvided) && requestBody.required === false) {
+      const contentNotProvided = contentType.normalize() === 'not_provided';
+      if ((contentType.normalize() === undefined || contentNotProvided) && requestBody.required === false) {
         return {};
       }
       const msg =
         contentNotProvided
           ? 'media type not specified'
-          : `unsupported media type ${contentType.contentType}`;
+          : `unsupported media type ${contentType.normalize()}`;
       throw new UnsupportedMediaType({ path: path, message: msg });
     }
     return content.schema ?? {};

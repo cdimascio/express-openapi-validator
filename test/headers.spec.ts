@@ -70,5 +70,69 @@ describe(packageJson.name, () => {
           tag: 'cat',
         })
         .expect(200));
+
+    it('should succeed in sending a content-type: "application/json; version=1" in multiple ways', async () =>{
+      await request(app)
+        .post(`${app.basePath}/pets_content_types`)
+        .set('Content-Type', 'application/json; version=1')
+        .set('Accept', 'application/json')
+        .send({
+          name: 'myPet',
+          tag: 'cat',
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.contentType).to.equal('application/json; version=1')
+        });
+
+      await request(app)
+        .post(`${app.basePath}/pets_content_types`)
+        .set('Content-Type', 'application/json;version=1')
+        .set('Accept', 'application/json')
+        .send({
+          name: 'myPet',
+          tag: 'cat',
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.contentType).to.equal('application/json;version=1')
+        });
+    });
+        
+    it('should throw a 415 error for unsupported "application/json; version=2" content type', async () =>
+      request(app)
+        .post(`${app.basePath}/pets_content_types`)
+        .set('Content-Type', 'application/json; version=2')
+        .set('Accept', 'application/json')
+        .send({
+          name: 'myPet',
+          tag: 'cat',
+        })
+        .expect(415));
+
+    it('should throw a 415 error for a path/method which has previously succeeded using different request body content types', async () => {
+      await request(app)
+        .post(`${app.basePath}/pets_content_types`)
+        .set('Content-Type', 'application/json;version=1')
+        .set('Accept', 'application/json')
+        .send({
+          name: 'myPet',
+          tag: 'cat',
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.contentType).to.equal('application/json;version=1')
+        });
+      
+      await request(app)
+        .post(`${app.basePath}/pets_content_types`)
+        .set('Content-Type', 'application/json; version=3')
+        .set('Accept', 'application/json')
+        .send({
+          name: 'myPet',
+          tag: 'cat',
+        })
+        .expect(415);
+    });
   });
 });
