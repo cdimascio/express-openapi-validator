@@ -99,10 +99,7 @@ export class ResponseValidator {
   ): { [key: string]: ValidateFunction } {
     // get the request content type - used only to build the cache key
     const contentTypeMeta = ContentType.from(req);
-    const contentType =
-      (contentTypeMeta.contentType?.indexOf('multipart') > -1
-        ? contentTypeMeta.equivalents()[0]
-        : contentTypeMeta.contentType) ?? 'not_provided';
+    const contentType = contentTypeMeta.normalize() ?? 'not_provided';
 
     const openapi = <OpenApiRequestMetadata>req.openapi;
     const key = `${req.method}-${openapi.expressRoute}-${contentType}`;

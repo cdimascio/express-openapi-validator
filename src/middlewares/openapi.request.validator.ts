@@ -67,7 +67,7 @@ export class RequestValidator {
     const reqSchema = openapi.schema;
     // cache middleware by combining method, path, and contentType
     const contentType = ContentType.from(req);
-    const contentTypeKey = contentType.equivalents()[0] ?? 'not_provided';
+    const contentTypeKey = contentType.normalize() ?? 'not_provided';
     // use openapi.expressRoute as path portion of key
     const key = `${req.method}-${path}-${contentTypeKey}`;
 
