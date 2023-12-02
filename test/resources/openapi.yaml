@@ -362,6 +362,30 @@ paths:
             application/json; charset=utf-8:
               schema:
                 $ref: '#/components/schemas/Error'
+  /pets_content_types:
+    post:
+      description: Creates a new pet in the store.  Duplicates are allowed
+      operationId: addPet
+      requestBody:
+        description: Pet to add to the store
+        required: true
+        content:
+          application/json; version=1:
+            schema:
+              $ref: '#/components/schemas/NewPet'
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+        default:
+          description: unexpected error
+          content:
+            application/json; charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/Error'
 
 components:
   parameters:
