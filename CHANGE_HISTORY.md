@@ -1,3 +1,18 @@
+## <small>5.1.2 (2023-12-04)</small>
+
+* Normalize request body ContentTypes (#863) ([0099b0d](https://github.com/cdimascio/express-openapi-validator/commit/0099b0d)), closes [#863](https://github.com/cdimascio/express-openapi-validator/issues/863)
+* Safer handling of multipart nested JSON body props (#878) ([807e09c](https://github.com/cdimascio/express-openapi-validator/commit/807e09c)), closes [#878](https://github.com/cdimascio/express-openapi-validator/issues/878)
+
+
+
+## <small>5.1.1 (2023-11-21)</small>
+
+* Pass-through HttpError caught in multipart handler (#867) ([240c876](https://github.com/cdimascio/express-openapi-validator/commit/240c876)), closes [#867](https://github.com/cdimascio/express-openapi-validator/issues/867)
+* v5.1.0 ([a9a3b0b](https://github.com/cdimascio/express-openapi-validator/commit/a9a3b0b))
+* v5.1.1 ([a4e62ac](https://github.com/cdimascio/express-openapi-validator/commit/a4e62ac))
+
+
+
 ## 5.1.0 (2023-11-12)
 
 * Allow optional use of `req.url` (#857) ([f732379](https://github.com/cdimascio/express-openapi-validator/commit/f732379)), closes [#857](https://github.com/cdimascio/express-openapi-validator/issues/857)
@@ -117,19 +132,6 @@
 * chore(deps): bump minimist in /examples/7-response-date-serialization (#721) ([ff63618](https://github.com/cdimascio/express-openapi-validator/commit/ff63618)), closes [#721](https://github.com/cdimascio/express-openapi-validator/issues/721)
 * chore(deps): bump minimist in /examples/8-top-level-discriminator (#720) ([a23a09f](https://github.com/cdimascio/express-openapi-validator/commit/a23a09f)), closes [#720](https://github.com/cdimascio/express-openapi-validator/issues/720)
 * chore(deps): bump node-fetch from 2.6.1 to 2.6.7 in /examples/9-nestjs (#711) ([87bb6df](https://github.com/cdimascio/express-openapi-validator/commit/87bb6df)), closes [#711](https://github.com/cdimascio/express-openapi-validator/issues/711)
-
-
-
-## <small>4.13.7 (2022-03-27)</small>
-
-* migrate README to wiki ([4887ba5](https://github.com/cdimascio/express-openapi-validator/commit/4887ba5))
-* Update README ([13b26d6](https://github.com/cdimascio/express-openapi-validator/commit/13b26d6))
-
-
-
-## <small>4.13.6 (2022-03-13)</small>
-
-* v4.13.6 ([0deb38f](https://github.com/cdimascio/express-openapi-validator/commit/0deb38f))
 
 
 
