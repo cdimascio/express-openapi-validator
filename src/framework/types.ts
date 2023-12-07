@@ -566,6 +566,14 @@ interface ErrorHeaders {
   Allow?: string;
 }
 
+export class CustomError extends Error {
+  error!: any;
+  constructor(error: any) {
+    super(error.message || "Custom Error");
+    this.error = error;
+  }
+}
+
 export class HttpError extends Error implements ValidationError {
   status!: number;
   path?: string;

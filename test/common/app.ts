@@ -8,6 +8,18 @@ import * as OpenApiValidator  from '../../src';
 import { startServer, routes } from './app.common';
 import { OpenApiValidatorOpts } from '../../src/framework/types';
 
+export class JsonResponse {
+  public status: number;
+  public message: string;
+  public data: any;
+
+  constructor(status: number, message: string, data: any) {
+    this.status = status;
+    this.message = message;
+    this.data = data;  
+  }
+}
+
 export async function createApp(
   opts?: OpenApiValidatorOpts,
   port = 3000,
@@ -30,6 +42,16 @@ export async function createApp(
   app.use(express.static(path.join(__dirname, 'public')));
 
   app.use(OpenApiValidator.middleware(opts));
+
+  // Add custom error handler
+  app.use((err, req, res, next) => {
+    if (err instanceof JsonResponse) {
+      res.status(err.status);
+      res.json(JSON.parse(JSON.stringify(err, null, 2)));
+    } else {
+      next(err);
+    }
+  });  
 
   if (useRoutes) {
     // register common routes

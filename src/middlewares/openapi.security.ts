@@ -6,6 +6,7 @@ import {
   OpenApiRequestHandler,
   InternalServerError,
   HttpError,
+  CustomError,
 } from '../framework/types';
 
 const defaultSecurityHandler = (
@@ -20,7 +21,7 @@ type SecuritySchemesMap = {
 interface SecurityHandlerResult {
   success: boolean;
   status?: number;
-  error?: string;
+  error?: string | Error;
 }
 export function security(
   apiDoc: OpenAPIV3.Document,
@@ -108,12 +109,19 @@ export function security(
         throw firstError;
       }
     } catch (e) {
-      const message = e?.error?.message || 'unauthorized';
-      const err = HttpError.create({
-        status: e.status,
-        path: path,
-        message: message,
-      });
+      let err: Error;
+
+      // Pass a custom Error instance to next if available
+      if (e?.error instanceof CustomError) {
+        err = e.error.error;
+      } else {
+        const message = e?.error?.message || 'unauthorized';
+        err = HttpError.create({
+          status: e.status,
+          path: path,
+          message: message,
+        });
+      }
       /*const err =
         e.status == 500
           ? new InternalServerError({ path: path, message: message })

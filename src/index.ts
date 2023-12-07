@@ -3,6 +3,7 @@ import * as res from './resolvers';
 import { OpenApiValidator, OpenApiValidatorOpts } from './openapi.validator';
 import { OpenApiSpecLoader } from './framework/openapi.spec.loader';
 import {
+  CustomError,
   InternalServerError,
   UnsupportedMediaType,
   RequestEntityTooLarge,
@@ -18,6 +19,7 @@ import {
 export const resolvers = res;
 export const middleware = openapiValidator;
 export const error = {
+  CustomError,
   InternalServerError,
   UnsupportedMediaType,
   RequestEntityTooLarge,
