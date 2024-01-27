@@ -69,3 +69,8 @@ components:
         endDate:
           type: string
           format: date-time
+        example: 
+            type: string
+      example:
+        name: 'hi'
+        description: 'yo'
