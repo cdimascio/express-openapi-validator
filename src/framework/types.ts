@@ -43,7 +43,7 @@ export interface Options extends ajv.Options {
   ajvFormats?: FormatsPluginOptions;
 }
 
-export interface RequestValidatorOptions extends Options, ValidateRequestOpts {}
+export interface RequestValidatorOptions extends Options, ValidateRequestOpts { }
 
 export type ValidateRequestOpts = {
   allowUnknownQueryParameters?: boolean;
@@ -240,7 +240,7 @@ export namespace OpenAPIV3 {
     in: string;
   }
 
-  export interface HeaderObject extends ParameterBaseObject {}
+  export interface HeaderObject extends ParameterBaseObject { }
 
   interface ParameterBaseObject {
     description?: string;
@@ -317,6 +317,7 @@ export namespace OpenAPIV3 {
     xml?: XMLObject;
     externalDocs?: ExternalDocumentationObject;
     example?: any;
+    examples?: any;
     deprecated?: boolean;
 
     // Express-openapi-validator specific properties

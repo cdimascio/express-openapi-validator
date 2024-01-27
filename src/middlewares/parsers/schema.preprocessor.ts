@@ -74,7 +74,7 @@ type Schema = ReferenceObject | SchemaObject;
 if (!Array.prototype['flatMap']) {
   // polyfill flatMap
   // TODO remove me when dropping node 10 support
-  Array.prototype['flatMap'] = function(lambda) {
+  Array.prototype['flatMap'] = function (lambda) {
     return Array.prototype.concat.apply([], this.map(lambda));
   };
   Object.defineProperty(Array.prototype, 'flatMap', { enumerable: false });
@@ -288,6 +288,7 @@ export class SchemaPreprocessor {
         this.handleSerDes(pschema, nschema, options);
         this.handleReadonly(pschema, nschema, options);
         this.processDiscriminator(pschema, nschema, options);
+        this.removeExamples(pschema, nschema, options)
       }
     }
   }
@@ -443,6 +444,20 @@ export class SchemaPreprocessor {
     }
   }
 
+  private removeExamples(
+    parent: OpenAPIV3.SchemaObject,
+    schema: OpenAPIV3.SchemaObject,
+    opts,
+  ) {
+    if (schema.type !== 'object') return;
+    if (schema?.example) {
+      delete schema.example
+    }
+    if (schema?.examples) {
+      delete schema.examples
+    }
+  }
+
   private handleReadonly(
     parent: OpenAPIV3.SchemaObject,
     schema: OpenAPIV3.SchemaObject,
@@ -591,7 +606,7 @@ export class SchemaPreprocessor {
     ) =>
       // if name or ref exists and are equal
       (opParam['name'] && opParam['name'] === pathParam['name']) ||
-        (opParam['$ref'] && opParam['$ref'] === pathParam['$ref']);
+      (opParam['$ref'] && opParam['$ref'] === pathParam['$ref']);
 
     // Add Path level query param to list ONLY if there is not already an operation-level query param by the same name.
     for (const param of parameters) {
