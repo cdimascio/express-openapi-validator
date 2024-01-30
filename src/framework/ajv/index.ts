@@ -117,19 +117,26 @@ function createAjv(
       compile: (sch, p, it) => {
         if (sch) {
           const validate: DataValidateFunction = (data, ctx) => {
-            const isValid = data == null;
-            if (!isValid) {
-              validate.errors = [
-                {
-                  keyword: 'readOnly',
-                  instancePath: ctx.instancePath,
-                  schemaPath: it.schemaPath.str,
-                  message: `is read-only`,
-                  params: { writeOnly: ctx.parentDataProperty },
-                },
-              ];
+            if (options.removeAdditional == true || options.removeAdditional == "all" || options.removeAdditional == "failing") {
+              // Remove readonly properties in request
+              delete ctx.parentData[ctx.parentDataProperty];
+              return true;
             }
-            return false;
+            else {
+              const isValid = data == null;
+              if (!isValid) {
+                validate.errors = [
+                  {
+                    keyword: 'readOnly',
+                    instancePath: ctx.instancePath,
+                    schemaPath: it.schemaPath.str,
+                    message: `is read-only`,
+                    params: { writeOnly: ctx.parentDataProperty },
+                  },
+                ];
+              }
+              return false;
+            }
           };
           return validate;
         }
@@ -178,19 +185,26 @@ function createAjv(
       compile: (sch, p, it) => {
         if (sch) {
           const validate: DataValidateFunction = (data, ctx) => {
-            const isValid = data == null;
-            if (!isValid) {
-              validate.errors = [
-                {
-                  keyword: 'writeOnly',
-                  instancePath: ctx.instancePath,
-                  schemaPath: it.schemaPath.str,
-                  message: `is write-only`,
-                  params: { writeOnly: ctx.parentDataProperty },
-                },
-              ];
+            if (options.removeAdditional == true || options.removeAdditional == "all" || options.removeAdditional == "failing") {
+              // Remove readonly properties in request
+              delete ctx.parentData[ctx.parentDataProperty];
+              return true;
             }
-            return false;
+            else {
+              const isValid = data == null;
+              if (!isValid) {
+                validate.errors = [
+                  {
+                    keyword: 'writeOnly',
+                    instancePath: ctx.instancePath,
+                    schemaPath: it.schemaPath.str,
+                    message: `is write-only`,
+                    params: {writeOnly: ctx.parentDataProperty},
+                  },
+                ];
+              }
+              return false;
+            }
           };
           return validate;
         }
