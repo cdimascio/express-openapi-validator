@@ -81,9 +81,9 @@ _**Important:** Ensure express is configured with all relevant body parsers. Bod
 
 ## [Documentation](https://cdimascio.github.io/express-openapi-validator-documentation/)
 
-See the [wiki](https://github.com/cdimascio/express-openapi-validator/wiki/Documentation) for complete documenation
+See the [doc](https://cdimascio.github.io/express-openapi-validator-documentation/) for complete documenation
 
-_deprecated_ [legacy doc](https://cdimascio.github.io/express-openapi-validator-documentation/) 
+_deprecated_ [legacy doc](https://github.com/cdimascio/express-openapi-validator/wiki) 
 
 ## License
 
