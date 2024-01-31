@@ -37,6 +37,10 @@ Be [Create a Pull Request](#create-a-pull-request) once you've written you code.
    npm test
    ```
 
+4. Update documentation
+
+   Create a PR at - [https://cdimascio.github.io/express-openapi-validator-documentation](https://cdimascio.github.io/express-openapi-validator-documentation)
+
 ## Develop
 
 - Write code
