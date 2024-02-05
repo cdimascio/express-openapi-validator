@@ -6,9 +6,9 @@
   "scripts": {
     "compile": "rimraf dist && tsc",
     "compile:release": "rimraf dist && tsc --sourceMap false",
-    "test": "mocha -r source-map-support/register -r ts-node/register --files --recursive -R spec test/**/*.spec.ts",
-    "test:debug": "mocha -r source-map-support/register -r ts-node/register --inspect-brk --files --recursive test/**/*.spec.ts",
-    "test:coverage": "nyc mocha -r source-map-support/register -r ts-node/register --recursive test/**/*.spec.ts",
+    "test": "mocha -r source-map-support/register -r ts-node/register --files --recursive -R spec --extension .spec.ts test",
+    "test:debug": "mocha -r source-map-support/register -r ts-node/register --inspect-brk --files --recursive --extension .spec.ts test",
+    "test:coverage": "nyc mocha -r source-map-support/register -r ts-node/register --recursive --extension .spec.ts test",
     "test:reset": "rimraf node_modules && npm i && npm run compile && npm t",
     "coveralls": "cat coverage/lcov.info | coveralls -v",
     "codacy": "bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage/lcov.info",
