@@ -23,7 +23,7 @@ interface SecurityHandlerResult {
   error?: string;
 }
 export function security(
-  apiDoc: OpenAPIV3.Document,
+  apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
   securityHandlers: SecurityHandlers,
 ): OpenApiRequestHandler {
   return async (req, res, next) => {

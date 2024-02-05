@@ -56,7 +56,7 @@ export class OpenAPISchemaValidator {
     this.validator = ajvInstance.compile(schema);
   }
 
-  public validate(openapiDoc: OpenAPIV3.Document): {
+  public validate(openapiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1): {
     errors: Array<ErrorObject> | null;
   } {
     const valid = this.validator(openapiDoc);

@@ -27,14 +27,14 @@ interface ValidateResult {
 }
 export class ResponseValidator {
   private ajvBody: Ajv;
-  private spec: OpenAPIV3.Document;
+  private spec: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
   private validatorsCache: {
     [key: string]: { [key: string]: ValidateFunction };
   } = {};
   private eovOptions: ValidateResponseOpts;
 
   constructor(
-    openApiSpec: OpenAPIV3.Document,
+    openApiSpec: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
     options: Options = {},
     eovOptions: ValidateResponseOpts = {},
   ) {

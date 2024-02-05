@@ -15,7 +15,7 @@ import { MulterError } from 'multer';
 const multer = require('multer');
 
 export function multipart(
-  apiDoc: OpenAPIV3.Document,
+  apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
   options: MultipartOpts,
 ): OpenApiRequestHandler {
   const mult = multer(options.multerOpts);

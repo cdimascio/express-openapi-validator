@@ -6,7 +6,7 @@ export interface RoutePair {
   openApiRoute: string;
 }
 export class OpenApiContext {
-  public readonly apiDoc: OpenAPIV3.Document;
+  public readonly apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
   public readonly expressRouteMap = {};
   public readonly openApiRouteMap = {};
   public readonly routes: RouteMetadata[] = [];

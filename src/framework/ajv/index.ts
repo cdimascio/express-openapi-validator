@@ -11,21 +11,21 @@ interface SerDesSchema extends Partial<SerDes> {
 }
 
 export function createRequestAjv(
-  openApiSpec: OpenAPIV3.Document,
+  openApiSpec: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
   options: Options = {},
 ): AjvDraft4 {
   return createAjv(openApiSpec, options);
 }
 
 export function createResponseAjv(
-  openApiSpec: OpenAPIV3.Document,
+  openApiSpec: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
   options: Options = {},
 ): AjvDraft4 {
   return createAjv(openApiSpec, options, false);
 }
 
 function createAjv(
-  openApiSpec: OpenAPIV3.Document,
+  openApiSpec: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
   options: Options = {},
   request = true,
 ): AjvDraft4 {
