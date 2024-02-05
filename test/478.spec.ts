@@ -53,7 +53,7 @@ describe('issue #478', () => {
       .expect(200));
 });
 
-function apiSpec(): OpenAPIV3.Document {
+function apiSpec(): OpenAPIV3.DocumentV3 {
   return {
     openapi: '3.0.3',
     info: {

@@ -91,12 +91,12 @@ export const httpMethods = new Set([
 ]);
 export class SchemaPreprocessor {
   private ajv: Ajv;
-  private apiDoc: OpenAPIV3.Document;
-  private apiDocRes: OpenAPIV3.Document;
+  private apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
+  private apiDocRes: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
   private serDesMap: SerDesMap;
   private responseOpts: ValidateResponseOpts;
   constructor(
-    apiDoc: OpenAPIV3.Document,
+    apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
     ajvOptions: Options,
     validateResponsesOpts: ValidateResponseOpts,
   ) {
@@ -108,22 +108,28 @@ export class SchemaPreprocessor {
 
   public preProcess() {
     const componentSchemas = this.gatherComponentSchemaNodes();
-    const r = this.gatherSchemaNodesFromPaths();
+    let r;
+
+    if (this.apiDoc.paths) {
+      r = this.gatherSchemaNodesFromPaths();
+    }
 
     // Now that we've processed paths, clone a response spec if we are validating responses
     this.apiDocRes = !!this.responseOpts ? cloneDeep(this.apiDoc) : null;
 
     const schemaNodes = {
       schemas: componentSchemas,
-      requestBodies: r.requestBodies,
-      responses: r.responses,
-      requestParameters: r.requestParameters,
+      requestBodies: r?.requestBodies,
+      responses: r?.responses,
+      requestParameters: r?.requestParameters,
     };
 
     // Traverse the schemas
-    this.traverseSchemas(schemaNodes, (parent, schema, opts) =>
+    if (r) {
+      this.traverseSchemas(schemaNodes, (parent, schema, opts) =>
       this.schemaVisitor(parent, schema, opts),
     );
+    }
 
     return {
       apiDoc: this.apiDoc,

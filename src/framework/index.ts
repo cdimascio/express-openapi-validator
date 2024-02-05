@@ -75,7 +75,7 @@ export class OpenAPIFramework {
   private loadSpec(
     filePath: string | object,
     $refParser: { mode: 'bundle' | 'dereference' } = { mode: 'bundle' },
-  ): Promise<OpenAPIV3.Document> {
+  ): Promise<OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1> {
     // Because of this issue ( https://github.com/APIDevTools/json-schema-ref-parser/issues/101#issuecomment-421755168 )
     // We need this workaround ( use '$RefParser.dereference' instead of '$RefParser.bundle' ) if asked by user
     if (typeof filePath === 'string') {
@@ -87,7 +87,7 @@ export class OpenAPIFramework {
           $refParser.mode === 'dereference'
             ? $RefParser.dereference(absolutePath)
             : $RefParser.bundle(absolutePath);
-        return doc as Promise<OpenAPIV3.Document>;
+        return doc as Promise<OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1>;
       } else {
         throw new Error(
           `${this.loggingPrefix}spec could not be read at ${filePath}`,
@@ -98,10 +98,10 @@ export class OpenAPIFramework {
       $refParser.mode === 'dereference'
         ? $RefParser.dereference(filePath)
         : $RefParser.bundle(filePath);
-    return doc as Promise<OpenAPIV3.Document>;
+    return doc as Promise<OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1>;
   }
 
-  private sortApiDocTags(apiDoc: OpenAPIV3.Document): void {
+  private sortApiDocTags(apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1): void {
     if (apiDoc && Array.isArray(apiDoc.tags)) {
       apiDoc.tags.sort((a, b): number => {
         return a.name < b.name ? -1 : 1;
