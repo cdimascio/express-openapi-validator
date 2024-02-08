@@ -201,8 +201,8 @@ export class OpenApiValidator {
       let resmw;
       middlewares.push(function responseMiddleware(req, res, next) {
         return pContext
-          .then(({ responseApiDoc }) => {
-            resmw = resmw || self.responseValidationMiddleware(responseApiDoc);
+          .then(({ responseApiDoc, context }) => {
+            resmw = resmw || self.responseValidationMiddleware(responseApiDoc, context.serial);
             return resmw(req, res, next);
           })
           .catch(next);
@@ -288,12 +288,13 @@ export class OpenApiValidator {
     return (req, res, next) => requestValidator.validate(req, res, next);
   }
 
-  private responseValidationMiddleware(apiDoc: OpenAPIV3.Document) {
+  private responseValidationMiddleware(apiDoc: OpenAPIV3.Document, serial: number) {
     return new middlewares.ResponseValidator(
       apiDoc,
       this.ajvOpts.response,
       // This has already been converted from boolean if required
       this.options.validateResponses as ValidateResponseOpts,
+      serial
     ).validate();
   }
 

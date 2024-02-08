@@ -1,4 +1,4 @@
-import * as path from 'path';
+ import * as path from 'path';
 import * as express from 'express';
 import * as request from 'supertest';
 import { createApp } from './common/app';
