@@ -1,7 +1,26 @@
+## <small>5.1.4 (2024-02-09)</small>
+
+* add cookies to examples 1 and 2 (#891) ([2c95d5b](https://github.com/cdimascio/express-openapi-validator/commit/2c95d5b)), closes [#891](https://github.com/cdimascio/express-openapi-validator/issues/891)
+* Direct example broken link to the guide ([00a9c8f](https://github.com/cdimascio/express-openapi-validator/commit/00a9c8f))
+* fixes badging for build and test ([631fb7b](https://github.com/cdimascio/express-openapi-validator/commit/631fb7b))
+* npm audit fix (#892) ([2977c0a](https://github.com/cdimascio/express-openapi-validator/commit/2977c0a)), closes [#892](https://github.com/cdimascio/express-openapi-validator/issues/892)
+* Remove read only and write only fields (#895) ([97617fd](https://github.com/cdimascio/express-openapi-validator/commit/97617fd)), closes [#895](https://github.com/cdimascio/express-openapi-validator/issues/895) [#627](https://github.com/cdimascio/express-openapi-validator/issues/627)
+* removes lodash.uniq and lodash.zipobject dependencies (#893) ([1206802](https://github.com/cdimascio/express-openapi-validator/commit/1206802)), closes [#893](https://github.com/cdimascio/express-openapi-validator/issues/893)
+* Update CONTRIBUTING.md ([6d67169](https://github.com/cdimascio/express-openapi-validator/commit/6d67169))
+* Update README.md ([dffda28](https://github.com/cdimascio/express-openapi-validator/commit/dffda28))
+* Update README.md ([bdd0d79](https://github.com/cdimascio/express-openapi-validator/commit/bdd0d79))
+* Update README.md (#896) ([bb66916](https://github.com/cdimascio/express-openapi-validator/commit/bb66916)), closes [#896](https://github.com/cdimascio/express-openapi-validator/issues/896)
+* v5.1.4 ([509fa22](https://github.com/cdimascio/express-openapi-validator/commit/509fa22))
+* fix: #887 allow multiple params with wildcard (#898) ([2d33d0a](https://github.com/cdimascio/express-openapi-validator/commit/2d33d0a)), closes [#887](https://github.com/cdimascio/express-openapi-validator/issues/887) [#898](https://github.com/cdimascio/express-openapi-validator/issues/898) [#1](https://github.com/cdimascio/express-openapi-validator/issues/1)
+* docs: fix doc typo in README.md (#885) ([8a81bf8](https://github.com/cdimascio/express-openapi-validator/commit/8a81bf8)), closes [#885](https://github.com/cdimascio/express-openapi-validator/issues/885)
+
+
+
 ## <small>5.1.3 (2024-01-27)</small>
 
 * CLS Context is lost after using multer middleware (#695) ([40716fb](https://github.com/cdimascio/express-openapi-validator/commit/40716fb)), closes [#695](https://github.com/cdimascio/express-openapi-validator/issues/695)
 * remove examples from schema (#890) ([0ad49ec](https://github.com/cdimascio/express-openapi-validator/commit/0ad49ec)), closes [#890](https://github.com/cdimascio/express-openapi-validator/issues/890)
+* v5.1.3 ([f806690](https://github.com/cdimascio/express-openapi-validator/commit/f806690))
 * v5.1.3 ([e567701](https://github.com/cdimascio/express-openapi-validator/commit/e567701))
 
 
@@ -106,14 +125,6 @@
 * fix: upgrade body-parser from 1.19.0 to 1.19.1 (#689) ([40736f8](https://github.com/cdimascio/express-openapi-validator/commit/40736f8)), closes [#689](https://github.com/cdimascio/express-openapi-validator/issues/689)
 * fix: upgrade body-parser from 1.19.0 to 1.19.1 (#690) ([9038edc](https://github.com/cdimascio/express-openapi-validator/commit/9038edc)), closes [#690](https://github.com/cdimascio/express-openapi-validator/issues/690)
 * fix: upgrade body-parser from 1.19.0 to 1.19.1 (#691) ([e64a91c](https://github.com/cdimascio/express-openapi-validator/commit/e64a91c)), closes [#691](https://github.com/cdimascio/express-openapi-validator/issues/691)
-
-
-
-## 5.0.0 (2022-11-19)
-
-* Fix #699 serdes missed on items in a collection, with tests. (#704) ([77bc4ae](https://github.com/cdimascio/express-openapi-validator/commit/77bc4ae)), closes [#699](https://github.com/cdimascio/express-openapi-validator/issues/699) [#704](https://github.com/cdimascio/express-openapi-validator/issues/704)
-* fixed router parameters (#762) ([2bbed6f](https://github.com/cdimascio/express-openapi-validator/commit/2bbed6f)), closes [#762](https://github.com/cdimascio/express-openapi-validator/issues/762)
-* v5.0.0 with ajv8 ([1d1d71b](https://github.com/cdimascio/express-openapi-validator/commit/1d1d71b))
 
 
 
