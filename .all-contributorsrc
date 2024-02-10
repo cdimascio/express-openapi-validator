@@ -507,6 +507,16 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "pdhau",
+      "name": "pdhau",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18321848?v=4",
+      "profile": "https://github.com/pdhau",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -514,5 +524,7 @@
   "projectOwner": "cdimascio",
   "repoType": "github",
   "repoHost": "https://github.com",
-  "skipCi": true
+  "skipCi": true,
+  "commitType": "docs",
+  "commitConvention": "angular"
 }
