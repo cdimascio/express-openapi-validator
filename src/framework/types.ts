@@ -497,6 +497,7 @@ export interface OpenApiRequestMetadata {
   openApiRoute: string;
   pathParams: { [index: string]: string };
   schema: OpenAPIV3.OperationObject;
+  serial: number;
 }
 
 export interface OpenApiRequest extends Request {

@@ -48,6 +48,7 @@ export function applyOpenApiMetadata(
         openApiRoute: openApiRoute,
         pathParams: pathParams,
         schema: schema,
+        serial: openApiContext.serial,
       };
       req.params = pathParams;
       if (responseApiDoc) {
@@ -101,6 +102,7 @@ export function applyOpenApiMetadata(
             expressRoute,
             openApiRoute,
             pathParams,
+            serial: -1,
           };
           (<any>r)._responseSchema = _schema;
           return r;
