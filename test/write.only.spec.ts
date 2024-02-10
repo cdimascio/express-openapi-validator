@@ -86,6 +86,7 @@ describe(packageJson.name, () => {
         name: 'some name',
         role: 'admin',
         price: 10.99,
+        password: 'password_value'
       })
       .expect(200));
 
@@ -96,9 +97,11 @@ describe(packageJson.name, () => {
       .send({
         name: 'some name',
         price: 10.99,
+        password: 'password_value',
         reviews: [
           {
             rating: 5,
+            review_password: 'review_password_value'
           },
         ],
       })

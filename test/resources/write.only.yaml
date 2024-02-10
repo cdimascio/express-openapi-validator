@@ -95,6 +95,8 @@ components:
     # TODO add nested test
     ProductNested:
       type: object
+      required:
+        - "password"
       properties:
         id:
           type: string
@@ -117,9 +119,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Review'
+        password:
+          type: string
+          writeOnly: true
 
     Review:
       type: object
+      required:
+        - "review_password"
       properties:
         id:
           type: integer
@@ -132,3 +139,6 @@ components:
           writeOnly: true
         rating:
           type: integer
+        review_password:
+          type: string
+          writeOnly: true
