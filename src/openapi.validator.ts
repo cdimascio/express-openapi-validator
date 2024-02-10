@@ -35,6 +35,12 @@ export {
   Forbidden,
 } from './framework/types';
 
+interface MiddlewareContext {
+  context: OpenApiContext,
+  responseApiDoc: OpenAPIV3.Document,
+  error: any,
+}
+
 export class OpenApiValidator {
   readonly options: NormalizedOpenApiValidatorOpts;
   readonly ajvOpts: AjvOptions;
@@ -92,7 +98,7 @@ export class OpenApiValidator {
 
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
     const middlewares: OpenApiRequestHandler[] = [];
-    const pContext = spec
+    const pContext: Promise<MiddlewareContext> = spec
       .then((spec) => {
         const apiDoc = spec.apiDoc;
         const ajvOpts = this.ajvOpts.preprocessor;
@@ -183,7 +189,7 @@ export class OpenApiValidator {
       });
     }
 
-    // request middlweare
+    // request middleware
     if (this.options.validateRequests) {
       let reqmw;
       middlewares.push(function requestMiddleware(req, res, next) {
@@ -201,8 +207,8 @@ export class OpenApiValidator {
       let resmw;
       middlewares.push(function responseMiddleware(req, res, next) {
         return pContext
-          .then(({ responseApiDoc }) => {
-            resmw = resmw || self.responseValidationMiddleware(responseApiDoc);
+          .then(({ responseApiDoc, context: { serial } }) => {
+            resmw = resmw || self.responseValidationMiddleware(responseApiDoc, serial);
             return resmw(req, res, next);
           })
           .catch(next);
@@ -288,12 +294,13 @@ export class OpenApiValidator {
     return (req, res, next) => requestValidator.validate(req, res, next);
   }
 
-  private responseValidationMiddleware(apiDoc: OpenAPIV3.Document) {
+  private responseValidationMiddleware(apiDoc: OpenAPIV3.Document, serial: number) {
     return new middlewares.ResponseValidator(
       apiDoc,
       this.ajvOpts.response,
       // This has already been converted from boolean if required
       this.options.validateResponses as ValidateResponseOpts,
+      serial
     ).validate();
   }
 
