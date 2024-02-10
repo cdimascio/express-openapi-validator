@@ -39,14 +39,14 @@ type Schema = ReferenceObject | SchemaObject;
  * the request is mutated to accomodate various styles and types e.g. form, explode, deepObject, etc
  */
 export class RequestParameterMutator {
-  private _apiDocs: OpenAPIV3.Document;
+  private _apiDocs: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
   private path: string;
   private ajv: Ajv;
   private parsedSchema: ValidationSchema;
 
   constructor(
     ajv: Ajv,
-    apiDocs: OpenAPIV3.Document,
+    apiDocs: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
     path: string,
     parsedSchema: ValidationSchema,
   ) {

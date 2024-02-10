@@ -9,7 +9,7 @@ describe(packageJson.name, () => {
 
   before(async () => {
     // Set up the express app
-    const apiSpec: OpenAPIV3.Document = {
+    const apiSpec: OpenAPIV3.DocumentV3 = {
       openapi: '3.0.0',
       info: { title: 'Api test', version: '1.0.0' },
       servers: [{ url: '/api' }],

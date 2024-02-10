@@ -21,7 +21,7 @@ export interface ValidationSchema extends ParametersSchema {
 }
 
 export interface OpenAPIFrameworkInit {
-  apiDoc: OpenAPIV3.Document;
+  apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
   basePaths: string[];
 }
 export type SecurityHandlers = {
@@ -109,7 +109,7 @@ export type SerDesMap = {
 };
 
 export interface OpenApiValidatorOpts {
-  apiSpec: OpenAPIV3.Document | string;
+  apiSpec: OpenAPIV3.DocumentV3 | string;
   validateApiSpec?: boolean;
   validateResponses?: boolean | ValidateResponseOpts;
   validateRequests?: boolean | ValidateRequestOpts;
@@ -152,7 +152,7 @@ export interface NormalizedOpenApiValidatorOpts extends OpenApiValidatorOpts {
 }
 
 export namespace OpenAPIV3 {
-  export interface Document {
+  export interface DocumentV3 {
     openapi: string;
     info: InfoObject;
     servers?: ServerObject[];
@@ -161,6 +161,13 @@ export namespace OpenAPIV3 {
     security?: SecurityRequirementObject[];
     tags?: TagObject[];
     externalDocs?: ExternalDocumentationObject;
+  }
+
+  export interface DocumentV3_1 extends Omit<DocumentV3, 'paths'> {
+    paths?: DocumentV3['paths']
+    webhooks: {
+      [name: string]: PathItemObject | ReferenceObject
+    } 
   }
 
   export interface InfoObject {
@@ -475,7 +482,7 @@ export interface OpenAPIFrameworkPathObject {
 }
 
 interface OpenAPIFrameworkArgs {
-  apiDoc: OpenAPIV3.Document | string;
+  apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1 | string;
   validateApiSpec?: boolean;
   $refParser?: {
     mode: 'bundle' | 'dereference';
@@ -485,7 +492,7 @@ interface OpenAPIFrameworkArgs {
 export interface OpenAPIFrameworkAPIContext {
   // basePaths: BasePath[];
   basePaths: string[];
-  getApiDoc(): OpenAPIV3.Document;
+  getApiDoc(): OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
 }
 
 export interface OpenAPIFrameworkVisitor {

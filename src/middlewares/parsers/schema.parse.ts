@@ -17,9 +17,9 @@ type Parameter = OpenAPIV3.ReferenceObject | OpenAPIV3.ParameterObject;
  */
 export class ParametersSchemaParser {
   private _ajv: Ajv;
-  private _apiDocs: OpenAPIV3.Document;
+  private _apiDocs: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
 
-  constructor(ajv: Ajv, apiDocs: OpenAPIV3.Document) {
+  constructor(ajv: Ajv, apiDocs: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1) {
     this._ajv = ajv;
     this._apiDocs = apiDocs;
   }

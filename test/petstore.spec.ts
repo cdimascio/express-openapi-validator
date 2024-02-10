@@ -36,7 +36,7 @@ describe('petstore', () => {
     request(app).get(`${app.basePath}/pets`).expect(200));
 });
 
-function petstoreSpec(): OpenAPIV3.Document {
+function petstoreSpec(): OpenAPIV3.DocumentV3 {
   return {
     openapi: '3.0.0',
     info: {

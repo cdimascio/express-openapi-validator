@@ -182,7 +182,6 @@ describe('699 serialize response components only', () => {
       3005,
       (app) => {
         app.get([`${app.basePath}/users/:id?`], (req, res) => {
-          debugger;
           if (typeof req.params.id !== 'string') {
             throw new Error("Should be not be deserialized to ObjectId object");
           }

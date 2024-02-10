@@ -261,26 +261,26 @@ export class OpenApiValidator {
 
   private metadataMiddleware(
     context: OpenApiContext,
-    responseApiDoc: OpenAPIV3.Document,
+    responseApiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
   ) {
     return middlewares.applyOpenApiMetadata(context, responseApiDoc);
   }
 
-  private multipartMiddleware(apiDoc: OpenAPIV3.Document) {
+  private multipartMiddleware(apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1) {
     return middlewares.multipart(apiDoc, {
       multerOpts: this.options.fileUploader,
       ajvOpts: this.ajvOpts.multipart,
     });
   }
 
-  private securityMiddleware(apiDoc: OpenAPIV3.Document) {
+  private securityMiddleware(apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1) {
     const securityHandlers = (<ValidateSecurityOpts>(
       this.options.validateSecurity
     ))?.handlers;
     return middlewares.security(apiDoc, securityHandlers);
   }
 
-  private requestValidationMiddleware(apiDoc: OpenAPIV3.Document) {
+  private requestValidationMiddleware(apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1) {
     const requestValidator = new middlewares.RequestValidator(
       apiDoc,
       this.ajvOpts.request,
@@ -288,7 +288,7 @@ export class OpenApiValidator {
     return (req, res, next) => requestValidator.validate(req, res, next);
   }
 
-  private responseValidationMiddleware(apiDoc: OpenAPIV3.Document) {
+  private responseValidationMiddleware(apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1) {
     return new middlewares.ResponseValidator(
       apiDoc,
       this.ajvOpts.response,
