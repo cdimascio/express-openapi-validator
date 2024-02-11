@@ -1,7 +1,14 @@
+## <small>5.1.6 (2024-02-11)</small>
+
+* Fixes for 881 - multiple specs w/validateRequests fail (#903) ([766806b](https://github.com/cdimascio/express-openapi-validator/commit/766806b)), closes [#903](https://github.com/cdimascio/express-openapi-validator/issues/903)
+
+
+
 ## <small>5.1.5 (2024-02-10)</small>
 
 * fixes write-only tests ([8c53e58](https://github.com/cdimascio/express-openapi-validator/commit/8c53e58))
 * Support writeOnly + required combination #149 (#756) ([4f16ed2](https://github.com/cdimascio/express-openapi-validator/commit/4f16ed2)), closes [#149](https://github.com/cdimascio/express-openapi-validator/issues/149) [#756](https://github.com/cdimascio/express-openapi-validator/issues/756)
+* v5.1.5 ([708f2f5](https://github.com/cdimascio/express-openapi-validator/commit/708f2f5))
 
 
 
@@ -175,12 +182,6 @@
 
 * migrate README to wiki ([4887ba5](https://github.com/cdimascio/express-openapi-validator/commit/4887ba5))
 * Update README ([13b26d6](https://github.com/cdimascio/express-openapi-validator/commit/13b26d6))
-
-
-
-## <small>4.13.6 (2022-03-13)</small>
-
-* v4.13.6 ([0deb38f](https://github.com/cdimascio/express-openapi-validator/commit/0deb38f))
 
 
 
