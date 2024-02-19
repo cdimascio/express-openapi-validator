@@ -204,6 +204,10 @@ export class RequestValidator {
   }
 
   private multipartNested(req, schemaBody) {
+    if (!req.body) {
+      return;
+    }
+
     Object.keys(req.body).forEach((key) => {
       const value = req.body[key];
       // TODO: Add support for oneOf, anyOf, allOf as the body schema
@@ -216,7 +220,6 @@ export class RequestValidator {
         }
       }
     });
-    return null;
   }
 
   private discriminatorValidator(req, discriminator) {
