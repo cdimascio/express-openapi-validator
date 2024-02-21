@@ -13,19 +13,22 @@ export async function createApp(
   port = 3000,
   customRoutes = (app) => {},
   useRoutes = true,
-  apiRouter = undefined,
+  useParsers = true,
 ) {
   var app = express();
   (<any>app).basePath = '/v1';
 
-  app.use(bodyParser.json());
-  app.use(bodyParser.json({ type: 'application/*+json' }));
-  app.use(bodyParser.json({ type: 'application/*+json*' }));
+  if (useParsers) {
+    app.use(bodyParser.json());
+    app.use(bodyParser.json({ type: 'application/*+json' }));
+    app.use(bodyParser.json({ type: 'application/*+json*' }));
 
-  app.use(bodyParser.text());
-  app.use(bodyParser.text({ type: 'text/html' }));
+    app.use(bodyParser.text());
+    app.use(bodyParser.text({ type: 'text/html' }));
+
+    app.use(express.urlencoded({ extended: false }));
+  }
   app.use(logger('dev'));
-  app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, 'public')));
 

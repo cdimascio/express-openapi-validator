@@ -6,7 +6,7 @@ import * as request from 'supertest';
 import { createApp } from './common/app';
 
 describe('a multipart request', () => {
-  let app = null;
+  let app;
   const fileNames = [];
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'multipart.yaml');
@@ -149,5 +149,43 @@ describe('a multipart request', () => {
         });
       expect(fileNames).to.deep.equal(['package.json']);
     });
+  });
+});
+
+describe('when request does not use parsers', () => {
+  let app;
+
+  after(() => {
+    (<any>app).server.close();
+  });
+
+  before(async () => {
+    const apiSpec = path.join('test', 'resources', 'multipart.yaml');
+    app = await createApp(
+      {
+        apiSpec,
+      },
+      3004,
+      (app) =>
+        app.use(
+          `${app.basePath}`,
+          express
+            .Router()
+            .post(`/sample_7`, (req, res) => res.json('ok')),
+        ),
+      false,
+      false,
+    );
+  });
+
+
+  it('should validate that endpoint exists', async () => {
+    await request(app)
+      .post(`${app.basePath}/sample_7`)
+      .set('Content-Type', 'multipart/form-data')
+      .expect(200)
+      .then((r) => {
+        expect(r.body).to.equal('ok');
+      });
   });
 });
