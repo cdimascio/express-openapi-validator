@@ -37,7 +37,6 @@ describe(packageJson.name, () => {
         })
       },
       true,
-      apiRoute
     );
   });
 
