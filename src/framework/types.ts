@@ -163,8 +163,9 @@ export namespace OpenAPIV3 {
     externalDocs?: ExternalDocumentationObject;
   }
 
-  export interface DocumentV3_1 extends Omit<DocumentV3, 'paths'> {
-    paths?: DocumentV3['paths']
+  export interface DocumentV3_1 extends Omit<DocumentV3, 'paths' | 'info'> {
+    paths?: DocumentV3['paths'];
+    info: InfoObjectV3_1;
     webhooks: {
       [name: string]: PathItemObject | ReferenceObject
     } 
@@ -177,6 +178,10 @@ export namespace OpenAPIV3 {
     contact?: ContactObject;
     license?: LicenseObject;
     version: string;
+  }
+
+  interface InfoObjectV3_1 extends InfoObject {
+    summary: string;
   }
 
   export interface ContactObject {
