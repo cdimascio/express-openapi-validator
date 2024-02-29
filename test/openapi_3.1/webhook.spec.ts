@@ -1,4 +1,3 @@
-import { expect } from "chai";
 import * as request from 'supertest';
 import { createApp } from "../common/app";
 import { join } from "path";
