@@ -1,3 +1,4 @@
+# From https://github.com/OAI/OpenAPI-Specification/blob/6f386968654fd483720aba0177e618e87a5d612d/tests/v3.1/pass/minimal_comp.yaml
 openapi: 3.1.0
 info:
   title: API
