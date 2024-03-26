@@ -14,7 +14,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.19.2",
     "express-openapi-validator": "^4.13.2",
     "morgan": "^1.10.0"
   },
