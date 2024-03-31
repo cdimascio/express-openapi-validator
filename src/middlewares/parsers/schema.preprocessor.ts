@@ -504,7 +504,7 @@ export class SchemaPreprocessor {
     const op = node.schema;
     const responses = op.responses;
 
-    if (!responses) return;
+    if (!responses) return [];
 
     const schemas: Root<SchemaObject>[] = [];
     for (const [statusCode, response] of Object.entries(responses)) {
