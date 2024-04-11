@@ -13,6 +13,7 @@ import {
   Unauthorized,
   Forbidden,
 } from './framework/types';
+export { OpenAPIV3 } from "./framework/types"
 
 // export default openapiValidator;
 export const resolvers = res;
