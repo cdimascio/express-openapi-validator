@@ -32,15 +32,18 @@ export class ResponseValidator {
     [key: string]: { [key: string]: ValidateFunction };
   } = {};
   private eovOptions: ValidateResponseOpts;
+  private serial: number;
 
   constructor(
     openApiSpec: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
     options: Options = {},
     eovOptions: ValidateResponseOpts = {},
+    serial: number = -1,
   ) {
     this.spec = openApiSpec;
     this.ajvBody = createResponseAjv(openApiSpec, options);
     this.eovOptions = eovOptions;
+    this.serial = serial;
 
     // This is a pseudo-middleware function. It doesn't get registered with
     // express via `use`
@@ -51,7 +54,7 @@ export class ResponseValidator {
 
   public validate(): RequestHandler {
     return mung.json((body, req, res) => {
-      if (req.openapi) {
+      if (req.openapi && this.serial == req.openapi.serial) {
         const openapi = <OpenApiRequestMetadata>req.openapi;
         // instead of openapi.schema, use openapi._responseSchema to get the response copy
         const responses: OpenAPIV3.ResponsesObject = (<any>openapi)

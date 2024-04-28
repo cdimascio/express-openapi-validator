@@ -12,6 +12,7 @@ export class OpenApiContext {
   public readonly routes: RouteMetadata[] = [];
   public readonly ignoreUndocumented: boolean;
   public readonly useRequestUrl: boolean;
+  public readonly serial: number;
   private readonly basePaths: string[];
   private readonly ignorePaths: RegExp | Function;
 
@@ -28,6 +29,7 @@ export class OpenApiContext {
     this.ignoreUndocumented = ignoreUndocumented;
     this.buildRouteMaps(spec.routes);
     this.useRequestUrl = useRequestUrl;
+    this.serial = spec.serial;
   }
 
   public isManagedRoute(path: string): boolean {

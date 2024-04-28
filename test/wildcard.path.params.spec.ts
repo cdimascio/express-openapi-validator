@@ -34,6 +34,16 @@ describe('wildcard path params', () => {
             res.json({
               success: true,
             }),
+          )
+          .get(`${app.basePath}/d4/:multi/spaced/:path(*)`, (req, res) =>
+            res.json({
+              ...req.params,
+            }),
+          )
+          .get(`${app.basePath}/d5/:multi/:path(*)`, (req, res) =>
+            res.json({
+              ...req.params,
+            }),
           );
       },
     );
@@ -82,5 +92,23 @@ describe('wildcard path params', () => {
       .expect(200)
       .then((r) => {
         expect(r.body.success).to.be.true;
+      }));
+
+  it('should return 200 when wildcard path includes all required params and multiple path params', async () =>
+    request(app)
+      .get(`${app.basePath}/d4/one/spaced/two/three/four`)
+      .expect(200)
+      .then((r) => {
+        expect(r.body.multi).to.equal('one');
+        expect(r.body.path).to.equal('two/three/four');
+      }));
+
+  it('should return 200 when wildcard path includes all required params and multiple path params', async () =>
+    request(app)
+      .get(`${app.basePath}/d5/one/two/three/four`)
+      .expect(200)
+      .then((r) => {
+        expect(r.body.multi).to.equal('one');
+        expect(r.body.path).to.equal('two/three/four');
       }));
 });

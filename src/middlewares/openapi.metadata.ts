@@ -1,4 +1,4 @@
-import * as _zipObject from 'lodash.zipobject';
+import { zipObject } from './util';
 import { pathToRegexp } from 'path-to-regexp';
 import { Response, NextFunction } from 'express';
 import { OpenApiContext } from '../framework/openapi.context';
@@ -48,6 +48,7 @@ export function applyOpenApiMetadata(
         openApiRoute: openApiRoute,
         pathParams: pathParams,
         schema: schema,
+        serial: openApiContext.serial,
       };
       req.params = pathParams;
       if (responseApiDoc) {
@@ -94,13 +95,14 @@ export function applyOpenApiMetadata(
         const paramKeys = keys.map((k) => k.name);
         try {
           const paramsVals = matchedRoute.slice(1).map(decodeURIComponent);
-          const pathParams = _zipObject(paramKeys, paramsVals);
+          const pathParams = zipObject(paramKeys, paramsVals);
 
           const r = {
             schema,
             expressRoute,
             openApiRoute,
             pathParams,
+            serial: -1,
           };
           (<any>r)._responseSchema = _schema;
           return r;
