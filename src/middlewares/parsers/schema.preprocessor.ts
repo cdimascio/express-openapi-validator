@@ -157,6 +157,11 @@ export class SchemaPreprocessor {
 
     for (const [p, pi] of Object.entries(this.apiDoc.paths)) {
       const pathItem = this.resolveSchema<OpenAPIV3.PathItemObject>(pi);
+
+      // Since OpenAPI 3.1, paths can be a #ref to reusable path items
+      // The following line mutates the paths item to dereference the reference, so that we can process as a POJO, as we would if it wasn't a reference
+      this.apiDoc.paths[p] = pathItem;
+      
       for (const method of Object.keys(pathItem)) {
         if (httpMethods.has(method)) {
           const operation = <OpenAPIV3.OperationObject>pathItem[method];
