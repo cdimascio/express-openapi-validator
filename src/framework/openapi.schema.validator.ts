@@ -32,22 +32,26 @@ export class OpenAPISchemaValidator {
       options.validateSchema = false;
     }
 
-    const ver = opts.version && parseFloat(String(opts.version));
-    if (!ver) throw Error('version missing from OpenAPI specification');
-    if (parseInt(ver.toString()) != 3) throw Error('OpenAPI v3 specification version is required');
+    const [ok, major, minor] = /^(\d+)\.(\d+).(\d+)?$/.exec(opts.version);
+
+    if (!ok) { 
+      throw Error('Version missing from OpenAPI specification')
+    };
+
+    if (major !== '3' || minor !== '0' && minor !== '1') {
+      throw new Error('OpenAPI v3.0 or v3.1 specification version is required');
+    }
 
     let ajvInstance;
     let schema;
 
-    if (ver === 3) {
+    if (minor === '0') {
       schema = openapi3Schema;
       ajvInstance = new AjvDraft4(options);
-    } else if (ver === 3.1) {
+    } else if (minor == '1') {
       schema = openapi31Schema;
       ajvInstance = new Ajv2020(options);
       ajvInstance.addFormat('media-range', true); // TODO: Validate media-range format as defined in https://www.rfc-editor.org/rfc/rfc9110.html#name-collected-abnf
-    } else {
-      throw new Error('OpenAPI v3 specification 3.0 and 3.1 supported');
     }
 
     addFormats(ajvInstance, ['email', 'regex', 'uri', 'uri-reference']);
