@@ -51,7 +51,12 @@ export class OpenAPISchemaValidator {
     } else if (minor == '1') {
       schema = openapi31Schema;
       ajvInstance = new Ajv2020(options);
-      ajvInstance.addFormat('media-range', true); // TODO: Validate media-range format as defined in https://www.rfc-editor.org/rfc/rfc9110.html#name-collected-abnf
+    
+      // Open API 3.1 has a custom "media-range" attribute defined in its schema, but the spec does not define it. "It's not really intended to be validated"
+      // https://github.com/OAI/OpenAPI-Specification/issues/2714#issuecomment-923185689
+      // Since the schema is non-normative (https://github.com/OAI/OpenAPI-Specification/pull/3355#issuecomment-1915695294) we will only validate that it's a string
+      // as the spec states
+      ajvInstance.addFormat('media-range', true);
     }
 
     addFormats(ajvInstance, ['email', 'regex', 'uri', 'uri-reference']);
