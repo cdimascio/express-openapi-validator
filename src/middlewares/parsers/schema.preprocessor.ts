@@ -127,8 +127,8 @@ export class SchemaPreprocessor {
     // Traverse the schemas
     if (r) {
       this.traverseSchemas(schemaNodes, (parent, schema, opts) =>
-      this.schemaVisitor(parent, schema, opts),
-    );
+        this.schemaVisitor(parent, schema, opts),
+      );
     }
 
     return {
