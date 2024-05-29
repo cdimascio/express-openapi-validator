@@ -1,7 +1,8 @@
 import * as ajv from 'ajv';
 import * as multer from 'multer';
-import { FormatsPluginOptions, FormatOptions } from 'ajv-formats';
-import { Request, Response, NextFunction } from 'express';
+import { FormatsPluginOptions } from 'ajv-formats';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { RouteMetadata } from './openapi.spec.loader';
 export { OpenAPIFrameworkArgs };
 
 export type BodySchema =
@@ -63,7 +64,11 @@ export type ValidateSecurityOpts = {
 
 export type OperationHandlerOptions = {
   basePath: string;
-  resolver: Function;
+  resolver: (
+    handlersPath: string,
+    route: RouteMetadata,
+    apiDoc: OpenAPIV3.Document,
+  ) => RequestHandler | Promise<RequestHandler>;
 };
 
 export type Format = {
