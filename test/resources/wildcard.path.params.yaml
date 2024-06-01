@@ -3,7 +3,7 @@ info:
   title: dummy api
   version: 1.0.0
 servers:
-- url: /v1
+  - url: /v1
 
 paths:
   /d1/{id}:

@@ -6,7 +6,7 @@ info:
 paths:
   /api/q_form_explode:
     get:
-      parameters: 
+      parameters:
         - description: Description
           schema:
             title: State
@@ -26,7 +26,7 @@ paths:
 
   /api/q_form_nexplode:
     get:
-      parameters: 
+      parameters:
         - description: Description
           required: false
           explode: false
@@ -37,7 +37,7 @@ paths:
               $ref: '#/components/schemas/Foo'
             description: A description
           name: state
-          in: query        
+          in: query
       responses:
         200:
           description: OK
@@ -45,8 +45,7 @@ paths:
             'application/json; charset=utf-8':
               schema:
                 type: object
-                
-                
+
 components:
   schemas:
     Foo:
@@ -54,5 +53,3 @@ components:
       enum:
         - on
         - off
-      
-      

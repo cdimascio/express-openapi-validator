@@ -7,24 +7,22 @@ import { startServer } from './common/app.common';
 import { deepStrictEqual } from 'assert';
 import * as path from 'path';
 
-
 const apiSpecPath = path.join('test', 'resources', '699.yaml');
 
-const date = new Date()
+const date = new Date();
 describe('issue #821 - serialization inside addiotionalProperties', () => {
   it('serializa both outer and inner date in addiotionalProperties', async () => {
-
     const app = await createApp(apiSpecPath);
-    await request(app).get('/test').expect(200, 
-      {
+    await request(app)
+      .get('/test')
+      .expect(200, {
         outer_date: date.toISOString(),
         other_info: {
           something: {
-            inner_date: date.toISOString()
-          }
-        }
-      }      
-    );
+            inner_date: date.toISOString(),
+          },
+        },
+      });
     app.server!.close();
   });
 });
@@ -46,12 +44,11 @@ async function createApp(
       outer_date: date,
       other_info: {
         something: {
-          inner_date: date
-        }
-      }
-    })
-
-  })
+          inner_date: date,
+        },
+      },
+    });
+  });
 
   app.use((err, req, res, next) => {
     console.error(err); // dump error to console for debug
@@ -64,5 +61,3 @@ async function createApp(
   await startServer(app, 3001);
   return app;
 }
-
-

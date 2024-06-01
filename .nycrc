@@ -1,28 +1,14 @@
 {
-    "check-coverage": true,
-    "per-file": true,
-    "lines": 62,
-    "statements": 40,
-    "functions": 15,
-    "branches": 40,
-    "include": [
-      "src/**/*.ts",
-      "src/index.ts"
-    ],
-    "exclude": [
-      "**/*.d.ts",
-      "test/*",
-      "src/resolvers.ts"
-    ],
-    "ignore-class-method": "methodToIgnore",
-    "reporter": [
-      "lcov",
-      "text",
-      "html"
-    ],
-    "all": true,
-    "extension": [
-      ".ts",
-      ".tsx"
-    ]
+  "check-coverage": true,
+  "per-file": true,
+  "lines": 62,
+  "statements": 40,
+  "functions": 15,
+  "branches": 40,
+  "include": ["src/**/*.ts", "src/index.ts"],
+  "exclude": ["**/*.d.ts", "test/*", "src/resolvers.ts"],
+  "ignore-class-method": "methodToIgnore",
+  "reporter": ["lcov", "text", "html"],
+  "all": true,
+  "extension": [".ts", ".tsx"]
 }

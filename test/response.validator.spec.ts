@@ -8,7 +8,9 @@ import * as packageJson from '../package.json';
 import { OpenAPIV3, OpenApiRequest } from '../src/framework/types';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
-const apiSpec = jsyaml.load(fs.readFileSync(apiSpecPath, 'utf8')) as OpenAPIV3.Document;
+const apiSpec = jsyaml.load(
+  fs.readFileSync(apiSpecPath, 'utf8'),
+) as OpenAPIV3.Document;
 const fakeReq: OpenApiRequest = <any>{
   method: 'GET',
   headers: { 'content-type': 'application/json' },
@@ -17,10 +19,10 @@ const fakeReq: OpenApiRequest = <any>{
 describe(packageJson.name, () => {
   it('should validate the using default (in this case the error object)', async () => {
     const v = new ResponseValidator(cloneDeep(apiSpec), {
-        formats: {
-            'date-time': true,
-        },
-        strict: false,
+      formats: {
+        'date-time': true,
+      },
+      strict: false,
     });
     const responses = petsResponseSchema();
     const validators = v._getOrBuildValidator(fakeReq, responses);
@@ -42,10 +44,10 @@ describe(packageJson.name, () => {
 
   it('should throw error when default response is invalid', async () => {
     const v = new ResponseValidator(apiSpec, {
-        formats: {
-            'date-time': true,
-        },
-        strict: false,
+      formats: {
+        'date-time': true,
+      },
+      strict: false,
     });
     const responses = petsResponseSchema();
     const validators = v._getOrBuildValidator(fakeReq, responses);
@@ -71,10 +73,10 @@ describe(packageJson.name, () => {
 
   it('should return an error if field type is invalid', async () => {
     const v = new ResponseValidator(apiSpec, {
-        formats: {
-            'date-time': true,
-        },
-        strict: false,
+      formats: {
+        'date-time': true,
+      },
+      strict: false,
     });
     const responses = petsResponseSchema();
     const validators = v._getOrBuildValidator(fakeReq, responses);

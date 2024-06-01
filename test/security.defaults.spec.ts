@@ -61,7 +61,7 @@ describe('security.defaults', () => {
       .then((r) => {
         expect(r.body)
           .to.have.property('message')
-          .that.equals('cookie \'JSESSIONID\' required');
+          .that.equals("cookie 'JSESSIONID' required");
       });
   });
 });

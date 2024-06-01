@@ -119,5 +119,4 @@ describe('custom operation handler', () => {
         expect(r.text).to.be.equal('pong');
       });
   });
-
 });

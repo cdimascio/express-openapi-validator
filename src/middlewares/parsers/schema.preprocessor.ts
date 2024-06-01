@@ -44,16 +44,24 @@ class Node<T, P> {
 }
 type SchemaObjectNode = Node<SchemaObject, SchemaObject>;
 
-function isParameterObject(node: ParameterObject | ReferenceObject): node is ParameterObject {
-  return !((node as ReferenceObject).$ref);
+function isParameterObject(
+  node: ParameterObject | ReferenceObject,
+): node is ParameterObject {
+  return !(node as ReferenceObject).$ref;
 }
-function isReferenceObject(node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject): node is ReferenceObject {
-  return !!((node as ReferenceObject).$ref);
+function isReferenceObject(
+  node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject,
+): node is ReferenceObject {
+  return !!(node as ReferenceObject).$ref;
 }
-function isArraySchemaObject(node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject): node is ArraySchemaObject {
-  return !!((node as ArraySchemaObject).items);
+function isArraySchemaObject(
+  node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject,
+): node is ArraySchemaObject {
+  return !!(node as ArraySchemaObject).items;
 }
-function isNonArraySchemaObject(node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject): node is NonArraySchemaObject {
+function isNonArraySchemaObject(
+  node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject,
+): node is NonArraySchemaObject {
   return !isArraySchemaObject(node) && !isReferenceObject(node);
 }
 
@@ -160,7 +168,8 @@ export class SchemaPreprocessor {
           const node = new Root<OpenAPIV3.OperationObject>(operation, path);
           const requestBodies = this.extractRequestBodySchemaNodes(node);
           const responseBodies = this.extractResponseSchemaNodes(node);
-          const requestParameters = this.extractRequestParameterSchemaNodes(node);
+          const requestParameters =
+            this.extractRequestParameterSchemaNodes(node);
 
           requestBodySchemas.push(...requestBodies);
           responseSchemas.push(...responseBodies);
@@ -233,7 +242,10 @@ export class SchemaPreprocessor {
           recurse(node, child, opts);
         });
       } else if (schema.additionalProperties) {
-        const child = new Node(node, schema.additionalProperties, [...node.path, 'additionalProperties']);
+        const child = new Node(node, schema.additionalProperties, [
+          ...node.path,
+          'additionalProperties',
+        ]);
         recurse(node, child, opts);
       }
     };
@@ -289,7 +301,7 @@ export class SchemaPreprocessor {
         this.handleReadonly(pschema, nschema, options);
         this.handleWriteonly(pschema, nschema, options);
         this.processDiscriminator(pschema, nschema, options);
-        this.removeExamples(pschema, nschema, options)
+        this.removeExamples(pschema, nschema, options);
       }
     }
   }
@@ -452,10 +464,10 @@ export class SchemaPreprocessor {
   ) {
     if (schema.type !== 'object') return;
     if (schema?.example) {
-      delete schema.example
+      delete schema.example;
     }
     if (schema?.examples) {
-      delete schema.examples
+      delete schema.examples;
     }
   }
 
@@ -573,21 +585,20 @@ export class SchemaPreprocessor {
   private extractRequestParameterSchemaNodes(
     operationNode: Root<OperationObject>,
   ): Root<SchemaObject>[] {
-
     return (operationNode.schema.parameters ?? []).flatMap((node) => {
       const parameterObject = isParameterObject(node) ? node : undefined;
       if (!parameterObject?.schema) return [];
 
-      const schema = isNonArraySchemaObject(parameterObject.schema) ?
-        parameterObject.schema :
-        undefined;
+      const schema = isNonArraySchemaObject(parameterObject.schema)
+        ? parameterObject.schema
+        : undefined;
       if (!schema) return [];
 
       return new Root(schema, [
         ...operationNode.path,
         'parameters',
         parameterObject.name,
-        parameterObject.in
+        parameterObject.in,
       ]);
     });
   }

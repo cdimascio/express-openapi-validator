@@ -10,12 +10,10 @@ describe('empty servers', () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'empty.servers.yaml');
-    app = await createApp({ apiSpec }, 3007, app =>
+    app = await createApp({ apiSpec }, 3007, (app) =>
       app.use(
         ``,
-        express
-          .Router()
-          .get(`/pets`, (req, res) => res.json(req.body)),
+        express.Router().get(`/pets`, (req, res) => res.json(req.body)),
       ),
     );
   });
@@ -28,7 +26,7 @@ describe('empty servers', () => {
     request(app)
       .get(`/pets`)
       .expect(400)
-      .then(r => {
+      .then((r) => {
         expect(r.body.errors).to.be.an('array');
         expect(r.body.errors).to.have.length(2);
       }));

@@ -187,8 +187,8 @@ export class RequestParameterMutator {
     const properties = hasXOf
       ? xOfProperties(schema)
       : type === 'object'
-      ? Object.keys(schema.properties ?? {})
-      : [];
+        ? Object.keys(schema.properties ?? {})
+        : [];
 
     this.explodedJsonObjectAndMutateRequest(
       req,

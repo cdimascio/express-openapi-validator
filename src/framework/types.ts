@@ -44,7 +44,7 @@ export interface Options extends ajv.Options {
   ajvFormats?: FormatsPluginOptions;
 }
 
-export interface RequestValidatorOptions extends Options, ValidateRequestOpts { }
+export interface RequestValidatorOptions extends Options, ValidateRequestOpts {}
 
 export type ValidateRequestOpts = {
   allowUnknownQueryParameters?: boolean;
@@ -107,29 +107,36 @@ export class SerDesSingleton implements SerDes {
       serialize: param.serialize,
     };
   }
-};
+}
 
 export type SerDesMap = {
-  [format: string]: SerDes
+  [format: string]: SerDes;
 };
 
-type Primitive = undefined | null | boolean | string | number | Function
+type Primitive = undefined | null | boolean | string | number | Function;
 
-type Immutable<T> =
-  T extends Primitive ? T :
-    T extends Array<infer U> ? ReadonlyArray<U> :
-      T extends Map<infer K, infer V> ? ReadonlyMap<K, V> : Readonly<T>
+type Immutable<T> = T extends Primitive
+  ? T
+  : T extends Array<infer U>
+    ? ReadonlyArray<U>
+    : T extends Map<infer K, infer V>
+      ? ReadonlyMap<K, V>
+      : Readonly<T>;
 
-type DeepImmutable<T> =
-  T extends Primitive ? T :
-    T extends Array<infer U> ? DeepImmutableArray<U> :
-      T extends Map<infer K, infer V> ? DeepImmutableMap<K, V> : DeepImmutableObject<T>
+type DeepImmutable<T> = T extends Primitive
+  ? T
+  : T extends Array<infer U>
+    ? DeepImmutableArray<U>
+    : T extends Map<infer K, infer V>
+      ? DeepImmutableMap<K, V>
+      : DeepImmutableObject<T>;
 
 interface DeepImmutableArray<T> extends ReadonlyArray<DeepImmutable<T>> {}
-interface DeepImmutableMap<K, V> extends ReadonlyMap<DeepImmutable<K>, DeepImmutable<V>> {}
+interface DeepImmutableMap<K, V>
+  extends ReadonlyMap<DeepImmutable<K>, DeepImmutable<V>> {}
 type DeepImmutableObject<T> = {
-  readonly [K in keyof T]: DeepImmutable<T[K]>
-}
+  readonly [K in keyof T]: DeepImmutable<T[K]>;
+};
 
 export interface OpenApiValidatorOpts {
   apiSpec: DeepImmutable<OpenAPIV3.Document> | string;
@@ -263,7 +270,7 @@ export namespace OpenAPIV3 {
     in: string;
   }
 
-  export interface HeaderObject extends ParameterBaseObject { }
+  export interface HeaderObject extends ParameterBaseObject {}
 
   interface ParameterBaseObject {
     description?: string;
@@ -287,14 +294,18 @@ export namespace OpenAPIV3 {
     | 'integer';
   export type ArraySchemaObjectType = 'array';
 
-  export type SchemaObject = ArraySchemaObject | NonArraySchemaObject | CompositionSchemaObject;
+  export type SchemaObject =
+    | ArraySchemaObject
+    | NonArraySchemaObject
+    | CompositionSchemaObject;
 
-  export interface ArraySchemaObject extends BaseSchemaObject<ArraySchemaObjectType> {
+  export interface ArraySchemaObject
+    extends BaseSchemaObject<ArraySchemaObjectType> {
     items: ReferenceObject | SchemaObject;
   }
 
-  export interface NonArraySchemaObject extends BaseSchemaObject<NonArraySchemaObjectType> {
-  }
+  export interface NonArraySchemaObject
+    extends BaseSchemaObject<NonArraySchemaObjectType> {}
 
   export interface CompositionSchemaObject extends BaseSchemaObject<undefined> {
     // JSON schema allowed properties, adjusted for OpenAPI

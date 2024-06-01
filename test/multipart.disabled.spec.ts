@@ -9,7 +9,7 @@ describe(packageJson.name, () => {
   let app = null;
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'multipart.yaml');
-    app = await createApp({ apiSpec, fileUploader: false }, 3003, app =>
+    app = await createApp({ apiSpec, fileUploader: false }, 3003, (app) =>
       app.use(
         `${app.basePath}`,
         express
@@ -30,10 +30,8 @@ describe(packageJson.name, () => {
         .set('Content-Type', 'multipart/form-data')
         .set('Accept', 'application/json')
         .expect(400)
-        .then(e => {
-          expect(e.body)
-            .has.property('errors')
-            .with.length(2);
+        .then((e) => {
+          expect(e.body).has.property('errors').with.length(2);
           expect(e.body.errors[0])
             .has.property('message')
             .equal("must have required property 'file'");
@@ -84,10 +82,8 @@ describe(packageJson.name, () => {
         .set('Content-Type', 'application/json')
         .expect('Content-Type', /json/)
         .expect(415)
-        .then(r => {
-          expect(r.body)
-            .has.property('errors')
-            .with.length(1);
+        .then((r) => {
+          expect(r.body).has.property('errors').with.length(1);
           expect(r.body.errors[0])
             .has.property('message')
             .equal('unsupported media type application/json');
@@ -102,7 +98,7 @@ describe(packageJson.name, () => {
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(400)
-        .then(r => {
+        .then((r) => {
           const e = r.body.errors;
           expect(e).to.have.length(1);
           expect(e[0].path).to.contain('number');

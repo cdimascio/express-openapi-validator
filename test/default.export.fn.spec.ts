@@ -20,8 +20,8 @@ describe('default export resolver', () => {
                 operationId: 'test#get',
                 // @ts-ignore
                 'x-eov-operation-handler': 'routes/default-export-fn',
-                responses: { 200: { description: 'homepage' } }
-              }
+                responses: { 200: { description: 'homepage' } },
+              },
             },
           },
         },
@@ -40,7 +40,7 @@ describe('default export resolver', () => {
       .get(`/`)
       .expect(200)
       .then((r) => {
-        expect(r.body).to.have.property('message').that.equals("It Works!");
+        expect(r.body).to.have.property('message').that.equals('It Works!');
       });
   });
 });

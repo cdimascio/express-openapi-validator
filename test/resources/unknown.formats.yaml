@@ -3,7 +3,7 @@ info:
   title: Formats
   version: 1.0.0
 servers:
-- url: /v1
+  - url: /v1
 paths:
   /persons:
     post:
@@ -16,12 +16,11 @@ paths:
         200:
           description: Invalid ID supplied
 
- 
 components:
   schemas:
     Person:
       required:
-      - id
+        - id
       type: object
       properties:
         id:
@@ -32,4 +31,4 @@ components:
         hypertext:
           type: string
           format: hypertext
-          example: "<p>Hello. I am..."
+          example: '<p>Hello. I am...'

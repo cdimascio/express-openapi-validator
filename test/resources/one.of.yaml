@@ -1,4 +1,4 @@
-openapi: "3.0.2"
+openapi: '3.0.2'
 info:
   version: 1.0.0
   title: requestBodies $ref
@@ -15,17 +15,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/OneOfType"
+              $ref: '#/components/schemas/OneOfType'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OneOfType'
-        "400":
+        '400':
           description: Bad Request
-          
+
   /one_of_b:
     post:
       requestBody:
@@ -33,22 +33,22 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/OneOfTypeB"
+              $ref: '#/components/schemas/OneOfTypeB'
       responses:
-        "200":
+        '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/OneOfType'
-        "400":
+        '400':
           description: Bad Request
 
 components:
   schemas:
     SimilarTypeOne:
       allOf:
-        - $ref: "#/components/schemas/SimilarSuperType"
+        - $ref: '#/components/schemas/SimilarSuperType'
         - type: object
           properties:
             type:
@@ -63,7 +63,7 @@ components:
 
     SimilarTypeTwo:
       allOf:
-        - $ref: "#/components/schemas/SimilarSuperType"
+        - $ref: '#/components/schemas/SimilarSuperType'
         - type: object
           properties:
             type:
@@ -83,14 +83,14 @@ components:
           type: array
           items:
             oneOf:
-              - $ref: "#/components/schemas/SimilarTypeOne"
-              - $ref: "#/components/schemas/SimilarTypeTwo"
+              - $ref: '#/components/schemas/SimilarTypeOne'
+              - $ref: '#/components/schemas/SimilarTypeTwo'
             discriminator:
               propertyName: type
 
     SimilarTypeOneB:
       allOf:
-        - $ref: "#/components/schemas/SimilarSuperTypeB"
+        - $ref: '#/components/schemas/SimilarSuperTypeB'
       properties:
         type:
           type: string
@@ -101,7 +101,7 @@ components:
         value:
           type: number
           format: int32
-          enum: [ 1 ]
+          enum: [1]
           default: 1
       required:
         - type
@@ -110,7 +110,7 @@ components:
 
     SimilarTypeTwoB:
       allOf:
-        - $ref: "#/components/schemas/SimilarSuperTypeB"
+        - $ref: '#/components/schemas/SimilarSuperTypeB'
       properties:
         type:
           type: string
@@ -121,7 +121,7 @@ components:
         value:
           type: number
           format: int32
-          enum: [ 2 ]
+          enum: [2]
           default: 2
       required:
         - type
@@ -135,8 +135,8 @@ components:
           type: array
           items:
             oneOf:
-              - $ref: "#/components/schemas/SimilarTypeOneB"
-              - $ref: "#/components/schemas/SimilarTypeTwoB"
+              - $ref: '#/components/schemas/SimilarTypeOneB'
+              - $ref: '#/components/schemas/SimilarTypeTwoB'
             discriminator:
               propertyName: type
 
@@ -145,7 +145,7 @@ components:
       properties:
         id:
           type: string
-          
+
     SimilarSuperTypeB:
       type: object
       properties:
@@ -158,4 +158,3 @@ components:
         propertyName: type
       required:
         - value
-

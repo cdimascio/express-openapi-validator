@@ -69,7 +69,10 @@ export class OpenApiSpecLoader {
                 continue;
               }
               const pathParams = new Set<string>();
-              const parameters = [...schema.parameters ?? [], ...methods.parameters ?? []]
+              const parameters = [
+                ...(schema.parameters ?? []),
+                ...(methods.parameters ?? []),
+              ];
               for (const param of parameters) {
                 if (param.in === 'path') {
                   pathParams.add(param.name);
@@ -101,7 +104,7 @@ export class OpenApiSpecLoader {
       apiDoc,
       basePaths,
       routes,
-      serial
+      serial,
     };
   }
 

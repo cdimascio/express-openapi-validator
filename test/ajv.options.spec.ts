@@ -10,8 +10,8 @@ describe('AjvOptions', () => {
     apiSpec: './spec',
     validateApiSpec: false,
     validateRequests: {
-        allowUnknownQueryParameters: false,
-        coerceTypes: false,
+      allowUnknownQueryParameters: false,
+      coerceTypes: false,
     },
     validateResponses: {
       coerceTypes: false,

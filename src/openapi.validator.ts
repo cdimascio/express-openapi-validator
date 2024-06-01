@@ -36,9 +36,9 @@ export {
 } from './framework/types';
 
 interface MiddlewareContext {
-  context: OpenApiContext,
-  responseApiDoc: OpenAPIV3.Document,
-  error: any,
+  context: OpenApiContext;
+  responseApiDoc: OpenAPIV3.Document;
+  error: any;
 }
 
 export class OpenApiValidator {
@@ -208,7 +208,9 @@ export class OpenApiValidator {
       middlewares.push(function responseMiddleware(req, res, next) {
         return pContext
           .then(({ responseApiDoc, context: { serial } }) => {
-            resmw = resmw || self.responseValidationMiddleware(responseApiDoc, serial);
+            resmw =
+              resmw ||
+              self.responseValidationMiddleware(responseApiDoc, serial);
             return resmw(req, res, next);
           })
           .catch(next);
@@ -221,7 +223,9 @@ export class OpenApiValidator {
       middlewares.push(function operationHandlersMiddleware(req, res, next) {
         if (router) return router(req, res, next);
         return pContext
-          .then(({context}) => self.installOperationHandlers(req.baseUrl, context))
+          .then(({ context }) =>
+            self.installOperationHandlers(req.baseUrl, context),
+          )
           .then((installedRouter) => (router = installedRouter)(req, res, next))
           .catch(next);
       });
@@ -239,7 +243,7 @@ export class OpenApiValidator {
     }
 
     // install param on routes with paths
-    const uniqPathParams = [...new Set(pathParams)]
+    const uniqPathParams = [...new Set(pathParams)];
     for (const p of uniqPathParams) {
       app.param(
         p,
@@ -291,17 +295,23 @@ export class OpenApiValidator {
     return (req, res, next) => requestValidator.validate(req, res, next);
   }
 
-  private responseValidationMiddleware(apiDoc: OpenAPIV3.Document, serial: number) {
+  private responseValidationMiddleware(
+    apiDoc: OpenAPIV3.Document,
+    serial: number,
+  ) {
     return new middlewares.ResponseValidator(
       apiDoc,
       this.ajvOpts.response,
       // This has already been converted from boolean if required
       this.options.validateResponses as ValidateResponseOpts,
-      serial
+      serial,
     ).validate();
   }
 
-  async installOperationHandlers(baseUrl: string, context: OpenApiContext): Promise<Router> {
+  async installOperationHandlers(
+    baseUrl: string,
+    context: OpenApiContext,
+  ): Promise<Router> {
     const router = express.Router({ mergeParams: true });
 
     this.installPathParams(router, context);

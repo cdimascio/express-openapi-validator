@@ -69,8 +69,8 @@ export class ResponseValidator {
         const accepts: [string] = contentType
           ? [contentType]
           : accept
-          ? accept.split(',').map((h) => h.trim())
-          : [];
+            ? accept.split(',').map((h) => h.trim())
+            : [];
 
         try {
           return this._validate({

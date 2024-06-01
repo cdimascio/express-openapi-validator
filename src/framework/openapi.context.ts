@@ -42,7 +42,9 @@ export class OpenApiContext {
   }
 
   public shouldIgnoreRoute(path: string) {
-    return typeof this.ignorePaths === 'function' ? this.ignorePaths(path) : this.ignorePaths?.test(path);
+    return typeof this.ignorePaths === 'function'
+      ? this.ignorePaths(path)
+      : this.ignorePaths?.test(path);
   }
 
   public routePair(route: string): RoutePair {

@@ -18,7 +18,7 @@ servers:
 paths:
   /ping:
     get:
-      parameters: 
+      parameters:
         - name: id
           in: query
           required: true

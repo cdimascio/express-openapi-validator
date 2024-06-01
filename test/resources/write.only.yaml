@@ -15,7 +15,7 @@ paths:
     post:
       description: create products
       operationId: createProductsInline
-      parameters: 
+      parameters:
         - name: exclude_write_only
           in: query
           schema:
@@ -50,7 +50,7 @@ paths:
     post:
       description: create products
       operationId: createProductsNested
-      parameters: 
+      parameters:
         - name: exclude_write_only
           in: query
           schema:
@@ -96,7 +96,7 @@ components:
     ProductNested:
       type: object
       required:
-        - "password"
+        - 'password'
       properties:
         id:
           type: string
@@ -126,7 +126,7 @@ components:
     Review:
       type: object
       required:
-        - "review_password"
+        - 'review_password'
       properties:
         id:
           type: integer

@@ -11,7 +11,7 @@ describe(packageJson.name, () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'component.params.yaml');
-    app = await createApp({ apiSpec }, 3005, app =>
+    app = await createApp({ apiSpec }, 3005, (app) =>
       app.use(
         `/`,
         express
@@ -30,7 +30,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`/api/v1/meeting/${id}`)
       .expect(200)
-      .then(r => {
+      .then((r) => {
         expect(r.body.id).to.equal(id);
       });
   });

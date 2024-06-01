@@ -5,6 +5,7 @@ Contributors are welcome!
 See something that needs fixing? Got an idea for a new feature? Contribute a [Pull Request](#Create-a-Pull-Request)!
 
 ## Easy path to contribution
+
 Click the Gitpod badge to setup a ready to code dev env in the cloud.
 
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/cdimascio/express-openapi-validator)
@@ -26,7 +27,7 @@ Click the Gitpod badge to setup a ready to code dev env in the cloud.
    # From the project directory, run
    npm i
    ```
-   
+
 Be [Create a Pull Request](#create-a-pull-request) once you've written you code.
 
 ## Run the tests
@@ -56,11 +57,12 @@ Be [Create a Pull Request](#create-a-pull-request) once you've written you code.
 3. Make a new branch
 4. Make your changes
 5. Push it back to your repo
-6. From the Github UI, Click the Compare & pull request button 
+6. From the Github UI, Click the Compare & pull request button
 
    NOTE: this button will be present for some period of time after 5. If the button no longer there, Create pull request and select the branches manually)
-6. From the Github UI, Click Create pull request to open a new pull request
-7. Detailed steps with example here:
+
+7. From the Github UI, Click Create pull request to open a new pull request
+8. Detailed steps with example here:
 
 ## Project structure
 
@@ -74,12 +76,13 @@ Reach out on [gitter](https://gitter.im/cdimascio-oss/community).
 We're happy to help!
 
 ## FAQ
+
 **Q:** I don't have permission to create a branch and I can't push my changes
 
 **A:** You cannot directly create a branch in this repo. Instead [Create a Pull Request](#create-a-pull-request)
 
+## Misc
 
-## Misc 
 If you are not a project, you may ignore this section
 
 ### Generate Change Log

@@ -23,6 +23,7 @@ docs.
 - 🎈 file upload
 
 **Docs:**
+
 - 📖 [documentation](https://cdimascio.github.io/express-openapi-validator-documentation/)
 
 [![GitHub stars](https://img.shields.io/github/stars/cdimascio/express-openapi-validator.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/cdimascio/express-openapi-validator/stargazers/) [![Twitter URL](https://img.shields.io/twitter/url/https/github.com/cdimascio/express-openapi-validator.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20express-openapi-validator%20by%20%40CarmineDiMascio%20https%3A%2F%2Fgithub.com%2Fcdimascio%2Fexpress-openapi-validator%20%F0%9F%91%8D)
@@ -83,7 +84,7 @@ _**Important:** Ensure express is configured with all relevant body parsers. Bod
 
 See the [doc](https://cdimascio.github.io/express-openapi-validator-documentation/) for complete documenation
 
-_deprecated_ [legacy doc](https://github.com/cdimascio/express-openapi-validator/wiki) 
+_deprecated_ [legacy doc](https://github.com/cdimascio/express-openapi-validator/wiki)
 
 ## License
 

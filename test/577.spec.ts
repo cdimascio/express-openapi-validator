@@ -13,7 +13,7 @@ describe('#577 - Exclude response validation that is not in api spec', () => {
     const app = await createApp(apiSpec);
     await request(app).get('/users').expect(200, 'some users');
     await request(app).post('/users').expect(201, 'Created!');
-    await request(app).get ('/example').expect(200, 'Example indeed')
+    await request(app).get('/example').expect(200, 'Example indeed');
     app.server.close();
 
     deepStrictEqual(apiSpec, createApiSpec());
@@ -34,18 +34,15 @@ async function createApp(
     }),
   );
   app.get('/users', (req, res) => {
-      res.status(200).send('some users');
-    }
-  );
+    res.status(200).send('some users');
+  });
   app.post('/users', (req, res) => {
-      res.status(201).send('Created!');
-    }
-  );
+    res.status(201).send('Created!');
+  });
 
   app.get('/example', (req, res) => {
-      res.status(200).send('Example indeed');
-    }
-  );
+    res.status(200).send('Example indeed');
+  });
 
   await startServer(app, 3001);
   return app;

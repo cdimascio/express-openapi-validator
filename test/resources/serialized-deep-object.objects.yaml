@@ -1,4 +1,4 @@
-openapi: "3.0.2"
+openapi: '3.0.2'
 info:
   version: 1.0.0
   title: Request Query Serialization
@@ -12,7 +12,7 @@ paths:
     x-vendorExtension1: accounts
     get:
       x-vendorExtension2: accounts
-      summary: "retrieve a deep object"
+      summary: 'retrieve a deep object'
       operationId: getDeepObject
       parameters:
         - in: query
@@ -31,21 +31,21 @@ paths:
                 minItems: 1
               state:
                 type: string
-                enum: ["default", "validated", "pending"]
-                default: "default"
+                enum: ['default', 'validated', 'pending']
+                default: 'default'
                 description: "Filter the tags by their validity. The default value ('default') stands for no filtering."
               greeting:
                 type: string
-                default: "hello"
+                default: 'hello'
       responses:
-        "200":
+        '200':
           description: the object
   /deep_object_2:
     get:
       parameters:
-      - $ref: '#/components/parameters/pedestrian'
+        - $ref: '#/components/parameters/pedestrian'
       responses:
-        "200":
+        '200':
           description: the object
 
 components:
@@ -76,7 +76,7 @@ components:
     #     greeting:
     #       type: string
     #       default: "hello"
-          
+
   parameters:
     pedestrian:
       name: pedestrian
