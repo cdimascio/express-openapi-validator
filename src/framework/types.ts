@@ -509,7 +509,7 @@ export interface OpenAPIFrameworkPathObject {
 }
 
 interface OpenAPIFrameworkArgs {
-  apiDoc: OpenAPIV3.Document | string;
+  apiDoc: DeepImmutableObject<OpenAPIV3.Document> | OpenAPIV3.Document | string;
   validateApiSpec?: boolean;
   $refParser?: {
     mode: 'bundle' | 'dereference';
