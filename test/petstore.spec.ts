@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { OpenAPIV3 } from '../src/framework/types';
 import { createApp } from './common/app';
 

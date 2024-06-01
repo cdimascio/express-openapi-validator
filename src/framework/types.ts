@@ -1,5 +1,5 @@
 import * as ajv from 'ajv';
-import * as multer from 'multer';
+import multer from 'multer';
 import { FormatsPluginOptions } from 'ajv-formats';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { RouteMetadata } from './openapi.spec.loader';

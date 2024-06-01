@@ -1,4 +1,3 @@
-import { OpenApiContext } from '../framework/openapi.context';
 import { createRequestAjv } from '../framework/ajv';
 import {
   OpenAPIV3,

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import * as express from 'express';
-import * as path from 'path';
-import * as request from 'supertest';
+import express from 'express';
+import path from 'path';
+import request from 'supertest';
 import { createApp } from './common/app';
 
 describe('styles', () => {

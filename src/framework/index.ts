@@ -1,6 +1,6 @@
-import * as fs from 'fs';
-import * as path from 'path';
-import * as $RefParser from '@apidevtools/json-schema-ref-parser';
+import fs from 'fs';
+import path from 'path';
+import $RefParser from '@apidevtools/json-schema-ref-parser';
 import { OpenAPISchemaValidator } from './openapi.schema.validator';
 import { BasePath } from './base.path';
 import {

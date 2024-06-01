@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import * as http from 'http';
-import * as express from 'express';
+import http from 'http';
+import express from 'express';
 
 export function startServer(app, port: number): Promise<http.Server> {
   return new Promise((resolve, reject) => {

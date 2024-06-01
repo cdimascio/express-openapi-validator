@@ -7,10 +7,10 @@ import {
   ValidationSchema,
   BadRequest,
 } from '../../framework/types';
-import * as url from 'url';
+import url from 'url';
 import { dereferenceParameter, normalizeParameter } from './util';
-import * as mediaTypeParser from 'media-typer';
-import * as contentTypeParser from 'content-type';
+import mediaTypeParser from 'media-typer';
+import contentTypeParser from 'content-type';
 
 type SchemaObject = OpenAPIV3.SchemaObject;
 type ReferenceObject = OpenAPIV3.ReferenceObject;

@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path from 'path';
 import { createApp } from '../common/app';
 
 const apiSpec = path.join('test', 'resources', 'openapi.yaml');

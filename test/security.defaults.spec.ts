@@ -1,7 +1,7 @@
-import * as path from 'path';
-import * as express from 'express';
+import path from 'path';
+import express from 'express';
 import { expect } from 'chai';
-import * as request from 'supertest';
+import request from 'supertest';
 import { createApp } from './common/app';
 
 describe('security.defaults', () => {

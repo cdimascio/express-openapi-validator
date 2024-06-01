@@ -1,6 +1,6 @@
 import { Options } from 'ajv';
 import ono from 'ono';
-import * as express from 'express';
+import express from 'express';
 import * as middlewares from './middlewares';
 import { Application, Response, NextFunction, Router } from 'express';
 import { OpenApiContext } from './framework/openapi.context';

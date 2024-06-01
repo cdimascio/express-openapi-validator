@@ -1,8 +1,8 @@
-import * as express from 'express';
+import express from 'express';
 import * as OpenApiValidator from '../src';
 import { expect } from 'chai';
-import * as request from 'supertest';
-import * as path from 'path';
+import request from 'supertest';
+import path from 'path';
 
 describe('default export resolver', () => {
   let server = null;

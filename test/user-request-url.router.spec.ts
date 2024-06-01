@@ -6,11 +6,10 @@ import type {
   NextFunction,
   Request,
 } from 'express';
-import * as express from 'express';
+import express from 'express';
 import { OpenAPIV3 } from '../src/framework/types';
-import * as request from 'supertest';
+import request from 'supertest';
 import { createApp } from './common/app';
-
 import * as OpenApiValidator from '../src';
 import { Server } from 'http';
 

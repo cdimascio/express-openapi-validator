@@ -1,8 +1,8 @@
-import * as express from 'express';
-import * as path from 'path';
-import * as fs from 'fs';
+import express from 'express';
+import path from 'path';
+import fs from 'fs';
 import { expect } from 'chai';
-import * as request from 'supertest';
+import request from 'supertest';
 import { createApp } from './common/app';
 
 describe('a multipart request', () => {

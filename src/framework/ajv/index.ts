@@ -4,7 +4,7 @@ import ajvType from 'ajv/dist/vocabularies/jtd/type';
 import addFormats from 'ajv-formats';
 import { formats } from './formats';
 import { OpenAPIV3, Options, SerDes } from '../types';
-import * as traverse from 'json-schema-traverse';
+import traverse from 'json-schema-traverse';
 
 interface SerDesSchema extends Partial<SerDes> {
   kind?: 'req' | 'res';

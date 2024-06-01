@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { createApp } from './common/app';
 
 describe('511 schema.preprocessor inheritance', () => {

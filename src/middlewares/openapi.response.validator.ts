@@ -15,8 +15,8 @@ import {
   InternalServerError,
   ValidateResponseOpts,
 } from '../framework/types';
-import * as mediaTypeParser from 'media-typer';
-import * as contentTypeParser from 'content-type';
+import mediaTypeParser from 'media-typer';
+import contentTypeParser from 'content-type';
 
 interface ValidateResult {
   validators: { [key: string]: ValidateFunction };

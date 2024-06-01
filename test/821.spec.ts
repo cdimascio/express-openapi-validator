@@ -1,11 +1,10 @@
-import * as express from 'express';
+import express from 'express';
 import { Server } from 'http';
-import * as request from 'supertest';
+import request from 'supertest';
 import * as OpenApiValidator from '../src';
 import { OpenAPIV3 } from '../src/framework/types';
 import { startServer } from './common/app.common';
-import { deepStrictEqual } from 'assert';
-import * as path from 'path';
+import path from 'path';
 
 const apiSpecPath = path.join('test', 'resources', '699.yaml');
 

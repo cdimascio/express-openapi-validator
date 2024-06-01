@@ -1,7 +1,6 @@
-import * as path from 'path';
-import * as express from 'express';
-import { expect } from 'chai';
-import * as request from 'supertest';
+import path from 'path';
+import express from 'express';
+import request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
 

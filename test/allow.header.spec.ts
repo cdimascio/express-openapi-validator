@@ -1,7 +1,7 @@
 import { expect } from 'chai';
-import * as express from 'express';
+import express from 'express';
 import { Server } from 'http';
-import * as request from 'supertest';
+import request from 'supertest';
 import * as packageJson from '../package.json';
 import * as OpenApiValidator from '../src';
 import { OpenAPIV3 } from '../src/framework/types';

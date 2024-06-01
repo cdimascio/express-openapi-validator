@@ -1,4 +1,4 @@
-import * as cloneDeep from 'lodash.clonedeep';
+import cloneDeep from 'lodash.clonedeep';
 import * as res from './resolvers';
 import { OpenApiValidator, OpenApiValidatorOpts } from './openapi.validator';
 import { OpenApiSpecLoader } from './framework/openapi.spec.loader';
