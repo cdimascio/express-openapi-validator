@@ -1,7 +1,8 @@
 import * as ajv from 'ajv';
 import * as multer from 'multer';
-import { FormatsPluginOptions, FormatOptions } from 'ajv-formats';
-import { Request, Response, NextFunction } from 'express';
+import { FormatsPluginOptions } from 'ajv-formats';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { RouteMetadata } from './openapi.spec.loader';
 export { OpenAPIFrameworkArgs };
 
 export type BodySchema =
@@ -43,7 +44,7 @@ export interface Options extends ajv.Options {
   ajvFormats?: FormatsPluginOptions;
 }
 
-export interface RequestValidatorOptions extends Options, ValidateRequestOpts {}
+export interface RequestValidatorOptions extends Options, ValidateRequestOpts { }
 
 export type ValidateRequestOpts = {
   allowUnknownQueryParameters?: boolean;
@@ -63,7 +64,11 @@ export type ValidateSecurityOpts = {
 
 export type OperationHandlerOptions = {
   basePath: string;
-  resolver: Function;
+  resolver: (
+    handlersPath: string,
+    route: RouteMetadata,
+    apiDoc: OpenAPIV3.Document,
+  ) => RequestHandler | Promise<RequestHandler>;
 };
 
 export type Format = {
@@ -108,8 +113,26 @@ export type SerDesMap = {
   [format: string]: SerDes
 };
 
+type Primitive = undefined | null | boolean | string | number | Function
+
+type Immutable<T> =
+  T extends Primitive ? T :
+    T extends Array<infer U> ? ReadonlyArray<U> :
+      T extends Map<infer K, infer V> ? ReadonlyMap<K, V> : Readonly<T>
+
+type DeepImmutable<T> =
+  T extends Primitive ? T :
+    T extends Array<infer U> ? DeepImmutableArray<U> :
+      T extends Map<infer K, infer V> ? DeepImmutableMap<K, V> : DeepImmutableObject<T>
+
+interface DeepImmutableArray<T> extends ReadonlyArray<DeepImmutable<T>> {}
+interface DeepImmutableMap<K, V> extends ReadonlyMap<DeepImmutable<K>, DeepImmutable<V>> {}
+type DeepImmutableObject<T> = {
+  readonly [K in keyof T]: DeepImmutable<T[K]>
+}
+
 export interface OpenApiValidatorOpts {
-  apiSpec: OpenAPIV3.Document | string;
+  apiSpec: DeepImmutable<OpenAPIV3.Document> | string;
   validateApiSpec?: boolean;
   validateResponses?: boolean | ValidateResponseOpts;
   validateRequests?: boolean | ValidateRequestOpts;
@@ -118,6 +141,7 @@ export interface OpenApiValidatorOpts {
   ignoreUndocumented?: boolean;
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
+  useRequestUrl?: boolean;
   /**
    * @deprecated
    * Use `formats` + `validateFormats` to ignore specified formats
@@ -239,7 +263,7 @@ export namespace OpenAPIV3 {
     in: string;
   }
 
-  export interface HeaderObject extends ParameterBaseObject {}
+  export interface HeaderObject extends ParameterBaseObject { }
 
   interface ParameterBaseObject {
     description?: string;
@@ -316,6 +340,7 @@ export namespace OpenAPIV3 {
     xml?: XMLObject;
     externalDocs?: ExternalDocumentationObject;
     example?: any;
+    examples?: any;
     deprecated?: boolean;
 
     // Express-openapi-validator specific properties
@@ -495,6 +520,7 @@ export interface OpenApiRequestMetadata {
   openApiRoute: string;
   pathParams: { [index: string]: string };
   schema: OpenAPIV3.OperationObject;
+  serial: number;
 }
 
 export interface OpenApiRequest extends Request {
@@ -558,7 +584,7 @@ export interface ValidationError {
 export interface ValidationErrorItem {
   path: string;
   message: string;
-  error_code?: string;
+  errorCode?: string;
 }
 
 interface ErrorHeaders {

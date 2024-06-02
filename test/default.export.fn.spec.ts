@@ -4,21 +4,6 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import * as path from 'path';
 
-const schema = {
-  openapi: '3.0.0',
-  info: { version: '1.0.0', title: 'test bug OpenApiValidator' },
-  servers: [],
-  paths: {
-    '/': {
-      get: {
-        operationId: 'anything',
-        'x-eov-operation-handler': 'controller-with-default',
-        responses: { 200: { description: 'home api' } }
-      }
-    },
-  },
-} as const;
-
 describe('default export resolver', () => {
   let server = null;
   let app = express();
@@ -26,7 +11,20 @@ describe('default export resolver', () => {
   before(async () => {
     app.use(
       OpenApiValidator.middleware({
-        apiSpec: schema,
+        apiSpec: {
+          openapi: '3.0.0',
+          info: { version: '1.0.0', title: 'test bug OpenApiValidator' },
+          paths: {
+            '/': {
+              get: {
+                operationId: 'test#get',
+                // @ts-ignore
+                'x-eov-operation-handler': 'routes/default-export-fn',
+                responses: { 200: { description: 'homepage' } }
+              }
+            },
+          },
+        },
         operationHandlers: path.join(__dirname, 'resources'),
       }),
     );
@@ -42,7 +40,7 @@ describe('default export resolver', () => {
       .get(`/`)
       .expect(200)
       .then((r) => {
-        expect(r.body).to.have.property('success').that.equals(true);
+        expect(r.body).to.have.property('message').that.equals("It Works!");
       });
   });
 });

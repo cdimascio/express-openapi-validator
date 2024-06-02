@@ -1,13 +1,15 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const path = require('path');
-const bodyParser = require('body-parser');
 const http = require('http');
+
 const OpenApiValidator = require('express-openapi-validator');
 
 app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.text());
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.text());
+app.use(express.json());
+app.use(cookieParser()); // add if using cookie auth
 
 const versions = [1, 2];
 

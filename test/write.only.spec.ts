@@ -10,7 +10,7 @@ describe(packageJson.name, () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'write.only.yaml');
-    app = await createApp({ apiSpec, validateResponses: true }, 3005, app =>
+    app = await createApp({ apiSpec, validateResponses: true }, 3005, (app) =>
       app
         .post(`${app.basePath}/products/inlined`, (req, res) => {
           const body = req.body;
@@ -18,22 +18,29 @@ describe(packageJson.name, () => {
           if (excludeWriteOnly) {
             delete body.role;
           }
-          res.json(body);
+          res.json({
+            ...body,
+          });
         })
         .post(`${app.basePath}/products/nested`, (req, res) => {
           const body = req.body;
           const excludeWriteOnly = req.query.exclude_write_only;
           body.id = 'test';
           body.created_at = new Date().toISOString();
-          body.reviews = body.reviews.map(r => ({
+          body.reviews = body.reviews.map((r) => ({
             ...(excludeWriteOnly ? {} : { role_x: 'admin' }),
             rating: r.rating ?? 2,
           }));
 
           if (excludeWriteOnly) {
             delete body.role;
+            delete body.password;
           }
-          res.json(body);
+          res.json({
+            // id: 'xxxxx',
+            // created_at: '2024-02-09T17:32:28Z',
+            ...body,
+          });
         }),
     );
   });
@@ -52,7 +59,7 @@ describe(packageJson.name, () => {
         created_at: new Date().toUTCString(),
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         // id is a readonly property and should not be allowed in the request
         expect(body.message).to.contain('created_at');
@@ -68,7 +75,7 @@ describe(packageJson.name, () => {
         price: 10.99,
       })
       .expect(500)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.message).to.contain('role');
         expect(body.errors[0].path).to.contain('/response/role');
@@ -86,8 +93,34 @@ describe(packageJson.name, () => {
         name: 'some name',
         role: 'admin',
         price: 10.99,
+        password: 'password_value',
       })
       .expect(200));
+
+  it('should return 200 if no write-only properties are in the responses', async () =>
+    request(app)
+      .post(`${app.basePath}/products/nested`)
+      .query({
+        exclude_write_only: true,
+      })
+      .set('content-type', 'application/json')
+      .send({
+        name: 'some name',
+        price: 10.99,
+        password: 'password_value',
+        reviews: [
+          {
+            rating: 5,
+            review_password: 'review_password_value',
+          },
+        ],
+      })
+      .expect(200)
+      .then((r) => {
+        const body = r.body;
+        // check that read-only props were not affected and present in the response
+        expect(body.created_at).to.be;
+      }));
 
   it('should not allow write only properties in responses (nested schema $refs)', async () =>
     request(app)
@@ -96,14 +129,16 @@ describe(packageJson.name, () => {
       .send({
         name: 'some name',
         price: 10.99,
+        password: 'password_value',
         reviews: [
           {
             rating: 5,
+            review_password: 'review_password_value',
           },
         ],
       })
       .expect(500)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.message).to.contain('role_x');
         expect(body.errors[0].path).to.contain('/response/reviews/0/role_x');
@@ -129,7 +164,7 @@ describe(packageJson.name, () => {
         ],
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.message).to.contain('request/body/reviews/0/id');
       }));

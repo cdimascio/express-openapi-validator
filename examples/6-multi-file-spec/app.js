@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
 const logger = require('morgan');
 const http = require('http');
 const OpenApiValidator = require('express-openapi-validator');
@@ -11,9 +10,9 @@ const app = express();
 const apiSpec = path.join(__dirname, 'ems.yaml');
 
 // 1. Install bodyParsers for the request types your API will support
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.text());
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.text());
+app.use(express.json());
 
 app.use(logger('dev'));
 app.use(cookieParser());

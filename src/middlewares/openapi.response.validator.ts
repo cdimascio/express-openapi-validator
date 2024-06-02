@@ -32,15 +32,18 @@ export class ResponseValidator {
     [key: string]: { [key: string]: ValidateFunction };
   } = {};
   private eovOptions: ValidateResponseOpts;
+  private serial: number;
 
   constructor(
     openApiSpec: OpenAPIV3.Document,
     options: Options = {},
     eovOptions: ValidateResponseOpts = {},
+    serial: number = -1,
   ) {
     this.spec = openApiSpec;
     this.ajvBody = createResponseAjv(openApiSpec, options);
     this.eovOptions = eovOptions;
+    this.serial = serial;
 
     // This is a pseudo-middleware function. It doesn't get registered with
     // express via `use`
@@ -51,7 +54,7 @@ export class ResponseValidator {
 
   public validate(): RequestHandler {
     return mung.json((body, req, res) => {
-      if (req.openapi) {
+      if (req.openapi && this.serial == req.openapi.serial) {
         const openapi = <OpenApiRequestMetadata>req.openapi;
         // instead of openapi.schema, use openapi._responseSchema to get the response copy
         const responses: OpenAPIV3.ResponsesObject = (<any>openapi)
@@ -99,10 +102,7 @@ export class ResponseValidator {
   ): { [key: string]: ValidateFunction } {
     // get the request content type - used only to build the cache key
     const contentTypeMeta = ContentType.from(req);
-    const contentType =
-      (contentTypeMeta.contentType?.indexOf('multipart') > -1
-        ? contentTypeMeta.equivalents()[0]
-        : contentTypeMeta.contentType) ?? 'not_provided';
+    const contentType = contentTypeMeta.normalize() ?? 'not_provided';
 
     const openapi = <OpenApiRequestMetadata>req.openapi;
     const key = `${req.method}-${openapi.expressRoute}-${contentType}`;

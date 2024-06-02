@@ -1,0 +1,26 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Test additionalProperties date-time
+paths:
+  /test:
+    get: 
+      responses:
+        '200':
+          description: foo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  outer_date:
+                    type: string
+                    format: date-time
+                  other_info:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        inner_date:
+                          type: string
+                          format: date-time

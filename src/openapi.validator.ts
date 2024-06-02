@@ -1,7 +1,6 @@
 import { Options } from 'ajv';
 import ono from 'ono';
 import * as express from 'express';
-import * as _uniq from 'lodash.uniq';
 import * as middlewares from './middlewares';
 import { Application, Response, NextFunction, Router } from 'express';
 import { OpenApiContext } from './framework/openapi.context';
@@ -36,6 +35,12 @@ export {
   Forbidden,
 } from './framework/types';
 
+interface MiddlewareContext {
+  context: OpenApiContext,
+  responseApiDoc: OpenAPIV3.Document,
+  error: any,
+}
+
 export class OpenApiValidator {
   readonly options: NormalizedOpenApiValidatorOpts;
   readonly ajvOpts: AjvOptions;
@@ -49,6 +54,7 @@ export class OpenApiValidator {
     if (options.$refParser == null) options.$refParser = { mode: 'bundle' };
     if (options.validateFormats == null) options.validateFormats = true;
     if (options.formats == null) options.formats = {};
+    if (options.useRequestUrl == null) options.useRequestUrl = false;
 
     if (typeof options.operationHandlers === 'string') {
       /**
@@ -92,7 +98,7 @@ export class OpenApiValidator {
 
   installMiddleware(spec: Promise<Spec>): OpenApiRequestHandler[] {
     const middlewares: OpenApiRequestHandler[] = [];
-    const pContext = spec
+    const pContext: Promise<MiddlewareContext> = spec
       .then((spec) => {
         const apiDoc = spec.apiDoc;
         const ajvOpts = this.ajvOpts.preprocessor;
@@ -103,7 +109,12 @@ export class OpenApiValidator {
           resOpts,
         ).preProcess();
         return {
-          context: new OpenApiContext(spec, this.options.ignorePaths, this.options.ignoreUndocumented),
+          context: new OpenApiContext(
+            spec,
+            this.options.ignorePaths,
+            this.options.ignoreUndocumented,
+            this.options.useRequestUrl,
+          ),
           responseApiDoc: sp.apiDocRes,
           error: null,
         };
@@ -149,19 +160,6 @@ export class OpenApiValidator {
         .catch(next);
     });
 
-    if (this.options.fileUploader) {
-      // multipart middleware
-      let fumw;
-      middlewares.push(function multipartMiddleware(req, res, next) {
-        return pContext
-          .then(({ context: { apiDoc } }) => {
-            fumw = fumw || self.multipartMiddleware(apiDoc);
-            return fumw(req, res, next);
-          })
-          .catch(next);
-      });
-    }
-
     // security middlware
     let scmw;
     middlewares.push(function securityMiddleware(req, res, next) {
@@ -178,7 +176,20 @@ export class OpenApiValidator {
         .catch(next);
     });
 
-    // request middlweare
+    if (this.options.fileUploader) {
+      // multipart middleware
+      let fumw;
+      middlewares.push(function multipartMiddleware(req, res, next) {
+        return pContext
+          .then(({ context: { apiDoc } }) => {
+            fumw = fumw || self.multipartMiddleware(apiDoc);
+            return fumw(req, res, next);
+          })
+          .catch(next);
+      });
+    }
+
+    // request middleware
     if (this.options.validateRequests) {
       let reqmw;
       middlewares.push(function requestMiddleware(req, res, next) {
@@ -196,12 +207,12 @@ export class OpenApiValidator {
       let resmw;
       middlewares.push(function responseMiddleware(req, res, next) {
         return pContext
-          .then(({ responseApiDoc }) => {
-            resmw = resmw || self.responseValidationMiddleware(responseApiDoc);
+          .then(({ responseApiDoc, context: { serial } }) => {
+            resmw = resmw || self.responseValidationMiddleware(responseApiDoc, serial);
             return resmw(req, res, next);
           })
           .catch(next);
-      })
+      });
     }
 
     // op handler middleware
@@ -210,11 +221,8 @@ export class OpenApiValidator {
       middlewares.push(function operationHandlersMiddleware(req, res, next) {
         if (router) return router(req, res, next);
         return pContext
-          .then(
-            ({ context }) =>
-              (router = self.installOperationHandlers(req.baseUrl, context)),
-          )
-          .then((router) => router(req, res, next))
+          .then(({context}) => self.installOperationHandlers(req.baseUrl, context))
+          .then((installedRouter) => (router = installedRouter)(req, res, next))
           .catch(next);
       });
     }
@@ -231,7 +239,8 @@ export class OpenApiValidator {
     }
 
     // install param on routes with paths
-    for (const p of _uniq(pathParams)) {
+    const uniqPathParams = [...new Set(pathParams)]
+    for (const p of uniqPathParams) {
       app.param(
         p,
         (
@@ -282,16 +291,17 @@ export class OpenApiValidator {
     return (req, res, next) => requestValidator.validate(req, res, next);
   }
 
-  private responseValidationMiddleware(apiDoc: OpenAPIV3.Document) {
+  private responseValidationMiddleware(apiDoc: OpenAPIV3.Document, serial: number) {
     return new middlewares.ResponseValidator(
       apiDoc,
       this.ajvOpts.response,
       // This has already been converted from boolean if required
       this.options.validateResponses as ValidateResponseOpts,
+      serial
     ).validate();
   }
 
-  installOperationHandlers(baseUrl: string, context: OpenApiContext): Router {
+  async installOperationHandlers(baseUrl: string, context: OpenApiContext): Promise<Router> {
     const router = express.Router({ mergeParams: true });
 
     this.installPathParams(router, context);
@@ -311,10 +321,8 @@ export class OpenApiValidator {
           expressRoute.indexOf(baseUrl) === 0
             ? expressRoute.substring(baseUrl.length)
             : expressRoute;
-        router[method.toLowerCase()](
-          path,
-          resolver(basePath, route, context.apiDoc),
-        );
+        const handler = await resolver(basePath, route, context.apiDoc);
+        router[method.toLowerCase()](path, handler);
       }
     }
     return router;

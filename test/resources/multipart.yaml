@@ -119,7 +119,17 @@ paths:
       responses:
         201:
           description: Created
-          
+
+  /sample_7:
+    post:
+      description: upload a file that body is not consumed by router parsers
+      requestBody:
+        content:
+          '*/*': {}
+      responses:
+        200:
+          description: Updated
+
   # TODO add test with ImageReqBody ref to Image
 
   /range:
