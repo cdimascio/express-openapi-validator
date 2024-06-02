@@ -8,7 +8,7 @@ import * as packageJson from '../package.json';
 import { OpenAPIV3, OpenApiRequest } from '../src/framework/types';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
-const apiSpec = jsyaml.safeLoad(fs.readFileSync(apiSpecPath, 'utf8'));
+const apiSpec = jsyaml.load(fs.readFileSync(apiSpecPath, 'utf8')) as OpenAPIV3.Document;
 const fakeReq: OpenApiRequest = <any>{
   method: 'GET',
   headers: { 'content-type': 'application/json' },
