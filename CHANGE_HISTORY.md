@@ -1,3 +1,26 @@
+##  (2024-06-02)
+
+* Add `express` as peer dependency (#907) ([4e8bc84](https://github.com/cdimascio/express-openapi-validator/commit/4e8bc84)), closes [#907](https://github.com/cdimascio/express-openapi-validator/issues/907)
+* Add multipart fix when does not exist any body (#905) ([5c98d17](https://github.com/cdimascio/express-openapi-validator/commit/5c98d17)), closes [#905](https://github.com/cdimascio/express-openapi-validator/issues/905)
+* add reponse serializer tests for arrays ([bbbd160](https://github.com/cdimascio/express-openapi-validator/commit/bbbd160))
+* pass coerceTypes through (#809) ([8f7c678](https://github.com/cdimascio/express-openapi-validator/commit/8f7c678)), closes [#809](https://github.com/cdimascio/express-openapi-validator/issues/809)
+* Support async operation handler resolver (#921) ([a4a7175](https://github.com/cdimascio/express-openapi-validator/commit/a4a7175)), closes [#921](https://github.com/cdimascio/express-openapi-validator/issues/921)
+* upgrade ajv ([a708132](https://github.com/cdimascio/express-openapi-validator/commit/a708132))
+* upgrade example 3 ([43cccc8](https://github.com/cdimascio/express-openapi-validator/commit/43cccc8))
+* upgrade example 4 ([255f20f](https://github.com/cdimascio/express-openapi-validator/commit/255f20f))
+* v5.2.0 ([42cb3ab](https://github.com/cdimascio/express-openapi-validator/commit/42cb3ab))
+* chore: apiSpec may be const literal (#854) ([e35a07c](https://github.com/cdimascio/express-openapi-validator/commit/e35a07c)), closes [#854](https://github.com/cdimascio/express-openapi-validator/issues/854)
+* chore(dependencies): bump @apidevtools/json-schema-ref-parser to 11.6.2 to prevent vulnerability (#9 ([61ff0cf](https://github.com/cdimascio/express-openapi-validator/commit/61ff0cf)), closes [#918](https://github.com/cdimascio/express-openapi-validator/issues/918)
+* chore(deps-dev): bump @babel/traverse (#924) ([5a04ea9](https://github.com/cdimascio/express-openapi-validator/commit/5a04ea9)), closes [#924](https://github.com/cdimascio/express-openapi-validator/issues/924)
+* chore(deps): bump axios, @nestjs/common, @nestjs/core, @nestjs/platform-express and @nestjs/testing  ([b77150f](https://github.com/cdimascio/express-openapi-validator/commit/b77150f)), closes [#925](https://github.com/cdimascio/express-openapi-validator/issues/925)
+* chore(deps): bump webpack and @nestjs/cli in /examples/9-nestjs (#831) ([c0c5f4c](https://github.com/cdimascio/express-openapi-validator/commit/c0c5f4c)), closes [#831](https://github.com/cdimascio/express-openapi-validator/issues/831)
+* fix: examples/4-eov-operations-babel/package.json & examples/4-eov-operations-babel/package-lock.jso ([87d173b](https://github.com/cdimascio/express-openapi-validator/commit/87d173b)), closes [#911](https://github.com/cdimascio/express-openapi-validator/issues/911)
+* fix: package.json & package-lock.json to reduce vulnerabilities (#920) ([898ceb7](https://github.com/cdimascio/express-openapi-validator/commit/898ceb7)), closes [#920](https://github.com/cdimascio/express-openapi-validator/issues/920)
+* fix: upgrade @types/multer from 1.4.7 to 1.4.11 (#897) ([a7d67e7](https://github.com/cdimascio/express-openapi-validator/commit/a7d67e7)), closes [#897](https://github.com/cdimascio/express-openapi-validator/issues/897)
+* fix: upgrade path-to-regexp from 6.2.0 to 6.2.2 (#914) ([bce2d6a](https://github.com/cdimascio/express-openapi-validator/commit/bce2d6a)), closes [#914](https://github.com/cdimascio/express-openapi-validator/issues/914)
+
+
+
 ## <small>5.1.6 (2024-02-11)</small>
 
 * Fixes for 881 - multiple specs w/validateRequests fail (#903) ([766806b](https://github.com/cdimascio/express-openapi-validator/commit/766806b)), closes [#903](https://github.com/cdimascio/express-openapi-validator/issues/903)
