@@ -42,6 +42,8 @@ export class RequestValidator {
   ) {
     this.middlewareCache = {};
     this.apiDoc = apiDoc;
+    // Examples not needed for validation
+    delete this.apiDoc.components?.examples;
     this.requestOpts.allowUnknownQueryParameters =
       options.allowUnknownQueryParameters;
     this.ajv = createRequestAjv(apiDoc, { ...options, coerceTypes: true });
@@ -65,7 +67,7 @@ export class RequestValidator {
     const reqSchema = openapi.schema;
     // cache middleware by combining method, path, and contentType
     const contentType = ContentType.from(req);
-    const contentTypeKey = contentType.equivalents()[0] ?? 'not_provided';
+    const contentTypeKey = contentType.normalize() ?? 'not_provided';
     // use openapi.expressRoute as path portion of key
     const key = `${req.method}-${path}-${contentTypeKey}`;
 
@@ -202,9 +204,14 @@ export class RequestValidator {
   }
 
   private multipartNested(req, schemaBody) {
+    if (!req.body) {
+      return;
+    }
+
     Object.keys(req.body).forEach((key) => {
       const value = req.body[key];
-      const type = schemaBody?.properties?.body?.properties[key]?.type;
+      // TODO: Add support for oneOf, anyOf, allOf as the body schema
+      const type = schemaBody?.properties?.body?.properties?.[key]?.type;
       if (['array', 'object'].includes(type)) {
         try {
           req.body[key] = JSON.parse(value);
@@ -212,8 +219,7 @@ export class RequestValidator {
           // NOOP
         }
       }
-    })
-    return null;
+    });
   }
 
   private discriminatorValidator(req, discriminator) {

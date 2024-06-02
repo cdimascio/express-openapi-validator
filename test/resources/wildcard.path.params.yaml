@@ -56,3 +56,39 @@ paths:
         200:
           description: dummy response
           content: {}
+
+  /d4/{multi}/spaced/{path}(*):
+    get:
+      parameters:
+        - name: multi
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: dummy response
+          content: {}
+
+  /d5/{multi}/{path}(*):
+    get:
+      parameters:
+        - name: multi
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: dummy response
+          content: {}

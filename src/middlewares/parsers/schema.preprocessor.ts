@@ -74,7 +74,7 @@ type Schema = ReferenceObject | SchemaObject;
 if (!Array.prototype['flatMap']) {
   // polyfill flatMap
   // TODO remove me when dropping node 10 support
-  Array.prototype['flatMap'] = function(lambda) {
+  Array.prototype['flatMap'] = function (lambda) {
     return Array.prototype.concat.apply([], this.map(lambda));
   };
   Object.defineProperty(Array.prototype, 'flatMap', { enumerable: false });
@@ -287,7 +287,9 @@ export class SchemaPreprocessor {
         // This null check should no longer be necessary
         this.handleSerDes(pschema, nschema, options);
         this.handleReadonly(pschema, nschema, options);
+        this.handleWriteonly(pschema, nschema, options);
         this.processDiscriminator(pschema, nschema, options);
+        this.removeExamples(pschema, nschema, options)
       }
     }
   }
@@ -443,6 +445,20 @@ export class SchemaPreprocessor {
     }
   }
 
+  private removeExamples(
+    parent: OpenAPIV3.SchemaObject,
+    schema: OpenAPIV3.SchemaObject,
+    opts,
+  ) {
+    if (schema.type !== 'object') return;
+    if (schema?.example) {
+      delete schema.example
+    }
+    if (schema?.examples) {
+      delete schema.examples
+    }
+  }
+
   private handleReadonly(
     parent: OpenAPIV3.SchemaObject,
     schema: OpenAPIV3.SchemaObject,
@@ -455,6 +471,27 @@ export class SchemaPreprocessor {
     const index = required.indexOf(prop);
     if (schema.readOnly && index > -1) {
       // remove required if readOnly
+      parent.required = required
+        .slice(0, index)
+        .concat(required.slice(index + 1));
+      if (parent.required.length === 0) {
+        delete parent.required;
+      }
+    }
+  }
+
+  private handleWriteonly(
+    parent: OpenAPIV3.SchemaObject,
+    schema: OpenAPIV3.SchemaObject,
+    opts,
+  ) {
+    if (opts.kind === 'req') return;
+
+    const required = parent?.required ?? [];
+    const prop = opts?.path?.[opts?.path?.length - 1];
+    const index = required.indexOf(prop);
+    if (schema.writeOnly && index > -1) {
+      // remove required if writeOnly
       parent.required = required
         .slice(0, index)
         .concat(required.slice(index + 1));
@@ -591,7 +628,7 @@ export class SchemaPreprocessor {
     ) =>
       // if name or ref exists and are equal
       (opParam['name'] && opParam['name'] === pathParam['name']) ||
-        (opParam['$ref'] && opParam['$ref'] === pathParam['$ref']);
+      (opParam['$ref'] && opParam['$ref'] === pathParam['$ref']);
 
     // Add Path level query param to list ONLY if there is not already an operation-level query param by the same name.
     for (const param of parameters) {

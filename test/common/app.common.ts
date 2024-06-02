@@ -116,4 +116,14 @@ export function routes(app) {
       id: 'new-id',
     });
   });
+
+  app.post('/v1/pets_content_types', function(req: Request, res: Response): void {
+    // req.file is the `avatar` file
+    // req.body will hold the text fields, if there were any
+    res.json({
+      ...req.body,
+      contentType: req.headers['content-type'],
+      id: 'new-id',
+    });
+  });
 }

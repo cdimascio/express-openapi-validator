@@ -9,6 +9,7 @@ export interface Spec {
   apiDoc: OpenAPIV3.Document;
   basePaths: string[];
   routes: RouteMetadata[];
+  serial: number;
 }
 
 export interface RouteMetadata {
@@ -23,6 +24,7 @@ interface DiscoveredRoutes {
   apiDoc: OpenAPIV3.Document;
   basePaths: string[];
   routes: RouteMetadata[];
+  serial: number;
 }
 // Sort routes by most specific to least specific i.e. static routes before dynamic
 // e.g. /users/my_route before /users/{id}
@@ -32,6 +34,9 @@ export const sortRoutes = (r1, r2) => {
   const e2 = r2.expressRoute.replace(/\/:/g, '/~');
   return e1 > e2 ? 1 : -1;
 };
+
+// Uniquely identify the Spec that is emitted
+let serial = 0;
 
 export class OpenApiSpecLoader {
   private readonly framework: OpenAPIFramework;
@@ -91,10 +96,12 @@ export class OpenApiSpecLoader {
 
     routes.sort(sortRoutes);
 
+    serial = serial + 1;
     return {
       apiDoc,
       basePaths,
       routes,
+      serial
     };
   }
 
@@ -106,7 +113,7 @@ export class OpenApiSpecLoader {
     // instead create our own syntax that is compatible with express' pathToRegex
     // /{path}* => /:path*)
     // /{path}(*) => /:path*)
-    const pass1 = part.replace(/\/{([^\*]+)}\({0,1}(\*)\){0,1}/g, '/:$1$2');
+    const pass1 = part.replace(/\/{([^}]+)}\({0,1}(\*)\){0,1}/g, '/:$1$2');
     // substitute params with express equivalent
     // /path/{id} => /path/:id
     return pass1.replace(/\{([^}]+)}/g, ':$1');

@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
-const bodyParser = require('body-parser');
 const http = require('http');
+const cookieParser = require('cookie-parser'); // Add if using cookie auth
 const { Pets } = require('./services');
 const OpenApiValidator = require('express-openapi-validator');
 
@@ -13,6 +13,7 @@ const apiSpec = path.join(__dirname, 'api.yaml');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.text());
 app.use(express.json());
+app.use(cookieParser()); // Add if using cookie auth enables req.cookies
 
 // Optionally serve the API spec
 app.use('/spec', express.static(apiSpec));

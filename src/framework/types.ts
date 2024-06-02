@@ -1,7 +1,8 @@
 import * as ajv from 'ajv';
 import * as multer from 'multer';
 import { FormatsPluginOptions } from 'ajv-formats';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { RouteMetadata } from './openapi.spec.loader';
 export { OpenAPIFrameworkArgs };
 
 export type BodySchema =
@@ -43,7 +44,7 @@ export interface Options extends ajv.Options {
   ajvFormats?: FormatsPluginOptions;
 }
 
-export interface RequestValidatorOptions extends Options, ValidateRequestOpts {}
+export interface RequestValidatorOptions extends Options, ValidateRequestOpts { }
 
 export type ValidateRequestOpts = {
   allowUnknownQueryParameters?: boolean;
@@ -63,7 +64,11 @@ export type ValidateSecurityOpts = {
 
 export type OperationHandlerOptions = {
   basePath: string;
-  resolver: Function;
+  resolver: (
+    handlersPath: string,
+    route: RouteMetadata,
+    apiDoc: OpenAPIV3.Document,
+  ) => RequestHandler | Promise<RequestHandler>;
 };
 
 export type Format = {
@@ -136,6 +141,7 @@ export interface OpenApiValidatorOpts {
   ignoreUndocumented?: boolean;
   securityHandlers?: SecurityHandlers;
   coerceTypes?: boolean | 'array';
+  useRequestUrl?: boolean;
   /**
    * @deprecated
    * Use `formats` + `validateFormats` to ignore specified formats
@@ -257,7 +263,7 @@ export namespace OpenAPIV3 {
     in: string;
   }
 
-  export interface HeaderObject extends ParameterBaseObject {}
+  export interface HeaderObject extends ParameterBaseObject { }
 
   interface ParameterBaseObject {
     description?: string;
@@ -334,6 +340,7 @@ export namespace OpenAPIV3 {
     xml?: XMLObject;
     externalDocs?: ExternalDocumentationObject;
     example?: any;
+    examples?: any;
     deprecated?: boolean;
 
     // Express-openapi-validator specific properties
@@ -513,6 +520,7 @@ export interface OpenApiRequestMetadata {
   openApiRoute: string;
   pathParams: { [index: string]: string };
   schema: OpenAPIV3.OperationObject;
+  serial: number;
 }
 
 export interface OpenApiRequest extends Request {
