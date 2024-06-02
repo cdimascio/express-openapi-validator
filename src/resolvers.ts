@@ -17,27 +17,27 @@ export async function defaultResolver(
   const pathKey = openApiRoute.substring(basePath.length);
   const schema = apiDoc.paths[pathKey][method.toLowerCase()];
   const oId = schema['x-eov-operation-id'] || schema['operationId'];
-  const handlerName = schema['x-eov-operation-handler'];
+  const baseName = schema['x-eov-operation-handler'];
 
-  const cacheKey = `${expressRoute}-${method}-${oId}-${handlerName}`;
+  const cacheKey = `${expressRoute}-${method}-${oId}-${baseName}`;
   if (cache[cacheKey]) return cache[cacheKey];
 
-  if (oId && !handlerName) {
+  if (oId && !baseName) {
     throw Error(
       `found x-eov-operation-id for route ${method} - ${expressRoute}]. x-eov-operation-handler required.`,
     );
   }
-  if (!oId && handlerName) {
+  if (!oId && baseName) {
     throw Error(
       `found x-eov-operation-handler for route [${method} - ${expressRoute}]. operationId or x-eov-operation-id required.`,
     );
   }
 
-  const isHandlerPath = !!handlersPath && (typeof handlersPath === 'string' || handlersPath instanceof URL);
-  if (oId && handlerName && isHandlerPath) {
+  const hasHandlerPath = typeof handlersPath === 'string' || handlersPath instanceof URL;
+  if (oId && baseName && hasHandlerPath) {
     const modulePath = typeof handlersPath === 'string'
-      ? path.join(handlersPath, handlerName)
-      : path.join(fileURLToPath(handlersPath), handlerName);
+      ? path.join(handlersPath, baseName)
+      : path.join(fileURLToPath(handlersPath), baseName);
     const importedModule = typeof handlersPath === 'string'
       ? require(modulePath)
       : await dynamicImport(pathToFileURL(modulePath).toString());
