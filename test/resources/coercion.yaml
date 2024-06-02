@@ -46,6 +46,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/PetStringBoolean'
 
+  /coercion/pets_as_array_parameter:
+    get:
+      description: Returns pets by name
+      operationId: addPet
+      parameters:
+      - in: query
+        name: filter
+        schema:
+          type: object
+          additionalProperties: false
+          properties:
+            names:
+              type: array
+              items:
+                type: string
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Pet' }
+
 components:
   schemas:
     Pet:
