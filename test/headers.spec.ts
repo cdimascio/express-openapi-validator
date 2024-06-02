@@ -1,11 +1,11 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   /**
    * Required to create app for each step, since 'buildMiddleware' is cached by media-type in contentType.
@@ -14,15 +14,13 @@ describe(packageJson.name, () => {
    * To avoid any potential error, use beforeEach and afterEach.
    *
    * */
-  beforeEach(() => {
+  beforeEach(async () => {
     const apiSpec = path.join('test', 'resources', 'openapi.yaml');
-    return createApp({ apiSpec }, 3004).then((a) => {
-      app = a;
-    });
+    app = await createApp({ apiSpec }, 3004);
   });
 
-  afterEach(() => {
-    (<any>app).server.close();
+  afterEach(async () => {
+    await app.closeServer();
   });
 
   it('should throw 400 if required header is missing', async () =>

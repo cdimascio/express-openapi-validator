@@ -1,7 +1,8 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
+import { EovErrorHandler } from './common/app.common';
 
 const apiSpecPath = path.join(
   'test',
@@ -10,7 +11,7 @@ const apiSpecPath = path.join(
 );
 
 describe('response serializer', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -22,7 +23,7 @@ describe('response serializer', () => {
       3005,
       (app) => {
         app.get([`${app.basePath}/date-time`], (req, res) => {
-          let date = new Date('2020-12-20T07:28:19.213Z');
+          const date = new Date('2020-12-20T07:28:19.213Z');
           res.json({
             id: req.params.id,
             created_at: date,
@@ -40,26 +41,26 @@ describe('response serializer', () => {
           });
         });
         app.get([`${app.basePath}/date`], (req, res) => {
-          let date = new Date('2020-12-20T07:28:19.213Z');
+          const date = new Date('2020-12-20T07:28:19.213Z');
           res.json({
             id: req.params.id,
             created_at: date,
           });
         });
-        app.use((err, req, res, next) => {
+        app.use(<EovErrorHandler>((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
           });
-        });
+        }));
       },
       false,
     );
     return app;
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   describe('that receive a Date object', () => {

@@ -1,11 +1,12 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
+import { EovErrorHandler } from './common/app.common';
 import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'headers.yaml');
@@ -16,19 +17,19 @@ describe(packageJson.name, () => {
         app.use(`${app.basePath}/headers_1`, (req, res) => {
           res.send('headers_1');
         });
-        app.use((err, req, res, next) => {
+        app.use(<EovErrorHandler>((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
           });
-        });
+        }));
       },
       false,
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should return 400 missing required header', async () => {

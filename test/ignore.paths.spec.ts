@@ -1,11 +1,11 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
 describe('ignorePaths as RegExp', () => {
-  let app = null;
-  let basePath = null;
+  let app: ExpressWithServer;
+  let basePath: string;
 
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'ignore.paths.yaml');
@@ -33,7 +33,9 @@ describe('ignorePaths as RegExp', () => {
     basePath = app.basePath;
   });
 
-  after(() => app.server.close());
+  after(async () => {
+    await app.closeServer();
+  });
 
   it('should ignore path and return 200, rather than validate', async () =>
     request(app)
@@ -68,7 +70,7 @@ describe('ignorePaths as RegExp', () => {
       .expect('Content-Type', /json/)
       .expect(404));
 
-  describe(`GET ${basePath}/pets/:id`, () => {
+  describe(`GET /pets/:id`, () => {
     it('should validate a path within the base path that is not ignored', async () => {
       const id = 'my_id';
       return request(app)
@@ -105,14 +107,14 @@ describe('ignorePaths as RegExp', () => {
 });
 
 describe('ignorePaths as Function', () => {
-  let app = null;
-  let basePath = null;
+  let app: ExpressWithServer;
+  let basePath: string;
 
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'ignore.paths.yaml');
 
     app = await createApp(
-      { apiSpec, ignorePaths: (path) => path.endsWith('/hippies') },
+      { apiSpec, ignorePaths: (path: string) => path.endsWith('/hippies') },
       3005,
       (app) => {
         app.all('/v1/hippies', (req, res) => {
@@ -132,7 +134,9 @@ describe('ignorePaths as Function', () => {
     basePath = app.basePath;
   });
 
-  after(() => app.server.close());
+  after(async () => {
+    await app.closeServer();
+  });
 
   it('should ignore path and return 200, rather than validate', async () =>
     request(app)
@@ -167,7 +171,7 @@ describe('ignorePaths as Function', () => {
       .expect('Content-Type', /json/)
       .expect(404));
 
-  describe(`GET ${basePath}/pets/:id`, () => {
+  describe(`GET /pets/:id`, () => {
     it('should validate a path within the base path that is not ignored', async () => {
       const id = 'my_id';
       return request(app)

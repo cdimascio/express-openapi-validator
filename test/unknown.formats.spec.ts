@@ -1,10 +1,10 @@
 import path from 'path';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'unknown.formats.yaml');
@@ -25,7 +25,9 @@ describe(packageJson.name, () => {
     );
   });
 
-  after(() => app.server.close());
+  after(async () => {
+    await app.closeServer();
+  });
 
   it('should return 200 for valid request with unknown format', async () =>
     request(app)

@@ -3,12 +3,16 @@ import * as OpenApiValidator from '../src';
 import { expect } from 'chai';
 import request from 'supertest';
 import path from 'path';
+import { ExpressWithServer, startServer } from './common/app.common';
+import { OpenAPIV3 } from '../src/framework/types';
 
 describe('default export resolver', () => {
-  let server = null;
-  let app = express();
+  let app: ExpressWithServer;
 
   before(async () => {
+    app = express() as ExpressWithServer;
+    app.basePath = '';
+
     app.use(
       OpenApiValidator.middleware({
         apiSpec: {
@@ -18,10 +22,9 @@ describe('default export resolver', () => {
             '/': {
               get: {
                 operationId: 'test#get',
-                // @ts-ignore
                 'x-eov-operation-handler': 'routes/default-export-fn',
                 responses: { 200: { description: 'homepage' } },
-              },
+              } as OpenAPIV3.OperationObject,
             },
           },
         },
@@ -29,11 +32,12 @@ describe('default export resolver', () => {
       }),
     );
 
-    server = app.listen(3000);
-    console.log('server start port 3000');
+    await startServer(app, 3000);
   });
 
-  after(async () => server.close());
+  after(async () => {
+    await app.closeServer();
+  });
 
   it('should use default export operation', async () => {
     return request(app)

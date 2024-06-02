@@ -1,10 +1,10 @@
 import path from 'path';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'servers.1.yaml');
@@ -28,7 +28,9 @@ describe(packageJson.name, () => {
     );
   });
 
-  after(() => app.server.close());
+  after(async () => {
+    await app.closeServer();
+  });
 
   it('should validate server path with version variable, v2 and petstore', async () =>
     request(app).get('/api/v1/petstore/ping').query({}).expect(400));
@@ -44,7 +46,7 @@ describe(packageJson.name, () => {
 });
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'servers.2.yaml');
@@ -68,7 +70,9 @@ describe(packageJson.name, () => {
     );
   });
 
-  after(() => app.server.close());
+  after(async () => {
+    await app.closeServer();
+  });
 
   it('should validate server path with version variables, v2 and petstore', async () =>
     request(app).get('/api/v1:petstore/ping').query({}).expect(400));

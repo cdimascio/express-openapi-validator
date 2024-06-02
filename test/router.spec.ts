@@ -2,13 +2,20 @@ import express from 'express';
 import { expect } from 'chai';
 import request from 'supertest';
 import * as OpenApiValidator from '../src';
+import {
+  EovErrorHandler,
+  ExpressWithServer,
+  startServer,
+} from './common/app.common';
 
 describe('security.defaults', () => {
-  let app = express();
-  let basePath = '/api';
-  let server = null;
+  let app: ExpressWithServer;
+  let basePath: string;
 
   before(async () => {
+    app = express() as ExpressWithServer;
+    basePath = '/api';
+
     const router = express.Router();
     router.use(
       OpenApiValidator.middleware({
@@ -31,18 +38,19 @@ describe('security.defaults', () => {
     app.get('/', (req, res) => res.status(200).send('home\n'));
     app.use(basePath, router);
 
-    app.use((err, req, res, next) => {
+    app.use(<EovErrorHandler>((err, req, res, next) => {
       res.status(err.status ?? 500).json({
         message: err.message,
         errors: err.errors,
       });
-    });
+    }));
 
-    server = app.listen(3000);
-    console.log('server start port 3000');
+    await startServer(app, 3000);
   });
 
-  after(async () => server.close());
+  after(async () => {
+    await app.closeServer();
+  });
 
   it('should return 404 for undocumented route when using Router', async () => {
     return request(app)

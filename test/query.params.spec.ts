@@ -2,11 +2,11 @@ import path from 'path';
 import express from 'express';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // Set up the express app
@@ -27,8 +27,8 @@ describe(packageJson.name, () => {
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should pass if known query params are specified', async () =>

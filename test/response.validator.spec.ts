@@ -17,7 +17,7 @@ const fakeReq: OpenApiRequest = <any>{
   openapi: { expressRoute: '/api/test' },
 };
 describe(packageJson.name, () => {
-  it('should validate the using default (in this case the error object)', async () => {
+  it('should validate the using default (in this case the error object)', () => {
     const v = new ResponseValidator(cloneDeep(apiSpec), {
       formats: {
         'date-time': true,
@@ -42,7 +42,7 @@ describe(packageJson.name, () => {
     }
   });
 
-  it('should throw error when default response is invalid', async () => {
+  it('should throw error when default response is invalid', () => {
     const v = new ResponseValidator(apiSpec, {
       formats: {
         'date-time': true,
@@ -71,7 +71,7 @@ describe(packageJson.name, () => {
     }
   });
 
-  it('should return an error if field type is invalid', async () => {
+  it('should return an error if field type is invalid', () => {
     const v = new ResponseValidator(apiSpec, {
       formats: {
         'date-time': true,

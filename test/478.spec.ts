@@ -1,9 +1,9 @@
 import request from 'supertest';
 import { OpenAPIV3 } from '../src/framework/types';
-import { createApp } from './common/app';
+import { createApp, ExpressWithServer } from './common/app';
 
 describe('issue #478', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -38,8 +38,8 @@ describe('issue #478', () => {
     return app;
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should return 200', async () =>

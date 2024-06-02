@@ -5,18 +5,25 @@ import bodyParser from 'body-parser';
 import logger from 'morgan';
 
 import * as OpenApiValidator from '../../src';
-import { startServer, routes } from './app.common';
+import {
+  startServer,
+  routes,
+  ExpressWithServer,
+  EovErrorHandler,
+} from './app.common';
 import { OpenApiValidatorOpts } from '../../src/framework/types';
 
+export type { ExpressWithServer };
+
 export async function createApp(
-  opts?: OpenApiValidatorOpts,
+  opts: OpenApiValidatorOpts,
   port = 3000,
-  customRoutes = (app) => {},
+  customRoutes = (app: ExpressWithServer) => {},
   useRoutes = true,
   useParsers = true,
 ) {
-  var app = express();
-  (<any>app).basePath = '/v1';
+  const app = express() as ExpressWithServer;
+  app.basePath = '/v1';
 
   if (useParsers) {
     app.use(bodyParser.json());
@@ -44,13 +51,13 @@ export async function createApp(
 
   if (useRoutes) {
     // Register error handler
-    app.use((err, req, res, next) => {
+    app.use(<EovErrorHandler>((err, req, res, next) => {
       // console.error(err);
       res.status(err.status ?? 500).json({
         message: err.message,
         errors: err.errors,
       });
-    });
+    }));
   }
 
   const server = await startServer(app, port);

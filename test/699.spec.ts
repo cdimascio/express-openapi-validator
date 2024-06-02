@@ -1,8 +1,8 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
-
+import { createApp, ExpressWithServer } from './common/app';
+import { EovErrorHandler } from './common/app.common';
 import { date, dateTime } from '../src/framework/base.serdes';
 
 const apiSpecPath = path.join('test', 'resources', '699.yaml');
@@ -26,7 +26,7 @@ class BadDate extends Date {
 }
 
 describe('699', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -56,7 +56,7 @@ describe('699', () => {
           if (typeof req.params.id !== 'object') {
             throw new Error('Should be deserialized to ObjectId object');
           }
-          let date = new Date('2020-12-20T07:28:19.213Z');
+          const date = new Date('2020-12-20T07:28:19.213Z');
           res.json({
             id: req.params.id,
             creationDateTime: date,
@@ -82,20 +82,20 @@ describe('699', () => {
           }
           res.json(req.body);
         });
-        app.use((err, req, res, next) => {
+        app.use(<EovErrorHandler>((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
           });
-        });
+        }));
       },
       false,
     );
     return app;
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should control GOOD id format and get a response in expected format', async () =>
@@ -167,7 +167,7 @@ describe('699', () => {
 });
 
 describe('699 serialize response components only', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -193,18 +193,17 @@ describe('699 serialize response components only', () => {
       3005,
       (app) => {
         app.get([`${app.basePath}/users/:id?`], (req, res) => {
-          debugger;
           if (typeof req.params.id !== 'string') {
             throw new Error('Should be not be deserialized to ObjectId object');
           }
-          let date = new Date('2020-12-20T07:28:19.213Z');
-          let result = {
+          const date = new Date('2020-12-20T07:28:19.213Z');
+          const result = {
             id: new ObjectID(req.params.id),
             creationDateTime: date,
             creationDate: date,
             shortOrLong: 'a',
-            history: [{ modificationDate: undefined }],
-            historyWithoutRef: [{ modificationDate: undefined }],
+            history: [{} as { modificationDate?: ObjectID | Date }],
+            historyWithoutRef: [{} as { modificationDate?: ObjectID | Date }],
           };
           if (req.query.baddateresponse === 'functionNotExists') {
             result.history[0].modificationDate = new ObjectID();
@@ -251,20 +250,20 @@ describe('699 serialize response components only', () => {
           // We let creationDate et al as String and it should also work (either in Date Object ou String 'date' format)
           res.json(req.body);
         });
-        app.use((err, req, res, next) => {
+        app.use(<EovErrorHandler>((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
           });
-        });
+        }));
       },
       false,
     );
     return app;
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should control GOOD id format and get a response in expected format', async () =>

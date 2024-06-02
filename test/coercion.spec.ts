@@ -2,12 +2,12 @@ import path from 'path';
 import express from 'express';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
-  let app = null;
-  let arrayCoercedApp = null;
+  let app: ExpressWithServer;
+  let arrayCoercedApp: ExpressWithServer;
 
   before(async () => {
     // Set up the express app
@@ -32,9 +32,9 @@ describe(packageJson.name, () => {
     );
   });
 
-  after(() => {
-    app.server.close();
-    arrayCoercedApp.server.close();
+  after(async () => {
+    await app.closeServer();
+    await arrayCoercedApp.closeServer();
   });
 
   it('should return 400 since is_cat is passed as string not boolean', async () =>

@@ -1,16 +1,13 @@
 import path from 'path';
 import express from 'express';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 import * as packageJson from '../package.json';
 
 describe.skip(packageJson.name, () => {
-  let app = null;
-  after(() => {
-    app.server.close();
-  });
+  let app: ExpressWithServer;
 
-  it('should propagate missing spec to err handler', async () => {
+  before(async () => {
     const apiSpec = path.join('test', 'resources', 'does-not-exist.yaml');
     app = await createApp({ apiSpec, coerceTypes: false }, 3005, (app) =>
       app.use(
@@ -18,7 +15,12 @@ describe.skip(packageJson.name, () => {
         express.Router().get(`/test`, (req, res) => res.json(req.body)),
       ),
     );
-
-    request(app).get('/test').expect(500);
   });
+
+  after(async () => {
+    await app.closeServer();
+  });
+
+  it('should propagate missing spec to err handler', async () =>
+    request(app).get('/test').expect(500));
 });

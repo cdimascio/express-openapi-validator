@@ -2,11 +2,11 @@ import path from 'path';
 import express from 'express';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // Set up the express app
@@ -37,8 +37,8 @@ describe(packageJson.name, () => {
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should fail, because response does not satisfy schema', async () =>
@@ -46,7 +46,7 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/api-path/pets?qparam=test`)
       .send()
       .expect(500)
-      .then((r: any) => {
+      .then((r) => {
         const e = r.body;
         expect(e.message).to.contain(
           "/response/0 must have required property 'id'",

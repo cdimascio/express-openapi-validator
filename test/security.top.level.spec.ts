@@ -2,11 +2,11 @@ import path from 'path';
 import express from 'express';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
 describe('security.top.level', () => {
-  let app = null;
-  let basePath = null;
+  let app: ExpressWithServer;
+  let basePath: string;
 
   before(async () => {
     // Set up the express app
@@ -30,8 +30,8 @@ describe('security.top.level', () => {
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should inherit top level security and return 401 if apikey header is missing', async () =>

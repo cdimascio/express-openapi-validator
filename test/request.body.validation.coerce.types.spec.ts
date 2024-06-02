@@ -1,12 +1,12 @@
 import path from 'path';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
 describe('request body validation coercion', () => {
-  let coerceApp = null;
-  let nonCoerceApp = null;
+  let coerceApp: ExpressWithServer;
+  let nonCoerceApp: ExpressWithServer;
 
-  const defineRoutes = (app) => {
+  const defineRoutes = (app: ExpressWithServer) => {
     app.post(`${app.basePath}/coercion_test`, (req, res) => {
       res.status(200).send();
     });
@@ -39,9 +39,9 @@ describe('request body validation coercion', () => {
     );
   });
 
-  after(() => {
-    coerceApp.server.close();
-    nonCoerceApp.server.close();
+  after(async () => {
+    await coerceApp.closeServer();
+    await nonCoerceApp.closeServer();
   });
 
   it('should return 200 if coercion is enabled and the type is correct', async () =>

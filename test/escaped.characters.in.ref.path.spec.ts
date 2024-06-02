@@ -1,10 +1,10 @@
 import path from 'path';
 import express from 'express';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
 describe('when escaped characters are in path', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // Set up the express app
@@ -39,8 +39,8 @@ describe('when escaped characters are in path', () => {
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   // Without option "unsafeRefs" this test will fail

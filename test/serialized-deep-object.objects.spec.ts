@@ -3,10 +3,10 @@ import express from 'express';
 import request from 'supertest';
 import * as packageJson from '../package.json';
 import { expect } from 'chai';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // Set up the express app
@@ -26,8 +26,8 @@ describe(packageJson.name, () => {
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should explode deepObject and set default', async () =>

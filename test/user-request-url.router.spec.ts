@@ -1,17 +1,10 @@
 import { expect } from 'chai';
-import type {
-  Express,
-  IRouter,
-  Response,
-  NextFunction,
-  Request,
-} from 'express';
+import type { IRouter } from 'express';
 import express from 'express';
 import { OpenAPIV3 } from '../src/framework/types';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 import * as OpenApiValidator from '../src';
-import { Server } from 'http';
 
 interface HTTPError extends Error {
   status: number;
@@ -20,8 +13,8 @@ interface HTTPError extends Error {
   path: string;
 }
 
-describe('when useRequestUrl is set to "true" on the child router', async () => {
-  let app: Express & { server?: Server };
+describe('when useRequestUrl is set to "true" on the child router', () => {
+  let app: ExpressWithServer;
 
   before(async () => {
     const router = makeRouter({ useRequestUrl: true });
@@ -29,7 +22,9 @@ describe('when useRequestUrl is set to "true" on the child router', async () => 
     app.use(router);
   });
 
-  after(() => app?.server?.close());
+  after(async () => {
+    await app.closeServer();
+  });
 
   it('should apply parent app schema to requests', async () => {
     const result = await request(app).get('/api/pets/1');
@@ -63,8 +58,8 @@ describe('when useRequestUrl is set to "true" on the child router', async () => 
   });
 });
 
-describe('when useRequestUrl is set to "false" on the child router', async () => {
-  let app: Express & { server?: Server };
+describe('when useRequestUrl is set to "false" on the child router', () => {
+  let app: ExpressWithServer;
 
   before(async () => {
     const router = makeRouter({ useRequestUrl: false });
@@ -72,7 +67,9 @@ describe('when useRequestUrl is set to "false" on the child router', async () =>
     app.use(router);
   });
 
-  after(() => app?.server?.close());
+  after(async () => {
+    await app.closeServer();
+  });
 
   it('should throw not found', async () => {
     const result = await request(app).get('/api/pets/valid-pet-id');
@@ -219,16 +216,7 @@ const childRouterSpec: OpenAPIV3.Document = {
   },
 };
 
-function redirectToInternalService(
-  req: Request,
-  _res: Response,
-  next: NextFunction,
-): void {
-  req.url = `/internal${req.originalUrl}`;
-  next();
-}
-
-function makeMainApp(): ReturnType<typeof createApp> {
+function makeMainApp() {
   return createApp(
     {
       apiSpec: gatewaySpec,
@@ -238,13 +226,13 @@ function makeMainApp(): ReturnType<typeof createApp> {
     3000,
     (app) => {
       app
-        .get(
-          '/api/pets/:petId',
-          function (_req: Request, _res: Response, next: NextFunction) {
-            next();
-          },
-        )
-        .use(redirectToInternalService);
+        .get('/api/pets/:petId', (_req, _res, next) => {
+          next();
+        })
+        .use((req, _res, next) => {
+          req.url = `/internal${req.originalUrl}`;
+          next();
+        });
     },
     false,
   );

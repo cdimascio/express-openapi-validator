@@ -1,11 +1,12 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
+import { EovErrorHandler } from './common/app.common';
 import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'one.of.yaml');
@@ -19,19 +20,19 @@ describe(packageJson.name, () => {
         app.post(`${app.basePath}/one_of_b`, (req, res) => {
           res.json(req.body);
         });
-        app.use((err, req, res, next) => {
+        app.use(<EovErrorHandler>((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
           });
-        });
+        }));
       },
       false,
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should return 200 one first oneOf option', async () => {

@@ -3,11 +3,14 @@ import path from 'path';
 import fs from 'fs';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
+import { Writable } from 'stream';
+import { finished } from 'stream/promises';
 
 describe('a multipart request', () => {
-  let app;
-  const fileNames = [];
+  let app: ExpressWithServer;
+  const fileNames: string[] = [];
+
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'multipart.yaml');
     app = await createApp(
@@ -37,11 +40,13 @@ describe('a multipart request', () => {
         ),
     );
   });
+
   beforeEach(() => {
     fileNames.length = 0;
   });
-  after(() => {
-    (<any>app).server.close();
+
+  after(async () => {
+    await app.closeServer();
   });
 
   describe('that contains $refs', () => {
@@ -94,9 +99,9 @@ describe('a multipart request', () => {
         .get(`${app.basePath}/sample_2`)
         .set('Content-Type', 'multipart/form-data')
         .set('Accept', 'application/json')
-        .expect('Content-Type', /json/)
         .attach('file', 'package.json')
         .field('metadata', 'some-metadata')
+        .expect('Content-Type', /json/)
         .expect(405));
 
     it('should throw 415 unsupported media type', async () =>
@@ -115,23 +120,20 @@ describe('a multipart request', () => {
   });
 
   describe('that is well formed', () => {
-    it('should validate application/octet-stream file and metadata', (done) => {
+    it('should validate application/octet-stream file and metadata', async () => {
       const testImage = `${__dirname}/assets/image.png`;
+      const imgStream = fs.createReadStream(testImage);
       const req = request(app)
         .post(`${app.basePath}/sample_3`)
         .set('content-type', 'application/octet-stream');
-
-      const imgStream = fs.createReadStream(testImage);
-      imgStream.on('end', () => req.end(done));
-      imgStream.pipe(<any>req, { end: false });
+      const reqStream = new Writable({ write: req.write.bind(req) });
+      imgStream.pipe(reqStream);
+      await finished(imgStream);
+      await req.expect(200);
     });
 
     it('should validate multipart file and metadata', async () => {
-      const array_with_objects = JSON.stringify([
-        {
-          foo: 'bar',
-        },
-      ]);
+      const array_with_objects = JSON.stringify([{ foo: 'bar' }]);
 
       await request(app)
         .post(`${app.basePath}/sample_2`)
@@ -153,11 +155,7 @@ describe('a multipart request', () => {
 });
 
 describe('when request does not use parsers', () => {
-  let app;
-
-  after(() => {
-    (<any>app).server.close();
-  });
+  let app: ExpressWithServer;
 
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'multipart.yaml');
@@ -174,6 +172,10 @@ describe('when request does not use parsers', () => {
       false,
       false,
     );
+  });
+
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should validate that endpoint exists', async () => {

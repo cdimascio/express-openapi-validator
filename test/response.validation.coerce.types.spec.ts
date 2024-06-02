@@ -1,12 +1,12 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 
 describe('response validation with type coercion', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -36,17 +36,18 @@ describe('response validation with type coercion', () => {
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should be able to return `true` as the response body', async () =>
     request(app)
       .get(`${app.basePath}/boolean?value=true`)
       .expect(200)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body).to.equal(true);
       }));
+
   it('should coerce id from string to number', async () =>
     request(app).get(`${app.basePath}/object`).expect(200));
 });

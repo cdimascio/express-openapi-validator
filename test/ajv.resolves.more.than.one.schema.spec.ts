@@ -1,16 +1,28 @@
 import express from 'express';
-import { Server } from 'http';
 import request from 'supertest';
 import * as OpenApiValidator from '../src';
-import { startServer } from './common/app.common';
+import {
+  EovErrorHandler,
+  ExpressWithServer,
+  startServer,
+} from './common/app.common';
 import { deepStrictEqual } from 'assert';
+import { OpenAPIV3 } from '../src/framework/types';
 
 describe('AJV: reference resolves to more than one schema', () => {
+  let apiSpec: OpenAPIV3.Document;
+  let app: ExpressWithServer;
+
+  before(async () => {
+    apiSpec = createApiSpec();
+    app = await createApp(apiSpec);
+  });
+
+  after(async () => {
+    await app.closeServer();
+  });
+
   it('it should ignore x-stoplight properties', async () => {
-    const apiSpec = createApiSpec();
-
-    const app = await createApp(apiSpec);
-
     await request(app)
       .get('/bear')
       .expect((res) => {
@@ -23,16 +35,15 @@ describe('AJV: reference resolves to more than one schema', () => {
         }
       });
 
-    app.server.close();
-
     deepStrictEqual(apiSpec, createApiSpec());
   });
 });
 
 async function createApp(
-  apiSpec: any,
-): Promise<express.Express & { server?: Server }> {
-  const app = express();
+  apiSpec: OpenAPIV3.Document,
+): Promise<ExpressWithServer> {
+  const app = express() as ExpressWithServer;
+  app.basePath = '';
 
   app.use(
     OpenApiValidator.middleware({
@@ -46,15 +57,15 @@ async function createApp(
     }),
   );
 
-  app.use((err, req, res, next) => {
+  app.use(<EovErrorHandler>((err, req, res, next) => {
     res.status(500).send(err.stack);
-  });
+  }));
 
   await startServer(app, 3001);
   return app;
 }
 
-function createApiSpec() {
+function createApiSpec(): OpenAPIV3.Document {
   return {
     openapi: '3.0.3',
     info: {
@@ -92,7 +103,7 @@ function createApiSpec() {
               type: 'string',
             },
           },
-        },
+        } as OpenAPIV3.SchemaObject,
       },
     },
   };

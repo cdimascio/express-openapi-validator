@@ -1,8 +1,9 @@
 import request from 'supertest';
-import { createApp } from './common/app';
+import { createApp, ExpressWithServer } from './common/app';
+import { OpenAPIV3 } from '../src/framework/types';
 
 describe('511 schema.preprocessor inheritance', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -27,8 +28,8 @@ describe('511 schema.preprocessor inheritance', () => {
     return app;
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should return 201', async () =>
@@ -43,7 +44,7 @@ describe('511 schema.preprocessor inheritance', () => {
       .expect(201));
 });
 
-function apiSpec(): any {
+function apiSpec(): OpenAPIV3.Document {
   return {
     openapi: '3.0.0',
     info: {
@@ -86,7 +87,6 @@ function apiSpec(): any {
     components: {
       schemas: {
         PolyObject: {
-          type: 'object',
           discriminator: {
             propertyName: 'object_type',
             mapping: {

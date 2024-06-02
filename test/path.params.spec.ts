@@ -1,12 +1,13 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
+import { EovErrorHandler } from './common/app.common';
 
 const apiSpecPath = path.join('test', 'resources', 'path.params.yaml');
 
 describe('path params', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -27,7 +28,7 @@ describe('path params', () => {
         );
         app.get(`${app.basePath}/user_lookup\\::name`, (req, res) => {
           res.json({
-            id: req.params.name,
+            id: 'name' in req.params ? req.params.name : undefined,
           });
         });
         app.get(`${app.basePath}/multi_users/:ids?`, (req, res) => {
@@ -35,20 +36,20 @@ describe('path params', () => {
             ids: req.params.ids,
           });
         });
-        app.use((err, req, res, next) => {
+        app.use(<EovErrorHandler>((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
           });
-        });
+        }));
       },
       false,
     );
     return app;
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should url decode path parameters (type level)', async () =>

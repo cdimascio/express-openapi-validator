@@ -1,11 +1,11 @@
 import path from 'path';
 import express from 'express';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 import { expect } from 'chai';
 
 describe('one.of readonly', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // Set up the express app
@@ -27,8 +27,8 @@ describe('one.of readonly', () => {
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('post type anyOf (without readonly id) should pass', async () =>

@@ -1,15 +1,17 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
 describe('datetime.validation', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
-  async function setupServer(validateFormats?: false | 'full' | 'fast') {
+  function setupServer(
+    validateFormats?: false | 'full' | 'fast',
+  ): Promise<ExpressWithServer> {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'datetime.validation.yaml');
-    app = await createApp(
+    return createApp(
       {
         apiSpec,
         validateResponses: true,
@@ -26,18 +28,12 @@ describe('datetime.validation', () => {
     );
   }
 
-  beforeEach(() => {
-    app = null;
-  });
-
   afterEach(async () => {
-    if (app) {
-      await new Promise((resolve) => app.server.close(resolve));
-    }
+    await app.closeServer();
   });
 
   it('should return 200 if testDateTimeProperty is provided with invalid, but correctly formatted date time and default validation is enabled (past compatibility)', async () => {
-    await setupServer();
+    app = await setupServer();
     await request(app)
       .post(`${app.basePath}/date-time-validation`)
       .send({
@@ -51,7 +47,7 @@ describe('datetime.validation', () => {
   });
 
   it('should return 400 if testDateTimeProperty is provided with incorrectly formatted date time and default validation enabled (past compatibility)', async () => {
-    await setupServer();
+    app = await setupServer();
     await request(app)
       .post(`${app.basePath}/date-time-validation`)
       .send({
@@ -61,7 +57,7 @@ describe('datetime.validation', () => {
   });
 
   it('should return 200 if testDateTimeProperty is provided with incorrectly formatted date time and format validation disabled', async () => {
-    await setupServer(false);
+    app = await setupServer(false);
     await request(app)
       .post(`${app.basePath}/date-time-validation`)
       .send({
@@ -75,7 +71,7 @@ describe('datetime.validation', () => {
   });
 
   it('should return 200 if testDateTimeProperty is provided with valid date time and full validation enabled', async () => {
-    await setupServer('full');
+    app = await setupServer('full');
     await request(app)
       .post(`${app.basePath}/date-time-validation`)
       .send({
@@ -89,7 +85,7 @@ describe('datetime.validation', () => {
   });
 
   it('should return 400 if testDateTimeProperty is provided with invalid date time and full validation enabled', async () => {
-    await setupServer('full');
+    app = await setupServer('full');
     await request(app)
       .post(`${app.basePath}/date-time-validation`)
       .send({

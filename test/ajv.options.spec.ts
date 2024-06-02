@@ -26,25 +26,25 @@ describe('AjvOptions', () => {
     validateFormats: true,
   };
 
-  it('should not validate schema for requests since schema is validated on startup', async () => {
+  it('should not validate schema for requests since schema is validated on startup', () => {
     const ajv = new AjvOptions(baseOptions);
     const options = ajv.request;
     expect(options.validateSchema).to.be.false;
   });
 
-  it('should not validate schema for response since schema is validated on startup', async () => {
+  it('should not validate schema for response since schema is validated on startup', () => {
     const ajv = new AjvOptions(baseOptions);
     const options = ajv.response;
     expect(options.validateSchema).to.be.false;
   });
 
-  it('should not validate schema for preprocessor since schema is validated on startup', async () => {
+  it('should not validate schema for preprocessor since schema is validated on startup', () => {
     const ajv = new AjvOptions(baseOptions);
     const options = ajv.preprocessor;
     expect(options.validateSchema).to.be.false;
   });
 
-  it('should not validate schema for multipar since schema is validated on startup', async () => {
+  it('should not validate schema for multipar since schema is validated on startup', () => {
     const ajv = new AjvOptions(baseOptions);
     const options = ajv.multipart;
     expect(options.validateSchema).to.be.false;
@@ -61,6 +61,7 @@ describe('AjvOptions', () => {
       ],
     });
     const options = ajv.multipart;
+    expect(options.serDesMap).has.property('custom-1');
     expect(options.serDesMap['custom-1']).has.property('deserialize');
     expect(options.serDesMap['custom-1']).does.not.have.property('serialize');
   });

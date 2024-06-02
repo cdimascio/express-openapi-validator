@@ -1,16 +1,25 @@
+import express from 'express';
+import path from 'path';
+import bodyParser from 'body-parser';
+import * as OpenApiValidator from '../src';
 import { expect } from 'chai';
 import request from 'supertest';
+import {
+  EovErrorHandler,
+  ExpressWithServer,
+  startServer,
+} from './common/app.common';
 
 describe('multi-spec', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // Set up the express app
-    app = createServer();
+    app = await createServer();
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('create campaign should return 200', async () =>
@@ -31,14 +40,10 @@ describe('multi-spec', () => {
       }));
 });
 
-function createServer() {
-  const express = require('express');
-  const path = require('path');
-  const bodyParser = require('body-parser');
-  const http = require('http');
-  const OpenApiValidator = require('../src');
+async function createServer(): Promise<ExpressWithServer> {
+  const app = express() as ExpressWithServer;
+  app.basePath = '';
 
-  const app = express();
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.text());
   app.use(bodyParser.json());
@@ -56,16 +61,14 @@ function createServer() {
     routes(app, v);
   }
 
-  const server = http.createServer(app);
-  server.listen(3000);
-  console.log('Listening on port 3000');
+  await startServer(app, 3000);
 
-  function routes(app, v) {
+  function routes(app: ExpressWithServer, v: number) {
     if (v === 1) routesV1(app);
     if (v === 2) routesV2(app);
   }
 
-  function routesV1(app) {
+  function routesV1(app: ExpressWithServer) {
     const v = '/v1';
     app.post(`${v}/pets`, (req, res, next) => {
       res.json({ ...req.body });
@@ -80,16 +83,16 @@ function createServer() {
       ]);
     });
 
-    app.use((err, req, res, next) => {
+    app.use(<EovErrorHandler>((err, req, res, next) => {
       // format error
       res.status(err.status || 500).json({
         message: err.message,
         errors: err.errors,
       });
-    });
+    }));
   }
 
-  function routesV2(app) {
+  function routesV2(app: ExpressWithServer) {
     const v = '/v2';
     app.get(`${v}/pets`, (req, res, next) => {
       res.json([
@@ -104,15 +107,14 @@ function createServer() {
       res.json({ ...req.body });
     });
 
-    app.use((err, req, res, next) => {
+    app.use(<EovErrorHandler>((err, req, res, next) => {
       // format error
       res.status(err.status || 500).json({
         message: err.message,
         errors: err.errors,
       });
-    });
+    }));
   }
 
-  app.server = server;
   return app;
 }

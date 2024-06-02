@@ -1,15 +1,16 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
+import { EovErrorHandler } from './common/app.common';
 import * as packageJson from '../package.json';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
+  let onErrorArgs: any[] | undefined;
 
-  let onErrorArgs = null;
   before(async () => {
     // set up express app
     app = await createApp(
@@ -39,38 +40,38 @@ describe(packageJson.name, () => {
           }
           return res.json(json);
         });
-        app.use((err, _req, res, _next) => {
+        app.use(<EovErrorHandler>((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
           });
-        });
+        }));
       },
       false,
     );
   });
 
   afterEach(() => {
-    onErrorArgs = null;
+    onErrorArgs = undefined;
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('custom error handler invoked if response field has a value of incorrect type', async () =>
     request(app)
       .get(`${app.basePath}/pets?mode=bad_type`)
       .expect(200)
-      .then((r: any) => {
+      .then((r) => {
         const data = [{ id: 'bad_id', name: 'name', tag: 'tag' }];
         expect(r.body).to.eql(data);
-        expect(onErrorArgs.length).to.equal(3);
-        expect(onErrorArgs[0].message).to.equal(
+        expect(onErrorArgs?.length).to.equal(3);
+        expect(onErrorArgs?.[0].message).to.equal(
           '/response/0/id must be integer',
         );
-        expect(onErrorArgs[1]).to.eql(data);
-        expect(onErrorArgs[2].query).to.eql({
+        expect(onErrorArgs?.[1]).to.eql(data);
+        expect(onErrorArgs?.[2].query).to.eql({
           mode: 'bad_type',
         });
       }));
@@ -79,22 +80,22 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/users`)
       .expect(200)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body).is.an('array').with.length(3);
-        expect(onErrorArgs).to.equal(null);
+        expect(onErrorArgs).to.be.undefined;
       }));
 
   it('returns error if custom error handler throws', async () =>
     request(app)
       .get(`${app.basePath}/pets?mode=bad_type_throw`)
       .expect(500)
-      .then((r: any) => {
+      .then((r) => {
         const data = [{ id: 'bad_id_throw', name: 'name', tag: 'tag' }];
         expect(r.body.message).to.equal('error in onError handler');
-        expect(onErrorArgs.length).to.equal(3);
-        expect(onErrorArgs[0].message).to.equal(
+        expect(onErrorArgs?.length).to.equal(3);
+        expect(onErrorArgs?.[0].message).to.equal(
           '/response/0/id must be integer',
         );
-        expect(onErrorArgs[1]).to.eql(data);
+        expect(onErrorArgs?.[1]).to.eql(data);
       }));
 });

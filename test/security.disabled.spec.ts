@@ -1,13 +1,14 @@
 import path from 'path';
 import express from 'express';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
 // NOTE/TODO: These tests modify eovConf.validateSecurity.handlers
 // Thus test execution order matters :-(
 describe('security.disabled', () => {
-  let app = null;
-  let basePath = null;
+  let app: ExpressWithServer;
+  let basePath: string;
+
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'security.yaml');
@@ -24,18 +25,16 @@ describe('security.disabled', () => {
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should return 200 if no security', async () =>
     request(app).get(`${basePath}/no_security`).expect(200));
 
-  it('should skip validation, even if auth header is missing for basic auth', async () => {
-    return request(app).get(`${basePath}/basic`).expect(200);
-  });
+  it('should skip validation, even if auth header is missing for basic auth', async () =>
+    request(app).get(`${basePath}/basic`).expect(200));
 
-  it('should skip security validation, even if auth header is missing for bearer auth', async () => {
-    return request(app).get(`${basePath}/bearer`).expect(200);
-  });
+  it('should skip security validation, even if auth header is missing for bearer auth', async () =>
+    request(app).get(`${basePath}/bearer`).expect(200));
 });

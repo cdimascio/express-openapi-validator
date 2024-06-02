@@ -1,14 +1,15 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
+import { EovErrorHandler } from './common/app.common';
 import * as packageJson from '../package.json';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 const today = new Date();
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -77,26 +78,26 @@ describe(packageJson.name, () => {
         app.post(`${app.basePath}/no_additional_props`, (req, res) => {
           res.json(req.body);
         });
-        app.use((err, req, res, next) => {
+        app.use(<EovErrorHandler>((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
           });
-        });
+        }));
       },
       false,
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should return 200 on valid responses 200 $ref', async () =>
     request(app)
       .get(`${app.basePath}/ref_response_body`)
       .expect(200)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body.id).to.be.a('number').that.equals(213);
       }));
 
@@ -105,7 +106,7 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/ref_response_body`)
       .set('Accept', 'APPLICATION/JSON')
       .expect(200)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body.id).to.be.a('number').that.equals(213);
       }));
 
@@ -113,7 +114,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets?mode=bad_type`)
       .expect(500)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body.message).to.contain('must be integer');
         expect(r.body).to.have.property('code').that.equals(500);
       }));
@@ -123,7 +124,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/object`)
       .expect(500)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body.message).to.contain('must be object');
         expect(r.body).to.have.property('code').that.equals(500);
       }));
@@ -133,7 +134,7 @@ describe(packageJson.name, () => {
       .post(`${app.basePath}/object?mode=array`)
       .send({ id: 1, name: 'fido' })
       .expect(500)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body.message).to.contain('must be object');
         expect(r.body).to.have.property('code').that.equals(500);
       }));
@@ -148,7 +149,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets?mode=empty_object`)
       .expect(500)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body.message).to.contain('must be array');
         expect(r.body).to.have.property('code').that.equals(500);
       }));
@@ -157,7 +158,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets?mode=empty_response`)
       .expect(500)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body.message).to.contain('body required');
         expect(r.body).to.have.property('code').that.equals(500);
       }));
@@ -201,7 +202,7 @@ describe(packageJson.name, () => {
         some_invalid_prop: 'test',
       })
       .expect(500)
-      .then((r: any) => {
+      .then((r) => {
         const e = r.body;
         expect(e.message).to.contain('must NOT have additional properties');
         expect(e.code).to.equal(500);
@@ -221,7 +222,7 @@ describe(packageJson.name, () => {
         },
       })
       .expect(500)
-      .then((r: any) => {
+      .then((r) => {
         const e = r.body;
         expect(e.message).to.contain('must NOT have additional properties');
         expect(e.code).to.equal(500);
@@ -231,7 +232,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/pets?mode=check_null`)
       .expect(200)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body).is.an('array').with.length(3);
         expect(r.body[0].bought_at).equal(null);
         expect(r.body[1].bought_at).equal(today.toISOString());
@@ -242,7 +243,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/users`)
       .expect(200)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body).is.an('array').with.length(3);
       }));
 
@@ -250,7 +251,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/boolean?value=true`)
       .expect(200)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body).to.equal(true);
       }));
 
@@ -258,7 +259,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/boolean?value=false`)
       .expect(200)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body).to.equal(false);
       }));
 });

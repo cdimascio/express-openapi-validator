@@ -1,10 +1,10 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
 describe('request bodies', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // Set up the express app
@@ -24,12 +24,13 @@ describe('request bodies', () => {
             ...req,
           }))
           .post(`${app.basePath}/request_bodies_ref`, (req, res) => {
+            const accept_header = req.header('accept');
             if (req.query.bad_body) {
               const r = req.body;
               r.unexpected_prop = 'bad';
               res.json(r);
-            } else if (req.header('accept')) {
-              res.type(req.header('accept')).send(req.body);
+            } else if (accept_header) {
+              res.type(accept_header).send(req.body);
             } else {
               res.json(req.body);
             }
@@ -39,8 +40,8 @@ describe('request bodies', () => {
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should return 415 for undeclared media type', async () =>
@@ -79,7 +80,7 @@ describe('request bodies', () => {
       });
   });
 
-  it('should return 200 if application/ld+json request body is satisfied by application/*', async () => {
+  it('should return 200 if application/ld+json request body is satisfied by application/*', async () =>
     request(app)
       .post(`${app.basePath}/request_bodies_ref`)
       .set('accept', 'application/ld+json')
@@ -92,10 +93,9 @@ describe('request bodies', () => {
         const { body } = r;
         expect(r.get('content-type')).to.contain('application/ld+json');
         expect(body).to.have.property('testProperty');
-      });
-  });
+      }));
 
-  it('should return 200 if application/vnd.api+json; type=two request body is validated agains the corrent schema', async () => {
+  it('should return 200 if application/vnd.api+json; type=two request body is validated agains the corrent schema', async () =>
     request(app)
       .post(`${app.basePath}/request_bodies_ref`)
       .set('accept', 'application/vnd.api+json; type=two')
@@ -109,8 +109,7 @@ describe('request bodies', () => {
         expect(r.get('content-type')).to.contain('application/vnd.api+json');
         expect(r.get('content-type')).to.contain(' type=two');
         expect(body).to.have.property('testPropertyTwo');
-      });
-  });
+      }));
 
   it('should return 400 if testProperty body property is not provided', async () =>
     request(app)

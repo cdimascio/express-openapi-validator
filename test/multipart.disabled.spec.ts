@@ -2,11 +2,12 @@ import express from 'express';
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
+
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'multipart.yaml');
     app = await createApp({ apiSpec, fileUploader: false }, 3003, (app) =>
@@ -20,9 +21,11 @@ describe(packageJson.name, () => {
       ),
     );
   });
-  after(() => {
-    (<any>app).server.close();
+
+  after(async () => {
+    await app.closeServer();
   });
+
   describe(`multipart disabled`, () => {
     it('should throw 400 when required multipart file field', async () =>
       request(app)

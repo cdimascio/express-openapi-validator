@@ -1,12 +1,12 @@
 import path from 'path';
 import express from 'express';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { createApp, ExpressWithServer } from './common/app';
 import * as packageJson from '../package.json';
 import { expect } from 'chai';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // Set up the express app
@@ -27,8 +27,8 @@ describe(packageJson.name, () => {
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('create campaign should return 201', async () =>

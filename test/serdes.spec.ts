@@ -1,8 +1,8 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
-
+import { ExpressWithServer, createApp } from './common/app';
+import { EovErrorHandler } from './common/app.common';
 import { date, dateTime } from '../src/framework/base.serdes';
 
 const apiSpecPath = path.join('test', 'resources', 'serdes.yaml');
@@ -35,7 +35,7 @@ function toSummary(title, value) {
 }
 
 describe('serdes', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -65,7 +65,7 @@ describe('serdes', () => {
           if (typeof req.params.id !== 'object') {
             throw new Error('Should be deserialized to ObjectId object');
           }
-          let date = new Date('2020-12-20T07:28:19.213Z');
+          const date = new Date('2020-12-20T07:28:19.213Z');
           res.json({
             id: req.params.id,
             creationDateTime: date,
@@ -113,20 +113,20 @@ describe('serdes', () => {
             ),
           });
         });
-        app.use((err, req, res, next) => {
+        app.use(<EovErrorHandler>((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
           });
-        });
+        }));
       },
       false,
     );
     return app;
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should control BAD id format and throw an error', async () =>
@@ -251,7 +251,7 @@ describe('serdes', () => {
 });
 
 describe('serdes serialize response components only', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -280,11 +280,11 @@ describe('serdes serialize response components only', () => {
           if (typeof req.params.id !== 'string') {
             throw new Error('Should be not be deserialized to ObjectId object');
           }
-          let date = new Date('2020-12-20T07:28:19.213Z');
-          let result = {
+          const date = new Date('2020-12-20T07:28:19.213Z');
+          const result = {
             id: new ObjectID(req.params.id),
             creationDateTime: date,
-            creationDate: undefined,
+            creationDate: undefined as unknown,
             shortOrLong: 'a',
           };
           if (req.query.baddateresponse === 'functionNotExists') {
@@ -311,20 +311,20 @@ describe('serdes serialize response components only', () => {
           // We let creationDate as String and it should also work (either in Date Object ou String 'date' format)
           res.json(req.body);
         });
-        app.use((err, req, res, next) => {
+        app.use(<EovErrorHandler>((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
           });
-        });
+        }));
       },
       false,
     );
     return app;
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should control BAD id format and throw an error', async () =>
@@ -443,7 +443,7 @@ describe('serdes serialize response components only', () => {
 });
 
 describe('serdes with array type string-list', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -477,7 +477,7 @@ describe('serdes with array type string-list', () => {
           if (typeof req.params.id !== 'object') {
             throw new Error('Should be deserialized to ObjectId object');
           }
-          let date = new Date('2020-12-20T07:28:19.213Z');
+          const date = new Date('2020-12-20T07:28:19.213Z');
           res.json({
             id: req.params.id,
             tags: ['aa', 'bb', 'cc'],
@@ -506,20 +506,20 @@ describe('serdes with array type string-list', () => {
           }
           res.json(req.body);
         });
-        app.use((err, req, res, next) => {
+        app.use(<EovErrorHandler>((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
           });
-        });
+        }));
       },
       false,
     );
     return app;
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should control BAD id format and throw an error', async () =>
@@ -532,7 +532,7 @@ describe('serdes with array type string-list', () => {
         );
       }));
 
-  it('should control GOOD id format and get a response in expected format', async () => {
+  it('should control GOOD id format and get a response in expected format', async () =>
     request(app)
       .get(`${app.basePath}/users/5fdefd13a6640bb5fb5fa925`)
       .expect(200)
@@ -541,8 +541,7 @@ describe('serdes with array type string-list', () => {
         expect(r.body.creationDate).to.equal('2020-12-20');
         expect(r.body.creationDateTime).to.equal('2020-12-20T07:28:19.213Z');
         expect(r.body.tags).to.equal('aa,bb,cc');
-      });
-  });
+      }));
 
   it('should POST also works with deserialize on request then serialize en response', async () =>
     request(app)

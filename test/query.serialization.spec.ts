@@ -2,10 +2,11 @@ import { expect } from 'chai';
 import express from 'express';
 import path from 'path';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
-describe('styles', () => {
-  let app = null;
+describe('query.serialization', () => {
+  let app: ExpressWithServer;
+
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'query.serialization.yaml');
     app = await createApp({ apiSpec }, 3005, (app) =>
@@ -24,7 +25,7 @@ describe('styles', () => {
   });
 
   after(async () => {
-    app.server.close();
+    await app.closeServer();
   });
 
   it('should handle querey param (default) style=form, explode=true', async () =>
@@ -35,7 +36,7 @@ describe('styles', () => {
         expect(r.body.query.state).is.an('array').of.length(2);
       }));
 
-  it.only('should handle query param with style=form, explode=false', async () =>
+  it('should handle query param with style=form, explode=false', async () =>
     request(app)
       .get('/api/q_form_nexplode')
       .query({

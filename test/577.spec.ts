@@ -1,29 +1,36 @@
 import express from 'express';
-import { Server } from 'http';
 import request from 'supertest';
 import * as OpenApiValidator from '../src';
 import { OpenAPIV3 } from '../src/framework/types';
-import { startServer } from './common/app.common';
+import { ExpressWithServer, startServer } from './common/app.common';
 import { deepStrictEqual } from 'assert';
 
 describe('#577 - Exclude response validation that is not in api spec', () => {
-  it('does not validate responses which are not present in the spec', async () => {
-    const apiSpec = createApiSpec();
+  let apiSpec: OpenAPIV3.Document;
+  let app: ExpressWithServer;
 
-    const app = await createApp(apiSpec);
+  before(async () => {
+    apiSpec = createApiSpec();
+    app = await createApp(apiSpec);
+  });
+
+  after(async () => {
+    await app.closeServer();
+  });
+
+  it('does not validate responses which are not present in the spec', async () => {
     await request(app).get('/users').expect(200, 'some users');
     await request(app).post('/users').expect(201, 'Created!');
     await request(app).get('/example').expect(200, 'Example indeed');
-    app.server.close();
-
     deepStrictEqual(apiSpec, createApiSpec());
   });
 });
 
 async function createApp(
   apiSpec: OpenAPIV3.Document,
-): Promise<express.Express & { server?: Server }> {
-  const app = express();
+): Promise<ExpressWithServer> {
+  const app = express() as ExpressWithServer;
+  app.basePath = '';
 
   app.use(
     OpenApiValidator.middleware({

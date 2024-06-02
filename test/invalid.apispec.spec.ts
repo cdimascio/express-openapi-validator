@@ -1,39 +1,47 @@
-import express from 'express';
-import { Server } from 'http';
+import express, { Request } from 'express';
 import request from 'supertest';
 import * as OpenApiValidator from '../src';
 import { OpenAPIV3, OpenApiValidatorOpts } from '../src/framework/types';
-import { startServer } from './common/app.common';
+import { ExpressWithServer, startServer } from './common/app.common';
 
 describe('invalid api spec', () => {
+  let apiSpec: OpenAPIV3.Document;
+  let app: ExpressWithServer;
+
+  beforeEach(() => {
+    apiSpec = createApiSpec();
+  });
+
+  afterEach(async () => {
+    await app.closeServer();
+  });
+
   it('should propagate spec errors when validateApiSpec is true', async () => {
-    const apiSpec = createApiSpec();
-    const app = await createApp({
+    app = await createApp({
       apiSpec,
     });
     await request(app).get('/dev/hello/echo').expect(500);
-    app.server.close();
   });
+
   it('should fail gracefully when validateApiSpec is false', async () => {
-    const apiSpec = createApiSpec();
-    const app = await createApp({
+    app = await createApp({
       apiSpec,
       validateApiSpec: false,
     });
     await request(app).get('/dev/hello/echo').expect(500);
-    app.server.close();
   });
 });
 
 async function createApp(
   opts: OpenApiValidatorOpts,
-): Promise<express.Express & { server?: Server }> {
-  const app = express();
+): Promise<ExpressWithServer> {
+  const app = express() as ExpressWithServer;
+  app.basePath = '';
 
   app.use(OpenApiValidator.middleware(opts));
   app.use(
     express.Router().get('/dev/hello/echo', (req, res) => {
-      res.status(200).send((<any>req.params).value);
+      res.status(200).send((req as Request).params.value);
     }),
   );
 
@@ -42,7 +50,7 @@ async function createApp(
 }
 
 function createApiSpec(): OpenAPIV3.Document {
-  return <any>{
+  return {
     openapi: '3.0.3',
     info: {
       title: 'The API',
@@ -69,7 +77,8 @@ function createApiSpec(): OpenAPIV3.Document {
           summary: 'Responds with the request.',
           description: '',
           responses: { '200': { description: 'OK' } },
-          parameters: { q: 'string' }, // <-- THE INCORRECT BIT
+          // Incorrect parameters, should be array.
+          parameters: { q: 'string' } as unknown as OpenAPIV3.ParameterObject[],
           tags: ['dev/hello'],
         },
       },

@@ -1,28 +1,25 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 import * as packageJson from '../package.json';
 
 describe(packageJson.name, () => {
-  const apps = [];
-  let basePath = null;
+  let apps: ExpressWithServer[] = [];
+  let basePath: string;
 
-  before(() => {
+  before(async () => {
     const apiSpecPath = path.join('test', 'resources', 'openapi.yaml');
-    const apiSpecJson = require('./resources/openapi.json');
-    return Promise.all([
+    const apiSpecJson = path.join('test', 'resources', 'openapi.json');
+    apps = await Promise.all([
       createApp({ apiSpec: apiSpecPath }, 3001),
       createApp({ apiSpec: apiSpecJson }, 3002),
-    ]).then(([a1, a2]) => {
-      apps.push(a1);
-      apps.push(a2);
-      basePath = (<any>a1).basePath;
-    });
+    ]);
+    basePath = apps[0].basePath;
   });
 
-  after(() => {
-    apps.forEach((app) => app.server.close());
+  after(async () => {
+    await Promise.all(apps.map((app) => app.closeServer()));
   });
 
   // [0,1] simulate range of 2 items - each item references an index in `apps`

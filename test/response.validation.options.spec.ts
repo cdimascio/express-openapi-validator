@@ -1,13 +1,14 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
+import { EovErrorHandler } from './common/app.common';
 import * as packageJson from '../package.json';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -26,7 +27,7 @@ describe(packageJson.name, () => {
         });
         app.get(`${app.basePath}/pets`, (req, res) => {
           let json = {};
-          if ((req.query.mode = 'bad_type')) {
+          if (req.query.mode == 'bad_type') {
             json = [{ id: 'bad_id', name: 'name', tag: 'tag' }];
           }
           return res.json(json);
@@ -34,26 +35,26 @@ describe(packageJson.name, () => {
         app.post(`${app.basePath}/no_additional_props`, (req, res) => {
           res.json(req.body);
         });
-        app.use((err, req, res, next) => {
+        app.use(<EovErrorHandler>((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
           });
-        });
+        }));
       },
       false,
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should fail if response field has a value of incorrect type', async () =>
     request(app)
       .get(`${app.basePath}/pets?mode=bad_type`)
       .expect(500)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body.message).to.contain('must be integer');
         expect(r.body).to.have.property('code').that.equals(500);
       }));
@@ -72,7 +73,7 @@ describe(packageJson.name, () => {
         some_invalid_prop: 'test',
       })
       .expect(200)
-      .then((r: any) => {
+      .then((r) => {
         const body = r.body;
         expect(body).to.have.property('token_type');
         expect(body).to.not.have.property('some_invalid_prop');
@@ -92,7 +93,7 @@ describe(packageJson.name, () => {
         },
       })
       .expect(200)
-      .then((r: any) => {
+      .then((r) => {
         const body = r.body;
         expect(body.user).to.have.property('id');
         expect(body.user).to.not.have.property('extra_prop');
@@ -102,7 +103,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/users`)
       .expect(200)
-      .then((r: any) => {
+      .then((r) => {
         expect(r.body).is.an('array').with.length(3);
       }));
 });

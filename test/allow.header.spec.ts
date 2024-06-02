@@ -1,21 +1,20 @@
 import { expect } from 'chai';
 import express from 'express';
-import { Server } from 'http';
 import request from 'supertest';
 import * as packageJson from '../package.json';
 import * as OpenApiValidator from '../src';
 import { OpenAPIV3 } from '../src/framework/types';
-import { startServer } from './common/app.common';
+import { ExpressWithServer, startServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     app = await createApp();
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('adds "Allow" header to 405 - Method Not Allowed', async () =>
@@ -30,8 +29,9 @@ describe(packageJson.name, () => {
       }));
 });
 
-async function createApp(): Promise<express.Express & { server?: Server }> {
-  const app = express();
+async function createApp(): Promise<ExpressWithServer> {
+  const app = express() as ExpressWithServer;
+  app.basePath = '';
 
   app.use(
     OpenApiValidator.middleware({

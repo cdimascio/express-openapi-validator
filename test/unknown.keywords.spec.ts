@@ -1,9 +1,9 @@
 import path from 'path';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
 describe('Unknown x- keywords', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'unknown.keywords.yaml');
@@ -23,7 +23,9 @@ describe('Unknown x- keywords', () => {
     );
   });
 
-  after(() => app.server.close());
+  after(async () => {
+    await app.closeServer();
+  });
 
   it('should return 200 for valid request with unknown x- keywords', async () =>
     request(app)

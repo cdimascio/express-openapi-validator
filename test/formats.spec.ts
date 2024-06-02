@@ -1,12 +1,13 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
+import { EovErrorHandler } from './common/app.common';
 
 const apiSpecPath = path.join('test', 'resources', 'formats.yaml');
 
 describe('path params', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -17,12 +18,12 @@ describe('path params', () => {
           {
             name: 'three-digits',
             type: 'number',
-            validate: (v) => /^[0-9]{3}$/.test(v.toString()),
+            validate: (v: number) => /^[0-9]{3}$/.test(v.toString()),
           },
           {
             name: 'three-letters',
             type: 'string',
-            validate: (v) => /^[A-Za-z]{3}$/.test(v),
+            validate: (v: string) => /^[A-Za-z]{3}$/.test(v),
           },
         ],
       },
@@ -32,20 +33,20 @@ describe('path params', () => {
         app.all(`${app.basePath}/formats/1`, (req, res) =>
           res.json([req.query]),
         );
-        app.use((err, req, res, next) => {
+        app.use(<EovErrorHandler>((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
             code: err.status ?? 500,
           });
-        });
+        }));
       },
       false,
     );
     return app;
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   // TODO add tests for min and max float values

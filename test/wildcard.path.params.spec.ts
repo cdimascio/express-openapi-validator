@@ -1,10 +1,10 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
 describe('wildcard path params', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'wildcard.path.params.yaml');
@@ -49,7 +49,9 @@ describe('wildcard path params', () => {
     );
   });
 
-  after(() => app.server.close());
+  after(async () => {
+    await app.closeServer();
+  });
 
   it('should allow path param without wildcard', async () =>
     request(app)

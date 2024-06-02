@@ -2,10 +2,10 @@ import path from 'path';
 import express from 'express';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
 describe('empty servers', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // Set up the express app
@@ -18,8 +18,8 @@ describe('empty servers', () => {
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should throw 400 if servers are empty and request is malformed', async () =>

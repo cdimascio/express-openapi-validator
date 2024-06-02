@@ -4,13 +4,13 @@ import { expect } from 'chai';
 import request from 'supertest';
 import * as OpenApiValidator from '../src';
 import * as resolvers from '../src/resolvers';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 import { OpenApiValidatorOpts } from '../src/framework/types';
 
 describe('operation handler', () => {
-  let defaultNumberOfRoutes = null;
+  let defaultNumberOfRoutes: number;
 
-  before(async () => {
+  before(() => {
     const apiSpec = path.join(__dirname, 'resources/eov-operations.yaml');
     const app = express();
 
@@ -89,8 +89,9 @@ describe('operation handler', () => {
 });
 
 describe('custom operation handler', () => {
-  let app = null;
-  let basePath = null;
+  let app: ExpressWithServer;
+  let basePath: string;
+
   const apiSpec = path.join(
     __dirname,
     'resources/eov-operations.modulepath.yaml',
@@ -109,14 +110,15 @@ describe('custom operation handler', () => {
     basePath = app.basePath;
   });
 
-  after(async () => app.server.close());
+  after(async () => {
+    await app.closeServer();
+  });
 
-  it('should recognize mapped operation', async () => {
-    return request(app)
+  it('should recognize mapped operation', async () =>
+    request(app)
       .get(`${basePath}/ping`)
       .expect(200)
       .then((r) => {
         expect(r.text).to.be.equal('pong');
-      });
-  });
+      }));
 });

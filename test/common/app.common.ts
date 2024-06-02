@@ -1,19 +1,42 @@
-import { Request, Response } from 'express';
+import { Express, NextFunction, Request, Response } from 'express';
 import http from 'http';
 import express from 'express';
+import { HttpError } from '../../src/framework/types';
 
-export function startServer(app, port: number): Promise<http.Server> {
-  return new Promise((resolve, reject) => {
-    const http = require('http');
-    const server = http.createServer(app);
-    app.server = server;
+export type ExpressWithServer = Express & {
+  server: http.Server;
+  closeServer: () => Promise<void>;
+  basePath: string;
+};
+
+export type EovErrorHandler = (
+  err: HttpError,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => void;
+
+export async function startServer(
+  app: ExpressWithServer,
+  port: number,
+): Promise<http.Server> {
+  const http = await import('http');
+  const server = http.createServer(app);
+
+  app.server = server;
+  app.closeServer = async () => {
+    app.server.closeAllConnections();
+    return new Promise((resolve) => app.server.close(() => resolve()));
+  };
+
+  return new Promise((resolve) => {
     server.listen(port, () => {
       resolve(server);
     });
   });
 }
 
-export function routes(app) {
+export function routes(app: ExpressWithServer) {
   const basePath = app.basePath;
   const router1 = express
     .Router()

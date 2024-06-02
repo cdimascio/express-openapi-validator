@@ -1,7 +1,7 @@
 import path from 'path';
 import { expect } from 'chai';
 import request from 'supertest';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
 const apiSpecPath = path.join(
   'test',
@@ -10,7 +10,7 @@ const apiSpecPath = path.join(
 );
 
 describe('response validation with type coercion', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -36,8 +36,8 @@ describe('response validation with type coercion', () => {
     );
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should validate 200 using explicit response', async () =>

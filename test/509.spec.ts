@@ -1,8 +1,9 @@
 import request from 'supertest';
-import { createApp } from './common/app';
+import { createApp, ExpressWithServer } from './common/app';
+import { OpenAPIV3 } from '../src/framework/types';
 
 describe('509 schema.preprocessor', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -24,18 +25,17 @@ describe('509 schema.preprocessor', () => {
       },
       false,
     );
-    return app;
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should return 200', async () =>
     request(app).get(`${app.basePath}/users/aafasdf`).expect(200));
 });
 
-function apiSpec(): any {
+function apiSpec(): OpenAPIV3.Document {
   return {
     openapi: '3.0.1',
     info: {

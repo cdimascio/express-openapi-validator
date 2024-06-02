@@ -1,9 +1,9 @@
 import request from 'supertest';
 import { OpenAPIV3 } from '../src/framework/types';
-import { createApp } from './common/app';
+import { ExpressWithServer, createApp } from './common/app';
 
 describe('petstore', () => {
-  let app = null;
+  let app: ExpressWithServer;
 
   before(async () => {
     // set up express app
@@ -28,8 +28,8 @@ describe('petstore', () => {
     return app;
   });
 
-  after(() => {
-    app.server.close();
+  after(async () => {
+    await app.closeServer();
   });
 
   it('should return 200', async () =>
