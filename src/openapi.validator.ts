@@ -221,11 +221,8 @@ export class OpenApiValidator {
       middlewares.push(function operationHandlersMiddleware(req, res, next) {
         if (router) return router(req, res, next);
         return pContext
-          .then(
-            ({ context }) =>
-              (router = self.installOperationHandlers(req.baseUrl, context)),
-          )
-          .then((router) => router(req, res, next))
+          .then(({context}) => self.installOperationHandlers(req.baseUrl, context))
+          .then((installedRouter) => (router = installedRouter)(req, res, next))
           .catch(next);
       });
     }
@@ -304,7 +301,7 @@ export class OpenApiValidator {
     ).validate();
   }
 
-  installOperationHandlers(baseUrl: string, context: OpenApiContext): Router {
+  async installOperationHandlers(baseUrl: string, context: OpenApiContext): Promise<Router> {
     const router = express.Router({ mergeParams: true });
 
     this.installPathParams(router, context);
@@ -324,10 +321,8 @@ export class OpenApiValidator {
           expressRoute.indexOf(baseUrl) === 0
             ? expressRoute.substring(baseUrl.length)
             : expressRoute;
-        router[method.toLowerCase()](
-          path,
-          resolver(basePath, route, context.apiDoc),
-        );
+        const handler = await resolver(basePath, route, context.apiDoc);
+        router[method.toLowerCase()](path, handler);
       }
     }
     return router;

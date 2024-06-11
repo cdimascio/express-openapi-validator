@@ -1,7 +1,8 @@
 import * as ajv from 'ajv';
 import * as multer from 'multer';
-import { FormatsPluginOptions, FormatOptions } from 'ajv-formats';
-import { Request, Response, NextFunction } from 'express';
+import { FormatsPluginOptions } from 'ajv-formats';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { RouteMetadata } from './openapi.spec.loader';
 export { OpenAPIFrameworkArgs };
 
 export type BodySchema =
@@ -63,7 +64,11 @@ export type ValidateSecurityOpts = {
 
 export type OperationHandlerOptions = {
   basePath: string;
-  resolver: Function;
+  resolver: (
+    handlersPath: string,
+    route: RouteMetadata,
+    apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
+  ) => RequestHandler | Promise<RequestHandler>;
 };
 
 export type Format = {
@@ -108,8 +113,26 @@ export type SerDesMap = {
   [format: string]: SerDes
 };
 
+type Primitive = undefined | null | boolean | string | number | Function
+
+type Immutable<T> =
+  T extends Primitive ? T :
+    T extends Array<infer U> ? ReadonlyArray<U> :
+      T extends Map<infer K, infer V> ? ReadonlyMap<K, V> : Readonly<T>
+
+type DeepImmutable<T> =
+  T extends Primitive ? T :
+    T extends Array<infer U> ? DeepImmutableArray<U> :
+      T extends Map<infer K, infer V> ? DeepImmutableMap<K, V> : DeepImmutableObject<T>
+
+interface DeepImmutableArray<T> extends ReadonlyArray<DeepImmutable<T>> {}
+interface DeepImmutableMap<K, V> extends ReadonlyMap<DeepImmutable<K>, DeepImmutable<V>> {}
+type DeepImmutableObject<T> = {
+  readonly [K in keyof T]: DeepImmutable<T[K]>
+}
+
 export interface OpenApiValidatorOpts {
-  apiSpec: OpenAPIV3.DocumentV3 | string;
+  apiSpec: DeepImmutable<OpenAPIV3.DocumentV3> | string;
   validateApiSpec?: boolean;
   validateResponses?: boolean | ValidateResponseOpts;
   validateRequests?: boolean | ValidateRequestOpts;

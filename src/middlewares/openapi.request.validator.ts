@@ -46,7 +46,14 @@ export class RequestValidator {
     delete this.apiDoc.components?.examples;
     this.requestOpts.allowUnknownQueryParameters =
       options.allowUnknownQueryParameters;
-    this.ajv = createRequestAjv(apiDoc, { ...options, coerceTypes: true });
+
+    this.ajv = createRequestAjv(
+      apiDoc,
+      // This should always be true as it handles query params (everything, but the body)
+      // This should always be coerced. Note that coerceTypes = 'array` also operates as true
+      // but also coerces 'array' types
+      !options.coerceTypes ? { ...options, coerceTypes: true } : options,
+    );
     this.ajvBody = createRequestAjv(apiDoc, options);
   }
 
@@ -220,6 +227,7 @@ export class RequestValidator {
         }
       }
     });
+    return null;
   }
 
   private discriminatorValidator(req, discriminator) {
