@@ -2,11 +2,12 @@ import * as path from 'path';
 import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
-import { createApp } from './common/app';
+import { createApp, JsonResponse } from './common/app';
 import {
   OpenApiValidatorOpts,
   ValidateSecurityOpts,
   OpenAPIV3,
+  CustomError,
 } from '../src/framework/types';
 
 // NOTE/TODO: These tests modify eovConf.validateSecurity.handlers
@@ -67,6 +68,34 @@ describe('security.handlers', () => {
         );
       }));
 
+  it('should return Custom Error for the security validation is provided', async () => {
+
+    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
+    validateSecurity.handlers.ApiKeyAuth = <any>function (req, scopes, schema) {
+      const jsonResponse = new JsonResponse(418, "Just Kidding", {
+        data1: true,
+        data2: "false",
+        data3: null
+      });
+      throw new CustomError(jsonResponse);
+    };
+
+    return request(app)
+      .get(`${basePath}/api_key`)
+      .set('X-API-Key', 'test')
+      .expect(418)
+      .then((r) => {
+        const body = r.body;
+        expect(body.status).to.equal(418);
+        expect(body.message).to.equal("Just Kidding");
+        expect(body.data).to.deep.equal({
+          data1: true,
+          data2: "false",
+          data3: null
+        })
+      });
+  });
+    
   it('should return 401 if apikey handler returns false', async () => {
     const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
     validateSecurity.handlers.ApiKeyAuth = <any>function (req, scopes, schema) {
