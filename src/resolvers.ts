@@ -2,14 +2,17 @@ import * as path from 'path';
 import { RequestHandler } from 'express';
 import { RouteMetadata } from './framework/openapi.spec.loader';
 import { OpenAPIV3 } from './framework/types';
+import { fileURLToPath, pathToFileURL } from 'url';
+
+// Prevent TypeScript from replacing dynamic import with require()
+const dynamicImport = new Function('specifier', 'return import(specifier)');
 
 const cache = {};
-export function defaultResolver(
-  handlersPath: string,
+export async function defaultResolver(
+  handlersPath: string | URL,
   route: RouteMetadata,
   apiDoc: OpenAPIV3.Document,
-): RequestHandler {
-  const tmpModules = {};
+): Promise<RequestHandler> {
   const { basePath, expressRoute, openApiRoute, method } = route;
   const pathKey = openApiRoute.substring(basePath.length);
   const schema = apiDoc.paths[pathKey][method.toLowerCase()];
@@ -29,13 +32,17 @@ export function defaultResolver(
       `found x-eov-operation-handler for route [${method} - ${expressRoute}]. operationId or x-eov-operation-id required.`,
     );
   }
-  if (oId && baseName && typeof handlersPath === 'string') {
-    const modulePath = path.join(handlersPath, baseName);
-    if (!tmpModules[modulePath]) {
-      tmpModules[modulePath] = require(modulePath);
-    }
 
-    const handler = tmpModules[modulePath][oId] || tmpModules[modulePath].default[oId] || tmpModules[modulePath].default;
+  const hasHandlerPath = typeof handlersPath === 'string' || handlersPath instanceof URL;
+  if (oId && baseName && hasHandlerPath) {
+    const modulePath = typeof handlersPath === 'string'
+      ? path.join(handlersPath, baseName)
+      : path.join(fileURLToPath(handlersPath), baseName);
+    const importedModule = typeof handlersPath === 'string'
+      ? require(modulePath)
+      : await dynamicImport(pathToFileURL(modulePath).toString());
+
+    const handler = importedModule[oId] || importedModule.default?.[oId] || importedModule.default;
 
     if (!handler) {
       throw Error(
