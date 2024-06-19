@@ -44,7 +44,7 @@ export class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const { coerceTypes, formats, validateFormats, serDes, ajvFormats } =
+    const { coerceTypes, formats, validateFormats, serDes, ajvFormats, ajvKeywords } =
       this.options;
     const serDesMap = {};
     for (const serDesObject of serDes) {
@@ -73,6 +73,7 @@ export class AjvOptions {
       formats,
       serDesMap,
       ajvFormats,
+      keywords: ajvKeywords
     };
 
     return options;
