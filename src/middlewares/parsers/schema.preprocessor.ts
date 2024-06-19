@@ -91,12 +91,12 @@ export const httpMethods = new Set([
 ]);
 export class SchemaPreprocessor {
   private ajv: Ajv;
-  private apiDoc: OpenAPIV3.Document;
-  private apiDocRes: OpenAPIV3.Document;
+  private apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
+  private apiDocRes: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
   private serDesMap: SerDesMap;
   private responseOpts: ValidateResponseOpts;
   constructor(
-    apiDoc: OpenAPIV3.Document,
+    apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
     ajvOptions: Options,
     validateResponsesOpts: ValidateResponseOpts,
   ) {
@@ -108,22 +108,28 @@ export class SchemaPreprocessor {
 
   public preProcess() {
     const componentSchemas = this.gatherComponentSchemaNodes();
-    const r = this.gatherSchemaNodesFromPaths();
+    let r;
+
+    if (this.apiDoc.paths) {
+      r = this.gatherSchemaNodesFromPaths();
+    }
 
     // Now that we've processed paths, clone a response spec if we are validating responses
     this.apiDocRes = !!this.responseOpts ? cloneDeep(this.apiDoc) : null;
 
     const schemaNodes = {
       schemas: componentSchemas,
-      requestBodies: r.requestBodies,
-      responses: r.responses,
-      requestParameters: r.requestParameters,
+      requestBodies: r?.requestBodies,
+      responses: r?.responses,
+      requestParameters: r?.requestParameters,
     };
 
     // Traverse the schemas
-    this.traverseSchemas(schemaNodes, (parent, schema, opts) =>
-      this.schemaVisitor(parent, schema, opts),
-    );
+    if (r) {
+      this.traverseSchemas(schemaNodes, (parent, schema, opts) =>
+        this.schemaVisitor(parent, schema, opts),
+      );
+    }
 
     return {
       apiDoc: this.apiDoc,
@@ -151,6 +157,11 @@ export class SchemaPreprocessor {
 
     for (const [p, pi] of Object.entries(this.apiDoc.paths)) {
       const pathItem = this.resolveSchema<OpenAPIV3.PathItemObject>(pi);
+
+      // Since OpenAPI 3.1, paths can be a #ref to reusable path items
+      // The following line mutates the paths item to dereference the reference, so that we can process as a POJO, as we would if it wasn't a reference
+      this.apiDoc.paths[p] = pathItem;
+      
       for (const method of Object.keys(pathItem)) {
         if (httpMethods.has(method)) {
           const operation = <OpenAPIV3.OperationObject>pathItem[method];
@@ -535,7 +546,7 @@ export class SchemaPreprocessor {
     const op = node.schema;
     const responses = op.responses;
 
-    if (!responses) return;
+    if (!responses) return [];
 
     const schemas: Root<SchemaObject>[] = [];
     for (const [statusCode, response] of Object.entries(responses)) {

@@ -1,0 +1,13 @@
+# Adapted from https://github.com/OAI/OpenAPI-Specification/blob/77c7b9a522ab6fb83a49e8088fa600e93da4f44e/tests/v3.1/fail/server_enum_empty.yaml
+
+openapi: 3.1.0
+info:
+  title: API
+  version: 1.0.0
+servers:
+  - url: https://example.com/test
+    variables:
+      var:
+        enum: ['a', 'b']
+components:
+  {}

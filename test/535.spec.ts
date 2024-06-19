@@ -19,7 +19,7 @@ describe('#535 - calling `middleware()` multiple times', () => {
 });
 
 async function createApp(
-  apiSpec: OpenAPIV3.Document,
+  apiSpec: OpenAPIV3.DocumentV3,
 ): Promise<express.Express & { server?: Server }> {
   const app = express();
 
@@ -39,7 +39,7 @@ async function createApp(
   return app;
 }
 
-function createApiSpec(): OpenAPIV3.Document {
+function createApiSpec(): OpenAPIV3.DocumentV3 {
   return {
     openapi: '3.0.3',
     info: {

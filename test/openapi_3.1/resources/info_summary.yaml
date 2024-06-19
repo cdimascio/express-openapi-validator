@@ -1,0 +1,7 @@
+# From https://github.com/OAI/OpenAPI-Specification/blob/6f386968654fd483720aba0177e618e87a5d612d/tests/v3.1/pass/info_summary.yaml
+openapi: 3.1.0
+info:
+  title: API
+  summary: My lovely API
+  version: 1.0.0
+components: {}

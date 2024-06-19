@@ -1,0 +1,23 @@
+openapi: 3.1.0
+info:
+  title: API
+  version: 1.0.0
+servers:
+  - url: /v1
+paths:
+  /entity:
+    get:
+        summary: test
+        description: GETS my entity
+        responses:
+          '200':
+            description: OK
+            content:
+              application/json: 
+                schema:
+                  title: Entity
+                  type: object
+                  properties:
+                    property:
+                      type: ['string', 'null']
+              

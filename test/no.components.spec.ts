@@ -33,7 +33,7 @@ describe('no components', () => {
       }));
 });
 
-function apiDoc(): OpenAPIV3.Document {
+function apiDoc(): OpenAPIV3.DocumentV3 {
   return {
     openapi: '3.0.1',
     info: {
