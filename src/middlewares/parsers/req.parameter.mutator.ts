@@ -76,7 +76,7 @@ export class RequestParameterMutator {
       const i = req.originalUrl.indexOf('?');
       const queryString = req.originalUrl.substr(i + 1);
 
-      if (parameter.in === 'query' && !parameter.allowReserved) {
+      if (parameter.in === 'query' && !parameter.allowReserved && parameter.explode === true) {
         this.validateReservedCharacters(name, rawQuery);
       }
 
@@ -94,7 +94,15 @@ export class RequestParameterMutator {
       } else if (type === 'array' && !explode) {
         const delimiter = ARRAY_DELIMITER[parameter.style];
         this.validateArrayDelimiter(delimiter, parameter);
-        this.parseJsonArrayAndMutateRequest(req, parameter.in, name, delimiter);
+        if (parameter.in === "query") {
+          const field = REQUEST_FIELDS[parameter.in];
+          const vs = rawQuery.get(name);
+          if (vs) {
+            req[field][name] = vs[0].split(delimiter).map(v => decodeURIComponent(v));
+          }
+        } else {
+          this.parseJsonArrayAndMutateRequest(req, parameter.in, name, delimiter);
+        }
       } else if (type === 'array' && explode) {
         this.explodeJsonArrayAndMutateRequest(req, parameter.in, name);
       } else if (style === 'form' && explode) {
