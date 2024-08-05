@@ -31,13 +31,13 @@ type ApiKeySecurityScheme = OpenAPIV3.ApiKeySecurityScheme;
 
 export class RequestValidator {
   private middlewareCache: { [key: string]: RequestHandler } = {};
-  private apiDoc: OpenAPIV3.Document;
+  private apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
   private ajv: Ajv;
   private ajvBody: Ajv;
   private requestOpts: ValidateRequestOpts = {};
 
   constructor(
-    apiDoc: OpenAPIV3.Document,
+    apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
     options: RequestValidatorOptions = {},
   ) {
     this.middlewareCache = {};
@@ -278,7 +278,7 @@ export class RequestValidator {
 }
 
 class Validator {
-  private readonly apiDoc: OpenAPIV3.Document;
+  private readonly apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
   readonly schemaGeneral: object;
   readonly schemaBody: object;
   readonly validatorGeneral: ValidateFunction;
@@ -286,7 +286,7 @@ class Validator {
   readonly allSchemaProperties: ValidationSchema;
 
   constructor(
-    apiDoc: OpenAPIV3.Document,
+    apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
     parametersSchema: ParametersSchema,
     bodySchema: BodySchema,
     ajv: {
@@ -340,7 +340,7 @@ class Validator {
 
 class Security {
   public static queryParam(
-    apiDocs: OpenAPIV3.Document,
+    apiDocs: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
     schema: OperationObject,
   ): string[] {
     const hasPathSecurity = schema.security?.length > 0 ?? false;

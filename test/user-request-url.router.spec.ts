@@ -112,7 +112,7 @@ function defaultResponse(): OpenAPIV3.ResponseObject {
    type of id in path and id in the response here defined as simple string
    with minLength
  */
-const gatewaySpec: OpenAPIV3.Document = {
+const gatewaySpec: OpenAPIV3.DocumentV3 = {
   openapi: '3.0.0',
   info: { version: '1.0.0', title: 'test bug OpenApiValidator' },
   servers: [{ url: 'http://localhost:3000/api' }],
@@ -168,7 +168,7 @@ const gatewaySpec: OpenAPIV3.Document = {
  represents spec of the child router. We route request from main app (gateway) to this router.
  This router has its own schema, routes and validation formats. In particular, we force id in the path and id in the response to be uuid.
  */
-const childRouterSpec: OpenAPIV3.Document = {
+const childRouterSpec: OpenAPIV3.DocumentV3 = {
   openapi: '3.0.0',
   info: { version: '1.0.0', title: 'test bug OpenApiValidator' },
   servers: [{ url: 'http://localhost:3000/' }],
