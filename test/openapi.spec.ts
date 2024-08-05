@@ -135,22 +135,34 @@ describe(packageJson.name, () => {
             );
           }));
 
-      it('should return 400 when comma separated array in query param', async () =>
+      it('should return 200 when comma separated array in query param - no allow reserved (default)', async () =>
+        // query params default is style: form, explode: true - false, also comma separated list
+        // testArrayNoExplode is set to form, explode false
+        request(apps[i])
+          .get(`${basePath}/pets?limit=10&test=one&testArrayNoExplode2=categoryId%3AIN%3A%5B1%2C2%2C3%2C4%2C5%5D,itemId%3AEQ%3A2`)
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200))
+
+      it('should return 200 when comma separated array in query param', async () =>
+        // query params default is style: form, explode: true - false, also comma separated list
+        // testArrayNoExplode is set to form, explode false
         request(apps[i])
           .get(`${basePath}/pets`)
           .query({
             limit: 10,
             test: 'one',
-            testArray: 'foo,bar,baz',
+            testArrayNoExplode: 'foo,bar,baz',
           })
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200));
 
-      it('should return 400 when comma separated array in query param is not url encoded', async () =>
+      // Note with version <=5.2.0, this test was incorrectly returning 400 for testArray (explode true), rather than testArrayNoE
+      it('should return 400 when comma separated array in query param is not url encoded and explode is set to true', async () =>
         request(apps[i])
           .get(`${basePath}/pets`)
-          .query(`limit=10&test=one&testArray=foo,bar,baz`)
+          .query(`limit=10&test=one&testArrayExplode=foo,bar,baz`)
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(400)
@@ -158,7 +170,7 @@ describe(packageJson.name, () => {
             expect(r.body)
               .to.have.property('message')
               .that.equals(
-                "Parameter 'testArray' must be url encoded. Its value may not contain reserved characters.",
+                "Parameter 'testArrayExplode' must be url encoded. Its value may not contain reserved characters.",
               );
           }));
 
@@ -166,7 +178,7 @@ describe(packageJson.name, () => {
         request(apps[i])
           .get(`${basePath}/pets`)
           .query(
-            `limit=10&test=one&testArray=${encodeURIComponent('foo,bar,baz')}`,
+            `limit=10&test=one&testArrayNoExplode=${encodeURIComponent('foo,bar,baz')}`,
           )
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
@@ -178,7 +190,7 @@ describe(packageJson.name, () => {
           .query({
             limit: 10,
             test: 'one',
-            testArray: 'foo,bar,test',
+            testArrayNoExplode: 'foo,bar,test',
           })
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
@@ -186,7 +198,7 @@ describe(packageJson.name, () => {
           .then(r => {
             const e = r.body.errors;
             expect(e).to.have.length(1);
-            expect(e[0].path).to.contain('testArray');
+            expect(e[0].path).to.contain('testArrayNoExplode');
             expect(e[0].message).to.equal(
               'must be equal to one of the allowed values: foo, bar, baz',
             );
@@ -388,7 +400,7 @@ describe(packageJson.name, () => {
           .query({
             limit: 10,
             test: 'one',
-            testArray: ['unknown_value'],
+            testArrayNoExplode: ['unknown_value'],
           })
           .expect(400)
           .then(r => {
