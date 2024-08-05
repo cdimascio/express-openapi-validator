@@ -1,3 +1,16 @@
+##  (2024-08-05)
+
+* Stripped query params for req.url branch arm (#942) ([26d06c4](https://github.com/cdimascio/express-openapi-validator/commit/26d06c4)), closes [#942](https://github.com/cdimascio/express-openapi-validator/issues/942)
+* Update LICENSE ([20727ff](https://github.com/cdimascio/express-openapi-validator/commit/20727ff))
+* version 5.2.1 ([aace73c](https://github.com/cdimascio/express-openapi-validator/commit/aace73c))
+* FIX: issue #917 (#935) ([8e66d3f](https://github.com/cdimascio/express-openapi-validator/commit/8e66d3f)), closes [#917](https://github.com/cdimascio/express-openapi-validator/issues/917) [#935](https://github.com/cdimascio/express-openapi-validator/issues/935)
+* fix: upgrade @apidevtools/json-schema-ref-parser from 11.6.2 to 11.6.4 (#937) ([f148eeb](https://github.com/cdimascio/express-openapi-validator/commit/f148eeb)), closes [#937](https://github.com/cdimascio/express-openapi-validator/issues/937)
+* fix: upgrade ajv from 8.14.0 to 8.15.0 (#938) ([a1ea81f](https://github.com/cdimascio/express-openapi-validator/commit/a1ea81f)), closes [#938](https://github.com/cdimascio/express-openapi-validator/issues/938)
+* fix: upgrade express-openapi-validator from 5.1.6 to 5.2.0 (#936) ([2d75db4](https://github.com/cdimascio/express-openapi-validator/commit/2d75db4)), closes [#936](https://github.com/cdimascio/express-openapi-validator/issues/936)
+* chore(deps-dev): bump braces from 3.0.2 to 3.0.3 (#928) ([093bd3c](https://github.com/cdimascio/express-openapi-validator/commit/093bd3c)), closes [#928](https://github.com/cdimascio/express-openapi-validator/issues/928)
+
+
+
 ##  (2024-06-02)
 
 * Add `express` as peer dependency (#907) ([4e8bc84](https://github.com/cdimascio/express-openapi-validator/commit/4e8bc84)), closes [#907](https://github.com/cdimascio/express-openapi-validator/issues/907)
