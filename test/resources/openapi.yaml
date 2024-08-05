@@ -81,7 +81,7 @@ paths:
                     enum:
                       - bar
                       - baz
-        - name: testArray
+        - name: testArrayNoExplode
           in: query
           description: Array in query param
           schema:
@@ -92,6 +92,15 @@ paths:
                 - foo
                 - bar
                 - baz
+          style: form
+          explode: false
+        - name: testArrayNoExplode2
+          in: query
+          description: Array in query param
+          schema:
+            type: array
+            items:
+              type: string
           style: form
           explode: false
         - name: testArrayExplode
@@ -106,7 +115,7 @@ paths:
                 - bar
                 - baz
           style: form
-          explode: true
+#          explode: true
       responses:
         '200':
           description: pet response

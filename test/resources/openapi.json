@@ -111,7 +111,7 @@
                         }
 					},
 					{
-						"name": "testArray",
+						"name": "testArrayNoExplode",
 						"in": "query",
 						"description": "Array in query param",
 						"schema": {
@@ -123,6 +123,19 @@
 									"bar",
 									"baz"
 								]
+							}
+						},
+						"style": "form",
+						"explode": false
+					},
+					{
+						"name": "testArrayNoExplode2",
+						"in": "query",
+						"description": "Array in query param",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
 							}
 						},
 						"style": "form",

@@ -1,11 +1,11 @@
 import { Request } from 'express';
 import Ajv from 'ajv';
 import {
-  OpenAPIV3,
+  BadRequest,
   OpenApiRequest,
   OpenApiRequestMetadata,
+  OpenAPIV3,
   ValidationSchema,
-  BadRequest,
 } from '../../framework/types';
 import * as url from 'url';
 import { dereferenceParameter, normalizeParameter } from './util';
@@ -57,7 +57,7 @@ export class RequestParameterMutator {
   }
 
   /**
-   * Modifies an incoing request object by applying the openapi schema
+   * Modifies an incoming request object by applying the openapi schema
    * req values may be parsed/mutated as a JSON object, JSON Exploded Object, JSON Array, or JSON Exploded Array
    * @param req
    */
@@ -76,8 +76,11 @@ export class RequestParameterMutator {
       const i = req.originalUrl.indexOf('?');
       const queryString = req.originalUrl.substr(i + 1);
 
-      if (parameter.in === 'query' && !parameter.allowReserved && parameter.explode === true) {
+      if (parameter.in === 'query' && !parameter.allowReserved && !!parameter.explode) { //} && !!parameter.explode) {
         this.validateReservedCharacters(name, rawQuery);
+      }
+      if (parameter.in === 'query' && !parameter.allowReserved && !parameter.explode) { //} && !!parameter.explode) {
+        this.validateReservedCharacters(name, rawQuery, true);
       }
 
       if (parameter.content) {
@@ -94,15 +97,7 @@ export class RequestParameterMutator {
       } else if (type === 'array' && !explode) {
         const delimiter = ARRAY_DELIMITER[parameter.style];
         this.validateArrayDelimiter(delimiter, parameter);
-        if (parameter.in === "query") {
-          const field = REQUEST_FIELDS[parameter.in];
-          const vs = rawQuery.get(name);
-          if (vs) {
-            req[field][name] = vs[0].split(delimiter).map(v => decodeURIComponent(v));
-          }
-        } else {
-          this.parseJsonArrayAndMutateRequest(req, parameter.in, name, delimiter);
-        }
+        this.parseJsonArrayAndMutateRequest(req, parameter.in, name, delimiter, rawQuery);
       } else if (type === 'array' && explode) {
         this.explodeJsonArrayAndMutateRequest(req, parameter.in, name);
       } else if (style === 'form' && explode) {
@@ -195,8 +190,8 @@ export class RequestParameterMutator {
     const properties = hasXOf
       ? xOfProperties(schema)
       : type === 'object'
-      ? Object.keys(schema.properties ?? {})
-      : [];
+        ? Object.keys(schema.properties ?? {})
+        : [];
 
     this.explodedJsonObjectAndMutateRequest(
       req,
@@ -248,23 +243,49 @@ export class RequestParameterMutator {
     }
   }
 
+  /**
+   * used for !explode array parameters
+   * @param req
+   * @param $in
+   * @param name
+   * @param delimiter
+   * @param rawQuery
+   * @private
+   */
   private parseJsonArrayAndMutateRequest(
     req: Request,
     $in: string,
     name: string,
     delimiter: string,
+    rawQuery: Map<string, string[]>,
   ): void {
     /**
-     * array deserialization
+     * array deserialization for query and params
      * filter=foo,bar,baz
      * filter=foo|bar|baz
      * filter=foo%20bar%20baz
      */
     const field = REQUEST_FIELDS[$in];
+    const rawValues = []
+    if (['query'].includes($in)) {
+      // perhaps split query from params
+      rawValues.concat(rawQuery.get(name) ?? []);
+    }
+
+    let i = 0;
     if (req[field]?.[name]) {
       if (Array.isArray(req[field][name])) return;
       const value = req[field][name].split(delimiter);
-      req[field][name] = value;
+      const rawValue = rawValues[i++];
+      if (rawValue?.includes(delimiter)) { // TODO add && !allowReserved to improve performance. When allowReserved is true, commas are common and we do not need to do this extra work
+        // Currently, rawValue is only populated for query params
+        // if the raw value contains a delimiter, decode manually
+        // parse the decode value and update req[field][name]
+        const manuallyDecodedValues = rawValue.split(delimiter).map(v => decodeURIComponent(v));
+        req[field][name] = manuallyDecodedValues;
+      } else {
+        req[field][name] = value;
+      }
     }
   }
 
@@ -342,13 +363,17 @@ export class RequestParameterMutator {
   private validateReservedCharacters(
     name: string,
     pairs: Map<string, string[]>,
+    allowComma: boolean = false,
   ) {
     const vs = pairs.get(name);
     if (!vs) return;
     for (const v of vs) {
-      if (v?.match(RESERVED_CHARS)) {
-        const message = `Parameter '${name}' must be url encoded. Its value may not contain reserved characters.`;
-        throw new BadRequest({ path: `/query/${name}`, message: message });
+      const svs = allowComma ? v.split(',') : [v];
+      for (const sv of svs) {
+        if (sv?.match(RESERVED_CHARS)) {
+          const message = `Parameter '${name}' must be url encoded. Its value may not contain reserved characters.`;
+          throw new BadRequest({ path: `/query/${name}`, message: message });
+        }
       }
     }
   }
