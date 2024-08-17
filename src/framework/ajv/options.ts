@@ -44,7 +44,7 @@ export class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const { coerceTypes, formats, validateFormats, serDes, ajvFormats } =
+    const { coerceTypes, formats, validateFormats, serDes, ajvFormats, ajvKeywords, useDefaults } =
       this.options;
     const serDesMap = {};
     for (const serDesObject of serDes) {
@@ -67,12 +67,13 @@ export class AjvOptions {
       allowUnionTypes: false,
       validateSchema: false, // this is true for startup validation, thus it can be bypassed here
       coerceTypes,
-      useDefaults: true,
+      useDefaults: useDefaults ?? true,
       removeAdditional: false,
       validateFormats: validateFormats,
       formats,
       serDesMap,
       ajvFormats,
+      keywords: ajvKeywords
     };
 
     return options;

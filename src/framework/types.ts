@@ -149,6 +149,8 @@ export interface OpenApiValidatorOpts {
   unknownFormats?: true | string[] | 'ignore';
   serDes?: SerDes[];
   formats?: Format[] | Record<string, ajv.Format>;
+  ajvKeywords?: ajv.Vocabulary;
+  useDefaults?: boolean | 'empty';
   ajvFormats?: FormatsPluginOptions;
   fileUploader?: boolean | multer.Options;
   multerOpts?: multer.Options;
