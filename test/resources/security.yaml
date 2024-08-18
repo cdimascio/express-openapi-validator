@@ -90,6 +90,19 @@ paths:
         "401":
           description: unauthorized
 
+  /multi_auth:
+    get:
+      security:
+        - ApiKeyAuth: []
+          BearerAuth: []
+        - BasicAuth: []
+          CookieAuth: []
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: unauthorized
+
   /oauth2:
     get:
       security:
