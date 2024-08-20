@@ -1,11 +1,11 @@
 import {
-  OpenAPIV3,
-  OpenApiRequest,
-  SecurityHandlers,
-  OpenApiRequestMetadata,
-  OpenApiRequestHandler,
-  InternalServerError,
   HttpError,
+  InternalServerError,
+  OpenApiRequest,
+  OpenApiRequestHandler,
+  OpenApiRequestMetadata,
+  OpenAPIV3,
+  SecurityHandlers,
 } from '../framework/types';
 
 const defaultSecurityHandler = (
@@ -17,11 +17,30 @@ const defaultSecurityHandler = (
 type SecuritySchemesMap = {
   [key: string]: OpenAPIV3.ReferenceObject | OpenAPIV3.SecuritySchemeObject;
 };
+
 interface SecurityHandlerResult {
   success: boolean;
   status?: number;
   error?: string;
 }
+
+function extractErrorsFromResults(results: (SecurityHandlerResult | SecurityHandlerResult[])[]) {
+  return results.map(result => {
+    if (Array.isArray(result)) {
+      return result.map(it => it).filter(it => !it.success);
+    }
+    return [result].filter(it => !it.success);
+  }).flatMap(it => [...it]);
+}
+
+function didAllSecurityRequirementsPass(results: SecurityHandlerResult[]) {
+  return results.every(it => it.success);
+}
+
+function didOneSchemaPassValidation(results: (SecurityHandlerResult | SecurityHandlerResult[])[]) {
+  return results.some(result => Array.isArray(result) ? didAllSecurityRequirementsPass(result) : result.success);
+}
+
 export function security(
   apiDoc: OpenAPIV3.Document,
   securityHandlers: SecurityHandlers,
@@ -62,50 +81,13 @@ export function security(
 
       // TODO handle AND'd and OR'd security
       // This assumes OR only! i.e. at least one security passed authentication
-      let firstError: SecurityHandlerResult = null;
-      let success = false;
-
-      function checkErrorWithOr(res) {
-        return res.forEach((r) => {
-          if (r.success) {
-            success = true;
-          } else if (!firstError) {
-            firstError = r;
-          }
-        });
-      }
-
-      function checkErrorsWithAnd(res) {
-        let allSuccess = false;
-
-        res.forEach((r) => {
-          if (!r.success) {
-            allSuccess = false;
-            if (!firstError) {
-              firstError = r;
-            }
-          } else if (!firstError) {
-            allSuccess = true;
-          }
-        });
-
-        if (allSuccess) {
-          success = true;
-        }
-      }
-
-      results.forEach((result) => {
-        if (Array.isArray(result) && result.length > 1) {
-          checkErrorsWithAnd(result);
-        } else {
-          checkErrorWithOr(result);
-        }
-      });
+      const success = didOneSchemaPassValidation(results);
 
       if (success) {
         next();
       } else {
-        throw firstError;
+        const errors = extractErrorsFromResults(results)
+        throw errors[0]
       }
     } catch (e) {
       const message = e?.error?.message || 'unauthorized';
@@ -129,6 +111,7 @@ class SecuritySchemes {
   private securitySchemes: SecuritySchemesMap;
   private securityHandlers: SecurityHandlers;
   private securities: OpenAPIV3.SecurityRequirementObject[];
+
   constructor(
     securitySchemes: SecuritySchemesMap,
     securityHandlers: SecurityHandlers,
@@ -213,6 +196,7 @@ class AuthValidator {
   private scheme;
   private path: string;
   private scopes: string[];
+
   constructor(req: OpenApiRequest, scheme, scopes: string[] = []) {
     const openapi = <OpenApiRequestMetadata>req.openapi;
     this.req = req;

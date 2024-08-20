@@ -21,7 +21,8 @@ describe('security.defaults', () => {
         .get(`/cookie_auth`, (req, res) => res.json({ logged_in: true }))
         .get(`/bearer`, (req, res) => res.json({ logged_in: true }))
         .get(`/basic`, (req, res) => res.json({ logged_in: true }))
-        .get('/no_security', (req, res) => res.json({ logged_in: true })),
+        .get('/no_security', (req, res) => res.json({ logged_in: true }))
+        .get('/multi_auth', (req, res) => res.json({ logged_in: true }))
     );
   });
 
@@ -64,4 +65,33 @@ describe('security.defaults', () => {
           .that.equals('cookie \'JSESSIONID\' required');
       });
   });
+
+  it("Should return 200 WHEN one of multiple security rules is met GIVEN a request with apiKey and bearer token", () => {
+    return request(app)
+      .get(`${basePath}/multi_auth`)
+      .set({
+        "Authorization": "Bearer rawww",
+        "X-API-Key": "hello world"
+      })
+      .expect(200)
+  })
+
+  it("Should return 200 WHEN one of multiple security rules is met GIVEN a request with cookie and basic auth", () => {
+    return request(app)
+      .get(`${basePath}/multi_auth`)
+      .set({
+        "Authorization": "Basic ZGVtbzpwQDU1dzByZA==",
+        "Cookie": "JSESSIONID=dwdwdwdwd"
+      })
+      .expect(200)
+  })
+
+  it("Should return 401 WHEN none of multiple security rules is met GIVEN a request with only cookie auth", () => {
+    return request(app)
+      .get(`${basePath}/multi_auth`)
+      .set({
+        "Cookie": "JSESSIONID=dwdwdwdwd"
+      })
+      .expect(401)
+  })
 });
