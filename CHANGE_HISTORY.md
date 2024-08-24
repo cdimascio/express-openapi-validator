@@ -1,3 +1,10 @@
+##  (2024-08-24)
+
+* fix: correct security schema logic for OR verification (#946) ([2265a10](https://github.com/cdimascio/express-openapi-validator/commit/2265a10)), closes [#946](https://github.com/cdimascio/express-openapi-validator/issues/946)
+* fix: upgrade express-openapi-validator from 5.1.6 to 5.2.0 (#944) ([f022d21](https://github.com/cdimascio/express-openapi-validator/commit/f022d21)), closes [#944](https://github.com/cdimascio/express-openapi-validator/issues/944)
+
+
+
 ##  (2024-08-05)
 
 * Stripped query params for req.url branch arm (#942) ([26d06c4](https://github.com/cdimascio/express-openapi-validator/commit/26d06c4)), closes [#942](https://github.com/cdimascio/express-openapi-validator/issues/942)
