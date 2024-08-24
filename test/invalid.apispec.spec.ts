@@ -41,7 +41,7 @@ async function createApp(
   return app;
 }
 
-function createApiSpec(): OpenAPIV3.Document {
+function createApiSpec(): OpenAPIV3.DocumentV3 {
   return <any>{
     openapi: '3.0.3',
     info: {

@@ -22,7 +22,7 @@ export interface ValidationSchema extends ParametersSchema {
 }
 
 export interface OpenAPIFrameworkInit {
-  apiDoc: OpenAPIV3.Document;
+  apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
   basePaths: string[];
 }
 export type SecurityHandlers = {
@@ -67,7 +67,7 @@ export type OperationHandlerOptions = {
   resolver: (
     handlersPath: string,
     route: RouteMetadata,
-    apiDoc: OpenAPIV3.Document,
+    apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
   ) => RequestHandler | Promise<RequestHandler>;
 };
 
@@ -132,7 +132,7 @@ type DeepImmutableObject<T> = {
 }
 
 export interface OpenApiValidatorOpts {
-  apiSpec: DeepImmutable<OpenAPIV3.Document> | string;
+  apiSpec: DeepImmutable<OpenAPIV3.DocumentV3> | string;
   validateApiSpec?: boolean;
   validateResponses?: boolean | ValidateResponseOpts;
   validateRequests?: boolean | ValidateRequestOpts;
@@ -175,7 +175,7 @@ export interface NormalizedOpenApiValidatorOpts extends OpenApiValidatorOpts {
 }
 
 export namespace OpenAPIV3 {
-  export interface Document {
+  export interface DocumentV3 {
     openapi: string;
     info: InfoObject;
     servers?: ServerObject[];
@@ -186,6 +186,19 @@ export namespace OpenAPIV3 {
     externalDocs?: ExternalDocumentationObject;
   }
 
+  interface ComponentsV3_1 extends ComponentsObject {
+    pathItems?: { [path: string]: PathItemObject | ReferenceObject }
+  }
+
+  export interface DocumentV3_1 extends Omit<DocumentV3, 'paths' | 'info' | 'components'> {
+    paths?: DocumentV3['paths'];
+    info: InfoObjectV3_1;
+    components: ComponentsV3_1;
+    webhooks: {
+      [name: string]: PathItemObject | ReferenceObject
+    } 
+  }
+
   export interface InfoObject {
     title: string;
     description?: string;
@@ -193,6 +206,10 @@ export namespace OpenAPIV3 {
     contact?: ContactObject;
     license?: LicenseObject;
     version: string;
+  }
+
+  interface InfoObjectV3_1 extends InfoObject {
+    summary: string;
   }
 
   export interface ContactObject {
@@ -498,7 +515,7 @@ export interface OpenAPIFrameworkPathObject {
 }
 
 interface OpenAPIFrameworkArgs {
-  apiDoc: OpenAPIV3.Document | string;
+  apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1 | string;
   validateApiSpec?: boolean;
   $refParser?: {
     mode: 'bundle' | 'dereference';
@@ -508,7 +525,7 @@ interface OpenAPIFrameworkArgs {
 export interface OpenAPIFrameworkAPIContext {
   // basePaths: BasePath[];
   basePaths: string[];
-  getApiDoc(): OpenAPIV3.Document;
+  getApiDoc(): OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
 }
 
 export interface OpenAPIFrameworkVisitor {
