@@ -1,5 +1,18 @@
 ##  (2024-08-24)
 
+* chore(deps-dev): bump @babel/traverse in /examples/9-nestjs (#948) ([edd054f](https://github.com/cdimascio/express-openapi-validator/commit/edd054f)), closes [#948](https://github.com/cdimascio/express-openapi-validator/issues/948)
+* chore(deps-dev): bump braces in /examples/8-top-level-discriminator (#929) ([e3a9526](https://github.com/cdimascio/express-openapi-validator/commit/e3a9526)), closes [#929](https://github.com/cdimascio/express-openapi-validator/issues/929)
+* chore(deps-dev): bump ws from 7.5.5 to 7.5.10 in /examples/9-nestjs (#930) ([9d5895b](https://github.com/cdimascio/express-openapi-validator/commit/9d5895b)), closes [#930](https://github.com/cdimascio/express-openapi-validator/issues/930)
+* fix: correct security schema logic for OR verification (#946) ([2265a10](https://github.com/cdimascio/express-openapi-validator/commit/2265a10)), closes [#946](https://github.com/cdimascio/express-openapi-validator/issues/946)
+* fix: upgrade @apidevtools/json-schema-ref-parser from 11.6.4 to 11.7.0 (#947) ([ea4129c](https://github.com/cdimascio/express-openapi-validator/commit/ea4129c)), closes [#947](https://github.com/cdimascio/express-openapi-validator/issues/947)
+* fix: upgrade ajv from 8.15.0 to 8.17.1 (#945) ([087d8f7](https://github.com/cdimascio/express-openapi-validator/commit/087d8f7)), closes [#945](https://github.com/cdimascio/express-openapi-validator/issues/945)
+* fix: upgrade express-openapi-validator from 5.1.6 to 5.2.0 (#944) ([f022d21](https://github.com/cdimascio/express-openapi-validator/commit/f022d21)), closes [#944](https://github.com/cdimascio/express-openapi-validator/issues/944)
+* version 5.3.2 ([4428922](https://github.com/cdimascio/express-openapi-validator/commit/4428922))
+
+
+
+##  (2024-08-24)
+
 * fix: correct security schema logic for OR verification (#946) ([2265a10](https://github.com/cdimascio/express-openapi-validator/commit/2265a10)), closes [#946](https://github.com/cdimascio/express-openapi-validator/issues/946)
 * fix: upgrade express-openapi-validator from 5.1.6 to 5.2.0 (#944) ([f022d21](https://github.com/cdimascio/express-openapi-validator/commit/f022d21)), closes [#944](https://github.com/cdimascio/express-openapi-validator/issues/944)
 
