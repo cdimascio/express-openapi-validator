@@ -1,7 +1,5 @@
 # 🦋 express-openapi-validator
 
-docs.
-
 [![example workflow](https://github.com/cdimascio/express-openapi-validator/actions/workflows/default.yml/badge.svg)](#) [![](https://img.shields.io/npm/v/express-openapi-validator.svg)](https://www.npmjs.com/package/express-openapi-validator) [![](https://img.shields.io/npm/dm/express-openapi-validator?color=blue)](https://www.npmjs.com/package/express-openapi-validator) [![All Contributors](https://img.shields.io/badge/all_contributors-54-darkcyan.svg?style=flat)](#contributors) [![Coverage Status](https://coveralls.io/repos/github/cdimascio/express-openapi-validator/badge.svg?branch=master)](https://coveralls.io/github/cdimascio/express-openapi-validator?branch=master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1570a06f609345ddb237114bbd6ceed7)](https://www.codacy.com/manual/cdimascio/express-openapi-validator?utm_source=github.com&utm_medium=referral&utm_content=cdimascio/express-openapi-validator&utm_campaign=Badge_Grade) [![](https://img.shields.io/gitter/room/cdimascio-oss/community?color=%23eb205a)](https://gitter.im/cdimascio-oss/community) [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/cdimascio/express-openapi-validator) [![](https://img.shields.io/badge/documentation-yes-informational)](https://cdimascio.github.io/express-openapi-validator-documentation/) [![](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
 
 **An OpenApi validator for ExpressJS** that automatically validates **API** _**requests**_ and _**responses**_ using an **OpenAPI 3** specification.
@@ -30,13 +28,15 @@ docs.
 [NestJS](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/9-nestjs)
 [Koa](https://github.com/cdimascio/express-openapi-validator/tree/lerna-fastify/packages/koa-openapi-validator) and [Fastify](https://github.com/cdimascio/express-openapi-validator/tree/lerna-fastify/packages/fastify-openapi-validator) now available! 🚀
 
+[OAS 3.1 (experimental)](https://github.com/cdimascio/express-openapi-validator/pull/882)
+
 ## Install
 
 ```shell
 npm install express-openapi-validator
 
-## latest beta
-npm install express-openapi-validator@4.14.0-beta.1
+# experimental OAS 3.1 in alpha (contributions welcome - see branch `oas-3.1` and pr-882)
+npm install express-openapi-validator@6.0.0-alpha.1
 ```
 
 ## Usage
