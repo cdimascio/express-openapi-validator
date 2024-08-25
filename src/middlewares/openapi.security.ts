@@ -232,14 +232,21 @@ class AuthValidator {
       const authHeader =
         req.headers['authorization'] &&
         req.headers['authorization'].toLowerCase();
+        const authCookie = req.cookies[scheme.name] || req.signedCookies?.[scheme.name]; 
 
-      if (!authHeader) {
-        throw Error(`Authorization header required`);
+      if (!authHeader && !authCookie) {
+        throw Error(`Authorization header or cookie required`);
       }
 
       const type = scheme.scheme && scheme.scheme.toLowerCase();
-      if (type === 'bearer' && !authHeader.includes('bearer')) {
-        throw Error(`Authorization header with scheme 'Bearer' required`);
+      if (type === 'bearer') {
+        if (authHeader && !authHeader.includes('bearer')) {
+            throw Error(`Authorization header with scheme 'Bearer' required`);
+        }
+
+        if (!authHeader && authCookie === undefined) {
+            throw Error(`Bearer token required in authorization header or cookie`);
+        }
       }
 
       if (type === 'basic' && !authHeader.includes('basic')) {
