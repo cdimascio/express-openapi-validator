@@ -11,6 +11,7 @@ export class AjvOptions {
   constructor(options: NormalizedOpenApiValidatorOpts) {
     this.options = options;
   }
+
   get preprocessor(): Options {
     return this.baseOptions();
   }
@@ -44,7 +45,7 @@ export class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const { coerceTypes, formats, validateFormats, serDes, ajvFormats } =
+    const { coerceTypes, formats, validateFormats, serDes, allErrors, ajvFormats } =
       this.options;
     const serDesMap = {};
     for (const serDesObject of serDes) {
@@ -72,6 +73,7 @@ export class AjvOptions {
       validateFormats: validateFormats,
       formats,
       serDesMap,
+      allErrors: allErrors === undefined || allErrors,
       ajvFormats,
     };
 

@@ -1,0 +1,29 @@
+openapi: 3.0.1
+info:
+  title: Multiple validations for allErrors check
+  version: 1.0.0
+servers:
+  - url: /v1
+paths:
+  /persons:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Person"
+      responses:
+        200:
+          description: Success
+
+components:
+  schemas:
+    Person:
+      required:
+        - bname
+      type: object
+      properties:
+        bname:
+          type: string
+          format: starts-with-b
+          maxLength: 10

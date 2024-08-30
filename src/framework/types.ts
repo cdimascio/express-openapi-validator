@@ -150,6 +150,13 @@ export interface OpenApiValidatorOpts {
   serDes?: SerDes[];
   formats?: Format[] | Record<string, ajv.Format>;
   ajvFormats?: FormatsPluginOptions;
+  /**
+   * Whether AJV should check all rules and collect all errors or return after the first error.
+   *
+   * The default is `true`. This should be set to `false` in production. See [AJV: Security risks of
+   * trusted schemas](https://ajv.js.org/security.html#security-risks-of-trusted-schemas).
+   */
+  allErrors?: boolean;
   fileUploader?: boolean | multer.Options;
   multerOpts?: multer.Options;
   $refParser?: {

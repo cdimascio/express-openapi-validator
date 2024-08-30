@@ -10,8 +10,8 @@ describe('AjvOptions', () => {
     apiSpec: './spec',
     validateApiSpec: false,
     validateRequests: {
-        allowUnknownQueryParameters: false,
-        coerceTypes: false,
+      allowUnknownQueryParameters: false,
+      coerceTypes: false,
     },
     validateResponses: {
       coerceTypes: false,
@@ -44,7 +44,7 @@ describe('AjvOptions', () => {
     expect(options.validateSchema).to.be.false;
   });
 
-  it('should not validate schema for multipar since schema is validated on startup', async () => {
+  it('should not validate schema for multipart since schema is validated on startup', async () => {
     const ajv = new AjvOptions(baseOptions);
     const options = ajv.multipart;
     expect(options.validateSchema).to.be.false;
@@ -60,7 +60,7 @@ describe('AjvOptions', () => {
         },
       ],
     });
-    const options = ajv.multipart;
+    const options = ajv.preprocessor;
     expect(options.serDesMap['custom-1']).has.property('deserialize');
     expect(options.serDesMap['custom-1']).does.not.have.property('serialize');
   });
@@ -75,7 +75,7 @@ describe('AjvOptions', () => {
         },
       ],
     });
-    const options = ajv.multipart;
+    const options = ajv.preprocessor;
     expect(options.serDesMap).has.property('custom-1');
     expect(options.serDesMap['custom-1']).has.property('serialize');
     expect(options.serDesMap['custom-1']).does.not.have.property('deserialize');
@@ -92,7 +92,7 @@ describe('AjvOptions', () => {
         },
       ],
     });
-    const options = ajv.multipart;
+    const options = ajv.preprocessor;
     expect(options.serDesMap).has.property('custom-1');
     expect(options.serDesMap['custom-1']).has.property('serialize');
     expect(options.serDesMap['custom-1']).has.property('deserialize');
@@ -116,9 +116,26 @@ describe('AjvOptions', () => {
         },
       ],
     });
-    const options = ajv.multipart;
+    const options = ajv.preprocessor;
     expect(options.serDesMap).has.property('custom-1');
     expect(options.serDesMap['custom-1']).has.property('serialize');
     expect(options.serDesMap['custom-1']).has.property('deserialize');
+  });
+
+  it('should default to allErrors', () => {
+    const ajv = new AjvOptions({
+      ...baseOptions,
+    });
+    const options = ajv.preprocessor;
+    expect(options.allErrors).to.be.true;
+  });
+
+  it('should respect user allErrors setting', () => {
+    const ajv = new AjvOptions({
+      ...baseOptions,
+      allErrors: false,
+    });
+    const options = ajv.preprocessor;
+    expect(options.allErrors).to.be.false;
   });
 });
