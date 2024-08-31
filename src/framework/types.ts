@@ -47,12 +47,26 @@ export interface Options extends ajv.Options {
 export interface RequestValidatorOptions extends Options, ValidateRequestOpts { }
 
 export type ValidateRequestOpts = {
+  /**
+   * Whether AJV should check all rules and collect all errors or return after the first error.
+   *
+   * This should not be set to `true` in production. See [AJV: Security risks of trusted
+   * schemas](https://ajv.js.org/security.html#security-risks-of-trusted-schemas).
+   */
+  allErrors?: boolean;
   allowUnknownQueryParameters?: boolean;
   coerceTypes?: boolean | 'array';
   removeAdditional?: boolean | 'all' | 'failing';
 };
 
 export type ValidateResponseOpts = {
+  /**
+   * Whether AJV should check all rules and collect all errors or return after the first error.
+   *
+   * This should not be set to `true` in production. See [AJV: Security risks of trusted
+   * schemas](https://ajv.js.org/security.html#security-risks-of-trusted-schemas).
+   */
+  allErrors?: boolean;
   removeAdditional?: boolean | 'all' | 'failing';
   coerceTypes?: boolean | 'array';
   onError?: (err: InternalServerError, json: any, req: Request) => void;
