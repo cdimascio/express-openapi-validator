@@ -15,7 +15,7 @@ describe(packageJson.name, () => {
       'resources',
       'path.level.parameters.yaml',
     );
-    app = await createApp({ apiSpec }, 3005, app =>
+    app = await createApp({ apiSpec, allErrors: true }, 3005, app =>
       app.use(
         `${app.basePath}`,
         express

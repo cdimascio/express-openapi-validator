@@ -122,20 +122,20 @@ describe('AjvOptions', () => {
     expect(options.serDesMap['custom-1']).has.property('deserialize');
   });
 
-  it('should default to allErrors', () => {
+  it('should default to not setting allErrors', () => {
     const ajv = new AjvOptions({
       ...baseOptions,
     });
     const options = ajv.preprocessor;
-    expect(options.allErrors).to.be.true;
+    expect(options.allErrors).to.be.undefined;
   });
 
   it('should respect user allErrors setting', () => {
     const ajv = new AjvOptions({
       ...baseOptions,
-      allErrors: false,
+      allErrors: true,
     });
     const options = ajv.preprocessor;
-    expect(options.allErrors).to.be.false;
+    expect(options.allErrors).to.be.true;
   });
 });

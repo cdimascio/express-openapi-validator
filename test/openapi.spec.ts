@@ -12,8 +12,8 @@ describe(packageJson.name, () => {
     const apiSpecPath = path.join('test', 'resources', 'openapi.yaml');
     const apiSpecJson = require('./resources/openapi.json');
     return Promise.all([
-      createApp({ apiSpec: apiSpecPath }, 3001),
-      createApp({ apiSpec: apiSpecJson }, 3002),
+      createApp({ apiSpec: apiSpecPath, allErrors: true }, 3001),
+      createApp({ apiSpec: apiSpecJson, allErrors: true }, 3002),
     ]).then(([a1, a2]) => {
       apps.push(a1);
       apps.push(a2);

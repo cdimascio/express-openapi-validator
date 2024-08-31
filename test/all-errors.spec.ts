@@ -20,7 +20,7 @@ describe('request body validation with and without allErrors', () => {
       {
         apiSpec,
         formats: { 'starts-with-b': (v) => /^b/i.test(v) },
-        // allErrors is set to true when undefined
+        allErrors: true,
       },
       3005,
       defineRoutes,
@@ -31,7 +31,6 @@ describe('request body validation with and without allErrors', () => {
       {
         apiSpec,
         formats: { 'starts-with-b': (v) => /^b/i.test(v) },
-        allErrors: false,
       },
       3006,
       defineRoutes,

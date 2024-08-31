@@ -10,7 +10,7 @@ describe('empty servers', () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'empty.servers.yaml');
-    app = await createApp({ apiSpec }, 3007, app =>
+    app = await createApp({ apiSpec, allErrors: true }, 3007, app =>
       app.use(
         ``,
         express

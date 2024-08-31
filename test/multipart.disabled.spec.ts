@@ -9,7 +9,7 @@ describe(packageJson.name, () => {
   let app = null;
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'multipart.yaml');
-    app = await createApp({ apiSpec, fileUploader: false }, 3003, app =>
+    app = await createApp({ apiSpec, allErrors: true, fileUploader: false }, 3003, app =>
       app.use(
         `${app.basePath}`,
         express

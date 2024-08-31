@@ -50,6 +50,7 @@ function createServer() {
     app.use(
       OpenApiValidator.middleware({
         apiSpec,
+        allErrors: true,
       }),
     );
 

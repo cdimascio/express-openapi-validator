@@ -10,7 +10,7 @@ describe(packageJson.name, () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'write.only.yaml');
-    app = await createApp({ apiSpec, validateResponses: true }, 3005, (app) =>
+    app = await createApp({ apiSpec, allErrors: true, validateResponses: true }, 3005, (app) =>
       app
         .post(`${app.basePath}/products/inlined`, (req, res) => {
           const body = req.body;

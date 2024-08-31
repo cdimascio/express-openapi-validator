@@ -45,8 +45,14 @@ export class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const { coerceTypes, formats, validateFormats, serDes, allErrors, ajvFormats } =
-      this.options;
+    const {
+      coerceTypes,
+      formats,
+      validateFormats,
+      serDes,
+      allErrors,
+      ajvFormats,
+    } = this.options;
     const serDesMap = {};
     for (const serDesObject of serDes) {
       if (!serDesMap[serDesObject.format]) {
@@ -70,10 +76,10 @@ export class AjvOptions {
       coerceTypes,
       useDefaults: true,
       removeAdditional: false,
-      validateFormats: validateFormats,
+      validateFormats,
       formats,
       serDesMap,
-      allErrors: allErrors === undefined || allErrors,
+      allErrors,
       ajvFormats,
     };
 

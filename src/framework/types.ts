@@ -153,8 +153,8 @@ export interface OpenApiValidatorOpts {
   /**
    * Whether AJV should check all rules and collect all errors or return after the first error.
    *
-   * The default is `true`. This should be set to `false` in production. See [AJV: Security risks of
-   * trusted schemas](https://ajv.js.org/security.html#security-risks-of-trusted-schemas).
+   * This should not be set to `true` in production. See [AJV: Security risks of trusted
+   * schemas](https://ajv.js.org/security.html#security-risks-of-trusted-schemas).
    */
   allErrors?: boolean;
   fileUploader?: boolean | multer.Options;
