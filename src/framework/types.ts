@@ -68,7 +68,7 @@ export type OperationHandlerOptions = {
     handlersPath: string,
     route: RouteMetadata,
     apiDoc: OpenAPIV3.Document,
-  ) => RequestHandler | Promise<RequestHandler>;
+  ) => unknown;
 };
 
 export type Format = {
