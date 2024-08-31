@@ -1,3 +1,24 @@
+##  (2024-08-31)
+
+* Change AJV allErrors default and support user setting (#955) ([392f1dd](https://github.com/cdimascio/express-openapi-validator/commit/392f1dd)), closes [#955](https://github.com/cdimascio/express-openapi-validator/issues/955) [#954](https://github.com/cdimascio/express-openapi-validator/issues/954)
+* Update README.md ([f20b1c9](https://github.com/cdimascio/express-openapi-validator/commit/f20b1c9))
+* Use lenient resolver type (#956) ([826ba62](https://github.com/cdimascio/express-openapi-validator/commit/826ba62)), closes [#956](https://github.com/cdimascio/express-openapi-validator/issues/956) [#921](https://github.com/cdimascio/express-openapi-validator/issues/921) [#952](https://github.com/cdimascio/express-openapi-validator/issues/952)
+
+
+### breaking change
+
+* by defaulting to `true` when not defined by the user.
+
+Add tests:
+1. Make sure `AjvOptions` sets the value appropriately based on whether
+   the end user defined `allErrors` or not.
+2. When validating requests, make sure the number of errors reported
+   (when multiple occur) is 1 when `allErrors` is `false`.
+
+The `allErrors` configuration for OpenAPISchemaValidator is not changed
+by this commit since that validation is for trusted content.
+
+
 ##  (2024-08-24)
 
 * chore(deps-dev): bump @babel/traverse in /examples/9-nestjs (#948) ([edd054f](https://github.com/cdimascio/express-openapi-validator/commit/edd054f)), closes [#948](https://github.com/cdimascio/express-openapi-validator/issues/948)
