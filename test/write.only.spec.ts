@@ -10,38 +10,47 @@ describe(packageJson.name, () => {
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'write.only.yaml');
-    app = await createApp({ apiSpec, allErrors: true, validateResponses: true }, 3005, (app) =>
-      app
-        .post(`${app.basePath}/products/inlined`, (req, res) => {
-          const body = req.body;
-          const excludeWriteOnly = req.query.exclude_write_only;
-          if (excludeWriteOnly) {
-            delete body.role;
-          }
-          res.json({
-            ...body,
-          });
-        })
-        .post(`${app.basePath}/products/nested`, (req, res) => {
-          const body = req.body;
-          const excludeWriteOnly = req.query.exclude_write_only;
-          body.id = 'test';
-          body.created_at = new Date().toISOString();
-          body.reviews = body.reviews.map((r) => ({
-            ...(excludeWriteOnly ? {} : { role_x: 'admin' }),
-            rating: r.rating ?? 2,
-          }));
+    app = await createApp(
+      {
+        apiSpec,
+        validateRequests: {
+          allErrors: true,
+        },
+        validateResponses: true,
+      },
+      3005,
+      (app) =>
+        app
+          .post(`${app.basePath}/products/inlined`, (req, res) => {
+            const body = req.body;
+            const excludeWriteOnly = req.query.exclude_write_only;
+            if (excludeWriteOnly) {
+              delete body.role;
+            }
+            res.json({
+              ...body,
+            });
+          })
+          .post(`${app.basePath}/products/nested`, (req, res) => {
+            const body = req.body;
+            const excludeWriteOnly = req.query.exclude_write_only;
+            body.id = 'test';
+            body.created_at = new Date().toISOString();
+            body.reviews = body.reviews.map((r) => ({
+              ...(excludeWriteOnly ? {} : { role_x: 'admin' }),
+              rating: r.rating ?? 2,
+            }));
 
-          if (excludeWriteOnly) {
-            delete body.role;
-            delete body.password;
-          }
-          res.json({
-            // id: 'xxxxx',
-            // created_at: '2024-02-09T17:32:28Z',
-            ...body,
-          });
-        }),
+            if (excludeWriteOnly) {
+              delete body.role;
+              delete body.password;
+            }
+            res.json({
+              // id: 'xxxxx',
+              // created_at: '2024-02-09T17:32:28Z',
+              ...body,
+            });
+          }),
     );
   });
 

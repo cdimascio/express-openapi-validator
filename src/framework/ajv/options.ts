@@ -17,11 +17,12 @@ export class AjvOptions {
   }
 
   get response(): Options {
-    const { coerceTypes, removeAdditional } = <ValidateResponseOpts>(
+    const { allErrors, coerceTypes, removeAdditional } = <ValidateResponseOpts>(
       this.options.validateResponses
     );
     return {
       ...this.baseOptions(),
+      allErrors,
       useDefaults: false,
       coerceTypes,
       removeAdditional,
@@ -29,11 +30,12 @@ export class AjvOptions {
   }
 
   get request(): RequestValidatorOptions {
-    const { allowUnknownQueryParameters, coerceTypes, removeAdditional } = <
+    const { allErrors, allowUnknownQueryParameters, coerceTypes, removeAdditional } = <
       ValidateRequestOpts
     >this.options.validateRequests;
     return {
       ...this.baseOptions(),
+      allErrors,
       allowUnknownQueryParameters,
       coerceTypes,
       removeAdditional,
@@ -50,7 +52,6 @@ export class AjvOptions {
       formats,
       validateFormats,
       serDes,
-      allErrors,
       ajvFormats,
     } = this.options;
     const serDesMap = {};
@@ -79,7 +80,6 @@ export class AjvOptions {
       validateFormats,
       formats,
       serDesMap,
-      allErrors,
       ajvFormats,
     };
 
