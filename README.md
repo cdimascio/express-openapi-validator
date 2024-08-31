@@ -36,7 +36,7 @@
 npm install express-openapi-validator
 
 # experimental OAS 3.1 in alpha (contributions welcome - see branch `oas-3.1` and pr-882)
-npm install express-openapi-validator@6.0.0-alpha.1
+npm install express-openapi-validator@6.0.0-alpha.2
 ```
 
 ## Usage
