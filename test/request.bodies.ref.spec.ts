@@ -13,6 +13,9 @@ describe('request bodies', () => {
     app = await createApp(
       {
         apiSpec,
+        validateRequests: {
+          allErrors: true,
+        },
         validateResponses: true,
         unknownFormats: ['phone-number'],
       },

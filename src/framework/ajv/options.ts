@@ -11,16 +11,18 @@ export class AjvOptions {
   constructor(options: NormalizedOpenApiValidatorOpts) {
     this.options = options;
   }
+
   get preprocessor(): Options {
     return this.baseOptions();
   }
 
   get response(): Options {
-    const { coerceTypes, removeAdditional } = <ValidateResponseOpts>(
+    const { allErrors, coerceTypes, removeAdditional } = <ValidateResponseOpts>(
       this.options.validateResponses
     );
     return {
       ...this.baseOptions(),
+      allErrors,
       useDefaults: false,
       coerceTypes,
       removeAdditional,
@@ -28,11 +30,12 @@ export class AjvOptions {
   }
 
   get request(): RequestValidatorOptions {
-    const { allowUnknownQueryParameters, coerceTypes, removeAdditional } = <
+    const { allErrors, allowUnknownQueryParameters, coerceTypes, removeAdditional } = <
       ValidateRequestOpts
     >this.options.validateRequests;
     return {
       ...this.baseOptions(),
+      allErrors,
       allowUnknownQueryParameters,
       coerceTypes,
       removeAdditional,
@@ -44,8 +47,13 @@ export class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const { coerceTypes, formats, validateFormats, serDes, ajvFormats } =
-      this.options;
+    const {
+      coerceTypes,
+      formats,
+      validateFormats,
+      serDes,
+      ajvFormats,
+    } = this.options;
     const serDesMap = {};
     for (const serDesObject of serDes) {
       if (!serDesMap[serDesObject.format]) {
@@ -69,7 +77,7 @@ export class AjvOptions {
       coerceTypes,
       useDefaults: true,
       removeAdditional: false,
-      validateFormats: validateFormats,
+      validateFormats,
       formats,
       serDesMap,
       ajvFormats,

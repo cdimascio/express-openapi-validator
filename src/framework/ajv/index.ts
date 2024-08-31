@@ -32,7 +32,6 @@ function createAjv(
   const { ajvFormats, ...ajvOptions } = options;
   const ajv = new AjvDraft4({
     ...ajvOptions,
-    allErrors: true,
     formats: formats,
   });
 

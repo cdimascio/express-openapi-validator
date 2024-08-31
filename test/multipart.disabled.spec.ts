@@ -9,15 +9,24 @@ describe(packageJson.name, () => {
   let app = null;
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'multipart.yaml');
-    app = await createApp({ apiSpec, fileUploader: false }, 3003, app =>
-      app.use(
-        `${app.basePath}`,
-        express
-          .Router()
-          .post(`/sample_2`, (req, res) => res.json(req.body))
-          .post(`/sample_1`, (req, res) => res.json(req.body))
-          .get('/range', (req, res) => res.json(req.body)),
-      ),
+    app = await createApp(
+      {
+        apiSpec,
+        fileUploader: false,
+        validateRequests: {
+          allErrors: true,
+        },
+      },
+      3003,
+      (app) =>
+        app.use(
+          `${app.basePath}`,
+          express
+            .Router()
+            .post(`/sample_2`, (req, res) => res.json(req.body))
+            .post(`/sample_1`, (req, res) => res.json(req.body))
+            .get('/range', (req, res) => res.json(req.body)),
+        ),
     );
   });
   after(() => {

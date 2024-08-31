@@ -15,13 +15,21 @@ describe(packageJson.name, () => {
       'resources',
       'path.level.parameters.yaml',
     );
-    app = await createApp({ apiSpec }, 3005, app =>
-      app.use(
-        `${app.basePath}`,
-        express
-          .Router()
-          .get(`/path_level_parameters`, (_req, res) => res.send()),
-      ),
+    app = await createApp(
+      {
+        apiSpec,
+        validateRequests: {
+          allErrors: true,
+        },
+      },
+      3005,
+      (app) =>
+        app.use(
+          `${app.basePath}`,
+          express
+            .Router()
+            .get(`/path_level_parameters`, (_req, res) => res.send()),
+        ),
     );
   });
 
