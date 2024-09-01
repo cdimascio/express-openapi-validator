@@ -81,7 +81,7 @@ export type OperationHandlerOptions = {
   resolver: (
     handlersPath: string,
     route: RouteMetadata,
-    apiDoc: OpenAPIV3.Document,
+    apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
   ) => unknown;
 };
 
