@@ -7,16 +7,25 @@
 
 ### breaking change
 
-* by defaulting to `true` when not defined by the user.
+By default, request and response validation now stops after the first failure. Only one error will be reported even when multiple may exist. This follows best practices from AJV:
+- [Security risks of trusted schemas](https://ajv.js.org/security.html#security-risks-of-trusted-schemas)
+- [`allErrors` option](https://ajv.js.org/options.html#allerrors)
 
-Add tests:
-1. Make sure `AjvOptions` sets the value appropriately based on whether
-   the end user defined `allErrors` or not.
-2. When validating requests, make sure the number of errors reported
-   (when multiple occur) is 1 when `allErrors` is `false`.
+To report all validation errors (only recommended in development), option `allErrors` can be set in options `validateRequests` and/or `validateResponses`. For example:
 
-The `allErrors` configuration for OpenAPISchemaValidator is not changed
-by this commit since that validation is for trusted content.
+```ts
+app.use(
+  OpenApiValidator.middleware({
+    apiSpec: 'path/to/openapi.json',
+    validateRequests: {
+      allErrors: true,
+    },
+    validateResponses: {
+      allErrors: true,
+    },
+  })
+);
+```
 
 
 ##  (2024-08-24)
