@@ -1,3 +1,4 @@
+import { dereferenceParameter } from '../middlewares/parsers/util';
 import { OpenAPIFramework } from './index';
 import {
   OpenAPIFrameworkAPIContext,
@@ -68,13 +69,15 @@ export class OpenApiSpecLoader {
               ) {
                 continue;
               }
-              const pathParams = new Set<string>();
-              const parameters = [...schema.parameters ?? [], ...methods.parameters ?? []]
-              for (const param of parameters) {
-                if (param.in === 'path') {
-                  pathParams.add(param.name);
-                }
-              }
+
+              const pathParams = [
+                ...(schema.parameters ?? []),
+                ...(methods.parameters ?? []),
+              ]
+                .map(param => dereferenceParameter(apiDoc, param))
+                .filter(param => param.in === 'path')
+                .map(param => param.name);
+
               const openApiRoute = `${bp}${path}`;
               const expressRoute = `${openApiRoute}`
                 .split(':')
@@ -86,7 +89,7 @@ export class OpenApiSpecLoader {
                 expressRoute,
                 openApiRoute,
                 method: method.toUpperCase(),
-                pathParams: Array.from(pathParams),
+                pathParams: Array.from(new Set(pathParams)),
               });
             }
           }

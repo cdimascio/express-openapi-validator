@@ -185,8 +185,35 @@ paths:
                 properties:
                   success:
                     type: boolean
+  /users/{userID}/info:
+    get:
+      description: Get info about a User
+      summary: Get info about a User
+      operationId: user.info
+      security: []
+      parameters: 
+        - $ref: '#/components/parameters/userID'
+      responses:
+        '200':
+          description: Returns info about a User.
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  id:
+                    $ref: '#/components/schemas/UserID'
 
 components:
+  parameters:
+    userID:
+      name: userID
+      in: path
+      required: true
+      schema: 
+        $ref: '#/components/schemas/UserID'
+        # type: number
+
   schemas:
     Pet:
       required:
@@ -209,6 +236,9 @@ components:
       enum:
         - dog
         - cat
+
+    UserID:
+      type: number
 
     Error:
       required:
