@@ -120,4 +120,12 @@ describe('custom operation handler', () => {
       });
   });
 
+  it('should coerce path parameters', async () => {
+    return request(app)
+      .get(`${basePath}/users/123/info`)
+      .expect(200)
+      .then((r) => {
+        expect(r.text).to.be.equal('{"id":123}');
+      });
+  });
 });
