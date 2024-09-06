@@ -1,3 +1,16 @@
+##  (2024-09-06)
+
+* fix: Dereference path parameters (#962) ([0aebe5d](https://github.com/cdimascio/express-openapi-validator/commit/0aebe5d)), closes [#962](https://github.com/cdimascio/express-openapi-validator/issues/962)
+* fix: upgrade express-openapi-validator from 5.2.0 to 5.3.1 (#951) ([5b0058d](https://github.com/cdimascio/express-openapi-validator/commit/5b0058d)), closes [#951](https://github.com/cdimascio/express-openapi-validator/issues/951)
+* [StepSecurity] ci: Harden GitHub Actions (#959) ([78e55be](https://github.com/cdimascio/express-openapi-validator/commit/78e55be)), closes [#959](https://github.com/cdimascio/express-openapi-validator/issues/959)
+* Fix changelog breaking changes notice (#961) ([0a8dc2f](https://github.com/cdimascio/express-openapi-validator/commit/0a8dc2f)), closes [#961](https://github.com/cdimascio/express-openapi-validator/issues/961)
+* update README ([7334ccd](https://github.com/cdimascio/express-openapi-validator/commit/7334ccd))
+* chore(deps-dev): bump braces in /examples/5-custom-operation-resolver (#958) ([eda5612](https://github.com/cdimascio/express-openapi-validator/commit/eda5612)), closes [#958](https://github.com/cdimascio/express-openapi-validator/issues/958)
+* chore(deps): bump braces in /examples/4-eov-operations-babel (#957) ([749a8c8](https://github.com/cdimascio/express-openapi-validator/commit/749a8c8)), closes [#957](https://github.com/cdimascio/express-openapi-validator/issues/957)
+* chore(deps): bump webpack and @nestjs/cli in /examples/9-nestjs (#953) ([299aad6](https://github.com/cdimascio/express-openapi-validator/commit/299aad6)), closes [#953](https://github.com/cdimascio/express-openapi-validator/issues/953)
+
+
+
 ##  (2024-08-31)
 
 * Change AJV allErrors default and support user setting (#955) ([392f1dd](https://github.com/cdimascio/express-openapi-validator/commit/392f1dd)), closes [#955](https://github.com/cdimascio/express-openapi-validator/issues/955) [#954](https://github.com/cdimascio/express-openapi-validator/issues/954)
