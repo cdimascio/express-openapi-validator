@@ -39,9 +39,9 @@ function createServer() {
   const OpenApiValidator = require('../src');
 
   const app = express();
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.text());
-  app.use(bodyParser.json());
+  app.use(express.urlencoded({ extended: false }));
+  app.use(express.text());
+  app.use(express.json());
 
   const versions = [1, 2];
 
