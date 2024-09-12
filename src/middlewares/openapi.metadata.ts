@@ -80,15 +80,14 @@ export function applyOpenApiMetadata(
       const pathKey = openApiRoute.substring((<any>methods).basePath.length);
       const schema = openApiContext.apiDoc.paths[pathKey][method.toLowerCase()];
       const _schema = responseApiDoc?.paths[pathKey][method.toLowerCase()];
-
-      const keys = [];
+      
       const strict = !!req.app.enabled('strict routing');
       const sensitive = !!req.app.enabled('case sensitive routing');
       const pathOpts = {
         sensitive,
         strict,
       };
-      const regexp = pathToRegexp(expressRoute, keys, pathOpts);
+      const {regexp, keys} = pathToRegexp(expressRoute, pathOpts);
       const matchedRoute = regexp.exec(path);
 
       if (matchedRoute) {
