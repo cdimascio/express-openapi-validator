@@ -9,7 +9,7 @@ const app = express();
 const apiSpec = path.join(__dirname, 'api.yaml');
 
 // 1. Install bodyParsers for the request types your API will support
-app.use(bodyParsers.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.text());
 app.use(express.json());
 
