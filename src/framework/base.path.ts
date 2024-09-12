@@ -69,6 +69,7 @@ export class BasePath {
     }, []);
 
     const allParamCombos = cartesian(...allParams);
+    // path-to-regexp v 8.x.x requires we escape the open and close parentheses `(`,`)` added a replace function to catch that use case.
     const filteredExpressPath = this.expressPath.replace(/[(]/g, '\\\\(').replace(/[)]/g, '\\\\)');
     const toPath = compile(filteredExpressPath);
     const paths = new Set<string>();
