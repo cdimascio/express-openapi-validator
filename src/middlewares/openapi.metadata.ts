@@ -86,7 +86,7 @@ export function applyOpenApiMetadata(
       const sensitive = !!req.app.enabled('case sensitive routing');
       const pathOpts = {
         sensitive,
-        strict
+        strict,
       };
       const regexpObj = pathToRegexp(expressRoute, pathOpts);
       const regexp = regexpObj.regexp;
