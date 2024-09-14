@@ -25,8 +25,8 @@ export class BasePath {
       urlPath = urlPath.replace(':','\\:')
     }
     if (/{\w+}/.test(urlPath)) {
-      // has variable that we need to check out
-      urlPath = urlPath.replace(/{(\w+)}/g, (substring, p1) => `:${p1}(.*)`);
+      // has variable that we need to check out      
+      urlPath = urlPath.replace(/{(\w+)}/g, (substring, p1) => `:"${p1}"`);
     }
     this.expressPath = urlPath;
     for (const variable in server.variables) {
@@ -69,7 +69,8 @@ export class BasePath {
     }, []);
 
     const allParamCombos = cartesian(...allParams);
-    const toPath = compile(this.expressPath);
+    const filteredExpressPath = this.expressPath.replace(/[(]/g, '\\\\(').replace(/[)]/g, '\\\\)');
+    const toPath = compile(filteredExpressPath);
     const paths = new Set<string>();
     for (const combo of allParamCombos) {
       paths.add(toPath(combo));
