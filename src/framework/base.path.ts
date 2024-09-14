@@ -26,7 +26,7 @@ export class BasePath {
     }
     if (/{\w+}/.test(urlPath)) {
       // has variable that we need to check out
-      urlPath = urlPath.replace(/{(\w+)}/g, (substring, p1) => `:${p1}(.*)`);
+      urlPath = urlPath.replace(/{(\w+)}/g, (substring, p1) => `:"${p1}"`);
     }
     this.expressPath = urlPath;
     for (const variable in server.variables) {
@@ -69,7 +69,9 @@ export class BasePath {
     }, []);
 
     const allParamCombos = cartesian(...allParams);
-    const toPath = compile(this.expressPath);
+    // path-to-regexp v 8.x.x requires we escape the open and close parentheses `(`,`)` added a replace function to catch that use case.
+    const filteredExpressPath = this.expressPath.replace(/[(]/g, '\\\\(').replace(/[)]/g, '\\\\)');
+    const toPath = compile(filteredExpressPath);
     const paths = new Set<string>();
     for (const combo of allParamCombos) {
       paths.add(toPath(combo));
