@@ -77,9 +77,9 @@ export type ValidateSecurityOpts = {
 };
 
 export type OperationHandlerOptions = {
-  basePath: string;
+  basePath: string | URL;
   resolver: (
-    handlersPath: string,
+    handlersPath: string | URL,
     route: RouteMetadata,
     apiDoc: OpenAPIV3.Document,
   ) => unknown;
@@ -169,7 +169,7 @@ export interface OpenApiValidatorOpts {
   $refParser?: {
     mode: 'bundle' | 'dereference';
   };
-  operationHandlers?: false | string | OperationHandlerOptions;
+  operationHandlers?: false | string | URL | OperationHandlerOptions;
   validateFormats?: boolean | 'fast' | 'full';
 }
 
