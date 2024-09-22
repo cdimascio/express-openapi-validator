@@ -1,3 +1,4 @@
+import { dereferenceParameter } from '../middlewares/parsers/util';
 import { OpenAPIFramework } from './index';
 import {
   OpenAPIFrameworkAPIContext,
@@ -69,13 +70,15 @@ export class OpenApiSpecLoader {
                 ) {
                   continue;
                 }
-                const pathParams = new Set<string>();
-                const parameters = [...schema.parameters ?? [], ...methods.parameters ?? []]
-                for (const param of parameters) {
-                  if (param.in === 'path') {
-                    pathParams.add(param.name);
-                  }
-                }
+
+                const pathParams = [
+                  ...(schema.parameters ?? []),
+                  ...(methods.parameters ?? []),
+                ]
+                  .map(param => dereferenceParameter(apiDoc, param))
+                  .filter(param => param.in === 'path')
+                  .map(param => param.name);
+
                 const openApiRoute = `${bp}${path}`;
                 const expressRoute = `${openApiRoute}`
                   .split(':')
@@ -87,7 +90,7 @@ export class OpenApiSpecLoader {
                   expressRoute,
                   openApiRoute,
                   method: method.toUpperCase(),
-                  pathParams: Array.from(pathParams),
+                  pathParams: Array.from(new Set(pathParams)),
                 });
               }
             }
@@ -112,10 +115,22 @@ export class OpenApiSpecLoader {
     // {/path} => /path(*) <--- RFC 6570 format (not supported by openapi)
     // const pass1 = part.replace(/\{(\/)([^\*]+)(\*)}/g, '$1:$2$3');
 
+    //if wildcard path use new path-to-regex expected model
+    if(/[*]/g.test(part)){
+      // /v1/{path}* => /v1/*path)
+      // /v1/{path}(*) => /v1/*path)
+      const pass1 = part.replace(/\/{([^}]+)}\({0,1}(\*)\){0,1}/g, '/$2$1');
+
+      // substitute params with express equivalent
+      // /path/{multi}/test/{/*path}=> /path/:multi/test/{/*path}
+      return pass1.replace(/\{([^\/}]+)}/g, ':$1');
+      //return pass1;
+    }
     // instead create our own syntax that is compatible with express' pathToRegex
     // /{path}* => /:path*)
     // /{path}(*) => /:path*)
     const pass1 = part.replace(/\/{([^}]+)}\({0,1}(\*)\){0,1}/g, '/:$1$2');
+
     // substitute params with express equivalent
     // /path/{id} => /path/:id
     return pass1.replace(/\{([^}]+)}/g, ':$1');
