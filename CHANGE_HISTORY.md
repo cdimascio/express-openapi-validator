@@ -1,3 +1,21 @@
+##  (2024-09-18)
+
+* fix: upgrade @types/multer from 1.4.11 to 1.4.12 (#983) ([0fa043e](https://github.com/cdimascio/express-openapi-validator/commit/0fa043e)), closes [#983](https://github.com/cdimascio/express-openapi-validator/issues/983)
+* feat(path-to-regexp): path-to-regexp 8.1.0 update (#976) ([70cce65](https://github.com/cdimascio/express-openapi-validator/commit/70cce65)), closes [#976](https://github.com/cdimascio/express-openapi-validator/issues/976)
+
+
+
+##  (2024-09-13)
+
+* bodyParsers is deprecated so update with expess bodyParsers (#974) ([6dc3b97](https://github.com/cdimascio/express-openapi-validator/commit/6dc3b97)), closes [#974](https://github.com/cdimascio/express-openapi-validator/issues/974)
+* Update README.md ([772d1dc](https://github.com/cdimascio/express-openapi-validator/commit/772d1dc))
+* Update README.md ([de4219e](https://github.com/cdimascio/express-openapi-validator/commit/de4219e))
+* fix: upgrade express-openapi-validator from 5.2.0 to 5.3.1 (#960) ([bd636bb](https://github.com/cdimascio/express-openapi-validator/commit/bd636bb)), closes [#960](https://github.com/cdimascio/express-openapi-validator/issues/960)
+* chore(deps-dev): bump braces from 3.0.2 to 3.0.3 in /examples/9-nestjs (#964) ([148fa90](https://github.com/cdimascio/express-openapi-validator/commit/148fa90)), closes [#964](https://github.com/cdimascio/express-openapi-validator/issues/964)
+* chore(deps-dev): bump braces in /examples/7-response-date-serialization (#963) ([aa3018a](https://github.com/cdimascio/express-openapi-validator/commit/aa3018a)), closes [#963](https://github.com/cdimascio/express-openapi-validator/issues/963)
+
+
+
 ##  (2024-09-06)
 
 * fix: Dereference path parameters (#962) ([0aebe5d](https://github.com/cdimascio/express-openapi-validator/commit/0aebe5d)), closes [#962](https://github.com/cdimascio/express-openapi-validator/issues/962)

@@ -1,7 +1,6 @@
 import * as express from 'express';
 import * as path from 'path';
 import * as cookieParser from 'cookie-parser';
-import * as bodyParser from 'body-parser';
 import * as logger from 'morgan';
 
 import * as OpenApiValidator from '../../src';
@@ -18,12 +17,12 @@ export async function createApp(
   var app = express();
   (<any>app).basePath = '/v1';
 
-  app.use(bodyParser.json());
-  app.use(bodyParser.json({ type: 'application/*+json' }));
-  app.use(bodyParser.json({ type: 'application/*+json*' }));
+  app.use(express.json());
+  app.use(express.json({ type: 'application/*+json' }));
+  app.use(express.json({ type: 'application/*+json*' }));
 
-  app.use(bodyParser.text());
-  app.use(bodyParser.text({ type: 'text/html' }));
+  app.use(express.text());
+  app.use(express.text({ type: 'text/html' }));
   app.use(logger('dev'));
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
