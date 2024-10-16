@@ -1,3 +1,10 @@
+##  (2024-09-18)
+
+* fix: upgrade @types/multer from 1.4.11 to 1.4.12 (#983) ([0fa043e](https://github.com/cdimascio/express-openapi-validator/commit/0fa043e)), closes [#983](https://github.com/cdimascio/express-openapi-validator/issues/983)
+* feat(path-to-regexp): path-to-regexp 8.1.0 update (#976) ([70cce65](https://github.com/cdimascio/express-openapi-validator/commit/70cce65)), closes [#976](https://github.com/cdimascio/express-openapi-validator/issues/976)
+
+
+
 ##  (2024-09-13)
 
 * bodyParsers is deprecated so update with expess bodyParsers (#974) ([6dc3b97](https://github.com/cdimascio/express-openapi-validator/commit/6dc3b97)), closes [#974](https://github.com/cdimascio/express-openapi-validator/issues/974)
