@@ -31,6 +31,7 @@ function extractErrorsFromResults(results: (SecurityHandlerResult | SecurityHand
     }
     return [result].filter(it => !it.success);
   }).flatMap(it => [...it]);
+}
 
 function didAllSecurityRequirementsPass(results: SecurityHandlerResult[]) {
   return results.every(it => it.success);
@@ -38,6 +39,7 @@ function didAllSecurityRequirementsPass(results: SecurityHandlerResult[]) {
 
 function didOneSchemaPassValidation(results: (SecurityHandlerResult | SecurityHandlerResult[])[]) {
   return results.some(result => Array.isArray(result) ? didAllSecurityRequirementsPass(result) : result.success);
+}
 
 export function security(
   apiDoc: OpenAPIV3.Document,
@@ -84,8 +86,8 @@ export function security(
       if (success) {
         next();
       } else {
-        const errors = extractErrorsFromResults(results)
-        throw errors[0]
+        const errors = extractErrorsFromResults(results);
+        throw errors[0];
       }
     } catch (e) {
       const message = e?.error?.message || 'unauthorized';
