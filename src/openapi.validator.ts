@@ -56,7 +56,7 @@ export class OpenApiValidator {
     if (options.formats == null) options.formats = {};
     if (options.useRequestUrl == null) options.useRequestUrl = false;
 
-    if (typeof options.operationHandlers === 'string') {
+    if (typeof options.operationHandlers === 'string' || options.operationHandlers instanceof URL) {
       /**
        * Internally, we want to convert this to a value typed OperationHandlerOptions.
        * In this way, we can treat the value as such when we go to install (rather than
