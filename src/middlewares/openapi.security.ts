@@ -86,8 +86,8 @@ export function security(
       if (success) {
         next();
       } else {
-        const errors = extractErrorsFromResults(results)
-        throw errors[0]
+        const errors = extractErrorsFromResults(results);
+        throw errors[0];
       }
     } catch (e) {
       const message = e?.error?.message || 'unauthorized';
@@ -232,18 +232,31 @@ class AuthValidator {
       const authHeader =
         req.headers['authorization'] &&
         req.headers['authorization'].toLowerCase();
-
-      if (!authHeader) {
-        throw Error(`Authorization header required`);
-      }
-
+      const authCookie =
+        req.cookies[scheme.name] || req.signedCookies?.[scheme.name];
+  
       const type = scheme.scheme && scheme.scheme.toLowerCase();
-      if (type === 'bearer' && !authHeader.includes('bearer')) {
-        throw Error(`Authorization header with scheme 'Bearer' required`);
+      if (type === 'bearer') {
+        if (authHeader && !authHeader.includes('bearer')) {
+          throw Error(`Authorization header with scheme 'Bearer' required`);
+        }
+        
+        if (!authHeader && !authCookie) {
+          if (scheme.in === 'cookie') {
+            throw Error(`Cookie authentication required`);
+          } else {
+            throw Error(`Authorization header required`);
+          }
+        }
       }
-
-      if (type === 'basic' && !authHeader.includes('basic')) {
-        throw Error(`Authorization header with scheme 'Basic' required`);
+  
+      if (type === 'basic') {
+        if (!authHeader) {
+          throw Error(`Authorization header required`);
+        }
+        if (!authHeader.includes('basic')) {
+          throw Error(`Authorization header with scheme 'Basic' required`);
+        }
       }
     }
   }
