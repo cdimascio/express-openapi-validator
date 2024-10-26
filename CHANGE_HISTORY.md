@@ -1,3 +1,23 @@
+##  (2024-10-26)
+
+* fix: add cookie support for HTTP bearer authentication (#949) ([00d070b](https://github.com/cdimascio/express-openapi-validator/commit/00d070b)), closes [#949](https://github.com/cdimascio/express-openapi-validator/issues/949)
+* fix: examples/1-standard/package.json & examples/1-standard/package-lock.json to reduce vulnerabilit ([8ce7fda](https://github.com/cdimascio/express-openapi-validator/commit/8ce7fda)), closes [#986](https://github.com/cdimascio/express-openapi-validator/issues/986)
+* fix: examples/2-standard-multiple-api-specs/package.json & examples/2-standard-multiple-api-specs/pa ([95f5f5a](https://github.com/cdimascio/express-openapi-validator/commit/95f5f5a)), closes [#987](https://github.com/cdimascio/express-openapi-validator/issues/987)
+* fix: examples/3-eov-operations/package.json & examples/3-eov-operations/package-lock.json to reduce  ([e81222e](https://github.com/cdimascio/express-openapi-validator/commit/e81222e)), closes [#989](https://github.com/cdimascio/express-openapi-validator/issues/989)
+* fix: examples/4-eov-operations-babel/package.json & examples/4-eov-operations-babel/package-lock.jso ([263c641](https://github.com/cdimascio/express-openapi-validator/commit/263c641)), closes [#994](https://github.com/cdimascio/express-openapi-validator/issues/994)
+* fix: examples/4-eov-operations-babel/package.json & examples/4-eov-operations-babel/package-lock.jso ([e71b5fc](https://github.com/cdimascio/express-openapi-validator/commit/e71b5fc)), closes [#988](https://github.com/cdimascio/express-openapi-validator/issues/988)
+* fix: package.json & package-lock.json to reduce vulnerabilities (#993) ([b6201c3](https://github.com/cdimascio/express-openapi-validator/commit/b6201c3)), closes [#993](https://github.com/cdimascio/express-openapi-validator/issues/993)
+* fix: upgrade express-openapi-validator from 5.3.6 to 5.3.7 (#995) ([8cee5f9](https://github.com/cdimascio/express-openapi-validator/commit/8cee5f9)), closes [#995](https://github.com/cdimascio/express-openapi-validator/issues/995)
+* Create SECURITY.md (#999) ([5e21e3f](https://github.com/cdimascio/express-openapi-validator/commit/5e21e3f)), closes [#999](https://github.com/cdimascio/express-openapi-validator/issues/999)
+* example 6 enhancements ([789b43b](https://github.com/cdimascio/express-openapi-validator/commit/789b43b))
+* Update README.md ([946aab8](https://github.com/cdimascio/express-openapi-validator/commit/946aab8))
+* Update README.md ([f61c185](https://github.com/cdimascio/express-openapi-validator/commit/f61c185))
+* chore(deps): bump body-parser and @nestjs/platform-express (#990) ([773f18e](https://github.com/cdimascio/express-openapi-validator/commit/773f18e)), closes [#990](https://github.com/cdimascio/express-openapi-validator/issues/990)
+* chore(deps): bump cookie and cookie-parser (#996) ([9bd5177](https://github.com/cdimascio/express-openapi-validator/commit/9bd5177)), closes [#996](https://github.com/cdimascio/express-openapi-validator/issues/996)
+* chore(deps): bump path-to-regexp (#997) ([e60d146](https://github.com/cdimascio/express-openapi-validator/commit/e60d146)), closes [#997](https://github.com/cdimascio/express-openapi-validator/issues/997)
+
+
+
 ##  (2024-09-18)
 
 * fix: upgrade @types/multer from 1.4.11 to 1.4.12 (#983) ([0fa043e](https://github.com/cdimascio/express-openapi-validator/commit/0fa043e)), closes [#983](https://github.com/cdimascio/express-openapi-validator/issues/983)
