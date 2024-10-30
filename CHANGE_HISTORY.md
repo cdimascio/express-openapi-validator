@@ -1,3 +1,10 @@
+##  (2024-10-30)
+
+* fix: fix authHeader without `cookie-parser` middleware (#1003) ([17e91d5](https://github.com/cdimascio/express-openapi-validator/commit/17e91d5)), closes [#1003](https://github.com/cdimascio/express-openapi-validator/issues/1003) [#949](https://github.com/cdimascio/express-openapi-validator/issues/949)
+* chore(deps): bump cookie and express in /examples/3-eov-operations (#1002) ([f2aba32](https://github.com/cdimascio/express-openapi-validator/commit/f2aba32)), closes [#1002](https://github.com/cdimascio/express-openapi-validator/issues/1002)
+
+
+
 ##  (2024-10-26)
 
 * fix: add cookie support for HTTP bearer authentication (#949) ([00d070b](https://github.com/cdimascio/express-openapi-validator/commit/00d070b)), closes [#949](https://github.com/cdimascio/express-openapi-validator/issues/949)
