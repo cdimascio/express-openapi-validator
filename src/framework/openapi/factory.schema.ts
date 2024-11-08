@@ -6,11 +6,11 @@ import * as openapi3Schema from '../openapi.v3.schema.json';
 import * as openapi31Schema from '../openapi.v3_1.modified.schema.json';
 
 export const factorySchema = (version: string): Object => {
-    const { minor } = assertVersion(version)
+  const { minor } = assertVersion(version);
 
-    if (minor === '0') {
-      return openapi3Schema;
-    }
-    
-    return openapi31Schema
+  if (minor === '0') {
+    return openapi3Schema;
+  }
+  
+  return openapi31Schema
 }

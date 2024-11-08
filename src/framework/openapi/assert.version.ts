@@ -6,7 +6,7 @@
  */
 export const assertVersion = (openApiVersion: string) => {
   const [ok, major, minor] = /^(\d+)\.(\d+).(\d+)?$/.exec(openApiVersion);
-     
+  
   if (!ok) { 
     throw Error('Version missing from OpenAPI specification')
   };
