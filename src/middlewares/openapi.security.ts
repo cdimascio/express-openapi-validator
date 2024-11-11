@@ -232,8 +232,9 @@ class AuthValidator {
       const authHeader =
         req.headers['authorization'] &&
         req.headers['authorization'].toLowerCase();
+      // req.cookies will be `undefined` without `cookie-parser` middleware
       const authCookie =
-        req.cookies[scheme.name] || req.signedCookies?.[scheme.name];
+        req.cookies?.[scheme.name] || req.signedCookies?.[scheme.name];
   
       const type = scheme.scheme && scheme.scheme.toLowerCase();
       if (type === 'bearer') {
