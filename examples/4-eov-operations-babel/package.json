@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.21.1",
-    "express-openapi-validator": "^5.3.7",
+    "express-openapi-validator": "^5.3.8",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
