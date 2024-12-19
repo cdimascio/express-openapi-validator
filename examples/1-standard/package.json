@@ -12,7 +12,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express-openapi-validator": "4.13.2"
+    "express-openapi-validator": "5.3.6"
   },
   "devDependencies": {
     "nodemon": "^2.0.13"
