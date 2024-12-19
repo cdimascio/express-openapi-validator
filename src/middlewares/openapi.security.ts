@@ -232,6 +232,7 @@ class AuthValidator {
       const authHeader =
         req.headers['authorization'] &&
         req.headers['authorization'].toLowerCase();
+
       // req.cookies will be `undefined` without `cookie-parser` middleware
       const authCookie =
         req.cookies?.[scheme.name] || req.signedCookies?.[scheme.name];
@@ -241,7 +242,7 @@ class AuthValidator {
         if (authHeader && !authHeader.includes('bearer')) {
           throw Error(`Authorization header with scheme 'Bearer' required`);
         }
-        
+
         if (!authHeader && !authCookie) {
           if (scheme.in === 'cookie') {
             throw Error(`Cookie authentication required`);
