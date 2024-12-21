@@ -112,7 +112,11 @@ describe('ignorePaths as Function', () => {
     const apiSpec = path.join('test', 'resources', 'ignore.paths.yaml');
 
     app = await createApp(
-      { apiSpec, ignorePaths: (path) => path.endsWith('/hippies') },
+      {
+        apiSpec,
+        ignorePaths: (path, method) =>
+          path.endsWith('/hippies') && ['GET', 'POST'].includes(method),
+      },
       3005,
       app => {
         app.all('/v1/hippies', (req, res) => {
@@ -121,6 +125,7 @@ describe('ignorePaths as Function', () => {
             { id: 2, name: 'fred' },
           ]);
         });
+
         app.get('/v1/hippies/1', (req, res) => {
           res.json({ id: 1, name: 'farah' });
         });
@@ -155,6 +160,17 @@ describe('ignorePaths as Function', () => {
       .set('Accept', 'application/json')
       .expect('Content-Type', /json/)
       .expect(200));
+
+  it('should not ignore path and return 405', async () =>
+    request(app)
+      .put(`${basePath}/hippies`)
+      .query({
+        test: 'one',
+        limit: 2,
+      })
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(405));
 
   it('should not ignore path and return 404', async () =>
     request(app)
