@@ -18,7 +18,7 @@ paths:
         - name: limit
           in: query
           description: How many items to return at one time (max 100)
-          required: false
+          required: true
           schema:
             type: integer
             format: int32
@@ -63,19 +63,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /pets/{petId}:
+  /pets/{id}:
     get:
       summary: Info for a specific pet
       operationId: showPetById
       tags:
         - pets
       parameters:
-        - name: petId
+        - name: id
           in: path
           required: true
           description: The id of the pet to retrieve
           schema:
-            type: string
+            type: number
       responses:
         '200':
           description: Expected response to a valid request
@@ -89,6 +89,42 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+
+  /pets/{id}/photos:
+    post:
+      summary: upload a photo of the pet
+      operationId: uploadPetPhoto
+      parameters:
+        - name: id
+          in: path
+          description: ID of pet to fetch
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  description: The photo
+                  type: string
+                  format: binary
+        required: true
+      responses:
+        '200':
+          description: Null response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
 components:
   schemas:
     Pet:

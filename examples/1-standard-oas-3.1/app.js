@@ -22,9 +22,6 @@ app.use('/spec', express.static(apiSpec));
 app.use(
   OpenApiValidator.middleware({
     apiSpec,
-    validateRequests: {
-      coerceTypes: true
-    },
     validateResponses: true, // default false
   }),
 );
@@ -47,9 +44,7 @@ app.delete('/v1/pets/:id', function (req, res, next) {
 });
 
 app.get('/v1/pets/:id', function (req, res, next) {
-  console.log(req.params.id)
   const pet = pets.findById(req.params.id);
-  console.log(pet);  
   return pet
     ? res.json({ ...pet })
     : res.status(404).json({ message: 'not found', code: 23 });
