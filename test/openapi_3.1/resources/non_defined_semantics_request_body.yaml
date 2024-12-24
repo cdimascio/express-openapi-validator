@@ -1,0 +1,55 @@
+openapi: 3.1.0
+info:
+  title: API
+  version: 1.0.0
+servers:
+  - url: /v1
+components:
+  schemas:
+    EntityRequest:
+      type: object
+      properties:
+        request:
+          type: string
+paths:
+  /entity:
+    get:
+      description: GETS my entity
+      requestBody:
+        description: Request body for entity
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntityRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: 
+              schema:
+                title: Entity
+                type: object
+                properties:
+                  property:
+                    type: ['string', 'null']
+    delete:
+      description: DELETE my entity
+      requestBody:
+        description: Request body for entity
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntityRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: 
+              schema:
+                title: Entity
+                type: object
+                properties:
+                  property:
+                    type: ['string', 'null']

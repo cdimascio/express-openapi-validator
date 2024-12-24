@@ -3,6 +3,7 @@ import * as OpenApiValidator from '../src';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import * as path from 'path';
+import {OpenAPIV3} from "../src/framework/types";
 
 describe('default export resolver', () => {
   let server = null;
@@ -11,7 +12,7 @@ describe('default export resolver', () => {
   before(async () => {
     app.use(
       OpenApiValidator.middleware({
-        apiSpec: {
+        apiSpec: <OpenAPIV3.DocumentV3>{
           openapi: '3.0.0',
           info: { version: '1.0.0', title: 'test bug OpenApiValidator' },
           paths: {

@@ -1,0 +1,28 @@
+openapi: 3.1.0
+info:
+  title: API
+  version: 1.0.0
+servers:
+  - url: /v1
+components:
+  schemas:
+    EntityRequest:
+      type: object
+      properties:
+        request:
+          type: string
+      unevaluatedProperties: false
+paths:
+  /entity:
+    post:
+      description: POSTs my entity
+      requestBody:
+        description: Request body for entity
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntityRequest'
+      responses:
+        '204':
+          description: No Content

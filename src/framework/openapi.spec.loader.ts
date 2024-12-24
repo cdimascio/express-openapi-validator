@@ -7,7 +7,7 @@ import {
 } from './types';
 
 export interface Spec {
-  apiDoc: OpenAPIV3.Document;
+  apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
   basePaths: string[];
   routes: RouteMetadata[];
   serial: number;
@@ -22,7 +22,7 @@ export interface RouteMetadata {
 }
 
 interface DiscoveredRoutes {
-  apiDoc: OpenAPIV3.Document;
+  apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
   basePaths: string[];
   routes: RouteMetadata[];
   serial: number;
@@ -53,7 +53,7 @@ export class OpenApiSpecLoader {
     const routes: RouteMetadata[] = [];
     const toExpressParams = this.toExpressParams;
     // const basePaths = this.framework.basePaths;
-    // let apiDoc: OpenAPIV3.Document = null;
+    // let apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1 = null;
     // let basePaths: string[] = null;
     const { apiDoc, basePaths } = await this.framework.initialize({
       visitApi(ctx: OpenAPIFrameworkAPIContext): void {
@@ -61,36 +61,38 @@ export class OpenApiSpecLoader {
         const basePaths = ctx.basePaths;
         for (const bpa of basePaths) {
           const bp = bpa.replace(/\/$/, '');
-          for (const [path, methods] of Object.entries(apiDoc.paths)) {
-            for (const [method, schema] of Object.entries(methods)) {
-              if (
-                method.startsWith('x-') ||
-                ['parameters', 'summary', 'description'].includes(method)
-              ) {
-                continue;
+          if (apiDoc.paths) {
+            for (const [path, methods] of Object.entries(apiDoc.paths)) {
+              for (const [method, schema] of Object.entries(methods)) {
+                if (
+                  method.startsWith('x-') ||
+                  ['parameters', 'summary', 'description'].includes(method)
+                ) {
+                  continue;
+                }
+
+                const pathParams = [
+                  ...(schema.parameters ?? []),
+                  ...(methods.parameters ?? []),
+                ]
+                  .map(param => dereferenceParameter(apiDoc, param))
+                  .filter(param => param.in === 'path')
+                  .map(param => param.name);
+
+                const openApiRoute = `${bp}${path}`;
+                const expressRoute = `${openApiRoute}`
+                  .split(':')
+                  .map(toExpressParams)
+                  .join('\\:');
+  
+                routes.push({
+                  basePath: bp,
+                  expressRoute,
+                  openApiRoute,
+                  method: method.toUpperCase(),
+                  pathParams: Array.from(new Set(pathParams)),
+                });
               }
-
-              const pathParams = [
-                ...(schema.parameters ?? []),
-                ...(methods.parameters ?? []),
-              ]
-                .map(param => dereferenceParameter(apiDoc, param))
-                .filter(param => param.in === 'path')
-                .map(param => param.name);
-
-              const openApiRoute = `${bp}${path}`;
-              const expressRoute = `${openApiRoute}`
-                .split(':')
-                .map(toExpressParams)
-                .join('\\:');
-
-              routes.push({
-                basePath: bp,
-                expressRoute,
-                openApiRoute,
-                method: method.toUpperCase(),
-                pathParams: Array.from(new Set(pathParams)),
-              });
             }
           }
         }

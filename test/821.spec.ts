@@ -30,7 +30,7 @@ describe('issue #821 - serialization inside addiotionalProperties', () => {
 });
 
 async function createApp(
-  apiSpec: OpenAPIV3.Document | string,
+  apiSpec: OpenAPIV3.DocumentV3 | string,
 ): Promise<express.Express & { server?: Server }> {
   const app = express();
 

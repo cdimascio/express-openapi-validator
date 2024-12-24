@@ -15,7 +15,7 @@ import { httpMethods } from './parsers/schema.preprocessor';
 
 export function applyOpenApiMetadata(
   openApiContext: OpenApiContext,
-  responseApiDoc: OpenAPIV3.Document,
+  responseApiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
 ): OpenApiRequestHandler {
   return (req: OpenApiRequest, res: Response, next: NextFunction): void => {
     // note base path is empty when path is fully qualified i.e. req.path.startsWith('')

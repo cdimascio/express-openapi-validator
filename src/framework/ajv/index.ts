@@ -1,39 +1,42 @@
 import AjvDraft4 from 'ajv-draft-04';
+import Ajv2020 from 'ajv/dist/2020'
 import { DataValidateFunction } from 'ajv/dist/types';
 import ajvType from 'ajv/dist/vocabularies/jtd/type';
 import addFormats from 'ajv-formats';
 import { formats } from './formats';
-import { OpenAPIV3, Options, SerDes } from '../types';
+import { AjvInstance, OpenAPIV3, Options, SerDes } from '../types';
 import * as traverse from 'json-schema-traverse';
+import { factoryAjv } from './factory';
 
 interface SerDesSchema extends Partial<SerDes> {
   kind?: 'req' | 'res';
 }
 
 export function createRequestAjv(
-  openApiSpec: OpenAPIV3.Document,
+  openApiSpec: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
   options: Options = {},
-): AjvDraft4 {
+): AjvInstance {
   return createAjv(openApiSpec, options);
 }
 
 export function createResponseAjv(
-  openApiSpec: OpenAPIV3.Document,
+  openApiSpec: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
   options: Options = {},
-): AjvDraft4 {
+): AjvInstance {
   return createAjv(openApiSpec, options, false);
 }
 
 function createAjv(
-  openApiSpec: OpenAPIV3.Document,
+  openApiSpec: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
   options: Options = {},
   request = true,
-): AjvDraft4 {
+): AjvInstance {
   const { ajvFormats, ...ajvOptions } = options;
-  const ajv = new AjvDraft4({
+
+  const ajv = factoryAjv(openApiSpec.openapi, {
     ...ajvOptions,
-    formats: formats,
-  });
+    formats
+  })
 
   // Clean openApiSpec
   traverse(openApiSpec, { allKeys: true }, <traverse.Callback>(schema => {
