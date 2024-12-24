@@ -29,16 +29,12 @@
 [NestJS](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/9-nestjs)
 [Koa](https://github.com/cdimascio/express-openapi-validator/tree/lerna-fastify/packages/koa-openapi-validator) and [Fastify](https://github.com/cdimascio/express-openapi-validator/tree/lerna-fastify/packages/fastify-openapi-validator) now available! 🚀
 
-[OAS 3.1 (experimental)](https://github.com/cdimascio/express-openapi-validator/pull/882)
+[OAS 3.1 (beta)](https://github.com/cdimascio/express-openapi-validator/pull/882) is available in v5.4.0!
 
 ## Install
 
 ```shell
 npm install express-openapi-validator
-
-# experimental OAS 3.1 in alpha (contributions welcome - see branch `oas-3.1` and pr-882 
-# please provide feedback on (issue-573)
-npm install express-openapi-validator@6.0.0-alpha.5
 ```
 
 ## Usage
