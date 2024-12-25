@@ -1,0 +1,20 @@
+{
+  "name": "example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "deps": "cd ../../ && npm i && npm run compile",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express-openapi-validator": "file:../../dist/index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
