@@ -7,7 +7,7 @@ const cache = {};
 export function defaultResolver(
   handlersPath: string,
   route: RouteMetadata,
-  apiDoc: OpenAPIV3.Document,
+  apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
 ): RequestHandler {
   const tmpModules = {};
   const { basePath, expressRoute, openApiRoute, method } = route;
@@ -51,7 +51,7 @@ export function defaultResolver(
 export function modulePathResolver(
   handlersPath: string,
   route: RouteMetadata,
-  apiDoc: OpenAPIV3.Document,
+  apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
 ): RequestHandler {
   const pathKey = route.openApiRoute.substring(route.basePath.length);
   const schema = apiDoc.paths[pathKey][route.method.toLowerCase()];

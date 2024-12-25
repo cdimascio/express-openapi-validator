@@ -50,7 +50,7 @@ async function createApp(): Promise<express.Express & { server?: Server }> {
   return app;
 }
 
-function createApiSpec(): OpenAPIV3.Document {
+function createApiSpec(): OpenAPIV3.DocumentV3 {
   return {
     openapi: '3.0.3',
     info: {
