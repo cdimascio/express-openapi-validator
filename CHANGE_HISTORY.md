@@ -1,3 +1,23 @@
+##  (2024-12-26)
+
+* update alpha 3.1 version ([cba4aac](https://github.com/cdimascio/express-openapi-validator/commit/cba4aac))
+* v5.3.9 ([75531ae](https://github.com/cdimascio/express-openapi-validator/commit/75531ae))
+* v5.4.0 ([34359d0](https://github.com/cdimascio/express-openapi-validator/commit/34359d0))
+* feat(openapi): support OpenAPI version 3.1 (extends PR #882) (#1027) ([fc876a3](https://github.com/cdimascio/express-openapi-validator/commit/fc876a3)), closes [#882](https://github.com/cdimascio/express-openapi-validator/issues/882) [#1027](https://github.com/cdimascio/express-openapi-validator/issues/1027) [#1009](https://github.com/cdimascio/express-openapi-validator/issues/1009) [#1021](https://github.com/cdimascio/express-openapi-validator/issues/1021) [#1017](https://github.com/cdimascio/express-openapi-validator/issues/1017) [#1016](https://github.com/cdimascio/express-openapi-validator/issues/1016)
+* fix: examples/4-eov-operations-babel/package.json & examples/4-eov-operations-babel/package-lock.jso ([8da3707](https://github.com/cdimascio/express-openapi-validator/commit/8da3707)), closes [#1021](https://github.com/cdimascio/express-openapi-validator/issues/1021)
+* fix: examples/4-eov-operations-babel/package.json & examples/4-eov-operations-babel/package-lock.jso ([f6e6295](https://github.com/cdimascio/express-openapi-validator/commit/f6e6295)), closes [#972](https://github.com/cdimascio/express-openapi-validator/issues/972)
+* fix: fix authHeader without `cookie-parser` middleware (#1003) ([17e91d5](https://github.com/cdimascio/express-openapi-validator/commit/17e91d5)), closes [#1003](https://github.com/cdimascio/express-openapi-validator/issues/1003) [#949](https://github.com/cdimascio/express-openapi-validator/issues/949)
+* fix: package.json & package-lock.json to reduce vulnerabilities (#1017) ([e88a4ef](https://github.com/cdimascio/express-openapi-validator/commit/e88a4ef)), closes [#1017](https://github.com/cdimascio/express-openapi-validator/issues/1017)
+* fix: upgrade @apidevtools/json-schema-ref-parser from 11.7.0 to 11.7.2 (#1006) ([a67802b](https://github.com/cdimascio/express-openapi-validator/commit/a67802b)), closes [#1006](https://github.com/cdimascio/express-openapi-validator/issues/1006)
+* fix: upgrade express-openapi-validator from 5.3.6 to 5.3.7 (#1001) ([7a8fcc0](https://github.com/cdimascio/express-openapi-validator/commit/7a8fcc0)), closes [#1001](https://github.com/cdimascio/express-openapi-validator/issues/1001)
+* fix: upgrade express-openapi-validator from 5.3.6 to 5.3.7 (#1008) ([831b648](https://github.com/cdimascio/express-openapi-validator/commit/831b648)), closes [#1008](https://github.com/cdimascio/express-openapi-validator/issues/1008)
+* fix: upgrade express-openapi-validator from 5.3.7 to 5.3.8 (#1011) ([65c0e56](https://github.com/cdimascio/express-openapi-validator/commit/65c0e56)), closes [#1011](https://github.com/cdimascio/express-openapi-validator/issues/1011)
+* fix: upgrade path-to-regexp from 8.1.0 to 8.2.0 (#1000) ([ed6a9b7](https://github.com/cdimascio/express-openapi-validator/commit/ed6a9b7)), closes [#1000](https://github.com/cdimascio/express-openapi-validator/issues/1000)
+* chore(deps): bump cookie and express in /examples/3-eov-operations (#1002) ([f2aba32](https://github.com/cdimascio/express-openapi-validator/commit/f2aba32)), closes [#1002](https://github.com/cdimascio/express-openapi-validator/issues/1002)
+* chore(deps): bump path-to-regexp and express in /examples/1-standard (#1016) ([4a3efff](https://github.com/cdimascio/express-openapi-validator/commit/4a3efff)), closes [#1016](https://github.com/cdimascio/express-openapi-validator/issues/1016)
+
+
+
 ##  (2024-10-30)
 
 * fix: fix authHeader without `cookie-parser` middleware (#1003) ([17e91d5](https://github.com/cdimascio/express-openapi-validator/commit/17e91d5)), closes [#1003](https://github.com/cdimascio/express-openapi-validator/issues/1003) [#949](https://github.com/cdimascio/express-openapi-validator/issues/949)
