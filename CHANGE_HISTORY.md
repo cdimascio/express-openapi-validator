@@ -1,5 +1,13 @@
 ##  (2024-12-27)
 
+* re-enable keywords now properly supported (#1031) ([83dac8a](https://github.com/cdimascio/express-openapi-validator/commit/83dac8a)), closes [#1031](https://github.com/cdimascio/express-openapi-validator/issues/1031)
+* update deps ([6eb86a6](https://github.com/cdimascio/express-openapi-validator/commit/6eb86a6))
+* v5.4.2 ([c811993](https://github.com/cdimascio/express-openapi-validator/commit/c811993))
+
+
+
+##  (2024-12-27)
+
 * fixes method res with path params (#1032) ([aa60f9c](https://github.com/cdimascio/express-openapi-validator/commit/aa60f9c)), closes [#1032](https://github.com/cdimascio/express-openapi-validator/issues/1032)
 * Update README.md ([d43ec2e](https://github.com/cdimascio/express-openapi-validator/commit/d43ec2e))
 
