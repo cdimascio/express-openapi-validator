@@ -1,3 +1,10 @@
+##  (2024-12-27)
+
+* fixes method res with path params (#1032) ([aa60f9c](https://github.com/cdimascio/express-openapi-validator/commit/aa60f9c)), closes [#1032](https://github.com/cdimascio/express-openapi-validator/issues/1032)
+* Update README.md ([d43ec2e](https://github.com/cdimascio/express-openapi-validator/commit/d43ec2e))
+
+
+
 ##  (2024-12-26)
 
 * update alpha 3.1 version ([cba4aac](https://github.com/cdimascio/express-openapi-validator/commit/cba4aac))
