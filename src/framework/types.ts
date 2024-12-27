@@ -194,7 +194,7 @@ export interface NormalizedOpenApiValidatorOpts extends OpenApiValidatorOpts {
 
 export namespace OpenAPIV3 {
   export interface DocumentV3 {
-    openapi: string;
+    openapi: `3.0.${string}`;
     info: InfoObject;
     servers?: ServerObject[];
     paths: PathsObject;
@@ -208,7 +208,8 @@ export namespace OpenAPIV3 {
     pathItems?: { [path: string]: PathItemObject | ReferenceObject }
   }
 
-  export interface DocumentV3_1 extends Omit<DocumentV3, 'paths' | 'info' | 'components'> {
+  export interface DocumentV3_1 extends Omit<DocumentV3, 'paths' | 'info' | 'components'| "openapi" > {
+    openapi: `3.1.${string}`;
     paths?: DocumentV3['paths'];
     info: InfoObjectV3_1;
     components: ComponentsV3_1;
