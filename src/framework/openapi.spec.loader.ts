@@ -33,6 +33,8 @@ interface DiscoveredRoutes {
 export const sortRoutes = (r1, r2) => {
   const e1 = r1.expressRoute.replace(/\/:/g, '/~');
   const e2 = r2.expressRoute.replace(/\/:/g, '/~');
+  if (e1.startsWith(e2)) return -1;
+  else if (e2.startsWith(e1)) return 1;
   return e1 > e2 ? 1 : -1;
 };
 
