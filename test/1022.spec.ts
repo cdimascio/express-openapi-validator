@@ -3,7 +3,7 @@ import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
 import { OpenAPIV3 } from '../src/framework/types';
-import {expect} from "chai";
+import { expect } from 'chai';
 
 describe(packageJson.name, () => {
   let app = null;
@@ -63,12 +63,12 @@ describe(packageJson.name, () => {
                     required: ['id'],
                     properties: {
                       id: {
-                        type: 'integer'
-                      }
-                    }
-                  }
-                }
-              }
+                        type: 'integer',
+                      },
+                    },
+                  },
+                },
+              },
             },
             responses: {
               '200': {
@@ -88,6 +88,26 @@ describe(packageJson.name, () => {
             },
           },
         },
+
+        '/some/{wildcard}*': {
+          parameters: [
+            {
+              name: 'wildcard',
+              in: 'path',
+              required: true,
+              schema: {
+                type: 'string',
+              },
+            },
+          ],
+          get: {
+            responses: {
+              '200': {
+                description: 'OK',
+              },
+            },
+          },
+        },
       },
     };
 
@@ -102,8 +122,17 @@ describe(packageJson.name, () => {
         app.use(
           express
             .Router()
-            .get(`/api/test/:id`, (req, res) => res.status(200).json({ id: 'id-test', label: 'label'}))
-            .post(`/api/test/:id:clone`, (req, res) => res.status(200).json({...req.body, id: 'id-test'})),
+            .get(`/api/test/:id`, (req, res) =>
+              res.status(200).json({ id: 'id-test', label: 'label' }),
+            )
+            .post(`/api/test/:id:clone`, (req, res) =>
+              res.status(200).json({ ...req.body, id: 'id-test' }),
+            )
+            .get('/api/some/:wildcard(*)', (req, res) => {
+              const wildcard = req.params.wildcard;
+              console.log(`Wildcard: ${wildcard}`);
+              res.status(200).send(`Matched wildcard: ${wildcard}`);
+            }),
         ),
     );
   });
@@ -112,19 +141,23 @@ describe(packageJson.name, () => {
     app.server.close();
   });
 
-  it('get /test/{id} should return 200', async () =>
+  it('GET /test/{id} should return 200', async () =>
     request(app).get(`/api/test/abc123`).expect(200));
 
   it('POST /test/{id}:clone should return 200', async () =>
-    request(app).post(`/api/test/abc123:clone`)
-        .send({ id: 10 })
-        .expect(200));
+    request(app).post(`/api/test/abc123:clone`).send({ id: 10 }).expect(200));
 
   it('POST /test/{id}:clone should return 400', async () =>
-    request(app).post(`/api/test/abc123:clone`)
-        .send({ id: 'abc123' })
-        .expect(400)
-        .then(r => {
-          expect(r.body.message).to.include('id must be integer');
-        }));
+    request(app)
+      .post(`/api/test/abc123:clone`)
+      .send({ id: 'abc123' })
+      .expect(400)
+      .then((r) => {
+        expect(r.body.message).to.include('id must be integer');
+      }));
+
+  it('GET /some/test with wildcard should return 200', async () =>
+    request(app)
+      .get(`/api/some/test/stuff`)
+      .expect(200));
 });
