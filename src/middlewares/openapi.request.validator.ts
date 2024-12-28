@@ -139,6 +139,7 @@ export class RequestValidator {
         }
         req.params = openapi.pathParams ?? req.params;
       }
+
       // HACK for express 5, temporarily make req.query mutable
       const reqQueryDescriptor = Object.getOwnPropertyDescriptor(req, 'query');
       Object.defineProperty(req, 'query', {
@@ -166,7 +167,6 @@ export class RequestValidator {
       // HACK for express 5, Restore the original descriptor
       if (reqQueryDescriptor) {
           Object.defineProperty(req, 'query', reqQueryDescriptor);
-          console.log('Query property restored to original descriptor.');
       }
 
       const cookies = req.cookies
