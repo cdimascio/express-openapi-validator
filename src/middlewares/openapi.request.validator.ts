@@ -139,13 +139,12 @@ export class RequestValidator {
         }
         req.params = openapi.pathParams ?? req.params;
       }
-
       // HACK for express 5, temporarily make req.query mutable
       const reqQueryDescriptor = Object.getOwnPropertyDescriptor(req, 'query');
       Object.defineProperty(req, 'query', {
           writable: true,
           value: req.query,
-      })
+      });
       const schemaProperties = validator.allSchemaProperties;
       const mutator = new RequestParameterMutator(
         this.ajv,
