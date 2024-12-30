@@ -33,7 +33,7 @@ describe('a multipart request', () => {
                 metadata: req.body.metadata,
               });
             })
-            .post(`/sample_*`, (req, res) => res.json(req.body)),
+            .post(`/sample_*suffix`, (req, res) => res.json(req.body)),
         ),
     );
   });
