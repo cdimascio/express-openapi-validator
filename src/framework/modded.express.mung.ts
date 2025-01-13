@@ -23,7 +23,7 @@ mung.onError = (err, req, res, next) => {
 };
 
 mung.json = function json(fn, options) {
-  return function(req, res, next) {
+  return function (req, res, next) {
     let original = res.json;
     options = options || {};
     let mungError = options.mungError;
@@ -63,7 +63,7 @@ mung.json = function json(fn, options) {
 };
 
 mung.jsonAsync = function json(fn, options) {
-  return function(req, res, next) {
+  return function (req, res, next) {
     let original = res.json;
     options = options || {};
     let mungError = options.mungError;
@@ -75,7 +75,7 @@ mung.jsonAsync = function json(fn, options) {
       if (!mungError && res.statusCode >= 400) return original.call(this, json);
       try {
         fn(json, req, res)
-          .then(json => {
+          .then((json) => {
             if (res.headersSent) return;
 
             // If null, then 204 No Content
@@ -89,7 +89,7 @@ mung.jsonAsync = function json(fn, options) {
 
             return original.call(this, json);
           })
-          .catch(e => mung.onError(e, req, res, next));
+          .catch((e) => mung.onError(e, req, res, next));
       } catch (e) {
         mung.onError(e, req, res, next);
       }
@@ -103,7 +103,7 @@ mung.jsonAsync = function json(fn, options) {
 };
 
 mung.headers = function headers(fn) {
-  return function(req, res, next) {
+  return function (req, res, next) {
     let original = res.end;
     function headers_hook() {
       res.end = original;
@@ -129,9 +129,9 @@ mung.headers = function headers(fn) {
 };
 
 mung.headersAsync = function headersAsync(fn) {
-  return function(req, res, next) {
+  return function (req, res, next) {
     let original = res.end;
-    let onError = e => {
+    let onError = (e) => {
       res.end = original;
       return mung.onError(e, req, res, next);
     };
@@ -146,7 +146,7 @@ mung.headersAsync = function headersAsync(fn) {
             if (res.headersSent) return;
             original.apply(this, args);
           })
-          .catch(e => onError(e));
+          .catch((e) => onError(e));
       } catch (e) {
         onError(e);
       }
@@ -158,7 +158,7 @@ mung.headersAsync = function headersAsync(fn) {
 };
 
 mung.write = function write(fn, options: any = {}) {
-  return function(req, res, next) {
+  return function (req, res, next) {
     const original = res.write;
     const mungError = options.mungError;
 

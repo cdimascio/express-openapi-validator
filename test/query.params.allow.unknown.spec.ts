@@ -15,7 +15,7 @@ describe(packageJson.name, () => {
     app = await createApp(
       { apiSpec, validateRequests: { allowUnknownQueryParameters: true } },
       3005,
-      app =>
+      (app) =>
         app.use(
           `${app.basePath}`,
           express
@@ -62,7 +62,7 @@ describe(packageJson.name, () => {
         unknown_prop: 'test',
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         expect(r.body.errors).to.be.an('array');
       }));
 });

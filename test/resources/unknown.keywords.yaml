@@ -3,7 +3,7 @@ info:
   title: Keywords
   version: 1.0.0
 servers:
-- url: /v1
+  - url: /v1
 paths:
   /persons:
     post:
@@ -21,7 +21,7 @@ components:
   schemas:
     Person:
       required:
-      - id
+        - id
       type: object
       x-custom-keyword: Ignored by validator.
       properties:

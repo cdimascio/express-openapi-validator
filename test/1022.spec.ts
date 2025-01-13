@@ -157,7 +157,5 @@ describe(packageJson.name, () => {
       }));
 
   it('GET /some/test with wildcard should return 200', async () =>
-    request(app)
-      .get(`/api/some/test/stuff`)
-      .expect(200));
+    request(app).get(`/api/some/test/stuff`).expect(200));
 });

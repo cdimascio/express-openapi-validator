@@ -7,17 +7,16 @@ servers:
 paths:
   /entity:
     get:
-        summary: test
-        description: GETS my entity
-        responses:
-          '200':
-            description: OK
-            content:
-              application/json: 
-                schema:
-                  title: Entity
-                  type: object
-                  properties:
-                    property:
-                      type: ['string', 'null']
-              
+      summary: test
+      description: GETS my entity
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                title: Entity
+                type: object
+                properties:
+                  property:
+                    type: ['string', 'null']

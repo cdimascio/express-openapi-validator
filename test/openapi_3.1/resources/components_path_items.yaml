@@ -1,21 +1,21 @@
 openapi: 3.1.0
 info:
   title: Example specification
-  version: "1.0"
+  version: '1.0'
 servers:
   - url: /v1
 components:
-  pathItems: 
+  pathItems:
     entity:
-      get: 
+      get:
         description: 'test'
-        responses: 
+        responses:
           200:
             description: GETS my entity
             content:
               application/json:
                 schema:
-                    type: object
+                  type: object
 paths:
   /entity:
     $ref: '#/components/pathItems/entity'

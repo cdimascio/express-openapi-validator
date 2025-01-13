@@ -24,12 +24,17 @@ module.exports.Pets = class {
     this.id = 4;
   }
   findAll({ type, limit }) {
-    return data.filter(d => !type || d.type === type).slice(0, limit);
+    return data.filter((d) => !type || d.type === type).slice(0, limit);
   }
 
   findById(id) {
-    console.log(id, data, data.filter(p => p.id === id), typeof id);
-    return data.filter(p => p.id === id)[0];
+    console.log(
+      id,
+      data,
+      data.filter((p) => p.id === id),
+      typeof id,
+    );
+    return data.filter((p) => p.id === id)[0];
   }
 
   create(pet) {
@@ -39,6 +44,6 @@ module.exports.Pets = class {
   }
 
   delete(id) {
-    return data.filter(e => e.id !== id);
+    return data.filter((e) => e.id !== id);
   }
 };

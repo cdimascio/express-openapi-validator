@@ -1,11 +1,11 @@
 openapi: '3.0.0'
 info:
-  description: "Some escaped characters in $ref"
-  version: "1.0.0"
-  title: "Source Code"
+  description: 'Some escaped characters in $ref'
+  version: '1.0.0'
+  title: 'Source Code'
   license:
-    name: "GPL-3.0-or-later"
-    url: "https://choosealicense.com/licenses/gpl-3.0/"
+    name: 'GPL-3.0-or-later'
+    url: 'https://choosealicense.com/licenses/gpl-3.0/'
 
 servers:
   - url: /v1/

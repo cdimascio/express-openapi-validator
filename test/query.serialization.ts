@@ -13,8 +13,12 @@ describe('styles', () => {
         `/`,
         express
           .Router()
-          .get('/api/q_form_explode', (req, res) => res.json({ query: req.query }))
-          .get('/api/q_form_nexplode', (req, res) => res.json({ query: req.query })),
+          .get('/api/q_form_explode', (req, res) =>
+            res.json({ query: req.query }),
+          )
+          .get('/api/q_form_nexplode', (req, res) =>
+            res.json({ query: req.query }),
+          ),
       ),
     );
   });

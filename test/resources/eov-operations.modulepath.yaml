@@ -14,7 +14,7 @@ paths:
     get:
       description: |
         ping then pong!
-      operationId: ping.ping 
+      operationId: ping.ping
       responses:
         '200':
           description: OK
@@ -191,7 +191,7 @@ paths:
       summary: Get info about a User
       operationId: user.info
       security: []
-      parameters: 
+      parameters:
         - $ref: '#/components/parameters/userID'
       responses:
         '200':
@@ -210,7 +210,7 @@ components:
       name: userID
       in: path
       required: true
-      schema: 
+      schema:
         $ref: '#/components/schemas/UserID'
         # type: number
 

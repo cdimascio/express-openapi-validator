@@ -10,19 +10,18 @@ const apiSpecPath = path.join('test', 'resources', 'serdes.yaml');
 class ObjectID {
   id: string;
 
-  constructor(id: string = "5fdefd13a6640bb5fb5fa925") {
+  constructor(id: string = '5fdefd13a6640bb5fb5fa925') {
     this.id = id;
   }
 
   toString() {
     return this.id;
   }
-
 }
 
 class BadDate extends Date {
   public toISOString(): string {
-    return "oh no a bad iso date";
+    return 'oh no a bad iso date';
   }
 }
 
@@ -30,9 +29,9 @@ function toSummary(title, value) {
   return {
     [title]: {
       value: value?.toISOString?.() || value?.toString(),
-      typeof: typeof value
-    }
-  }
+      typeof: typeof value,
+    },
+  };
 }
 
 describe('serdes', () => {
@@ -44,16 +43,16 @@ describe('serdes', () => {
       {
         apiSpec: apiSpecPath,
         validateRequests: {
-          coerceTypes: true
+          coerceTypes: true,
         },
         validateResponses: {
-          coerceTypes: true
+          coerceTypes: true,
         },
         serDes: [
           date,
           dateTime,
           {
-            format: "mongo-objectid",
+            format: 'mongo-objectid',
             deserialize: (s) => new ObjectID(s),
             serialize: (o) => o.toString(),
           },
@@ -64,36 +63,54 @@ describe('serdes', () => {
       (app) => {
         app.get([`${app.basePath}/users/:id?`], (req, res) => {
           if (typeof req.params.id !== 'object') {
-            throw new Error("Should be deserialized to ObjectId object");
+            throw new Error('Should be deserialized to ObjectId object');
           }
-          let date = new Date("2020-12-20T07:28:19.213Z");
+          let date = new Date('2020-12-20T07:28:19.213Z');
           res.json({
             id: req.params.id,
             creationDateTime: date,
             creationDate: date,
             shortOrLong: 'a',
             summary: {
-              ...toSummary('req.query.date-time-from-inline', req.query['date-time-from-inline']),
-              ...toSummary('req.query.date-time-from-schema', req.query['date-time-from-schema']),
+              ...toSummary(
+                'req.query.date-time-from-inline',
+                req.query['date-time-from-inline'],
+              ),
+              ...toSummary(
+                'req.query.date-time-from-schema',
+                req.query['date-time-from-schema'],
+              ),
             },
           });
         });
         app.post([`${app.basePath}/users`], (req, res) => {
           if (typeof req.body.id !== 'object') {
-            throw new Error("Should be deserialized to ObjectId object");
+            throw new Error('Should be deserialized to ObjectId object');
           }
-          if (typeof req.body.creationDate !== 'object' || !(req.body.creationDate instanceof Date)) {
-            throw new Error("Should be deserialized to Date object");
+          if (
+            typeof req.body.creationDate !== 'object' ||
+            !(req.body.creationDate instanceof Date)
+          ) {
+            throw new Error('Should be deserialized to Date object');
           }
-          if (typeof req.body.creationDateTime !== 'object' || !(req.body.creationDateTime instanceof Date)) {
-            throw new Error("Should be deserialized to Date object");
+          if (
+            typeof req.body.creationDateTime !== 'object' ||
+            !(req.body.creationDateTime instanceof Date)
+          ) {
+            throw new Error('Should be deserialized to Date object');
           }
-          if (typeof req.body.creationDateTimeInline !== 'object' || !(req.body.creationDateTimeInline instanceof Date)) {
-            throw new Error("Should be deserialized to Date object");
+          if (
+            typeof req.body.creationDateTimeInline !== 'object' ||
+            !(req.body.creationDateTimeInline instanceof Date)
+          ) {
+            throw new Error('Should be deserialized to Date object');
           }
           res.json({
             ...req.body,
-            summary: Object.entries(req.body).reduce((acc, [k, v]) => Object.assign(acc, toSummary(k, v)), {})
+            summary: Object.entries(req.body).reduce(
+              (acc, [k, v]) => Object.assign(acc, toSummary(k, v)),
+              {},
+            ),
           });
         });
         app.use((err, req, res, next) => {
@@ -105,7 +122,7 @@ describe('serdes', () => {
       },
       false,
     );
-    return app
+    return app;
   });
 
   after(() => {
@@ -117,21 +134,33 @@ describe('serdes', () => {
       .get(`${app.basePath}/users/1234`)
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request/params/id must match pattern "^[0-9a-fA-F]{24}$"');
+        expect(r.body.message).to.equal(
+          'request/params/id must match pattern "^[0-9a-fA-F]{24}$"',
+        );
       }));
 
   it('should control GOOD id format and get a response in expected format', async () =>
     request(app)
-      .get(`${app.basePath}/users/5fdefd13a6640bb5fb5fa925?date-time-from-inline=2019-11-20T01%3A11%3A54.930Z&date-time-from-schema=2020-11-20T01%3A11%3A54.930Z`)
+      .get(
+        `${app.basePath}/users/5fdefd13a6640bb5fb5fa925?date-time-from-inline=2019-11-20T01%3A11%3A54.930Z&date-time-from-schema=2020-11-20T01%3A11%3A54.930Z`,
+      )
       .expect(200)
       .then((r) => {
         expect(r.body.id).to.equal('5fdefd13a6640bb5fb5fa925');
         expect(r.body.creationDate).to.equal('2020-12-20');
-        expect(r.body.creationDateTime).to.equal("2020-12-20T07:28:19.213Z");
-        expect(r.body.summary['req.query.date-time-from-schema'].value).to.equal("2020-11-20T01:11:54.930Z");
-        expect(r.body.summary['req.query.date-time-from-schema'].typeof).to.equal("object");
-        expect(r.body.summary['req.query.date-time-from-inline'].value).to.equal("2019-11-20T01:11:54.930Z");
-        expect(r.body.summary['req.query.date-time-from-inline'].typeof).to.equal("object");
+        expect(r.body.creationDateTime).to.equal('2020-12-20T07:28:19.213Z');
+        expect(
+          r.body.summary['req.query.date-time-from-schema'].value,
+        ).to.equal('2020-11-20T01:11:54.930Z');
+        expect(
+          r.body.summary['req.query.date-time-from-schema'].typeof,
+        ).to.equal('object');
+        expect(
+          r.body.summary['req.query.date-time-from-inline'].value,
+        ).to.equal('2019-11-20T01:11:54.930Z');
+        expect(
+          r.body.summary['req.query.date-time-from-inline'].typeof,
+        ).to.equal('object');
       }));
 
   it('should POST also works with deserialize on request then serialize en response', async () =>
@@ -149,13 +178,21 @@ describe('serdes', () => {
       .then((r) => {
         expect(r.body.id).to.equal('5fdefd13a6640bb5fb5fa925');
         expect(r.body.creationDate).to.equal('2020-12-20');
-        expect(r.body.creationDateTime).to.equal("2020-12-20T07:28:19.213Z");
-        expect(r.body.summary['creationDate'].value).to.equal('2020-12-20T00:00:00.000Z');
+        expect(r.body.creationDateTime).to.equal('2020-12-20T07:28:19.213Z');
+        expect(r.body.summary['creationDate'].value).to.equal(
+          '2020-12-20T00:00:00.000Z',
+        );
         expect(r.body.summary['creationDate'].typeof).to.equal('object');
-        expect(r.body.summary['creationDateTime'].value).to.equal('2020-12-20T07:28:19.213Z');
+        expect(r.body.summary['creationDateTime'].value).to.equal(
+          '2020-12-20T07:28:19.213Z',
+        );
         expect(r.body.summary['creationDateTime'].typeof).to.equal('object');
-        expect(r.body.summary['creationDateTimeInline'].value).to.equal('2019-11-21T07:24:19.213Z');
-        expect(r.body.summary['creationDateTimeInline'].typeof).to.equal('object');
+        expect(r.body.summary['creationDateTimeInline'].value).to.equal(
+          '2019-11-21T07:24:19.213Z',
+        );
+        expect(r.body.summary['creationDateTimeInline'].typeof).to.equal(
+          'object',
+        );
       }));
 
   it('should POST throw error on invalid schema ObjectId', async () =>
@@ -170,7 +207,9 @@ describe('serdes', () => {
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request/body/id must match pattern "^[0-9a-fA-F]{24}$"');
+        expect(r.body.message).to.equal(
+          'request/body/id must match pattern "^[0-9a-fA-F]{24}$"',
+        );
       }));
 
   it('should POST throw error on invalid schema Date', async () =>
@@ -179,12 +218,14 @@ describe('serdes', () => {
       .send({
         id: '5fdefd13a6640bb5fb5fa925',
         creationDateTime: '2020-12-20T07:28:19.213Z',
-        creationDate: '2020-1f-20'
+        creationDate: '2020-1f-20',
       })
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request/body/creationDate must match format "date"');
+        expect(r.body.message).to.equal(
+          'request/body/creationDate must match format "date"',
+        );
       }));
 
   it('should enforce anyOf validations', async () =>
@@ -209,8 +250,6 @@ describe('serdes', () => {
       }));
 });
 
-
-
 describe('serdes serialize response components only', () => {
   let app = null;
 
@@ -220,16 +259,16 @@ describe('serdes serialize response components only', () => {
       {
         apiSpec: apiSpecPath,
         validateRequests: {
-          coerceTypes: true
+          coerceTypes: true,
         },
         validateResponses: {
-          coerceTypes: true
+          coerceTypes: true,
         },
         serDes: [
           date.serializer,
           dateTime.serializer,
           {
-            format: "mongo-objectid",
+            format: 'mongo-objectid',
             serialize: (o) => o.toString(),
           },
         ],
@@ -239,9 +278,9 @@ describe('serdes serialize response components only', () => {
       (app) => {
         app.get([`${app.basePath}/users/:id?`], (req, res) => {
           if (typeof req.params.id !== 'string') {
-            throw new Error("Should be not be deserialized to ObjectId object");
+            throw new Error('Should be not be deserialized to ObjectId object');
           }
-          let date = new Date("2020-12-20T07:28:19.213Z");
+          let date = new Date('2020-12-20T07:28:19.213Z');
           let result = {
             id: new ObjectID(req.params.id),
             creationDateTime: date,
@@ -250,24 +289,22 @@ describe('serdes serialize response components only', () => {
           };
           if (req.query.baddateresponse === 'functionNotExists') {
             result.creationDate = new ObjectID();
-          }
-          else if (req.query.baddateresponse === 'functionBadFormat') {
+          } else if (req.query.baddateresponse === 'functionBadFormat') {
             result.creationDate = new BadDate();
-          }
-          else {
+          } else {
             result.creationDate = date;
           }
           res.json(result);
         });
         app.post([`${app.basePath}/users`], (req, res) => {
           if (typeof req.body.id !== 'string') {
-            throw new Error("Should NOT be deserialized to ObjectId object");
+            throw new Error('Should NOT be deserialized to ObjectId object');
           }
           if (typeof req.body.creationDate !== 'string') {
-            throw new Error("Should NTO be deserialized to Date object");
+            throw new Error('Should NTO be deserialized to Date object');
           }
           if (typeof req.body.creationDateTime !== 'string') {
-            throw new Error("Should NOT be deserialized to Date object");
+            throw new Error('Should NOT be deserialized to Date object');
           }
           req.body.id = new ObjectID(req.body.id);
           req.body.creationDateTime = new Date(req.body.creationDateTime);
@@ -283,7 +320,7 @@ describe('serdes serialize response components only', () => {
       },
       false,
     );
-    return app
+    return app;
   });
 
   after(() => {
@@ -295,7 +332,9 @@ describe('serdes serialize response components only', () => {
       .get(`${app.basePath}/users/1234`)
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request/params/id must match pattern "^[0-9a-fA-F]{24}$"');
+        expect(r.body.message).to.equal(
+          'request/params/id must match pattern "^[0-9a-fA-F]{24}$"',
+        );
       }));
 
   it('should control GOOD id format and get a response in expected format', async () =>
@@ -305,7 +344,7 @@ describe('serdes serialize response components only', () => {
       .then((r) => {
         expect(r.body.id).to.equal('5fdefd13a6640bb5fb5fa925');
         expect(r.body.creationDate).to.equal('2020-12-20');
-        expect(r.body.creationDateTime).to.equal("2020-12-20T07:28:19.213Z");
+        expect(r.body.creationDateTime).to.equal('2020-12-20T07:28:19.213Z');
       }));
 
   it('should POST also works with deserialize on request then serialize en response', async () =>
@@ -314,14 +353,14 @@ describe('serdes serialize response components only', () => {
       .send({
         id: '5fdefd13a6640bb5fb5fa925',
         creationDateTime: '2020-12-20T07:28:19.213Z',
-        creationDate: '2020-12-20'
+        creationDate: '2020-12-20',
       })
       .set('Content-Type', 'application/json')
       .expect(200)
       .then((r) => {
         expect(r.body.id).to.equal('5fdefd13a6640bb5fb5fa925');
         expect(r.body.creationDate).to.equal('2020-12-20');
-        expect(r.body.creationDateTime).to.equal("2020-12-20T07:28:19.213Z");
+        expect(r.body.creationDateTime).to.equal('2020-12-20T07:28:19.213Z');
       }));
 
   it('should POST throw error on invalid schema ObjectId', async () =>
@@ -330,12 +369,14 @@ describe('serdes serialize response components only', () => {
       .send({
         id: '5fdefd13a6640bb5fb5fa',
         creationDateTime: '2020-12-20T07:28:19.213Z',
-        creationDate: '2020-12-20'
+        creationDate: '2020-12-20',
       })
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request/body/id must match pattern "^[0-9a-fA-F]{24}$"');
+        expect(r.body.message).to.equal(
+          'request/body/id must match pattern "^[0-9a-fA-F]{24}$"',
+        );
       }));
 
   it('should POST throw error on invalid schema Date', async () =>
@@ -344,12 +385,14 @@ describe('serdes serialize response components only', () => {
       .send({
         id: '5fdefd13a6640bb5fb5fa925',
         creationDateTime: '2020-12-20T07:28:19.213Z',
-        creationDate: '2020-1f-20'
+        creationDate: '2020-1f-20',
       })
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request/body/creationDate must match format "date"');
+        expect(r.body.message).to.equal(
+          'request/body/creationDate must match format "date"',
+        );
       }));
 
   it('should throw error 500 on invalid object type instead of Date expected', async () =>
@@ -397,7 +440,6 @@ describe('serdes serialize response components only', () => {
       }));
 
    */
-
 });
 
 describe('serdes with array type string-list', () => {
@@ -409,22 +451,22 @@ describe('serdes with array type string-list', () => {
       {
         apiSpec: apiSpecPath,
         validateRequests: {
-          coerceTypes: true
+          coerceTypes: true,
         },
         validateResponses: {
-          coerceTypes: true
+          coerceTypes: true,
         },
         serDes: [
           date,
           dateTime,
           {
-            format: "mongo-objectid",
+            format: 'mongo-objectid',
             deserialize: (s) => new ObjectID(s),
             serialize: (o) => o.toString(),
           },
           {
             format: 'string-list',
-            deserialize: (s): string[] => s.split(',').map(s => s.trim()),
+            deserialize: (s): string[] => s.split(',').map((s) => s.trim()),
             serialize: (o): string => (o as string[]).join(','),
           },
         ],
@@ -433,28 +475,34 @@ describe('serdes with array type string-list', () => {
       (app) => {
         app.get([`${app.basePath}/users/:id?`], (req, res) => {
           if (typeof req.params.id !== 'object') {
-            throw new Error("Should be deserialized to ObjectId object");
+            throw new Error('Should be deserialized to ObjectId object');
           }
-          let date = new Date("2020-12-20T07:28:19.213Z");
+          let date = new Date('2020-12-20T07:28:19.213Z');
           res.json({
             id: req.params.id,
             tags: ['aa', 'bb', 'cc'],
             creationDateTime: date,
-            creationDate: date
+            creationDate: date,
           });
         });
         app.post([`${app.basePath}/users`], (req, res) => {
           if (typeof req.body.id !== 'object') {
-            throw new Error("Should be deserialized to ObjectId object");
+            throw new Error('Should be deserialized to ObjectId object');
           }
           if (!Array.isArray(req.body.tags)) {
-            throw new Error("Should be deserialized to an Array object");
+            throw new Error('Should be deserialized to an Array object');
           }
-          if (typeof req.body.creationDate !== 'object' || !(req.body.creationDate instanceof Date)) {
-            throw new Error("Should be deserialized to Date object");
+          if (
+            typeof req.body.creationDate !== 'object' ||
+            !(req.body.creationDate instanceof Date)
+          ) {
+            throw new Error('Should be deserialized to Date object');
           }
-          if (typeof req.body.creationDateTime !== 'object' || !(req.body.creationDateTime instanceof Date)) {
-            throw new Error("Should be deserialized to Date object");
+          if (
+            typeof req.body.creationDateTime !== 'object' ||
+            !(req.body.creationDateTime instanceof Date)
+          ) {
+            throw new Error('Should be deserialized to Date object');
           }
           res.json(req.body);
         });
@@ -467,7 +515,7 @@ describe('serdes with array type string-list', () => {
       },
       false,
     );
-    return app
+    return app;
   });
 
   after(() => {
@@ -479,7 +527,9 @@ describe('serdes with array type string-list', () => {
       .get(`${app.basePath}/users/1234`)
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request/params/id must match pattern "^[0-9a-fA-F]{24}$"');
+        expect(r.body.message).to.equal(
+          'request/params/id must match pattern "^[0-9a-fA-F]{24}$"',
+        );
       }));
 
   it('should control GOOD id format and get a response in expected format', async () => {
@@ -489,11 +539,10 @@ describe('serdes with array type string-list', () => {
       .then((r) => {
         expect(r.body.id).to.equal('5fdefd13a6640bb5fb5fa925');
         expect(r.body.creationDate).to.equal('2020-12-20');
-        expect(r.body.creationDateTime).to.equal("2020-12-20T07:28:19.213Z");
+        expect(r.body.creationDateTime).to.equal('2020-12-20T07:28:19.213Z');
         expect(r.body.tags).to.equal('aa,bb,cc');
-      })
+      });
   });
-
 
   it('should POST also works with deserialize on request then serialize en response', async () =>
     request(app)
@@ -510,7 +559,7 @@ describe('serdes with array type string-list', () => {
       .then((r) => {
         expect(r.body.id).to.equal('5fdefd13a6640bb5fb5fa925');
         expect(r.body.creationDate).to.equal('2020-12-20');
-        expect(r.body.creationDateTime).to.equal("2020-12-20T07:28:19.213Z");
+        expect(r.body.creationDateTime).to.equal('2020-12-20T07:28:19.213Z');
         expect(r.body.tags).to.equal('aa,bb,cc');
       }));
 
@@ -521,12 +570,14 @@ describe('serdes with array type string-list', () => {
         id: '5fdefd13a6640bb5fb5fa',
         tags: 'aa,bb,cc',
         creationDateTime: '2020-12-20T07:28:19.213Z',
-        creationDate: '2020-12-20'
+        creationDate: '2020-12-20',
       })
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request/body/id must match pattern "^[0-9a-fA-F]{24}$"');
+        expect(r.body.message).to.equal(
+          'request/body/id must match pattern "^[0-9a-fA-F]{24}$"',
+        );
       }));
 
   it('should POST throw error on invalid schema Date', async () =>
@@ -536,12 +587,14 @@ describe('serdes with array type string-list', () => {
         id: '5fdefd13a6640bb5fb5fa925',
         tags: 'aa,bb,cc',
         creationDateTime: '2020-12-20T07:28:19.213Z',
-        creationDate: '2020-1f-20'
+        creationDate: '2020-1f-20',
       })
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request/body/creationDate must match format "date"');
+        expect(r.body.message).to.equal(
+          'request/body/creationDate must match format "date"',
+        );
       }));
 
   it('should POST throw error for deserialize on request of non-string format', async () =>
@@ -551,7 +604,7 @@ describe('serdes with array type string-list', () => {
         id: '5fdefd13a6640bb5fb5fa925',
         tags: ['aa', 'bb', 'cc'],
         creationDateTime: '2020-12-20T07:28:19.213Z',
-        creationDate: '2020-12-20'
+        creationDate: '2020-12-20',
       })
       .set('Content-Type', 'application/json')
       .expect(400)
@@ -580,5 +633,3 @@ describe('serdes with array type string-list', () => {
         );
       }));
 });
-
-

@@ -30,9 +30,12 @@ export class AjvOptions {
   }
 
   get request(): RequestValidatorOptions {
-    const { allErrors, allowUnknownQueryParameters, coerceTypes, removeAdditional } = <
-      ValidateRequestOpts
-    >this.options.validateRequests;
+    const {
+      allErrors,
+      allowUnknownQueryParameters,
+      coerceTypes,
+      removeAdditional,
+    } = <ValidateRequestOpts>this.options.validateRequests;
     return {
       ...this.baseOptions(),
       allErrors,
@@ -47,13 +50,8 @@ export class AjvOptions {
   }
 
   private baseOptions(): Options {
-    const {
-      coerceTypes,
-      formats,
-      validateFormats,
-      serDes,
-      ajvFormats,
-    } = this.options;
+    const { coerceTypes, formats, validateFormats, serDes, ajvFormats } =
+      this.options;
     const serDesMap = {};
     for (const serDesObject of serDes) {
       if (!serDesMap[serDesObject.format]) {

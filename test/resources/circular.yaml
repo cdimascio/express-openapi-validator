@@ -14,7 +14,7 @@ paths:
         content:
           application/json:
             schema:
-             $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/User'
       responses:
         '200':
           description: Updated
@@ -30,11 +30,9 @@ components:
           type: number
         name:
           type: string
-        favorite: 
+        favorite:
           $ref: '#/components/schemas/User'
         children:
           type: array
           items:
             $ref: '#/components/schemas/User'
-
-  

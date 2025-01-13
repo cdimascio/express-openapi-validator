@@ -7,8 +7,7 @@ import {
 } from '../../framework/types';
 
 export class BodySchemaParser {
-  constructor() {
-  }
+  constructor() {}
   public parse(
     path: string,
     pathSchema: OpenAPIV3.OperationObject,
@@ -44,7 +43,11 @@ export class BodySchemaParser {
       const equivalentContentTypes = contentType.equivalents();
       for (const type of requestBodyTypes) {
         let openApiContentType = ContentType.fromString(type);
-        if (equivalentContentTypes.find((type2) => openApiContentType.normalize() === type2.normalize())) {
+        if (
+          equivalentContentTypes.find(
+            (type2) => openApiContentType.normalize() === type2.normalize(),
+          )
+        ) {
           content = requestBody.content[type];
           break;
         }
@@ -74,13 +77,15 @@ export class BodySchemaParser {
     if (!content) {
       // check if required is false, if so allow request when no content type is supplied
       const contentNotProvided = contentType.normalize() === 'not_provided';
-      if ((contentType.normalize() === undefined || contentNotProvided) && requestBody.required === false) {
+      if (
+        (contentType.normalize() === undefined || contentNotProvided) &&
+        requestBody.required === false
+      ) {
         return {};
       }
-      const msg =
-        contentNotProvided
-          ? 'media type not specified'
-          : `unsupported media type ${contentType.normalize()}`;
+      const msg = contentNotProvided
+        ? 'media type not specified'
+        : `unsupported media type ${contentType.normalize()}`;
       throw new UnsupportedMediaType({ path: path, message: msg });
     }
     return content.schema ?? {};

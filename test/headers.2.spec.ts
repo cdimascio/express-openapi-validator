@@ -54,9 +54,7 @@ describe(packageJson.name, () => {
       .expect(400)
       .then((r) => {
         const e = r.body;
-        expect(e.message).to.contain(
-          'must NOT have more than 255 characters',
-        );
+        expect(e.message).to.contain('must NOT have more than 255 characters');
       });
   });
 

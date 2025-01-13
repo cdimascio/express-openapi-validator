@@ -1,8 +1,4 @@
-import {
-  ErrorObject,
-  Options,
-  ValidateFunction,
-} from 'ajv-draft-04';
+import { ErrorObject, Options, ValidateFunction } from 'ajv-draft-04';
 import addFormats from 'ajv-formats';
 import { OpenAPIV3 } from './types.js';
 import { factoryAjv } from './ajv/factory';
@@ -28,8 +24,8 @@ export class OpenAPISchemaValidator {
       options.validateSchema = false;
     }
 
-    const ajvInstance = factoryAjv(opts.version, options)
-    const schema = factorySchema(opts.version)
+    const ajvInstance = factoryAjv(opts.version, options);
+    const schema = factorySchema(opts.version);
 
     addFormats(ajvInstance, ['email', 'regex', 'uri', 'uri-reference']);
 

@@ -44,7 +44,7 @@ paths:
   /allow_reserved:
     get:
       parameters:
-       -  name: value
+        - name: value
           in: query
           required: true
           schema:
@@ -57,7 +57,7 @@ paths:
   /allow_reserved/array_explode:
     get:
       parameters:
-       -  name: value
+        - name: value
           in: query
           required: true
           schema:

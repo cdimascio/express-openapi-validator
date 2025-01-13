@@ -10,19 +10,18 @@ const apiSpecPath = path.join('test', 'resources', '699.yaml');
 class ObjectID {
   id: string;
 
-  constructor(id: string = "5fdefd13a6640bb5fb5fa925") {
+  constructor(id: string = '5fdefd13a6640bb5fb5fa925') {
     this.id = id;
   }
 
   toString() {
     return this.id;
   }
-
 }
 
 class BadDate extends Date {
   public toISOString(): string {
-    return "oh no a bad iso date";
+    return 'oh no a bad iso date';
   }
 }
 
@@ -35,16 +34,16 @@ describe('699', () => {
       {
         apiSpec: apiSpecPath,
         validateRequests: {
-          coerceTypes: true
+          coerceTypes: true,
         },
         validateResponses: {
-          coerceTypes: true
+          coerceTypes: true,
         },
         serDes: [
           date,
           dateTime,
           {
-            format: "mongo-objectid",
+            format: 'mongo-objectid',
             deserialize: (s) => new ObjectID(s),
             serialize: (o) => o.toString(),
           },
@@ -55,9 +54,9 @@ describe('699', () => {
       (app) => {
         app.get([`${app.basePath}/users/:id?`], (req, res) => {
           if (typeof req.params.id !== 'object') {
-            throw new Error("Should be deserialized to ObjectId object");
+            throw new Error('Should be deserialized to ObjectId object');
           }
-          let date = new Date("2020-12-20T07:28:19.213Z");
+          let date = new Date('2020-12-20T07:28:19.213Z');
           res.json({
             id: req.params.id,
             creationDateTime: date,
@@ -68,11 +67,18 @@ describe('699', () => {
           });
         });
         app.post([`${app.basePath}/users`], (req, res) => {
-          if (typeof req.body.history[0].modificationDate !== 'object' || !(req.body.history[0].modificationDate instanceof Date)) {
-            throw new Error("Should be deserialized to Date object");
+          if (
+            typeof req.body.history[0].modificationDate !== 'object' ||
+            !(req.body.history[0].modificationDate instanceof Date)
+          ) {
+            throw new Error('Should be deserialized to Date object');
           }
-          if (typeof req.body.historyWithoutRef[0].modificationDate !== 'object' || !(req.body.historyWithoutRef[0].modificationDate instanceof Date)) {
-            throw new Error("Should be deserialized to Date object");
+          if (
+            typeof req.body.historyWithoutRef[0].modificationDate !==
+              'object' ||
+            !(req.body.historyWithoutRef[0].modificationDate instanceof Date)
+          ) {
+            throw new Error('Should be deserialized to Date object');
           }
           res.json(req.body);
         });
@@ -85,7 +91,7 @@ describe('699', () => {
       },
       false,
     );
-    return app
+    return app;
   });
 
   after(() => {
@@ -97,8 +103,10 @@ describe('699', () => {
       .get(`${app.basePath}/users/5fdefd13a6640bb5fb5fa925`)
       .expect(200)
       .then((r) => {
-        expect(r.body.history[0].modificationDate).to.equal("2020-12-20");
-        expect(r.body.historyWithoutRef[0].modificationDate).to.equal("2020-12-20");
+        expect(r.body.history[0].modificationDate).to.equal('2020-12-20');
+        expect(r.body.historyWithoutRef[0].modificationDate).to.equal(
+          '2020-12-20',
+        );
       }));
 
   it('should POST also works with deserialize on request then serialize en response', async () =>
@@ -115,8 +123,10 @@ describe('699', () => {
       .set('Content-Type', 'application/json')
       .expect(200)
       .then((r) => {
-        expect(r.body.history[0].modificationDate).to.equal("2020-12-20");
-        expect(r.body.historyWithoutRef[0].modificationDate).to.equal("2020-12-20");
+        expect(r.body.history[0].modificationDate).to.equal('2020-12-20');
+        expect(r.body.historyWithoutRef[0].modificationDate).to.equal(
+          '2020-12-20',
+        );
       }));
 
   it('should POST throw error on invalid schema Date', async () =>
@@ -132,7 +142,9 @@ describe('699', () => {
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request/body/history/0/modificationDate must match format "date"');
+        expect(r.body.message).to.equal(
+          'request/body/history/0/modificationDate must match format "date"',
+        );
       }));
 
   it('should POST throw error on invalid schema Date', async () =>
@@ -148,12 +160,11 @@ describe('699', () => {
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request/body/historyWithoutRef/0/modificationDate must match format "date"');
+        expect(r.body.message).to.equal(
+          'request/body/historyWithoutRef/0/modificationDate must match format "date"',
+        );
       }));
-
 });
-
-
 
 describe('699 serialize response components only', () => {
   let app = null;
@@ -164,16 +175,16 @@ describe('699 serialize response components only', () => {
       {
         apiSpec: apiSpecPath,
         validateRequests: {
-          coerceTypes: true
+          coerceTypes: true,
         },
         validateResponses: {
-          coerceTypes: true
+          coerceTypes: true,
         },
         serDes: [
           date.serializer,
           dateTime.serializer,
           {
-            format: "mongo-objectid",
+            format: 'mongo-objectid',
             serialize: (o) => o.toString(),
           },
         ],
@@ -183,9 +194,9 @@ describe('699 serialize response components only', () => {
       (app) => {
         app.get([`${app.basePath}/users/:id?`], (req, res) => {
           if (typeof req.params.id !== 'string') {
-            throw new Error("Should be not be deserialized to ObjectId object");
+            throw new Error('Should be not be deserialized to ObjectId object');
           }
-          let date = new Date("2020-12-20T07:28:19.213Z");
+          let date = new Date('2020-12-20T07:28:19.213Z');
           let result = {
             id: new ObjectID(req.params.id),
             creationDateTime: date,
@@ -197,20 +208,20 @@ describe('699 serialize response components only', () => {
           if (req.query.baddateresponse === 'functionNotExists') {
             result.history[0].modificationDate = new ObjectID();
             result.historyWithoutRef[0].modificationDate = date;
-          }
-          else if (req.query.baddateresponse === 'functionNotExistsWithoutRef') {
+          } else if (
+            req.query.baddateresponse === 'functionNotExistsWithoutRef'
+          ) {
             result.history[0].modificationDate = date;
             result.historyWithoutRef[0].modificationDate = new ObjectID();
-          }
-          else if (req.query.baddateresponse === 'functionBadFormat') {
+          } else if (req.query.baddateresponse === 'functionBadFormat') {
             result.history[0].modificationDate = new BadDate();
             result.historyWithoutRef[0].modificationDate = date;
-          }
-          else if (req.query.baddateresponse === 'functionBadFormatWithoutRef') {
+          } else if (
+            req.query.baddateresponse === 'functionBadFormatWithoutRef'
+          ) {
             result.history[0].modificationDate = date;
             result.historyWithoutRef[0].modificationDate = new BadDate();
-          }
-          else {
+          } else {
             result.history[0].modificationDate = date;
             result.historyWithoutRef[0].modificationDate = date;
           }
@@ -218,18 +229,24 @@ describe('699 serialize response components only', () => {
         });
         app.post([`${app.basePath}/users`], (req, res) => {
           if (typeof req.body.id !== 'string') {
-            throw new Error("Should NOT be deserialized to ObjectId object");
+            throw new Error('Should NOT be deserialized to ObjectId object');
           }
           if (typeof req.body.history[0].modificationDate !== 'string') {
-            throw new Error("Should NTO be deserialized to Date object");
+            throw new Error('Should NTO be deserialized to Date object');
           }
-          if (typeof req.body.historyWithoutRef[0].modificationDate !== 'string') {
-            throw new Error("Should NOT be deserialized to Date object");
+          if (
+            typeof req.body.historyWithoutRef[0].modificationDate !== 'string'
+          ) {
+            throw new Error('Should NOT be deserialized to Date object');
           }
           req.body.id = new ObjectID(req.body.id);
           req.body.creationDateTime = new Date(req.body.creationDateTime);
-          req.body.history[0].modificationDate = new Date(req.body.history[0].modificationDate);
-          req.body.historyWithoutRef[0].modificationDate = new Date(req.body.historyWithoutRef[0].modificationDate);
+          req.body.history[0].modificationDate = new Date(
+            req.body.history[0].modificationDate,
+          );
+          req.body.historyWithoutRef[0].modificationDate = new Date(
+            req.body.historyWithoutRef[0].modificationDate,
+          );
           // We let creationDate et al as String and it should also work (either in Date Object ou String 'date' format)
           res.json(req.body);
         });
@@ -242,7 +259,7 @@ describe('699 serialize response components only', () => {
       },
       false,
     );
-    return app
+    return app;
   });
 
   after(() => {
@@ -256,9 +273,11 @@ describe('699 serialize response components only', () => {
       .then((r) => {
         expect(r.body.id).to.equal('5fdefd13a6640bb5fb5fa925');
         expect(r.body.creationDate).to.equal('2020-12-20');
-        expect(r.body.creationDateTime).to.equal("2020-12-20T07:28:19.213Z");
-        expect(r.body.history[0].modificationDate).to.equal("2020-12-20");
-        expect(r.body.historyWithoutRef[0].modificationDate).to.equal("2020-12-20");
+        expect(r.body.creationDateTime).to.equal('2020-12-20T07:28:19.213Z');
+        expect(r.body.history[0].modificationDate).to.equal('2020-12-20');
+        expect(r.body.historyWithoutRef[0].modificationDate).to.equal(
+          '2020-12-20',
+        );
       }));
 
   it('should POST also works with deserialize on request then serialize en response', async () =>
@@ -274,8 +293,10 @@ describe('699 serialize response components only', () => {
       .set('Content-Type', 'application/json')
       .expect(200)
       .then((r) => {
-        expect(r.body.history[0].modificationDate).to.equal("2020-12-20");
-        expect(r.body.historyWithoutRef[0].modificationDate).to.equal("2020-12-20");
+        expect(r.body.history[0].modificationDate).to.equal('2020-12-20');
+        expect(r.body.historyWithoutRef[0].modificationDate).to.equal(
+          '2020-12-20',
+        );
       }));
 
   it('should POST throw error on invalid schema Date', async () =>
@@ -291,7 +312,9 @@ describe('699 serialize response components only', () => {
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request/body/history/0/modificationDate must match format "date"');
+        expect(r.body.message).to.equal(
+          'request/body/history/0/modificationDate must match format "date"',
+        );
       }));
 
   it('should POST throw error on invalid schema Date', async () =>
@@ -307,7 +330,9 @@ describe('699 serialize response components only', () => {
       .set('Content-Type', 'application/json')
       .expect(400)
       .then((r) => {
-        expect(r.body.message).to.equal('request/body/historyWithoutRef/0/modificationDate must match format "date"');
+        expect(r.body.message).to.equal(
+          'request/body/historyWithoutRef/0/modificationDate must match format "date"',
+        );
       }));
 
   it('should throw error 500 on invalid object type instead of Date expected', async () =>
@@ -346,7 +371,4 @@ describe('699 serialize response components only', () => {
       }));
 
    */
-
 });
-
-

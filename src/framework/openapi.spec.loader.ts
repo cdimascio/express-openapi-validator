@@ -77,16 +77,16 @@ export class OpenApiSpecLoader {
                   ...(schema.parameters ?? []),
                   ...(methods.parameters ?? []),
                 ]
-                  .map(param => dereferenceParameter(apiDoc, param))
-                  .filter(param => param.in === 'path')
-                  .map(param => param.name);
+                  .map((param) => dereferenceParameter(apiDoc, param))
+                  .filter((param) => param.in === 'path')
+                  .map((param) => param.name);
 
                 const openApiRoute = `${bp}${path}`;
                 const expressRoute = `${openApiRoute}`
                   .split(':')
                   .map(toExpressParams)
                   .join('\\:');
-  
+
                 routes.push({
                   basePath: bp,
                   expressRoute,
@@ -108,7 +108,7 @@ export class OpenApiSpecLoader {
       apiDoc,
       basePaths,
       routes,
-      serial
+      serial,
     };
   }
 
@@ -118,7 +118,7 @@ export class OpenApiSpecLoader {
     // const pass1 = part.replace(/\{(\/)([^\*]+)(\*)}/g, '$1:$2$3');
 
     //if wildcard path use new path-to-regex expected model
-    if(/[*]/g.test(part)){
+    if (/[*]/g.test(part)) {
       // /v1/{path}* => /v1/*path)
       // /v1/{path}(*) => /v1/*path)
       const pass1 = part.replace(/\/{([^}]+)}\({0,1}(\*)\){0,1}/g, '/$2$1');

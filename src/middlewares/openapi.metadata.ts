@@ -71,7 +71,9 @@ export function applyOpenApiMetadata(
     req: OpenApiRequest,
     useRequestUrl: boolean,
   ): OpenApiRequestMetadata {
-    const path = useRequestUrl ? req.url.split('?')[0] : req.originalUrl.split('?')[0];
+    const path = useRequestUrl
+      ? req.url.split('?')[0]
+      : req.originalUrl.split('?')[0];
     const method = req.method;
     const routeEntries = Object.entries(openApiContext.expressRouteMap);
     for (const [expressRoute, methods] of routeEntries) {

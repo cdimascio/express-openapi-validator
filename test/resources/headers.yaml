@@ -12,7 +12,7 @@ servers:
 paths:
   /headers_1:
     get:
-      operationId: ping 
+      operationId: ping
       parameters:
         - name: x-userid
           in: header

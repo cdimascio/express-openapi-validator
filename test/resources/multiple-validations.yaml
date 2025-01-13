@@ -11,7 +11,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Person"
+              $ref: '#/components/schemas/Person'
       responses:
         200:
           description: Success
@@ -38,7 +38,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Person"
+                $ref: '#/components/schemas/Person'
 
 components:
   schemas:

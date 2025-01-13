@@ -29,19 +29,13 @@ describe('security.disabled', () => {
   });
 
   it('should return 200 if no security', async () =>
-    request(app)
-      .get(`${basePath}/no_security`)
-      .expect(200));
+    request(app).get(`${basePath}/no_security`).expect(200));
 
   it('should skip validation, even if auth header is missing for basic auth', async () => {
-    return request(app)
-      .get(`${basePath}/basic`)
-      .expect(200);
+    return request(app).get(`${basePath}/basic`).expect(200);
   });
 
   it('should skip security validation, even if auth header is missing for bearer auth', async () => {
-    return request(app)
-      .get(`${basePath}/bearer`)
-      .expect(200);
+    return request(app).get(`${basePath}/bearer`).expect(200);
   });
 });

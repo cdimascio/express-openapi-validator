@@ -115,7 +115,7 @@ paths:
                 - bar
                 - baz
           style: form
-#          explode: true
+      #          explode: true
       responses:
         '200':
           description: pet response

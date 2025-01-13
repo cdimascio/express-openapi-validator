@@ -9,7 +9,6 @@ currently being supported with security updates.
 | ------- | ------------------ |
 | 5.3.x   | :white_check_mark: |
 
-
 ## Reporting a Vulnerability
 
 Use this section to tell people how to report a vulnerability.
