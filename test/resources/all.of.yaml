@@ -1,4 +1,4 @@
-openapi: '3.0.0'
+openapi: "3.0.0"
 info:
   version: 1.0.0
   title: Test
@@ -13,10 +13,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Pet'
+              $ref: "#/components/schemas/Pet"
 
       responses:
-        '200':
+        "200":
           description: success
 
 components:
@@ -37,7 +37,7 @@ components:
       # This causes AVJ validation to fail - https://github.com/epoberezkin/ajv/issues/837
       # additionalProperties: false
       allOf:
-        - $ref: '#/components/schemas/NewPet'
+        - $ref: "#/components/schemas/NewPet"
         - required:
             - id
           type: object

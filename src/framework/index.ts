@@ -101,9 +101,7 @@ export class OpenAPIFramework {
     return doc as Promise<OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1>;
   }
 
-  private sortApiDocTags(
-    apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
-  ): void {
+  private sortApiDocTags(apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1): void {
     if (apiDoc && Array.isArray(apiDoc.tags)) {
       apiDoc.tags.sort((a, b): number => {
         return a.name < b.name ? -1 : 1;

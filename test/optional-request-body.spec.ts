@@ -33,7 +33,9 @@ describe(packageJson.name, () => {
       .expect(201));
 
   it('create document should return 201 with empty body', async () =>
-    request(app).post(`/documents`).expect(201));
+    request(app)
+      .post(`/documents`)
+      .expect(201));
 
   it('return 415', async () =>
     request(app)

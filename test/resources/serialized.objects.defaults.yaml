@@ -2,8 +2,8 @@ components:
   schemas:
     PageSort:
       allOf:
-        - $ref: '#/components/schemas/Paging'
-        - $ref: '#/components/schemas/Sorting'
+        - $ref: "#/components/schemas/Paging"
+        - $ref: "#/components/schemas/Sorting"
     Paging:
       properties:
         page:
@@ -47,10 +47,10 @@ paths:
           in: query
           name: pagesort
           schema:
-            $ref: '#/components/schemas/PageSort'
+            $ref: "#/components/schemas/PageSort"
           style: deepObject
       responses:
-        '200':
+        "200":
           description: description
           content:
             application/json:

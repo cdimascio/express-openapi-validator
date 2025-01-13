@@ -34,7 +34,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-
+                  
 components:
   schemas:
     Date:
@@ -43,7 +43,8 @@ components:
     User:
       type: object
       properties:
-        id:
+        id: 
           type: number
         created_at:
-          $ref: '#/components/schemas/Date'
+          $ref: "#/components/schemas/Date"
+ 

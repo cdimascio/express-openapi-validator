@@ -7,7 +7,7 @@ servers:
 paths:
   /fees:
     get:
-      parameters:
+      parameters: 
         - name: id
           in: query
           required: true
@@ -26,7 +26,7 @@ paths:
 
   /formats/1:
     get:
-      parameters:
+      parameters: 
         - name: string_id
           in: query
           schema:
@@ -56,3 +56,4 @@ paths:
       responses:
         '200':
           description: response
+

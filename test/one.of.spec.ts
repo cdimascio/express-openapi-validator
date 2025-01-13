@@ -12,7 +12,7 @@ describe(packageJson.name, () => {
     app = await createApp(
       { apiSpec },
       3005,
-      (app) => {
+      app => {
         app.post(`${app.basePath}/one_of`, (req, res) => {
           res.json(req.body);
         });
@@ -80,9 +80,11 @@ describe(packageJson.name, () => {
         ],
       })
       .expect(400)
-      .then((r) => {
+      .then(r => {
         const e = r.body;
-        expect(e.message).to.contain('must match exactly one schema in oneOf');
+        expect(e.message).to.contain(
+          'must match exactly one schema in oneOf',
+        );
       });
   });
 
@@ -134,9 +136,11 @@ describe(packageJson.name, () => {
         ],
       })
       .expect(400)
-      .then((r) => {
+      .then(r => {
         const e = r.body;
-        expect(e.message).to.contain('must match exactly one schema in oneOf');
+        expect(e.message).to.contain(
+          'must match exactly one schema in oneOf',
+        );
       });
   });
 });

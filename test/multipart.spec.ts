@@ -129,8 +129,8 @@ describe('a multipart request', () => {
     it('should validate multipart file and metadata', async () => {
       const array_with_objects = JSON.stringify([
         {
-          foo: 'bar',
-        },
+          foo: 'bar'
+        }
       ]);
 
       await request(app)
@@ -169,12 +169,15 @@ describe('when request does not use parsers', () => {
       (app) =>
         app.use(
           `${app.basePath}`,
-          express.Router().post(`/sample_7`, (req, res) => res.json('ok')),
+          express
+            .Router()
+            .post(`/sample_7`, (req, res) => res.json('ok')),
         ),
       false,
       false,
     );
   });
+
 
   it('should validate that endpoint exists', async () => {
     await request(app)

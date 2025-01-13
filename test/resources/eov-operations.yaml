@@ -15,8 +15,8 @@ paths:
       description: |
         ping then pong!
       # use operationId, (x-eov-operation-id is optional. it can be used in place of operationId or to override it)
-      operationId: ping
-      x-eov-operation-handler: routes/ping
+      operationId: ping 
+      x-eov-operation-handler: routes/ping 
       responses:
         '200':
           description: OK

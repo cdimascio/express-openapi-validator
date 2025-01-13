@@ -13,8 +13,8 @@ const schema = {
       get: {
         operationId: 'anything',
         'x-eov-operation-handler': 'controller-with-default',
-        responses: { 200: { description: 'home api' } },
-      },
+        responses: { 200: { description: 'home api' } }
+      }
     },
   },
 } as const;

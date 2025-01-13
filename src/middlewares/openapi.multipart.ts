@@ -42,7 +42,7 @@ export function multipart(
               //
               // This is a bit complex because the schema may be defined inline (easy) or via a $ref (complex) in which
               // case we must follow the $ref to check the type.
-
+    
               if (req.files) {
                 // to handle single and multiple file upload at the same time, let us this initialize this count variable
                 // for example { "files": 5 }
@@ -52,7 +52,7 @@ export function multipart(
                     acc[curr] = (acc[curr] || 0) + 1;
                     return acc;
                   }, {});
-
+    
                 // add file(s) to body
                 Object.entries(count_by_fieldname).forEach(
                   ([fieldname, count]: [string, number]) => {
@@ -68,7 +68,7 @@ export function multipart(
             }
           });
         });
-        next();
+        next()
       } catch (error) {
         next(error);
       }

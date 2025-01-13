@@ -145,11 +145,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductNested'
-
+                
   /readonly_required_allof:
     post:
       description: readonly required
-      parameters:
+      parameters: 
         - name: include_id
           in: query
           schema:
@@ -162,7 +162,7 @@ paths:
             schema:
               type: object
               properties:
-                optional:
+                optional: 
                   type: string
       responses:
         '200':

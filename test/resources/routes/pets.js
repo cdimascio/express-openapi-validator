@@ -24,7 +24,7 @@ module.exports = {
     console.log(req.files);
 
     res.status(201).json({
-      files_metadata: req.files.map((f) => ({
+      files_metadata: req.files.map(f => ({
         originalname: f.originalname,
         encoding: f.encoding,
         mimetype: f.mimetype,
@@ -55,7 +55,7 @@ module.exports = {
     console.log(req.files);
 
     res.status(201).json({
-      files_metadata: req.files.map((f) => ({
+      files_metadata: req.files.map(f => ({
         originalname: f.originalname,
         encoding: f.encoding,
         mimetype: f.mimetype,

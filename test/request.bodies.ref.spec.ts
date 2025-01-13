@@ -125,7 +125,9 @@ describe('request bodies', () => {
         expect(r.body.errors).to.be.an('array');
         expect(r.body.errors).to.have.length(1);
         const message = r.body.errors[0].message;
-        expect(message).to.equal("must have required property 'testProperty'");
+        expect(message).to.equal(
+          "must have required property 'testProperty'",
+        );
       }));
 
   it('should return 200 if testProperty body property is provided', async () =>

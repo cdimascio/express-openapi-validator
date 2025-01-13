@@ -43,7 +43,7 @@ paths:
     get:
       security:
         - ApiKeyQueryAuth: []
-      parameters:
+      parameters: 
         - name: param1
           in: query
           schema:

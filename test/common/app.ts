@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as cookieParser from 'cookie-parser';
 import * as logger from 'morgan';
 
-import * as OpenApiValidator from '../../src';
+import * as OpenApiValidator  from '../../src';
 import { startServer, routes } from './app.common';
 import { OpenApiValidatorOpts } from '../../src/framework/types';
 

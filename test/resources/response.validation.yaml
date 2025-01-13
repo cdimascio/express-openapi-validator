@@ -49,7 +49,7 @@ paths:
       responses:
         '204':
           description: empty
-
+          
   /boolean:
     description: get boolean responses
     get:

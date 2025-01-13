@@ -12,17 +12,15 @@ describe('AJV: reference resolves to more than one schema', () => {
 
     const app = await createApp(apiSpec);
 
-    await request(app)
-      .get('/bear')
-      .expect((res) => {
-        if (res.text.includes('resolves to more than one schema')) {
-          throw new Error('AJV not processing x-stoplight property correctly.');
-        }
+    await request(app).get('/bear').expect(res => {
+      if (res.text.includes('resolves to more than one schema')) {
+        throw new Error('AJV not processing x-stoplight property correctly.')
+      }
 
-        if (!res.text.includes('Black Bear')) {
-          throw new Error();
-        }
-      });
+      if (!res.text.includes('Black Bear')) {
+        throw new Error()
+      }
+    })
 
     app.server.close();
 
@@ -48,8 +46,8 @@ async function createApp(
   );
 
   app.use((err, req, res, next) => {
-    res.status(500).send(err.stack);
-  });
+    res.status(500).send(err.stack)
+  })
 
   await startServer(app, 3001);
   return app;
@@ -67,15 +65,15 @@ function createApiSpec() {
         parameters: [],
         get: {
           responses: {
-            '200': {
+            '200': { 
               description: 'OK',
               content: {
                 'application/json': {
                   schema: {
-                    $ref: '#/components/schemas/Bear',
-                  },
-                },
-              },
+                    $ref: '#/components/schemas/Bear'
+                  }
+                }
+              }
             },
           },
         },
@@ -86,15 +84,15 @@ function createApiSpec() {
         Bear: {
           title: 'Bear',
           'x-stoplight': {
-            id: 'ug68n9uynqll0',
+            id: 'ug68n9uynqll0'
           },
           properties: {
             type: {
-              type: 'string',
-            },
-          },
-        },
-      },
-    },
+              type: 'string'
+            }
+          }
+        }
+      }
+    }
   };
 }

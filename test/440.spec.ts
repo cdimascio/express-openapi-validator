@@ -45,19 +45,16 @@ describe(packageJson.name, () => {
         },
       },
     };
-    app = await createApp(
-      {
-        apiSpec,
-        validateRequests: true,
-        validateResponses: true,
-      },
-      3005,
-      (app) =>
-        app.use(
-          express
-            .Router()
-            .post(`/test/abc123`, (req, res) => res.status(200).json(req.body)),
-        ),
+    app = await createApp({
+      apiSpec,
+      validateRequests: true,
+      validateResponses: true, 
+    }, 3005, (app) =>
+      app.use(
+        express
+          .Router()
+          .post(`/test/abc123`, (req, res) => res.status(200).json(req.body)),
+      ),
     );
   });
 

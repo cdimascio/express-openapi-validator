@@ -1,4 +1,4 @@
-openapi: '3.0.2'
+openapi: "3.0.2"
 info:
   version: 1.0.0
   title: requestBodies $ref
@@ -15,15 +15,15 @@ paths:
           BearerAuth: []
         - BasicAuth: []
       responses:
-        '200':
+        "200":
           description: OK
-        '401':
+        "401":
           description: unauthorized
 
   /no_security:
     get:
       responses:
-        '200':
+        "200":
           description: OK
 
   /api_key:
@@ -31,9 +31,9 @@ paths:
       security:
         - ApiKeyAuth: []
       responses:
-        '200':
+        "200":
           description: OK
-        '401':
+        "401":
           description: unauthorized
 
   /api_key_or_anonymous:
@@ -43,9 +43,9 @@ paths:
         - {}
         - ApiKeyAuth: []
       responses:
-        '200':
+        "200":
           description: OK
-        '401':
+        "401":
           description: unauthorized
 
   # This api key with scopes should fail validation and return 500
@@ -53,11 +53,11 @@ paths:
   /api_key_with_scopes:
     get:
       security:
-        - ApiKeyAuth: ['read', 'write']
+        - ApiKeyAuth: ["read", "write"]
       responses:
-        '200':
+        "200":
           description: OK
-        '401':
+        "401":
           description: unauthorized
 
   /bearer:
@@ -65,9 +65,9 @@ paths:
       security:
         - BearerAuth: []
       responses:
-        '200':
+        "200":
           description: OK
-        '401':
+        "401":
           description: unauthorized
 
   /basic:
@@ -75,9 +75,9 @@ paths:
       security:
         - BasicAuth: []
       responses:
-        '200':
+        "200":
           description: OK
-        '401':
+        "401":
           description: unauthorized
 
   /cookie_auth:
@@ -85,9 +85,9 @@ paths:
       security:
         - CookieAuth: []
       responses:
-        '200':
+        "200":
           description: OK
-        '401':
+        "401":
           description: unauthorized
 
   /multi_auth:
@@ -98,9 +98,9 @@ paths:
         - BasicAuth: []
           CookieAuth: []
       responses:
-        '200':
+        "200":
           description: OK
-        '401':
+        "401":
           description: unauthorized
 
   /oauth2:
@@ -110,9 +110,9 @@ paths:
             - scope1
             - scope2
       responses:
-        '200':
+        "200":
           description: OK
-        '401':
+        "401":
           description: unauthorized
 
   /openid:
@@ -122,9 +122,9 @@ paths:
             - scope1
             - scope2
       responses:
-        '200':
+        "200":
           description: OK
-        '401':
+        "401":
           description: unauthorized
 
 components:

@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Dummy API
   description: Dummy API
-  version: '0.1.0'
+  version: "0.1.0"
 servers:
   - url: /v1
 paths:
@@ -10,54 +10,54 @@ paths:
     post:
       requestBody:
         content:
-          application/json:
-            schema:
-              anyOf:
-                - $ref: '#/components/schemas/subE'
-                - $ref: '#/components/schemas/subF'
-              discriminator:
-                propertyName: type
-                mapping:
-                  A: '#/components/schemas/subE'
-                  B: '#/components/schemas/subF'
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/subE'
+                  - $ref: '#/components/schemas/subF'
+                discriminator:
+                  propertyName: type
+                  mapping:
+                    A: '#/components/schemas/subE'
+                    B: '#/components/schemas/subF'
       responses:
-        200:
-          description: successful operation
+          200:
+            description: successful operation
   /any_of:
     post:
       requestBody:
         content:
-          application/json:
-            schema:
-              anyOf:
-                - $ref: '#/components/schemas/subA'
-                - $ref: '#/components/schemas/subB'
-              discriminator:
-                propertyName: type
-                mapping:
-                  A: '#/components/schemas/subA'
-                  B: '#/components/schemas/subB'
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/subA'
+                  - $ref: '#/components/schemas/subB'
+                discriminator:
+                  propertyName: type
+                  mapping:
+                    A: '#/components/schemas/subA'
+                    B: '#/components/schemas/subB'
       responses:
-        200:
-          description: successful operation
+          200:
+            description: successful operation
 
   /one_of:
     post:
       requestBody:
         content:
-          application/json:
-            schema:
-              oneOf:
-                - $ref: '#/components/schemas/subC'
-                - $ref: '#/components/schemas/subD'
-              discriminator:
-                propertyName: type
-                mapping:
-                  C: '#/components/schemas/subC'
-                  D: '#/components/schemas/subD'
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/subC'
+                  - $ref: '#/components/schemas/subD'
+                discriminator:
+                  propertyName: type
+                  mapping:
+                    C: '#/components/schemas/subC'
+                    D: '#/components/schemas/subD'
       responses:
-        200:
-          description: successful operation
+          200:
+            description: successful operation
 
 components:
   schemas:
@@ -69,10 +69,10 @@ components:
           type: string
         type:
           type: string
-          enum: [A, B]
+          enum: [A, B]          
       required:
         - id
-        - type
+        - type  
 
     one_required:
       type: object
@@ -82,7 +82,7 @@ components:
           type: string
         type:
           type: string
-          enum: [A, B]
+          enum: [A, B]          
       required:
         - id
 
@@ -103,10 +103,10 @@ components:
               type: string
             type:
               type: string
-              enum: [C, D]
+              enum: [C, D]          
           required:
             - id
-            - type
+            - type  
 
     subD:
       allOf:
@@ -117,10 +117,10 @@ components:
               type: string
             type:
               type: string
-              enum: [C, D]
+              enum: [C, D]          
           required:
             - id
-            - type
+            - type  
 
     subE:
       allOf:

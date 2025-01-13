@@ -71,7 +71,7 @@ describe(packageJson.name, () => {
         })
         .expect(200));
 
-    it('should succeed in sending a content-type: "application/json; version=1" in multiple ways', async () => {
+    it('should succeed in sending a content-type: "application/json; version=1" in multiple ways', async () =>{
       await request(app)
         .post(`${app.basePath}/pets_content_types`)
         .set('Content-Type', 'application/json; version=1')
@@ -82,7 +82,7 @@ describe(packageJson.name, () => {
         })
         .expect(200)
         .expect((res) => {
-          expect(res.body.contentType).to.equal('application/json; version=1');
+          expect(res.body.contentType).to.equal('application/json; version=1')
         });
 
       await request(app)
@@ -95,10 +95,10 @@ describe(packageJson.name, () => {
         })
         .expect(200)
         .expect((res) => {
-          expect(res.body.contentType).to.equal('application/json;version=1');
+          expect(res.body.contentType).to.equal('application/json;version=1')
         });
     });
-
+        
     it('should throw a 415 error for unsupported "application/json; version=2" content type', async () =>
       request(app)
         .post(`${app.basePath}/pets_content_types`)
@@ -121,9 +121,9 @@ describe(packageJson.name, () => {
         })
         .expect(200)
         .expect((res) => {
-          expect(res.body.contentType).to.equal('application/json;version=1');
+          expect(res.body.contentType).to.equal('application/json;version=1')
         });
-
+      
       await request(app)
         .post(`${app.basePath}/pets_content_types`)
         .set('Content-Type', 'application/json; version=3')

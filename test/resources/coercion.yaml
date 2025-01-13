@@ -51,16 +51,16 @@ paths:
       description: Returns pets by name
       operationId: addPet
       parameters:
-        - in: query
-          name: filter
-          schema:
-            type: object
-            additionalProperties: false
-            properties:
-              names:
-                type: array
-                items:
-                  type: string
+      - in: query
+        name: filter
+        schema:
+          type: object
+          additionalProperties: false
+          properties:
+            names:
+              type: array
+              items:
+                type: string
       responses:
         '200':
           description: pet response

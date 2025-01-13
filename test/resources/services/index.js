@@ -24,11 +24,11 @@ module.exports.Pets = class {
     this.id = 4;
   }
   findAll({ type, limit }) {
-    return data.filter((d) => d.type === type).slice(0, limit);
+    return data.filter(d => d.type === type).slice(0, limit);
   }
 
   findById(id) {
-    return data.filter((p) => p.id === id)[0];
+    return data.filter(p => p.id === id)[0];
   }
 
   create(pet) {
@@ -38,6 +38,6 @@ module.exports.Pets = class {
   }
 
   delete(id) {
-    return data.filter((e) => e.id !== id);
+    return data.filter(e => e.id !== id);
   }
-};
+}

@@ -31,12 +31,10 @@ describe('response serializer', () => {
         app.get([`${app.basePath}/array-of-date-times`], (req, res) => {
           let date = new Date('2020-12-20T07:28:19.213Z');
           res.json({
-            users: [
-              {
-                id: req.params.id,
-                created_at: date,
-              },
-            ],
+            users: [{
+              id: req.params.id,
+              created_at: date,
+            }],
           });
         });
         app.get([`${app.basePath}/date`], (req, res) => {
@@ -82,9 +80,7 @@ describe('response serializer', () => {
         .get(`${app.basePath}/array-of-date-times`)
         .expect(200)
         .then((r) => {
-          expect(r.body.users[0].created_at).to.equal(
-            '2020-12-20T07:28:19.213Z',
-          );
+          expect(r.body.users[0].created_at).to.equal('2020-12-20T07:28:19.213Z');
         }));
   });
 });

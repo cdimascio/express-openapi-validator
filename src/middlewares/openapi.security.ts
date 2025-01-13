@@ -24,31 +24,21 @@ interface SecurityHandlerResult {
   error?: string;
 }
 
-function extractErrorsFromResults(
-  results: (SecurityHandlerResult | SecurityHandlerResult[])[],
-) {
-  return results
-    .map((result) => {
-      if (Array.isArray(result)) {
-        return result.map((it) => it).filter((it) => !it.success);
-      }
-      return [result].filter((it) => !it.success);
-    })
-    .flatMap((it) => [...it]);
+function extractErrorsFromResults(results: (SecurityHandlerResult | SecurityHandlerResult[])[]) {
+  return results.map(result => {
+    if (Array.isArray(result)) {
+      return result.map(it => it).filter(it => !it.success);
+    }
+    return [result].filter(it => !it.success);
+  }).flatMap(it => [...it]);
 }
 
 function didAllSecurityRequirementsPass(results: SecurityHandlerResult[]) {
-  return results.every((it) => it.success);
+  return results.every(it => it.success);
 }
 
-function didOneSchemaPassValidation(
-  results: (SecurityHandlerResult | SecurityHandlerResult[])[],
-) {
-  return results.some((result) =>
-    Array.isArray(result)
-      ? didAllSecurityRequirementsPass(result)
-      : result.success,
-  );
+function didOneSchemaPassValidation(results: (SecurityHandlerResult | SecurityHandlerResult[])[]) {
+  return results.some(result => Array.isArray(result) ? didAllSecurityRequirementsPass(result) : result.success);
 }
 
 export function security(
@@ -245,13 +235,13 @@ class AuthValidator {
       // req.cookies will be `undefined` without `cookie-parser` middleware
       const authCookie =
         req.cookies?.[scheme.name] || req.signedCookies?.[scheme.name];
-
+  
       const type = scheme.scheme && scheme.scheme.toLowerCase();
       if (type === 'bearer') {
         if (authHeader && !authHeader.includes('bearer')) {
           throw Error(`Authorization header with scheme 'Bearer' required`);
         }
-
+        
         if (!authHeader && !authCookie) {
           if (scheme.in === 'cookie') {
             throw Error(`Cookie authentication required`);
@@ -260,7 +250,7 @@ class AuthValidator {
           }
         }
       }
-
+  
       if (type === 'basic') {
         if (!authHeader) {
           throw Error(`Authorization header required`);

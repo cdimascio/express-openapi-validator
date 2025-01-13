@@ -9,4 +9,5 @@ servers:
     variables:
       var:
         enum: ['a', 'b']
-components: {}
+components:
+  {}

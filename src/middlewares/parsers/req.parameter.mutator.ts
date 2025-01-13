@@ -76,20 +76,10 @@ export class RequestParameterMutator {
       const i = req.originalUrl.indexOf('?');
       const queryString = req.originalUrl.substr(i + 1);
 
-      if (
-        parameter.in === 'query' &&
-        !parameter.allowReserved &&
-        !!parameter.explode
-      ) {
-        //} && !!parameter.explode) {
+      if (parameter.in === 'query' && !parameter.allowReserved && !!parameter.explode) { //} && !!parameter.explode) {
         this.validateReservedCharacters(name, rawQuery);
       }
-      if (
-        parameter.in === 'query' &&
-        !parameter.allowReserved &&
-        !parameter.explode
-      ) {
-        //} && !!parameter.explode) {
+      if (parameter.in === 'query' && !parameter.allowReserved && !parameter.explode) { //} && !!parameter.explode) {
         this.validateReservedCharacters(name, rawQuery, true);
       }
 
@@ -107,13 +97,7 @@ export class RequestParameterMutator {
       } else if (type === 'array' && !explode) {
         const delimiter = ARRAY_DELIMITER[parameter.style];
         this.validateArrayDelimiter(delimiter, parameter);
-        this.parseJsonArrayAndMutateRequest(
-          req,
-          parameter.in,
-          name,
-          delimiter,
-          rawQuery,
-        );
+        this.parseJsonArrayAndMutateRequest(req, parameter.in, name, delimiter, rawQuery);
       } else if (type === 'array' && explode) {
         this.explodeJsonArrayAndMutateRequest(req, parameter.in, name);
       } else if (style === 'form' && explode) {
@@ -206,8 +190,8 @@ export class RequestParameterMutator {
     const properties = hasXOf
       ? xOfProperties(schema)
       : type === 'object'
-      ? Object.keys(schema.properties ?? {})
-      : [];
+        ? Object.keys(schema.properties ?? {})
+        : [];
 
     this.explodedJsonObjectAndMutateRequest(
       req,
@@ -282,7 +266,7 @@ export class RequestParameterMutator {
      * filter=foo%20bar%20baz
      */
     const field = REQUEST_FIELDS[$in];
-    const rawValues = [];
+    const rawValues = []
     if (['query'].includes($in)) {
       // perhaps split query from params
       rawValues.concat(rawQuery.get(name) ?? []);
@@ -293,14 +277,11 @@ export class RequestParameterMutator {
       if (Array.isArray(req[field][name])) return;
       const value = req[field][name].split(delimiter);
       const rawValue = rawValues[i++];
-      if (rawValue?.includes(delimiter)) {
-        // TODO add && !allowReserved to improve performance. When allowReserved is true, commas are common and we do not need to do this extra work
+      if (rawValue?.includes(delimiter)) { // TODO add && !allowReserved to improve performance. When allowReserved is true, commas are common and we do not need to do this extra work
         // Currently, rawValue is only populated for query params
         // if the raw value contains a delimiter, decode manually
         // parse the decode value and update req[field][name]
-        const manuallyDecodedValues = rawValue
-          .split(delimiter)
-          .map((v) => decodeURIComponent(v));
+        const manuallyDecodedValues = rawValue.split(delimiter).map(v => decodeURIComponent(v));
         req[field][name] = manuallyDecodedValues;
       } else {
         req[field][name] = value;

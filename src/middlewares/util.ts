@@ -5,14 +5,11 @@ import { ValidationError } from '../framework/types';
 export class ContentType {
   public readonly mediaType: string = null;
   public readonly isWildCard: boolean;
-  public readonly parameters: { charset?: string; boundary?: string } & Record<
-    string,
-    string
-  > = {};
+  public readonly parameters: { charset?: string, boundary?: string } & Record<string, string> = {};
   private constructor(contentType: string | null) {
     if (contentType) {
       const parameterRegExp = /;\s*([^=]+)=([^;]+)/g;
-      const paramMatches = contentType.matchAll(parameterRegExp);
+      const paramMatches = contentType.matchAll(parameterRegExp)
       if (paramMatches) {
         this.parameters = {};
         for (let match of paramMatches) {
@@ -25,7 +22,7 @@ export class ContentType {
             value = value.toLowerCase();
           }
           this.parameters[key] = value;
-        }
+        };
       }
       this.mediaType = contentType.split(';')[0].toLowerCase().trim();
       this.isWildCard = RegExp(/^[a-z]+\/\*$/).test(contentType);
@@ -47,9 +44,7 @@ export class ContentType {
     types.push(new ContentType(this.mediaType));
 
     if (!this.parameters['charset']) {
-      types.push(
-        new ContentType(`${this.normalize(['charset'])}; charset=utf-8`),
-      );
+      types.push(new ContentType(`${this.normalize(['charset'])}; charset=utf-8`));
     }
     return types;
   }
@@ -60,10 +55,11 @@ export class ContentType {
       .sort()
       .forEach((key) => {
         if (!excludeParams.includes(key)) {
-          parameters += `; ${key}=${this.parameters[key]}`;
+          parameters += `; ${key}=${this.parameters[key]}`                  
         }
       });
-    if (this.mediaType) return this.mediaType + parameters;
+    if (this.mediaType)
+      return this.mediaType + parameters;
   }
 }
 
@@ -134,10 +130,10 @@ export const findResponseContent = function (
   expectedTypes: string[],
 ): string {
   const expectedTypesMap = new Map();
-  for (let type of expectedTypes) {
+  for(let type of expectedTypes) {
     expectedTypesMap.set(ContentType.fromString(type).normalize(), type);
   }
-
+  
   // if accepts are supplied, try to find a match, and use its validator
   for (const accept of accepts) {
     const act = ContentType.fromString(accept);
@@ -171,6 +167,7 @@ export const findResponseContent = function (
 
 export const zipObject = (keys, values) =>
   keys.reduce((acc, key, idx) => {
-    acc[key] = values[idx];
-    return acc;
-  }, {});
+    acc[key] = values[idx]
+    return acc
+  }, {})
+

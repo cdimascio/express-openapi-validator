@@ -1,4 +1,4 @@
-openapi: '3.0.0'
+openapi: "3.0.0"
 info:
   version: 1.0.0
   title: Swagger Petstore
@@ -22,7 +22,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: user response
 
   /pets/{id}:
@@ -38,12 +38,12 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: pet response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Pet'
+                $ref: "#/components/schemas/Pet"
 
   /route_defined_in_openapi_only:
     get:
@@ -56,7 +56,7 @@ paths:
             type: integer
             format: int64
       responses:
-        '200':
+        "200":
           description: test
 
 components:

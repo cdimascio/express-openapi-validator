@@ -1,7 +1,7 @@
-openapi: '3.0.0'
+openapi: "3.0.0"
 info:
-  title: 'Test for allOf'
-  version: '1'
+  title: "Test for allOf"
+  version: "1"
 servers:
   - url: /v1/
 paths:
@@ -12,7 +12,7 @@ paths:
           in: path
           required: true
           schema:
-            $ref: '#/components/schemas/ObjectId'
+            $ref: "#/components/schemas/ObjectId"
         - name: baddateresponse
           in: query
           schema:
@@ -26,28 +26,28 @@ paths:
           in: query
           required: false
           schema:
-            $ref: '#/components/schemas/ShortOrLong'
+            $ref: "#/components/schemas/ShortOrLong"
       responses:
         200:
-          description: ''
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
   /users:
     post:
       requestBody:
-        content:
+        content :
           application/json:
             schema:
               $ref: '#/components/schemas/User'
       responses:
         200:
-          description: ''
+          description: ""
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
 components:
   schemas:
     ObjectId:
@@ -70,7 +70,7 @@ components:
       type: object
       properties:
         modificationDate:
-          $ref: '#/components/schemas/Date'
+          $ref: "#/components/schemas/Date"
     StringList:
       type: string
       format: string-list
@@ -78,19 +78,19 @@ components:
       type: object
       properties:
         id:
-          $ref: '#/components/schemas/ObjectId'
+          $ref: "#/components/schemas/ObjectId"
         tags:
-          $ref: '#/components/schemas/StringList'
+          $ref: "#/components/schemas/StringList"
         creationDateTime:
-          $ref: '#/components/schemas/DateTime'
+          $ref: "#/components/schemas/DateTime"
         creationDate:
-          $ref: '#/components/schemas/Date'
+          $ref: "#/components/schemas/Date"
         shortOrLong:
-          $ref: '#/components/schemas/ShortOrLong'
+          $ref: "#/components/schemas/ShortOrLong"
         history:
           type: array
           items:
-            $ref: '#/components/schemas/HistoryItem'
+            $ref: "#/components/schemas/HistoryItem"
         historyWithoutRef:
           type: array
           items:
@@ -99,3 +99,4 @@ components:
               modificationDate:
                 type: string
                 format: date
+

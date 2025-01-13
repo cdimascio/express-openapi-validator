@@ -1,5 +1,5 @@
 import AjvDraft4 from 'ajv-draft-04';
-import Ajv2020 from 'ajv/dist/2020';
+import Ajv2020 from 'ajv/dist/2020'
 import { DataValidateFunction } from 'ajv/dist/types';
 import ajvType from 'ajv/dist/vocabularies/jtd/type';
 import addFormats from 'ajv-formats';
@@ -35,15 +35,15 @@ function createAjv(
 
   const ajv = factoryAjv(openApiSpec.openapi, {
     ...ajvOptions,
-    formats,
-  });
+    formats
+  })
 
   // Clean openApiSpec
-  traverse(openApiSpec, { allKeys: true }, <traverse.Callback>((schema) => {
+  traverse(openApiSpec, { allKeys: true }, <traverse.Callback>(schema => {
     if ('x-stoplight' in schema) {
-      delete schema['x-stoplight'];
+      delete schema['x-stoplight']
     }
-  }));
+  }))
 
   // Formats will overwrite existing validation,
   // so set in order of least->most important.
@@ -116,15 +116,12 @@ function createAjv(
       compile: (sch, p, it) => {
         if (sch) {
           const validate: DataValidateFunction = (data, ctx) => {
-            if (
-              options.removeAdditional == true ||
-              options.removeAdditional == 'all' ||
-              options.removeAdditional == 'failing'
-            ) {
+            if (options.removeAdditional == true || options.removeAdditional == "all" || options.removeAdditional == "failing") {
               // Remove readonly properties in request
               delete ctx.parentData[ctx.parentDataProperty];
               return true;
-            } else {
+            }
+            else {
               const isValid = data == null;
               if (!isValid) {
                 validate.errors = [
@@ -187,15 +184,12 @@ function createAjv(
       compile: (sch, p, it) => {
         if (sch) {
           const validate: DataValidateFunction = (data, ctx) => {
-            if (
-              options.removeAdditional == true ||
-              options.removeAdditional == 'all' ||
-              options.removeAdditional == 'failing'
-            ) {
+            if (options.removeAdditional == true || options.removeAdditional == "all" || options.removeAdditional == "failing") {
               // Remove readonly properties in request
               delete ctx.parentData[ctx.parentDataProperty];
               return true;
-            } else {
+            }
+            else {
               const isValid = data == null;
               if (!isValid) {
                 validate.errors = [
@@ -204,7 +198,7 @@ function createAjv(
                     instancePath: ctx.instancePath,
                     schemaPath: it.schemaPath.str,
                     message: `is write-only`,
-                    params: { writeOnly: ctx.parentDataProperty },
+                    params: {writeOnly: ctx.parentDataProperty},
                   },
                 ];
               }

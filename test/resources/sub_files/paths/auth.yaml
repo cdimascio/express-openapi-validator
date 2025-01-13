@@ -1,7 +1,7 @@
 paths:
   /auth/login:
     post:
-      summary: 'Logs user into the system'
+      summary: "Logs user into the system"
       operationId: signIn
       tags:
         - guest
@@ -10,7 +10,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Auth'
+              $ref: "#/components/schemas/Auth"
       responses:
         '200':
           description: A JSON containing the JWT Token and some information about the user
@@ -18,7 +18,7 @@ paths:
             application/json:
               schema:
                 allOf:
-                  - $ref: '#/components/schemas/JWTToken'
+                  - $ref: "#/components/schemas/JWTToken"
                   - type: object
                     description: Some basic information on this user
                     properties:
@@ -27,14 +27,14 @@ paths:
                         properties:
                           fullName:
                             type: string
-                            description: 'The full name of this user'
-                            example: 'Eric Cartman'
+                            description: "The full name of this user"
+                            example: "Eric Cartman"
                             minLength: 1
                             maxLength: 50
                           role:
                             type: string
                             enum: [admin, user]
-                            description: 'What kind of user are we ?'
+                            description: "What kind of user are we ?"
                         required:
                           - fullName
                           - role
@@ -42,14 +42,14 @@ paths:
                       - user
         # Definition of all error statuses
         default:
-          description: 'Whatever error : 4XX - Client error (Bad Request, Unauthorized, etc.) , 5XX - Server error'
+          description: "Whatever error : 4XX - Client error (Bad Request, Unauthorized, etc.) , 5XX - Server error"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorObject'
+                $ref: "#/components/schemas/ErrorObject"
   /auth/register:
     post:
-      summary: 'Creates a new user into the system'
+      summary: "Creates a new user into the system"
       operationId: register
       tags:
         - guest
@@ -59,13 +59,13 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/Auth'
+                - $ref: "#/components/schemas/Auth"
                 - type: object
                   properties:
                     fullName:
                       type: string
-                      example: 'Some User'
-                      description: 'The full name of this new user'
+                      example: "Some User"
+                      description: "The full name of this new user"
                       minLength: 1
                       maxLength: 50
                   required:
@@ -75,11 +75,11 @@ paths:
           description: OK
         # Definition of all error statuses
         default:
-          description: 'Whatever error : 4XX - Client error (Bad Request, Unauthorized, etc.) , 5XX - Server error'
+          description: "Whatever error : 4XX - Client error (Bad Request, Unauthorized, etc.) , 5XX - Server error"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorObject'
+                $ref: "#/components/schemas/ErrorObject"
 
 components:
   schemas:
@@ -89,11 +89,11 @@ components:
         email:
           type: string
           format: email
-          example: 'jy95@perdu.com'
+          example: "jy95@perdu.com"
         password:
           type: string
           format: password
-          example: '42'
+          example: "42"
       required:
         - email
         - password

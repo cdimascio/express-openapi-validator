@@ -32,7 +32,6 @@ curl http://localhost:3000/v1/pets
 ### GET /pets
 
 success
-
 ```shell
 curl -s 'localhost:3000/v1/pets?limit=5' |jq
 [
@@ -61,8 +60,7 @@ curl -s 'localhost:3000/v1/pets?limit=5' |jq
 ]
 ```
 
-error
-
+error 
 ```shell
  curl -s 'localhost:3000/v1/pets' |jq
 {
@@ -81,7 +79,6 @@ error
 ### POST /pets
 
 success
-
 ```shell
 curl -s -XPOST 'localhost:3000/v1/pets' -d '{"id": 1, "name": "jobe"}' -H 'Content-type: application/json'|jq
 {
@@ -91,7 +88,6 @@ curl -s -XPOST 'localhost:3000/v1/pets' -d '{"id": 1, "name": "jobe"}' -H 'Conte
 ```
 
 error
-
 ```shell
 curl -s -XPOST 'localhost:3000/v1/pets' -d '{"id": "sdfsf", "name": "jobe"}' -H 'Content-type: application/json'|jq
 {
@@ -110,7 +106,6 @@ curl -s -XPOST 'localhost:3000/v1/pets' -d '{"id": "sdfsf", "name": "jobe"}' -H 
 ### GET /pets/:id
 
 success
-
 ```shell
 curl -s 'localhost:3000/v1/pets/1' |jq
 {
@@ -124,7 +119,6 @@ curl -s 'localhost:3000/v1/pets/1' |jq
 ```
 
 error: bad id type
-
 ```shell
 curl -s 'localhost:3000/v1/pets/lkl' |jq
 {
@@ -140,10 +134,10 @@ curl -s 'localhost:3000/v1/pets/lkl' |jq
 }
 ```
 
+
 ### /v1/pets/1/photos
 
 success
-
 ```shell
 curl  -XPOST 'localhost:3000/v1/pets/1/photos' -H 'Content-type: multipart/form-data' -F 'file=@test.txt'|jq
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -161,7 +155,6 @@ curl  -XPOST 'localhost:3000/v1/pets/1/photos' -H 'Content-type: multipart/form-
 ```
 
 error: no file
-
 ```shell
  curl -s  -XPOST 'localhost:3000/v1/pets/1/photos' -H 'Content-type: multipart/form-data' |jq
 {
@@ -176,3 +169,4 @@ error: no file
   "code": 400
 }
 ```
+

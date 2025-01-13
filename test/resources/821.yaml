@@ -4,7 +4,7 @@ info:
   title: Test additionalProperties date-time
 paths:
   /test:
-    get:
+    get: 
       responses:
         '200':
           description: foo

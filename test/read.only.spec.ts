@@ -113,12 +113,10 @@ describe(packageJson.name, () => {
         name: 'some name',
         price: 10.99,
         created_at: new Date().toISOString(),
-        reviews: [
-          {
-            id: 'review_id',
-            rating: 5,
-          },
-        ],
+        reviews: [{
+          id: 'review_id',
+          rating: 5,
+        }],
       })
       .expect(400)
       .then((r) => {
