@@ -1,7 +1,7 @@
 import * as ajv from 'ajv';
 import * as multer from 'multer';
 import { FormatsPluginOptions } from 'ajv-formats';
-import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { RouteMetadata } from './openapi.spec.loader';
 import AjvDraft4 from 'ajv-draft-04';
 import Ajv2020 from 'ajv/dist/2020';
@@ -312,7 +312,7 @@ export namespace OpenAPIV3 {
 
   export interface HeaderObject extends ParameterBaseObject {}
 
-  interface ParameterBaseObject {
+  export interface ParameterBaseObject {
     description?: string;
     required?: boolean;
     deprecated?: boolean;
@@ -357,7 +357,7 @@ export namespace OpenAPIV3 {
     discriminator?: DiscriminatorObject;
   }
 
-  interface BaseSchemaObject<T> {
+  export interface BaseSchemaObject<T> {
     // JSON schema allowed properties, adjusted for OpenAPI
     type?: T;
     title?: string;
