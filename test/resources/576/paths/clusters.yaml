@@ -1,0 +1,10 @@
+get:
+  tags:
+    - Clusters
+  description: Returns a list of clusters
+  operationId: getClusters
+  responses:
+    "200":
+      $ref: "../responses/clusters.yaml"
+    "400":
+      $ref: "../responses/400.yaml"

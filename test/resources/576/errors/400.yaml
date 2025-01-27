@@ -1,0 +1,13 @@
+type: object
+properties:
+  error:
+    type: object
+    properties:
+      type:
+        type: number
+      message:
+        type: string
+example:
+  error:
+    type: 400
+    message: 'Bad request'
