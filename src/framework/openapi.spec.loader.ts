@@ -5,6 +5,7 @@ import {
   OpenAPIV3,
   OpenAPIFrameworkArgs,
 } from './types';
+import { stripExamples } from './openapi/strip.examples';
 
 export interface Spec {
   apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
@@ -102,6 +103,8 @@ export class OpenApiSpecLoader {
     });
 
     routes.sort(sortRoutes);
+
+    stripExamples(apiDoc);
 
     serial = serial + 1;
     return {
