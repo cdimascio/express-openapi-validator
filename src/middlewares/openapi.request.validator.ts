@@ -1,26 +1,26 @@
 import Ajv, { ValidateFunction } from 'ajv';
+import { NextFunction, RequestHandler, Response } from 'express';
 import { createRequestAjv } from '../framework/ajv';
+import {
+  BadRequest,
+  BodySchema,
+  NotFound,
+  OpenAPIV3,
+  OpenApiRequest,
+  OpenApiRequestMetadata,
+  ParametersSchema,
+  RequestValidatorOptions,
+  ValidateRequestOpts,
+  ValidationSchema,
+} from '../framework/types';
+import { BodySchemaParser } from './parsers/body.parse';
+import { RequestParameterMutator } from './parsers/req.parameter.mutator';
+import { ParametersSchemaParser } from './parsers/schema.parse';
 import {
   ContentType,
   ajvErrorsToValidatorError,
   augmentAjvErrors,
 } from './util';
-import { NextFunction, RequestHandler, Response } from 'express';
-import {
-  OpenAPIV3,
-  OpenApiRequest,
-  RequestValidatorOptions,
-  ValidateRequestOpts,
-  OpenApiRequestMetadata,
-  NotFound,
-  BadRequest,
-  ParametersSchema,
-  BodySchema,
-  ValidationSchema,
-} from '../framework/types';
-import { BodySchemaParser } from './parsers/body.parse';
-import { ParametersSchemaParser } from './parsers/schema.parse';
-import { RequestParameterMutator } from './parsers/req.parameter.mutator';
 
 type OperationObject = OpenAPIV3.OperationObject;
 type SchemaObject = OpenAPIV3.SchemaObject;
@@ -140,6 +140,12 @@ export class RequestValidator {
         req.params = openapi.pathParams ?? req.params;
       }
 
+      // HACK for express 5, temporarily make req.query mutable
+      const reqQueryDescriptor = Object.getOwnPropertyDescriptor(req, 'query');
+      Object.defineProperty(req, 'query', {
+          writable: true,
+          value: req.query,
+      })
       const schemaProperties = validator.allSchemaProperties;
       const mutator = new RequestParameterMutator(
         this.ajv,
@@ -156,6 +162,11 @@ export class RequestValidator {
           schemaProperties.query,
           securityQueryParam,
         );
+      }
+
+      // HACK for express 5, Restore the original descriptor
+      if (reqQueryDescriptor) {
+        Object.defineProperty(req, 'query', reqQueryDescriptor);
       }
 
       const cookies = req.cookies
