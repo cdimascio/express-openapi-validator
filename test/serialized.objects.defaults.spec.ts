@@ -4,9 +4,10 @@ import * as request from 'supertest';
 import * as packageJson from '../package.json';
 import { expect } from 'chai';
 import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
@@ -18,7 +19,9 @@ describe(packageJson.name, () => {
     app = await createApp({ apiSpec }, 3005, (app) =>
       app.use(
         `${app.basePath}`,
-        express.Router().get(`/deep_object`, (req, res) => res.json(req.query)),
+        express.Router().get(`/deep_object`, (req, res) => {
+          res.json(req.query);
+        }),
       ),
     );
   });

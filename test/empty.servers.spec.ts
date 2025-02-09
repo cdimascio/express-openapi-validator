@@ -3,9 +3,10 @@ import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 describe('empty servers', () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
@@ -21,7 +22,9 @@ describe('empty servers', () => {
       (app) =>
         app.use(
           ``,
-          express.Router().get(`/pets`, (req, res) => res.json(req.body)),
+          express.Router().get(`/pets`, (req, res) => {
+            res.json(req.body);
+          }),
         ),
     );
   });

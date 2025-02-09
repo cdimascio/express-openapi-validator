@@ -3,17 +3,20 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'read.only.yaml');
     app = await createApp({ apiSpec, validateResponses: true }, 3005, (app) =>
       app
-        .post(`${app.basePath}/products`, (req, res) => res.json(req.body))
-        .get(`${app.basePath}/products`, (req, res) =>
+        .post(`${app.basePath}/products`, (req, res) => {
+          res.json(req.body);
+        })
+        .get(`${app.basePath}/products`, (req, res) => {
           res.json([
             {
               id: 'id_1',
@@ -21,23 +24,23 @@ describe(packageJson.name, () => {
               price: 9.99,
               created_at: new Date().toISOString(),
             },
-          ]),
-        )
-        .post(`${app.basePath}/products/inlined`, (req, res) =>
-          res.json(req.body),
-        )
-        .post(`${app.basePath}/user`, (req, res) =>
+          ]);
+        })
+        .post(`${app.basePath}/products/inlined`, (req, res) => {
+          res.json(req.body);
+        })
+        .post(`${app.basePath}/user`, (req, res) => {
           res.json({
             ...req.body,
             ...(req.query.include_id ? { id: 'test_id' } : {}),
-          }),
-        )
-        .post(`${app.basePath}/user_inlined`, (req, res) =>
+          });
+        })
+        .post(`${app.basePath}/user_inlined`, (req, res) => {
           res.json({
             ...req.body,
             ...(req.query.include_id ? { id: 'test_id' } : {}),
-          }),
-        )
+          });
+        })
         .post(`${app.basePath}/products/nested`, (req, res) => {
           const body = req.body;
           body.id = 'test';
@@ -113,10 +116,12 @@ describe(packageJson.name, () => {
         name: 'some name',
         price: 10.99,
         created_at: new Date().toISOString(),
-        reviews: [{
-          id: 'review_id',
-          rating: 5,
-        }],
+        reviews: [
+          {
+            id: 'review_id',
+            rating: 5,
+          },
+        ],
       })
       .expect(400)
       .then((r) => {

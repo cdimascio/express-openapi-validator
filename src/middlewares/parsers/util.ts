@@ -1,7 +1,5 @@
 import Ajv from 'ajv';
 import { OpenAPIV3 } from '../../framework/types';
-import ajv = require('ajv');
-import { OpenAPIFramework } from '../../framework';
 
 export function dereferenceParameter(
   apiDocs: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,

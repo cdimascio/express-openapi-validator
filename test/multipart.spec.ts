@@ -7,7 +7,7 @@ import { createApp } from './common/app';
 
 describe('a multipart request', () => {
   let app;
-  const fileNames = [];
+  const fileNames: string[] = [];
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'multipart.yaml');
     app = await createApp(
@@ -33,7 +33,9 @@ describe('a multipart request', () => {
                 metadata: req.body.metadata,
               });
             })
-            .post(`/sample_*suffix`, (req, res) => res.json(req.body)),
+            .post(`/sample_*suffix`, (req, res) => {
+              res.json(req.body);
+            }),
         ),
     );
   });
@@ -129,8 +131,8 @@ describe('a multipart request', () => {
     it('should validate multipart file and metadata', async () => {
       const array_with_objects = JSON.stringify([
         {
-          foo: 'bar'
-        }
+          foo: 'bar',
+        },
       ]);
 
       await request(app)
@@ -169,15 +171,14 @@ describe('when request does not use parsers', () => {
       (app) =>
         app.use(
           `${app.basePath}`,
-          express
-            .Router()
-            .post(`/sample_7`, (req, res) => res.json('ok')),
+          express.Router().post(`/sample_7`, (req, res) => {
+            res.json('ok');
+          }),
         ),
       false,
       false,
     );
   });
-
 
   it('should validate that endpoint exists', async () => {
     await request(app)

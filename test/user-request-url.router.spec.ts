@@ -13,6 +13,7 @@ import { createApp } from './common/app';
 
 import * as OpenApiValidator from '../src';
 import { Server } from 'http';
+import { AppWithServer } from './common/app.common';
 
 interface HTTPError extends Error {
   status: number;
@@ -22,7 +23,7 @@ interface HTTPError extends Error {
 }
 
 describe('when useRequestUrl is set to "true" on the child router', async () => {
-  let app: Express & { server?: Server };
+  let app: AppWithServer;
 
   before(async () => {
     const router = makeRouter({ useRequestUrl: true });
@@ -65,7 +66,7 @@ describe('when useRequestUrl is set to "true" on the child router', async () => 
 });
 
 describe('when useRequestUrl is set to "false" on the child router', async () => {
-  let app: Express & { server?: Server };
+  let app: AppWithServer;
 
   before(async () => {
     const router = makeRouter({ useRequestUrl: false });

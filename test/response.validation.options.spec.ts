@@ -3,11 +3,12 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // set up express app
@@ -22,14 +23,14 @@ describe(packageJson.name, () => {
       (app) => {
         app.get(`${app.basePath}/users`, (req, res) => {
           const json = ['user1', 'user2', 'user3'];
-          return res.json(json);
+          res.json(json);
         });
         app.get(`${app.basePath}/pets`, (req, res) => {
           let json = {};
           if ((req.query.mode = 'bad_type')) {
             json = [{ id: 'bad_id', name: 'name', tag: 'tag' }];
           }
-          return res.json(json);
+          res.json(json);
         });
         app.post(`${app.basePath}/no_additional_props`, (req, res) => {
           res.json(req.body);

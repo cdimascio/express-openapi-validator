@@ -1,12 +1,13 @@
+import { expect } from 'chai';
 import * as express from 'express';
 import * as request from 'supertest';
-import { createApp } from './common/app';
 import * as packageJson from '../package.json';
 import { OpenAPIV3 } from '../src/framework/types';
-import { expect } from 'chai';
+import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
   before(async () => {
     // Set up the express app
     const apiSpec: OpenAPIV3.DocumentV3 = {
@@ -122,12 +123,12 @@ describe(packageJson.name, () => {
         app.use(
           express
             .Router()
-            .get(`/api/test/:id`, (req, res) =>
-              res.status(200).json({ id: 'id-test', label: 'label' }),
-            )
-            .post(`/api/test/:id\\:clone`, (req, res) =>
-              res.status(200).json({ ...req.body, id: 'id-test' }),
-            )
+            .get(`/api/test/:id`, (req, res) => {
+              res.status(200).json({ id: 'id-test', label: 'label' });
+            })
+            .post(`/api/test/:id\\:clone`, (req, res) => {
+              res.status(200).json({ ...req.body, id: 'id-test' });
+            })
             .get('/api/some/:wildcard(*wildcardSuffix)', (req, res) => {
               const wildcard = req.params.wildcard;
               console.log(`Wildcard: ${wildcard}`);
@@ -157,7 +158,5 @@ describe(packageJson.name, () => {
       }));
 
   it('GET /some/test with wildcard should return 200', async () =>
-    request(app)
-      .get(`/api/some/test/stuff`)
-      .expect(200));
+    request(app).get(`/api/some/test/stuff`).expect(200));
 });

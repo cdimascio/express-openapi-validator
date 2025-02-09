@@ -3,58 +3,68 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'read.only.yaml');
-    app = await createApp({ apiSpec, validateRequests: {removeAdditional:true}, validateResponses: true }, 3005, (app) =>
-      app
-        .post(`${app.basePath}/products`, (req, res) => res.json(req.body))
-        .get(`${app.basePath}/products`, (req, res) =>
-          res.json([
-            {
-              id: 'id_1',
-              name: 'name_1',
-              price: 9.99,
-              created_at: new Date().toISOString(),
-            },
-          ]),
-        )
-        .post(`${app.basePath}/products/inlined`, (req, res) =>
-          res.json(req.body),
-        )
-        .post(`${app.basePath}/user`, (req, res) =>
-          res.json({
-            ...req.body,
-            ...(req.query.include_id ? { id: 'test_id' } : {}),
+    app = await createApp(
+      {
+        apiSpec,
+        validateRequests: { removeAdditional: true },
+        validateResponses: true,
+      },
+      3005,
+      (app) =>
+        app
+          .post(`${app.basePath}/products`, (req, res) => {
+            res.json(req.body);
+          })
+          .get(`${app.basePath}/products`, (req, res) => {
+            res.json([
+              {
+                id: 'id_1',
+                name: 'name_1',
+                price: 9.99,
+                created_at: new Date().toISOString(),
+              },
+            ]);
+          })
+          .post(`${app.basePath}/products/inlined`, (req, res) => {
+            res.json(req.body);
+          })
+          .post(`${app.basePath}/user`, (req, res) => {
+            res.json({
+              ...req.body,
+              ...(req.query.include_id ? { id: 'test_id' } : {}),
+            });
+          })
+          .post(`${app.basePath}/user_inlined`, (req, res) => {
+            res.json({
+              ...req.body,
+              ...(req.query.include_id ? { id: 'test_id' } : {}),
+            });
+          })
+          .post(`${app.basePath}/products/nested`, (req, res) => {
+            const body = req.body;
+            body.id = 'test';
+            body.created_at = new Date().toISOString();
+            body.reviews = body.reviews.map((r) => ({
+              id: 99,
+              rating: r.rating ?? 2,
+            }));
+            res.json(body);
+          })
+          .post(`${app.basePath}/readonly_required_allof`, (req, res) => {
+            const json = {
+              name: 'My Name',
+              ...(req.query.include_id ? { id: 'test_id' } : {}),
+            };
+            res.json(json);
           }),
-        )
-        .post(`${app.basePath}/user_inlined`, (req, res) =>
-          res.json({
-            ...req.body,
-            ...(req.query.include_id ? { id: 'test_id' } : {}),
-          }),
-        )
-        .post(`${app.basePath}/products/nested`, (req, res) => {
-          const body = req.body;
-          body.id = 'test';
-          body.created_at = new Date().toISOString();
-          body.reviews = body.reviews.map((r) => ({
-            id: 99,
-            rating: r.rating ?? 2,
-          }));
-          res.json(body);
-        })
-        .post(`${app.basePath}/readonly_required_allof`, (req, res) => {
-          const json = {
-            name: 'My Name',
-            ...(req.query.include_id ? { id: 'test_id' } : {}),
-          };
-          res.json(json);
-        }),
     );
   });
 
@@ -63,23 +73,22 @@ describe(packageJson.name, () => {
   });
 
   it('should remove read only properties in requests thanks to removeAdditional', async () =>
-      request(app)
-            .post(`${app.basePath}/products`)
-            .set('content-type', 'application/json')
-            .send({
-                id: 'id_1',
-                name: 'some name',
-                price: 10.99,
-                created_at: new Date().toISOString(),
-            })
-            .expect(200)
-            .then((r) => {
-                const body = r.body;
-                // id is a readonly property and should not be allowed in the request
-                // but, as removeAdditional is true for requests, it should be deleted before entering in the route
-                expect(body.id).to.be.undefined;
-            }));
-
+    request(app)
+      .post(`${app.basePath}/products`)
+      .set('content-type', 'application/json')
+      .send({
+        id: 'id_1',
+        name: 'some name',
+        price: 10.99,
+        created_at: new Date().toISOString(),
+      })
+      .expect(200)
+      .then((r) => {
+        const body = r.body;
+        // id is a readonly property and should not be allowed in the request
+        // but, as removeAdditional is true for requests, it should be deleted before entering in the route
+        expect(body.id).to.be.undefined;
+      }));
 
   it('should allow read only properties in responses', async () =>
     request(app)
@@ -102,11 +111,10 @@ describe(packageJson.name, () => {
       .expect(200)
       .then((r) => {
         const body = r.body;
-          // id is a readonly property and should not not be allowed in the request
-          // but, as removeAdditional is true for requests, it should be deleted before entering in the route
-          expect(body.id).to.be.undefined;
+        // id is a readonly property and should not not be allowed in the request
+        // but, as removeAdditional is true for requests, it should be deleted before entering in the route
+        expect(body.id).to.be.undefined;
       }));
-
 
   it('should remove read only properties in requests (nested and deep nested schema $refs) thanks to removeAdditional', async () =>
     request(app)
@@ -117,18 +125,20 @@ describe(packageJson.name, () => {
         name: 'some name',
         price: 10.99,
         created_at: new Date().toISOString(),
-        reviews: [{
-          id: 10,
-          rating: 5,
-        }],
+        reviews: [
+          {
+            id: 10,
+            rating: 5,
+          },
+        ],
       })
       .expect(200)
       .then((r) => {
         const body = r.body;
-          // id is a readonly property and should not not be allowed in the request
-          // but, as removeAdditional is true for requests, it should be deleted before entering in the route
-          expect(body.id).to.be.equal('test');
-          expect(body.reviews[0].id).to.be.equal(99);
+        // id is a readonly property and should not not be allowed in the request
+        // but, as removeAdditional is true for requests, it should be deleted before entering in the route
+        expect(body.id).to.be.equal('test');
+        expect(body.reviews[0].id).to.be.equal(99);
       }));
 
   it('should pass validation if required read only properties to be missing from request ($ref)', async () =>

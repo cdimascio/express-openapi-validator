@@ -2,9 +2,10 @@ import * as path from 'path';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'unknown.formats.yaml');
@@ -15,11 +16,11 @@ describe(packageJson.name, () => {
       },
       3005,
       (app) => {
-        app.post(`${app.basePath}/persons`, (req, res) =>
+        app.post(`${app.basePath}/persons`, (req, res) => {
           res.json({
             ...req.body,
-          }),
-        );
+          });
+        });
       },
       true,
     );

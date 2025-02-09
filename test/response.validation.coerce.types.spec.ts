@@ -2,11 +2,12 @@ import * as path from 'path';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 
 describe('response validation with type coercion', () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // set up express app
@@ -21,10 +22,10 @@ describe('response validation with type coercion', () => {
       (app) => {
         app
           .get(`${app.basePath}/boolean`, (req, res) => {
-            return res.json(req.query.value);
+            res.json(req.query.value);
           })
           .get(`${app.basePath}/object`, (req, res) => {
-            return res.json({
+            res.json({
               id: '1', // we expect this to type coerce to number
               name: 'name',
               tag: 'tag',
@@ -48,7 +49,5 @@ describe('response validation with type coercion', () => {
         expect(r.body).to.equal(true);
       }));
   it('should coerce id from string to number', async () =>
-    request(app)
-      .get(`${app.basePath}/object`)
-      .expect(200));
+    request(app).get(`${app.basePath}/object`).expect(200));
 });

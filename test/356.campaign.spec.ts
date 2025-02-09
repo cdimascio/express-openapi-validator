@@ -1,19 +1,21 @@
- import * as path from 'path';
+import * as path from 'path';
 import * as express from 'express';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
 import { expect } from 'chai';
+import { Server } from 'http';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
-
+  let app: AppWithServer;
+  let server: Server;
   before(async () => {
     // Set up the express app
     const apiSpec = path.join(__dirname, '356.campaign.yaml');
-    app = await createApp({ apiSpec }, 3005, (app) =>
+    app = await createApp({ apiSpec }, 3005, (app) => {
       app.use(
-        express.Router().post(`/campaign`, (req, res) =>
+        express.Router().post('/campaign', (req, res) => {
           res.status(201).json({
             id: 123,
             name: req.body.name,
@@ -21,10 +23,10 @@ describe(packageJson.name, () => {
             startDate: req.body.startDate,
             createdAt: req.body.startDate,
             updatedAt: req.body.updatedAt,
-          }),
-        ),
-      ),
-    );
+          });
+        }),
+      );
+    });
   });
 
   after(() => {

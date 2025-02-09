@@ -1,10 +1,11 @@
 import * as path from 'path';
 import * as request from 'supertest';
 import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 describe('request body validation coercion', () => {
-  let coerceApp = null;
-  let nonCoerceApp = null;
+  let coerceApp: AppWithServer;
+  let nonCoerceApp: AppWithServer;
 
   const defineRoutes = (app) => {
     app.post(`${app.basePath}/coercion_test`, (req, res) => {

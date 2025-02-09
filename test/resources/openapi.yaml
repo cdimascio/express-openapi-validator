@@ -59,6 +59,8 @@ paths:
             type: integer
             format: int32
             minimum: 5
+            example: 8
+          example: 8
         - name: test
           in: query
           description: maximum number of results to return
@@ -81,6 +83,7 @@ paths:
                     enum:
                       - bar
                       - baz
+              example: {}
         - name: testArrayNoExplode
           in: query
           description: Array in query param
@@ -123,14 +126,21 @@ paths:
             application/json:
               schema:
                 type: array
+                example: 
+                  - {}
                 items:
                   $ref: '#/components/schemas/Pet'
+              example: {}
         default:
           description: unexpected error
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+              examples:
+                jsonObject:
+                  summary: A sample object
+                  externalValue: "http://example.com/examples/object-example.json"
     post:
       description: Creates a new pet in the store.  Duplicates are allowed
       operationId: addPet
@@ -397,6 +407,12 @@ paths:
                 $ref: '#/components/schemas/Error'
 
 components:
+  examples: 
+    objectExample:
+      value:
+        id: 1
+        name: new object
+      summary: A sample object
   parameters:
     $ref: 'xt.openapi.parameters.yaml#/parameters'
 

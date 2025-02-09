@@ -3,21 +3,22 @@ import * as express from 'express';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
     const apiSpec = path.join(__dirname, 'optional-request-body.yaml');
     app = await createApp({ apiSpec }, 3005, (app) =>
       app.use(
-        express.Router().post(`/documents`, (req, res) =>
+        express.Router().post(`/documents`, (req, res) => {
           res.status(201).json({
             id: 123,
             name: req.body ? req.body.name : '',
-          }),
-        ),
+          });
+        }),
       ),
     );
   });
@@ -33,9 +34,7 @@ describe(packageJson.name, () => {
       .expect(201));
 
   it('create document should return 201 with empty body', async () =>
-    request(app)
-      .post(`/documents`)
-      .expect(201));
+    request(app).post(`/documents`).expect(201));
 
   it('return 415', async () =>
     request(app)

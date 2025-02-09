@@ -4,9 +4,10 @@ import * as request from 'supertest';
 import * as packageJson from '../package.json';
 import { expect } from 'chai';
 import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
@@ -16,10 +17,18 @@ describe(packageJson.name, () => {
         `${app.basePath}`,
         express
           .Router()
-          .get(`/serialisable`, (req, res) => res.json(req.query))
-          .get(`/tags`, (req, res) => res.json(req.query))
-          .get(`/deep_object`, (req, res) => res.json(req.query))
-          .get(`/deep_object_2`, (req, res) => res.json(req.query)),
+          .get(`/serialisable`, (req, res) => {
+            res.json(req.query);
+          })
+          .get(`/tags`, (req, res) => {
+            res.json(req.query);
+          })
+          .get(`/deep_object`, (req, res) => {
+            res.json(req.query);
+          })
+          .get(`/deep_object_2`, (req, res) => {
+            res.json(req.query);
+          }),
       ),
     );
   });

@@ -4,9 +4,10 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
@@ -16,9 +17,15 @@ describe(packageJson.name, () => {
         `${app.basePath}`,
         express
           .Router()
-          .post(`/pets/nullable`, (req, res) => res.json(req.body))
-          .post(`/test/object`, (req, res) => res.json(req.body))
-          .post(`/test/object/nullable_int`, (req, res) => res.json(req.body)),
+          .post(`/pets/nullable`, (req, res) => {
+            res.json(req.body);
+          })
+          .post(`/test/object`, (req, res) => {
+            res.json(req.body);
+          })
+          .post(`/test/object/nullable_int`, (req, res) => {
+            res.json(req.body);
+          }),
       ),
     );
   });

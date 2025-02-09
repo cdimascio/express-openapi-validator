@@ -1,25 +1,30 @@
 import * as request from 'supertest';
 import * as express from 'express';
-import { createApp } from "../common/app";
-import { join } from "path";
+import { createApp } from '../common/app';
+import { join } from 'path';
+import { AppWithServer } from '../common/app.common';
 
 describe('Request body in operations without well defined semantics - OpenAPI 3.1', () => {
-  let app;
+  let app: AppWithServer;
 
   before(async () => {
-    const apiSpec = join('test', 'openapi_3.1', 'resources', 'non_defined_semantics_request_body.yaml');
+    const apiSpec = join(
+      'test',
+      'openapi_3.1',
+      'resources',
+      'non_defined_semantics_request_body.yaml',
+    );
     app = await createApp(
       { apiSpec, validateRequests: true, validateResponses: true },
       3005,
-      (app) => app.use(
-        express
-          .Router()
-          .get(`/v1/entity`, (req, res) =>
+      (app) =>
+        app.use(
+          express.Router().get(`/v1/entity`, (req, res) => {
             res.status(200).json({
-              property: null
-            }),
-          ),
-      )
+              property: null,
+            });
+          }),
+        ),
     );
   });
 
@@ -33,7 +38,7 @@ describe('Request body in operations without well defined semantics - OpenAPI 3.
     return request(app)
       .get(`${app.basePath}/entity`)
       .set('Content-Type', 'application/json')
-      .send({request: 123})
+      .send({ request: 123 })
       .expect(400);
   });
 
@@ -42,7 +47,7 @@ describe('Request body in operations without well defined semantics - OpenAPI 3.
     return request(app)
       .delete(`${app.basePath}/entity`)
       .set('Content-Type', 'application/json')
-      .send({request: 123})
+      .send({ request: 123 })
       .expect(400);
   });
-})
+});

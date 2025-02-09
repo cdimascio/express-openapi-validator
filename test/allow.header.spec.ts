@@ -6,16 +6,23 @@ import * as packageJson from '../package.json';
 import * as OpenApiValidator from '../src';
 import { OpenAPIV3 } from '../src/framework/types';
 import { startServer } from './common/app.common';
+import { RequestHandler } from 'express';
+
+interface AppWithServer extends express.Application {
+  server: Server;
+}
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
-    app = await createApp();
+    app = await createApp() as AppWithServer;
   });
 
   after(() => {
-    app.server.close();
+    if (app && app.server) {
+      app.server.close();
+    }
   });
 
   it('adds "Allow" header to 405 - Method Not Allowed', async () =>
@@ -39,12 +46,21 @@ async function createApp(): Promise<express.Express & { server?: Server }> {
       validateRequests: true,
     }),
   );
-  app.use(
-    express
-      .Router()
-      .get('/v1/pets/:petId', () => ['cat', 'dog'])
-      .post('/v1/pets/:petId', (req, res) => res.json(req.body)),
-  );
+
+  const router = express.Router();
+  
+  const getHandler: RequestHandler = (req, res) => {
+    res.json(['cat', 'dog']);
+  };
+  
+  const postHandler: RequestHandler = (req, res) => {
+    res.json(req.body);
+  };
+  
+  router.get('/v1/pets/:petId', getHandler);
+  router.post('/v1/pets/:petId', postHandler);
+  
+  app.use(router);
 
   await startServer(app, 3001);
   return app;

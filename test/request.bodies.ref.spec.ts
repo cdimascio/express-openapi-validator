@@ -3,9 +3,10 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 describe('request bodies', () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
@@ -23,17 +24,20 @@ describe('request bodies', () => {
       (app) => {
         // Define new coercion routes
         app
-          .post(`${app.basePath}/415_test`, (req, res) => ({
-            success: true,
-            ...req,
-          }))
+          .post(`${app.basePath}/415_test`, (req, res) => {
+            res.json({
+              success: true,
+              ...req,
+            });
+          })
           .post(`${app.basePath}/request_bodies_ref`, (req, res) => {
             if (req.query.bad_body) {
               const r = req.body;
               r.unexpected_prop = 'bad';
               res.json(r);
             } else if (req.header('accept')) {
-              res.type(req.header('accept')).send(req.body);
+              const accept = req.header('accept') as string;
+              res.type(accept).send(req.body);
             } else {
               res.json(req.body);
             }
@@ -125,9 +129,7 @@ describe('request bodies', () => {
         expect(r.body.errors).to.be.an('array');
         expect(r.body.errors).to.have.length(1);
         const message = r.body.errors[0].message;
-        expect(message).to.equal(
-          "must have required property 'testProperty'",
-        );
+        expect(message).to.equal("must have required property 'testProperty'");
       }));
 
   it('should return 200 if testProperty body property is provided', async () =>
