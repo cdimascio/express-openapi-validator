@@ -21,6 +21,8 @@
 - ✂️ **\$ref** support; split specs over multiple files
 - 🎈 file upload
 
+_Express 5 support is in progress--a subset of functionality is working. Try it out and provide feedback!_
+
 **Docs:**
 - 📖 [documentation](https://cdimascio.github.io/express-openapi-validator-documentation/)
 
