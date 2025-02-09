@@ -125,10 +125,10 @@ describe(packageJson.name, () => {
             .get(`/api/test/:id`, (req, res) =>
               res.status(200).json({ id: 'id-test', label: 'label' }),
             )
-            .post(`/api/test/:id:clone`, (req, res) =>
+            .post(`/api/test/:id\\:clone`, (req, res) =>
               res.status(200).json({ ...req.body, id: 'id-test' }),
             )
-            .get('/api/some/:wildcard(*)', (req, res) => {
+            .get('/api/some/:wildcard(*wildcardSuffix)', (req, res) => {
               const wildcard = req.params.wildcard;
               console.log(`Wildcard: ${wildcard}`);
               res.status(200).send(`Matched wildcard: ${wildcard}`);
