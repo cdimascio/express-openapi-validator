@@ -95,6 +95,8 @@ export class SchemaPreprocessor {
   private apiDocRes: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
   private serDesMap: SerDesMap;
   private responseOpts: ValidateResponseOpts;
+  private resolvedSchemaCache = new Map<string, SchemaObject>();
+
   constructor(
     apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
     ajvOptions: Options,
@@ -470,7 +472,7 @@ export class SchemaPreprocessor {
     }
   }
 
-  private handleReadonly(
+private handleReadonly(
     parent: OpenAPIV3.SchemaObject,
     schema: OpenAPIV3.SchemaObject,
     opts,
@@ -606,11 +608,17 @@ export class SchemaPreprocessor {
   private resolveSchema<T>(schema): T {
     if (!schema) return null;
     const ref = schema?.['$ref'];
+    if (ref && this.resolvedSchemaCache.has(ref)) {
+      return this.resolvedSchemaCache.get(ref) as T;
+    }
     let res = (ref ? this.ajv.getSchema(ref)?.schema : schema) as T;
     if (ref && !res) {
       const path = ref.split('/').join('.');
       const p = path.substring(path.indexOf('.') + 1);
       res = _get(this.apiDoc, p);
+    }
+    if (ref) {
+      this.resolvedSchemaCache.set(ref, res);
     }
     return res;
   }
