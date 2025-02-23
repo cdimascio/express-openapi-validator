@@ -1,3 +1,9 @@
+##  (2025-02-23)
+
+* caches pre-processed resolved schemas ([ac02bdf](https://github.com/cdimascio/express-openapi-validator/commit/ac02bdf))
+
+
+
 ##  (2025-02-09)
 
 * allow mutation for express 5 validaiton (#1043) ([0439224](https://github.com/cdimascio/express-openapi-validator/commit/0439224)), closes [#1043](https://github.com/cdimascio/express-openapi-validator/issues/1043)
