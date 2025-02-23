@@ -1,3 +1,26 @@
+##  (2025-02-23)
+
+* caches pre-processed resolved schemas ([ac02bdf](https://github.com/cdimascio/express-openapi-validator/commit/ac02bdf))
+
+
+
+##  (2025-02-09)
+
+* allow mutation for express 5 validaiton (#1043) ([0439224](https://github.com/cdimascio/express-openapi-validator/commit/0439224)), closes [#1043](https://github.com/cdimascio/express-openapi-validator/issues/1043)
+* fix test ([97158fd](https://github.com/cdimascio/express-openapi-validator/commit/97158fd))
+* Update README.md ([405a9ff](https://github.com/cdimascio/express-openapi-validator/commit/405a9ff))
+* Update README.md ([64582e9](https://github.com/cdimascio/express-openapi-validator/commit/64582e9))
+
+
+
+##  (2024-12-27)
+
+* re-enable keywords now properly supported (#1031) ([83dac8a](https://github.com/cdimascio/express-openapi-validator/commit/83dac8a)), closes [#1031](https://github.com/cdimascio/express-openapi-validator/issues/1031)
+* update deps ([6eb86a6](https://github.com/cdimascio/express-openapi-validator/commit/6eb86a6))
+* v5.4.2 ([c811993](https://github.com/cdimascio/express-openapi-validator/commit/c811993))
+
+
+
 ##  (2024-12-27)
 
 * fixes method res with path params (#1032) ([aa60f9c](https://github.com/cdimascio/express-openapi-validator/commit/aa60f9c)), closes [#1032](https://github.com/cdimascio/express-openapi-validator/issues/1032)

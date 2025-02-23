@@ -61,9 +61,6 @@ function createAjv(
   for (let [formatName, formatDefinition] of Object.entries(options.formats)) {
     ajv.addFormat(formatName, formatDefinition);
   }
-  ajv.removeKeyword('propertyNames');
-  ajv.removeKeyword('contains');
-  ajv.removeKeyword('const');
 
   if (options.serDesMap) {
     // Alias for `type` that can execute AFTER x-eov-res-serdes
