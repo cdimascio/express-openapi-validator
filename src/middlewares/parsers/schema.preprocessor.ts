@@ -463,7 +463,10 @@ export class SchemaPreprocessor {
     schema: OpenAPIV3.SchemaObject,
     opts,
   ) {
-    if (schema.type !== 'object') return;
+    const isComposition = ['oneOf', 'anyOf', 'allOf', 'not'].some(
+      (key) => key in schema && schema[key] !== undefined,
+    )
+    if (schema.type !== 'object' && !isComposition) return;
     if (schema?.example) {
       delete schema.example
     }
