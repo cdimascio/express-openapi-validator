@@ -1,3 +1,10 @@
+##  (2025-03-02)
+
+* removes example and examples from all schemas, not just object types ([bd9426c](https://github.com/cdimascio/express-openapi-validator/commit/bd9426c))
+* Update README.md (#1033) ([8e37442](https://github.com/cdimascio/express-openapi-validator/commit/8e37442)), closes [#1033](https://github.com/cdimascio/express-openapi-validator/issues/1033)
+
+
+
 ##  (2025-02-23)
 
 * caches pre-processed resolved schemas ([ac02bdf](https://github.com/cdimascio/express-openapi-validator/commit/ac02bdf))
