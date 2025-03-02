@@ -1,3 +1,8 @@
+2025-03-02
+===================
+
+
+
 ##  (2025-03-02)
 
 * removes example and examples from all schemas, not just object types ([bd9426c](https://github.com/cdimascio/express-openapi-validator/commit/bd9426c))
