@@ -463,12 +463,12 @@ export class SchemaPreprocessor {
     schema: OpenAPIV3.SchemaObject,
     opts,
   ) {
-    if (schema.type !== 'object') return;
+    // Remove example and examples from all schema types, not just objects
     if (schema?.example) {
-      delete schema.example
+      delete schema.example;
     }
     if (schema?.examples) {
-      delete schema.examples
+      delete schema.examples;
     }
   }
 
