@@ -44,16 +44,24 @@ class Node<T, P> {
 }
 type SchemaObjectNode = Node<SchemaObject, SchemaObject>;
 
-function isParameterObject(node: ParameterObject | ReferenceObject): node is ParameterObject {
-  return !((node as ReferenceObject).$ref);
+function isParameterObject(
+  node: ParameterObject | ReferenceObject,
+): node is ParameterObject {
+  return !(node as ReferenceObject).$ref;
 }
-function isReferenceObject(node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject): node is ReferenceObject {
-  return !!((node as ReferenceObject).$ref);
+function isReferenceObject(
+  node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject,
+): node is ReferenceObject {
+  return !!(node as ReferenceObject).$ref;
 }
-function isArraySchemaObject(node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject): node is ArraySchemaObject {
-  return !!((node as ArraySchemaObject).items);
+function isArraySchemaObject(
+  node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject,
+): node is ArraySchemaObject {
+  return !!(node as ArraySchemaObject).items;
 }
-function isNonArraySchemaObject(node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject): node is NonArraySchemaObject {
+function isNonArraySchemaObject(
+  node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject,
+): node is NonArraySchemaObject {
   return !isArraySchemaObject(node) && !isReferenceObject(node);
 }
 
@@ -119,6 +127,10 @@ export class SchemaPreprocessor {
     // Now that we've processed paths, clone a response spec if we are validating responses
     this.apiDocRes = !!this.responseOpts ? cloneDeep(this.apiDoc) : null;
 
+    if (this.apiDoc.components) {
+      this.removeExamples(this.apiDoc.components);
+    }
+
     const schemaNodes = {
       schemas: componentSchemas,
       requestBodies: r?.requestBodies,
@@ -163,7 +175,7 @@ export class SchemaPreprocessor {
       // Since OpenAPI 3.1, paths can be a #ref to reusable path items
       // The following line mutates the paths item to dereference the reference, so that we can process as a POJO, as we would if it wasn't a reference
       this.apiDoc.paths[p] = pathItem;
-      
+
       for (const method of Object.keys(pathItem)) {
         if (httpMethods.has(method)) {
           const operation = <OpenAPIV3.OperationObject>pathItem[method];
@@ -173,7 +185,8 @@ export class SchemaPreprocessor {
           const node = new Root<OpenAPIV3.OperationObject>(operation, path);
           const requestBodies = this.extractRequestBodySchemaNodes(node);
           const responseBodies = this.extractResponseSchemaNodes(node);
-          const requestParameters = this.extractRequestParameterSchemaNodes(node);
+          const requestParameters =
+            this.extractRequestParameterSchemaNodes(node);
 
           requestBodySchemas.push(...requestBodies);
           responseSchemas.push(...responseBodies);
@@ -246,7 +259,10 @@ export class SchemaPreprocessor {
           recurse(node, child, opts);
         });
       } else if (schema.additionalProperties) {
-        const child = new Node(node, schema.additionalProperties, [...node.path, 'additionalProperties']);
+        const child = new Node(node, schema.additionalProperties, [
+          ...node.path,
+          'additionalProperties',
+        ]);
         recurse(node, child, opts);
       }
     };
@@ -302,7 +318,7 @@ export class SchemaPreprocessor {
         this.handleReadonly(pschema, nschema, options);
         this.handleWriteonly(pschema, nschema, options);
         this.processDiscriminator(pschema, nschema, options);
-        this.removeExamples(pschema, nschema, options)
+        this.removeSchemaExamples(pschema, nschema, options);
       }
     }
   }
@@ -458,21 +474,23 @@ export class SchemaPreprocessor {
     }
   }
 
-  private removeExamples(
+  private removeSchemaExamples(
     parent: OpenAPIV3.SchemaObject,
     schema: OpenAPIV3.SchemaObject,
     opts,
   ) {
-    // Remove example and examples from all schema types, not just objects
-    if (schema?.example) {
-      delete schema.example;
-    }
-    if (schema?.examples) {
-      delete schema.examples;
-    }
+    this.removeExamples(parent);
+    this.removeExamples(schema);
   }
 
-private handleReadonly(
+  private removeExamples(
+    object: OpenAPIV3.SchemaObject | OpenAPIV3.MediaTypeObject,
+  ): void {
+    delete object?.example;
+    delete object?.examples;
+  }
+
+  private handleReadonly(
     parent: OpenAPIV3.SchemaObject,
     schema: OpenAPIV3.SchemaObject,
     opts,
@@ -536,6 +554,10 @@ private handleReadonly(
         mediaTypeObject.schema,
       );
       op.requestBody.content[type].schema = mediaTypeSchema;
+
+      // TODO replace with visitor
+      this.removeExamples(op.requestBody.content[type]);
+
       const path = [...node.path, 'requestBody', 'content', type, 'schema'];
       result.push(new Root(mediaTypeSchema, path));
     }
@@ -575,6 +597,10 @@ private handleReadonly(
               type,
               'schema',
             ];
+
+            // TODO replace with visitor
+            this.removeExamples(rschema.content[type]);
+
             schemas.push(new Root(schema, path));
           }
         }
@@ -586,21 +612,25 @@ private handleReadonly(
   private extractRequestParameterSchemaNodes(
     operationNode: Root<OperationObject>,
   ): Root<SchemaObject>[] {
-
     return (operationNode.schema.parameters ?? []).flatMap((node) => {
       const parameterObject = isParameterObject(node) ? node : undefined;
+
+      // TODO replace with visitor
+      // TODO This does not handle JSON query parameters
+      this.removeExamples(parameterObject);
+
       if (!parameterObject?.schema) return [];
 
-      const schema = isNonArraySchemaObject(parameterObject.schema) ?
-        parameterObject.schema :
-        undefined;
+      const schema = isNonArraySchemaObject(parameterObject.schema)
+        ? parameterObject.schema
+        : undefined;
       if (!schema) return [];
 
       return new Root(schema, [
         ...operationNode.path,
         'parameters',
         parameterObject.name,
-        parameterObject.in
+        parameterObject.in,
       ]);
     });
   }
