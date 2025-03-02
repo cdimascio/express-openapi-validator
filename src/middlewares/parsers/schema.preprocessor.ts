@@ -490,7 +490,7 @@ export class SchemaPreprocessor {
     delete object?.examples;
   }
 
-private handleReadonly(
+  private handleReadonly(
     parent: OpenAPIV3.SchemaObject,
     schema: OpenAPIV3.SchemaObject,
     opts,
