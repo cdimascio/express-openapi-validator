@@ -234,6 +234,8 @@ export class SchemaPreprocessor<
           return;
         }
 
+        if (seenObjects.has(node.object)) return;
+
         if (isReferenceNode(node) && isReferenceObject(node.object)) {
           node.originalRef = node.object.$ref;
 
@@ -261,8 +263,6 @@ export class SchemaPreprocessor<
 
           return traverse(parent, node as VisitorNode<NodeType>, state);
         }
-
-        if (seenObjects.has(node.object)) return;
 
         seenObjects.add(node.object);
 
