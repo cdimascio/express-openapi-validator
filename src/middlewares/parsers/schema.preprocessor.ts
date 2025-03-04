@@ -230,7 +230,15 @@ export class SchemaPreprocessor<
 
           // Resolve reference object in parent, then process again with resolved schema
           // As every object (aka schema) is 'pass-by-reference', this will update the actual apiDoc.
-          parent.object[node.path[-1]] = resolvedObject;
+          const lastPathComponent = node.path[node.path.length - 1];
+          if (isInteger(lastPathComponent)) {
+            const arrayName = node.path[node.path.length - 2];
+            const index = parseInt(lastPathComponent);
+            parent.object[arrayName][index] = resolvedObject;
+          } else {
+            parent.object[lastPathComponent] = resolvedObject;
+          }
+
           node.object = resolvedObject;
 
           return traverse(parent, node as VisitorNode<NodeType>, state);
@@ -967,4 +975,8 @@ function findKeys(
 
 function getKeyFromRef(ref: string) {
   return ref.split('/components/schemas/')[1];
+}
+
+function isInteger(str: string): boolean {
+  return /^\d+$/.test(str);
 }
