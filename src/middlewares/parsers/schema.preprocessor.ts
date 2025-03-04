@@ -520,10 +520,6 @@ export class SchemaPreprocessor<
             this.ajv.compile(newSchema);
         }
       }
-
-      //reset data
-      //parentState.properties = {};
-      //delete parentState.required;
     }
   }
 
