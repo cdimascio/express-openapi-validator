@@ -68,7 +68,19 @@ type VisitorTypesWithReference = {
     : never;
 }[keyof VisitorObjects];
 
+type DiscriminatorState = {
+  discriminator?: string;
+  options?: { option: any; ref: any }[];
+  properties?: {
+    [p: string]: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject;
+  };
+  required?: string[];
+};
+
 class VisitorNode<NodeType extends VisitorTypes> {
+  public discriminator: DiscriminatorState = {};
+  public originalRef?: string;
+
   constructor(
     public type: NodeType,
     public object: VisitorObjects[NodeType] | undefined,
@@ -162,16 +174,7 @@ type VisitorState = {
 
 type State<Type extends 'request' | 'response'> = {
   type: Type;
-  discriminator: {
-    discriminator?: string;
-    options?: { option: any; ref: any }[];
-    properties?: {
-      [p: string]: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject;
-    };
-    required?: string[];
-  };
   path: string[];
-  originalObject?: OpenAPIObject;
 };
 
 export class SchemaPreprocessor<
@@ -219,6 +222,8 @@ export class SchemaPreprocessor<
         }
 
         if (isReferenceNode(node) && isReferenceObject(node.object)) {
+          node.originalRef = node.object.$ref;
+
           const resolvedObject = this.resolveObject<typeof node.type>(
             node.object,
           );
@@ -232,9 +237,6 @@ export class SchemaPreprocessor<
         }
 
         seenObjects.add(node.object);
-
-        state.request.originalObject = node.object;
-        state.response.originalObject = node.object;
 
         this.visitNode(parent, node, state);
 
@@ -282,8 +284,8 @@ export class SchemaPreprocessor<
     };
 
     traverse(undefined, root, {
-      request: { type: 'request', discriminator: {}, path: [] },
-      response: { type: 'response', discriminator: {}, path: [] },
+      request: { type: 'request', path: [] },
+      response: { type: 'response', path: [] },
     });
   }
 
@@ -408,17 +410,17 @@ export class SchemaPreprocessor<
         this.handleWriteonly(parentSchema, nodeSchema, options);
       }
 
-      this.processDiscriminator(parentSchema, nodeSchema, options);
+      this.processDiscriminator(parent, node);
     }
   }
 
   private processDiscriminator(
-    parentSchema: VisitorObjects['schema'],
-    nodeSchema: VisitorObjects['schema'],
-    state: State<'request' | 'response'>,
+    parent: VisitorNode<'schema'> | undefined,
+    node: VisitorNode<'schema'>,
   ): void {
-    const o = state.discriminator;
-    const schemaObj = <OpenAPIV3.CompositionSchemaObject>nodeSchema;
+    const nodeState = node.discriminator;
+    const schemaObj = <OpenAPIV3.CompositionSchemaObject>node.object;
+
     const xOf =
       schemaObj.oneOf !== undefined
         ? 'oneOf'
@@ -426,12 +428,8 @@ export class SchemaPreprocessor<
         ? 'anyOf'
         : undefined;
 
-    if (
-      xOf &&
-      schemaObj.discriminator?.propertyName !== undefined &&
-      o.discriminator === undefined
-    ) {
-      o.options = schemaObj[xOf].flatMap((refObject) => {
+    if (xOf && schemaObj.discriminator?.propertyName !== undefined) {
+      nodeState.options = schemaObj[xOf].flatMap((refObject) => {
         if (refObject['$ref'] === undefined) {
           return [];
         }
@@ -444,29 +442,31 @@ export class SchemaPreprocessor<
           ? keys.map((option) => ({ option, ref }))
           : [{ option: ref, ref }];
       });
-      o.discriminator = schemaObj.discriminator?.propertyName;
-      o.properties = {
-        ...(o.properties ?? {}),
+      nodeState.discriminator = schemaObj.discriminator?.propertyName;
+      nodeState.properties = {
+        ...(nodeState.properties ?? {}),
         ...(schemaObj.properties ?? {}),
       };
-      o.required = Array.from(
-        new Set((o.required ?? []).concat(schemaObj.required ?? [])),
+      nodeState.required = Array.from(
+        new Set((nodeState.required ?? []).concat(schemaObj.required ?? [])),
       );
     }
 
     if (xOf) return;
 
-    if (o.discriminator) {
-      o.properties = {
-        ...(o.properties ?? {}),
+    const parentState = parent?.discriminator;
+
+    if (parent && parentState && parentState.discriminator) {
+      parentState.properties = {
+        ...(parentState.properties ?? {}),
         ...(schemaObj.properties ?? {}),
       };
-      o.required = Array.from(
-        new Set((o.required ?? []).concat(schemaObj.required ?? [])),
+      parentState.required = Array.from(
+        new Set((parentState.required ?? []).concat(schemaObj.required ?? [])),
       );
 
-      const ancestor: any = parentSchema;
-      const ref = state.originalObject['$ref'];
+      const ancestor: any = parent.object;
+      const ref = node.originalRef;
 
       if (!ref) return;
 
@@ -483,14 +483,14 @@ export class SchemaPreprocessor<
         const newSchema = JSON.parse(JSON.stringify(schemaObj));
 
         const newProperties = {
-          ...(o.properties ?? {}),
+          ...(parentState.properties ?? {}),
           ...(newSchema.properties ?? {}),
         };
         if (Object.keys(newProperties).length > 0) {
           newSchema.properties = newProperties;
         }
 
-        newSchema.required = o.required;
+        newSchema.required = parentState.required;
         if (newSchema.required.length === 0) {
           delete newSchema.required;
         }
@@ -500,8 +500,8 @@ export class SchemaPreprocessor<
           enumerable: false,
           value: ancestor._discriminator ?? {
             validators: {},
-            options: o.options,
-            property: o.discriminator,
+            options: parentState.options,
+            property: parentState.discriminator,
           },
         });
 
@@ -510,9 +510,10 @@ export class SchemaPreprocessor<
             this.ajv.compile(newSchema);
         }
       }
+
       //reset data
-      o.properties = {};
-      delete o.required;
+      //parentState.properties = {};
+      //delete parentState.required;
     }
   }
 
