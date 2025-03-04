@@ -673,16 +673,18 @@ export class SchemaPreprocessor<
   ): VisitorNode<any>[] {
     const children = [];
 
-    children.push(...VisitorNode.fromParentDict(parent, 'pathItem', 'paths'));
-
     if (isDocumentV3_1(parent.object)) {
       children.push(
         VisitorNode.fromParent(parent, 'componentsV3_1', 'components'),
       );
-      children.push(VisitorNode.fromParentDict(parent, 'pathItem', 'webhooks'));
+      children.push(
+        ...VisitorNode.fromParentDict(parent, 'pathItem', 'webhooks'),
+      );
     } else {
       children.push(VisitorNode.fromParent(parent, 'components'));
     }
+
+    children.push(...VisitorNode.fromParentDict(parent, 'pathItem', 'paths'));
 
     return children;
   }
