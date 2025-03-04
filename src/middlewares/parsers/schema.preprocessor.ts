@@ -735,12 +735,7 @@ export class SchemaPreprocessor<
 
     HttpMethods.forEach((method) => {
       if (method in parent.object)
-        children.push(
-          new VisitorNode('operation', parent.object[method], [
-            ...parent.path,
-            method,
-          ]),
-        );
+        children.push(VisitorNode.fromParent(parent, 'operation', method));
     });
 
     children.push(
@@ -844,8 +839,8 @@ export class SchemaPreprocessor<
     return children;
   }
 
-  private getChildrenForParameterBase(
-    parent: VisitorNode<'parameter' | 'header'>,
+  private getChildrenForHeader(
+    parent: VisitorNode<'header'>,
   ): VisitorNode<any>[] {
     const children = [];
 
@@ -853,16 +848,6 @@ export class SchemaPreprocessor<
     children.push(
       ...VisitorNode.fromParentDict(parent, 'mediaType', 'content'),
     );
-
-    return children;
-  }
-
-  private getChildrenForHeader(
-    parent: VisitorNode<'header'>,
-  ): VisitorNode<any>[] {
-    const children = [];
-
-    children.push(...this.getChildrenForParameterBase(parent));
 
     return children;
   }
@@ -883,10 +868,19 @@ export class SchemaPreprocessor<
   private getChildrenForParameter(
     parent: VisitorNode<'parameter'>,
   ): VisitorNode<any>[] {
+    if (isReferenceObject(parent.object)) {
+      throw new Error('Object should have been unwrapped.');
+    }
+
     const children = [];
 
-    children.push(...this.getChildrenForParameterBase(parent));
-    children.push(VisitorNode.fromParent(parent, 'schema'));
+    children.push(
+      new VisitorNode('schema', parent.object.schema, [
+        ...parent.path.slice(0, parent.path.length - 1),
+        parent.object.name,
+        parent.object.in,
+      ]),
+    );
     children.push(
       ...VisitorNode.fromParentDict(parent, 'mediaType', 'content'),
     );
