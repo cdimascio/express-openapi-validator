@@ -85,6 +85,7 @@ class VisitorNode<NodeType extends VisitorTypes> {
     public type: NodeType,
     public object: VisitorObjects[NodeType] | undefined,
     public path: string[],
+    public pathFromParent?: string[],
   ) {}
 
   static fromParent<
@@ -130,7 +131,14 @@ class VisitorNode<NodeType extends VisitorTypes> {
     };
 
     forEachValue(dict, (value, key) => {
-      nodes.push(new VisitorNode(type, value, [...parent.path, dictPath, key]));
+      nodes.push(
+        new VisitorNode(
+          type,
+          value,
+          [...parent.path, dictPath, key],
+          [dictPath, key],
+        ),
+      );
     });
 
     return nodes;
@@ -159,7 +167,12 @@ class VisitorNode<NodeType extends VisitorTypes> {
 
     array.forEach((value, index) => {
       nodes.push(
-        new VisitorNode(type, value, [...parent.path, arrayPath, `${index}`]),
+        new VisitorNode(
+          type,
+          value,
+          [...parent.path, arrayPath, `${index}`],
+          [arrayPath, `${index}`],
+        ),
       );
     });
 
@@ -230,12 +243,17 @@ export class SchemaPreprocessor<
 
           // Resolve reference object in parent, then process again with resolved schema
           // As every object (aka schema) is 'pass-by-reference', this will update the actual apiDoc.
-          const lastPathComponent = node.path[node.path.length - 1];
-          if (isInteger(lastPathComponent)) {
-            const arrayName = node.path[node.path.length - 2];
-            const index = parseInt(lastPathComponent);
-            parent.object[arrayName][index] = resolvedObject;
+          if (node.pathFromParent && node.pathFromParent.length > 0) {
+            const pathLength = node.pathFromParent.length;
+
+            let object = parent.object;
+            for (let i = 0; i < pathLength - 1; i++) {
+              object = object[node.pathFromParent[i]];
+            }
+
+            object[node.pathFromParent[pathLength - 1]] = resolvedObject;
           } else {
+            const lastPathComponent = node.path[node.path.length - 1];
             parent.object[lastPathComponent] = resolvedObject;
           }
 
@@ -874,6 +892,9 @@ export class SchemaPreprocessor<
 
     const children = [];
 
+    /*
+    // TODO: Probably not correctly resolved in case of schema ref!!!
+    // path calculation is taken from the old code
     children.push(
       new VisitorNode('schema', parent.object.schema, [
         ...parent.path.slice(0, parent.path.length - 1),
@@ -881,6 +902,8 @@ export class SchemaPreprocessor<
         parent.object.in,
       ]),
     );
+    */
+    children.push(VisitorNode.fromParent(parent, 'schema'));
     children.push(
       ...VisitorNode.fromParentDict(parent, 'mediaType', 'content'),
     );
