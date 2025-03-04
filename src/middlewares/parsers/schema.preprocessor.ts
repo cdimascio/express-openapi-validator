@@ -217,7 +217,7 @@ export class SchemaPreprocessor<
       state: VisitorState,
     ) => {
       try {
-        if (node.object === undefined || seenObjects.has(node.object)) {
+        if (node.object === undefined) {
           return;
         }
 
@@ -243,6 +243,8 @@ export class SchemaPreprocessor<
 
           return traverse(parent, node as VisitorNode<NodeType>, state);
         }
+
+        if (seenObjects.has(node.object)) return;
 
         seenObjects.add(node.object);
 
