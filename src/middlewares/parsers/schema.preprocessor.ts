@@ -19,8 +19,12 @@ const HttpMethods = [
   'patch',
   'trace',
 ] as const;
+const xOfObjects = ['allOf', 'oneOf', 'anyOf'] as const;
 
+// compatibility with other code
 export const httpMethods = new Set<string>(HttpMethods);
+
+type Document = OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
 
 type VisitorObjects = {
   document: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
@@ -62,10 +66,10 @@ type VisitorTypesWithReference = {
       ? Key
       : never
     : VisitorObjects[Key] extends OpenAPIV3.ReferenceObject | infer _Other
-    ? OpenAPIV3.ReferenceObject extends VisitorObjects[Key]
-      ? Key
-      : never
-    : never;
+      ? OpenAPIV3.ReferenceObject extends VisitorObjects[Key]
+        ? Key
+        : never
+      : never;
 }[keyof VisitorObjects];
 
 type DiscriminatorState = {
@@ -84,7 +88,8 @@ class VisitorNode<NodeType extends VisitorTypes> {
 
   constructor(
     public type: NodeType,
-    public object: VisitorObjects[NodeType] | undefined,
+    public object: VisitorObjects[NodeType],
+    public responseObject: VisitorObjects[NodeType] | undefined,
     traversedObjects: Set<OpenAPIObject> = new Set(),
     public path: string[] = [],
     public pathFromParent?: string[],
@@ -92,6 +97,87 @@ class VisitorNode<NodeType extends VisitorTypes> {
     // copy traversed object to not affect other children of the same parent
     this.traversedObjects = new Set(traversedObjects);
     this.traversedObjects.add(object);
+  }
+
+  public resolve<Schema extends Document, ParentType extends VisitorTypes>(
+    parent: VisitorNode<ParentType>,
+    resolver: ObjectResolver<Schema>,
+    responseResolver: ObjectResolver<Schema> | undefined,
+  ): boolean {
+    if (
+      !isReferenceNode(this) ||
+      !isReferenceObject(this.object) ||
+      (this.responseObject !== undefined &&
+        !isReferenceObject(this.responseObject))
+    ) {
+      throw new Error('Cannot resolve node that is not referenced.');
+    }
+
+    if (this.responseObject !== undefined && responseResolver === undefined) {
+      throw new Error(
+        'Response resolver is required when response object exists.',
+      );
+    }
+
+    const resolvedObject = resolver.resolveObject<typeof this.type>(
+      this.object,
+    );
+    const resolvedResponseObject = responseResolver?.resolveObject<
+      typeof this.type
+    >(this.responseObject as OpenAPIV3.ReferenceObject | undefined);
+
+    // stop when detecting circular references
+    if (
+      resolvedObject === undefined ||
+      this.traversedObjects.has(resolvedObject)
+    ) {
+      return false;
+    }
+
+    this.object = resolvedObject;
+    this.responseObject = resolvedResponseObject;
+
+    // cast valid as we just resolved the object of this node
+    parent.resolveChild(this as VisitorNode<NodeType>);
+
+    return true;
+  }
+
+  public resolveChild<ChildType extends VisitorTypes>(
+    child: VisitorNode<ChildType>,
+  ): void {
+    function resolveParentWithPath(
+      path: string[],
+      object: VisitorObjects[NodeType] | undefined,
+      childObject: VisitorObjects[ChildType] | undefined,
+    ): void {
+      if (object === undefined) return;
+
+      const pathLength = path.length;
+      for (let i = 0; i < pathLength - 1; i++) {
+        object = object[path[i]];
+      }
+
+      object[path[pathLength - 1]] = childObject;
+    }
+
+    // Resolve reference object in parent, then process again with resolved schema
+    // As every object (aka schema) is 'pass-by-reference', this will update the actual apiDoc.
+    if (child.pathFromParent && child.pathFromParent.length > 0) {
+      resolveParentWithPath(child.pathFromParent, this.object, child.object);
+      resolveParentWithPath(
+        child.pathFromParent,
+        this.responseObject,
+        child.responseObject,
+      );
+    } else {
+      const lastPathComponent = child.path[child.path.length - 1];
+
+      this.object[lastPathComponent] = child.object;
+      if (this.responseObject !== undefined) {
+        this.responseObject[lastPathComponent] = child.responseObject;
+      }
+    }
   }
 
   static fromParent<
@@ -105,15 +191,26 @@ class VisitorNode<NodeType extends VisitorTypes> {
     parent: VisitorNode<ParentType>,
     type: NodeType,
     propertyPath?: PropertyKey,
-  ): VisitorNode<NodeType> {
+  ): VisitorNode<NodeType>[] {
     propertyPath = propertyPath ?? (type as unknown as PropertyKey);
 
-    return new VisitorNode(
-      type,
-      parent.object[propertyPath] as unknown as VisitorObjects[NodeType],
-      parent.traversedObjects,
-      [...parent.path, propertyPath],
-    );
+    const object = parent.object[
+      propertyPath
+      ] as unknown as VisitorObjects[NodeType];
+
+    if (object === undefined) return [];
+
+    return [
+      new VisitorNode(
+        type,
+        object,
+        parent.responseObject?.[
+          propertyPath
+          ] as unknown as VisitorObjects[NodeType],
+        parent.traversedObjects,
+        [...parent.path, propertyPath],
+      ),
+    ];
   }
 
   static fromParentDict<
@@ -128,20 +225,19 @@ class VisitorNode<NodeType extends VisitorTypes> {
     type: NodeType,
     dictPath: DictKey,
   ): VisitorNode<NodeType>[] {
-    if (parent.object[dictPath] === undefined) {
-      return [];
-    }
-
     const nodes: VisitorNode<NodeType>[] = [];
     const dict = parent.object[dictPath] as unknown as {
       [key: string]: VisitorObjects[NodeType];
     };
 
-    forEachValue(dict, (value, key) => {
+    if (dict === undefined) return [];
+
+    forEachValue(dict, (object, key) => {
       nodes.push(
         new VisitorNode(
           type,
-          value,
+          object,
+          parent.responseObject?.[dictPath]?.[key],
           parent.traversedObjects,
           [...parent.path, dictPath, key],
           [dictPath, key],
@@ -164,20 +260,19 @@ class VisitorNode<NodeType extends VisitorTypes> {
     type: NodeType,
     arrayPath: ArrayKey,
   ): VisitorNode<NodeType>[] {
-    if (parent.object[arrayPath] === undefined) {
-      return [];
-    }
-
     const nodes: VisitorNode<NodeType>[] = [];
     const array = parent.object[arrayPath] as unknown as Array<
       VisitorObjects[NodeType]
     >;
 
-    array.forEach((value, index) => {
+    if (array === undefined) return [];
+
+    array.forEach((object, index) => {
       nodes.push(
         new VisitorNode(
           type,
-          value,
+          object,
+          parent.responseObject?.[arrayPath]?.[index],
           parent.traversedObjects,
           [...parent.path, arrayPath, `${index}`],
           [arrayPath, `${index}`],
@@ -189,41 +284,78 @@ class VisitorNode<NodeType extends VisitorTypes> {
   }
 }
 
-type VisitorState = {
-  request: State<'request'>;
-  response: State<'response'>;
-};
+class ObjectResolver<OpenAPISchema extends Document> {
+  public ajv: Ajv;
+  private resolvedObjectCache = new Map<string, OpenAPIObject>();
 
-type State<Type extends 'request' | 'response'> = {
-  type: Type;
-  path: string[];
-};
+  constructor(private apiDoc: OpenAPISchema, ajvOptions: Options) {
+    this.ajv = createRequestAjv(this.apiDoc, ajvOptions);
+  }
 
-export class SchemaPreprocessor<
-  OpenAPISchema extends OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
-> {
-  private ajv: Ajv;
-  //private apiDocRes: OpenAPISchema | undefined;
+  public resolveObject<ObjectType extends VisitorTypesWithReference>(
+    object: OpenAPIV3.ReferenceObject | undefined,
+  ): VisitorObjects[ObjectType] | undefined {
+    if (!object) return undefined;
+
+    const ref = object.$ref;
+
+    if (ref && this.resolvedObjectCache.has(ref)) {
+      return this.resolvedObjectCache.get(ref) as Exclude<
+        VisitorObjects[ObjectType],
+        OpenAPIV3.ReferenceObject
+      >;
+    }
+
+    let res = (ref ? this.ajv.getSchema(ref)?.schema : object) as Exclude<
+      VisitorObjects[ObjectType],
+      OpenAPIV3.ReferenceObject
+    >;
+
+    if (ref && !res) {
+      const path = ref.split('/').join('.');
+      const p = path.substring(path.indexOf('.') + 1);
+      res = _get(this.apiDoc, p);
+    }
+
+    if (ref) {
+      this.resolvedObjectCache.set(ref, res);
+    }
+
+    return res;
+  }
+}
+
+export class SchemaPreprocessor<OpenAPISchema extends Document> {
+  private readonly resolver: ObjectResolver<OpenAPISchema>;
+
+  private readonly apiDocRes: OpenAPISchema | undefined;
+  private readonly responseResolver: ObjectResolver<OpenAPISchema> | undefined;
+
   private readonly serDesMap: SerDesMap;
-  private resolvedSchemaCache = new Map<string, OpenAPIObject>();
 
   constructor(
     private apiDoc: OpenAPISchema,
     ajvOptions: Options,
     private responseOptions: ValidateResponseOpts | undefined,
   ) {
-    this.ajv = createRequestAjv(this.apiDoc, ajvOptions);
+    this.resolver = new ObjectResolver(this.apiDoc, ajvOptions);
+
+    this.apiDocRes = !!this.responseOptions ? cloneDeep(this.apiDoc) : null;
+    if (this.apiDocRes) {
+      this.responseResolver = new ObjectResolver(this.apiDocRes, ajvOptions);
+    }
+
     this.serDesMap = ajvOptions.serDesMap;
   }
 
   public preProcess(): { apiDoc: OpenAPISchema; apiDocRes: OpenAPISchema } {
-    const root = new VisitorNode('document', this.apiDoc);
+    const root = new VisitorNode('document', this.apiDoc, this.apiDocRes);
 
     this.traverseSchema(root);
 
     return {
       apiDoc: this.apiDoc,
-      apiDocRes: cloneDeep(this.apiDoc), // TODO: Should be response doc
+      apiDocRes: this.apiDocRes,
     };
   }
 
@@ -236,114 +368,86 @@ export class SchemaPreprocessor<
     >(
       parent: VisitorNode<ParentType>,
       node: VisitorNode<NodeType>,
-      state: VisitorState,
     ) => {
-      try {
-        if (node.object === undefined) {
+      // should technically not be required
+      if (node.object === undefined) {
+        return;
+      }
+
+      // resolve references
+      if (isReferenceNode(node) && isReferenceObject(node.object)) {
+        node.originalRef = node.object.$ref;
+
+        // To handle discriminators correctly, we cannot resolve xOF schemas.
+        // Instead, just process discriminator.
+        if (
+          node.pathFromParent &&
+          (xOfObjects as readonly string[]).includes(
+            node.pathFromParent[0], // this works, as these nodes are always constructed from arrays
+          ) &&
+          hasNodeType(node, 'schema')
+        ) {
+          this.processDiscriminator(
+            hasNodeType(parent, 'schema') ? parent : undefined,
+            node,
+          );
           return;
         }
 
-        // resolve references
-        if (isReferenceNode(node) && isReferenceObject(node.object)) {
-          node.originalRef = node.object.$ref;
+        const resolved = node.resolve(
+          parent,
+          this.resolver,
+          this.responseResolver,
+        );
 
-          // TODO: Seemingly we do not want to "unreference" these schema properties.
-          // Find way to implement this more elegantly.
-          if (
-            node.pathFromParent &&
-            ['allOf', 'oneOf', 'anyOf'].includes(node.pathFromParent[0]) &&
-            hasNodeType(node, 'schema')
-          ) {
-            this.processDiscriminator(
-              hasNodeType(parent, 'schema') ? parent : undefined,
-              node,
-            );
-            return;
-          }
-
-          const resolvedObject = this.resolveObject<typeof node.type>(
-            node.object,
-          );
-
-          // stop when detecting circular references
-          if (
-            resolvedObject === undefined ||
-            node.traversedObjects.has(resolvedObject)
-          ) {
-            return;
-          }
-
-          // Resolve reference object in parent, then process again with resolved schema
-          // As every object (aka schema) is 'pass-by-reference', this will update the actual apiDoc.
-          if (node.pathFromParent && node.pathFromParent.length > 0) {
-            const pathLength = node.pathFromParent.length;
-
-            let object = parent.object;
-            for (let i = 0; i < pathLength - 1; i++) {
-              object = object[node.pathFromParent[i]];
-            }
-
-            object[node.pathFromParent[pathLength - 1]] = resolvedObject;
-          } else {
-            const lastPathComponent = node.path[node.path.length - 1];
-            parent.object[lastPathComponent] = resolvedObject;
-          }
-
-          node.object = resolvedObject;
+        if (!resolved) {
+          return;
         }
-
-        if (seenObjects.has(node.object)) return;
-        seenObjects.add(node.object);
-
-        this.visitNode(parent, node, state);
-
-        let children: VisitorNode<any>[];
-
-        if (hasNodeType(node, 'document')) {
-          children = this.getChildrenForDocument(node);
-        } else if (hasNodeType(node, 'components')) {
-          children = this.getChildrenForComponents(node);
-        } else if (hasNodeType(node, 'componentsV3_1')) {
-          children = this.getChildrenForComponentsV3_1(node);
-        } else if (hasNodeType(node, 'pathItem')) {
-          children = this.getChildrenForPathItem(node);
-        } else if (hasNodeType(node, 'schema')) {
-          children = this.getChildrenForSchema(node);
-        } else if (hasNodeType(node, 'operation')) {
-          children = this.getChildrenForOperation(node);
-        } else if (hasNodeType(node, 'requestBody')) {
-          children = this.getChildrenForRequestBody(node);
-        } else if (hasNodeType(node, 'response')) {
-          children = this.getChildrenForResponse(node);
-        } else if (hasNodeType(node, 'encoding')) {
-          children = this.getChildrenForEncoding(node);
-        } else if (hasNodeType(node, 'header')) {
-          children = this.getChildrenForHeader(node);
-        } else if (hasNodeType(node, 'mediaType')) {
-          children = this.getChildrenForMediaType(node);
-        } else if (hasNodeType(node, 'parameter')) {
-          children = this.getChildrenForParameter(node);
-        } else if (hasNodeType(node, 'callback')) {
-          children = this.getChildrenForCallback(node);
-        } else {
-          throw new Error(
-            `No strategy to traverse node with type ${node.type}.`,
-          );
-        }
-
-        children.forEach((child) => {
-          // cloning state to isolate against sub-objects affecting each other's state
-          traverse(node as VisitorNode<NodeType>, child, cloneDeep(state));
-        });
-      } catch (error) {
-        throw error;
       }
+
+      if (seenObjects.has(node.object)) return;
+      seenObjects.add(node.object);
+
+      this.visitNode(parent, node);
+
+      let children: VisitorNode<any>[];
+
+      if (hasNodeType(node, 'document')) {
+        children = this.getChildrenForDocument(node);
+      } else if (hasNodeType(node, 'components')) {
+        children = this.getChildrenForComponents(node);
+      } else if (hasNodeType(node, 'componentsV3_1')) {
+        children = this.getChildrenForComponentsV3_1(node);
+      } else if (hasNodeType(node, 'pathItem')) {
+        children = this.getChildrenForPathItem(node);
+      } else if (hasNodeType(node, 'schema')) {
+        children = this.getChildrenForSchema(node);
+      } else if (hasNodeType(node, 'operation')) {
+        children = this.getChildrenForOperation(node);
+      } else if (hasNodeType(node, 'requestBody')) {
+        children = this.getChildrenForRequestBody(node);
+      } else if (hasNodeType(node, 'response')) {
+        children = this.getChildrenForResponse(node);
+      } else if (hasNodeType(node, 'encoding')) {
+        children = this.getChildrenForEncoding(node);
+      } else if (hasNodeType(node, 'header')) {
+        children = this.getChildrenForHeader(node);
+      } else if (hasNodeType(node, 'mediaType')) {
+        children = this.getChildrenForMediaType(node);
+      } else if (hasNodeType(node, 'parameter')) {
+        children = this.getChildrenForParameter(node);
+      } else if (hasNodeType(node, 'callback')) {
+        children = this.getChildrenForCallback(node);
+      } else {
+        throw new Error(`No strategy to traverse node with type ${node.type}.`);
+      }
+
+      children.forEach((child) => {
+        traverse(node as VisitorNode<NodeType>, child);
+      });
     };
 
-    traverse(undefined, root, {
-      request: { type: 'request', path: [] },
-      response: { type: 'response', path: [] },
-    });
+    traverse(undefined, root);
   }
 
   private visitNode<
@@ -352,7 +456,6 @@ export class SchemaPreprocessor<
   >(
     parent: VisitorNode<ParentType> | undefined,
     node: VisitorNode<NodeType>,
-    state: VisitorState,
   ): void {
     this.removeExamples(node);
 
@@ -362,7 +465,6 @@ export class SchemaPreprocessor<
       this.preProcessSchema(
         hasNodeType(parent, 'schema') ? parent : undefined,
         node,
-        state,
       );
     }
   }
@@ -370,12 +472,19 @@ export class SchemaPreprocessor<
   private removeExamples<ObjectType extends VisitorTypes>(
     node: VisitorNode<ObjectType>,
   ): void {
-    if (isReferenceObject(node.object)) {
+    if (
+      isReferenceObject(node.object) ||
+      isReferenceObject(node.responseObject)
+    ) {
       throw new Error('Object should have been unwrapped.');
     }
 
     if (hasNodeType(node, 'components')) {
       delete node.object.examples;
+
+      if (node.responseObject) {
+        delete node.responseObject.examples;
+      }
     } else if (
       hasNodeType(node, 'mediaType') ||
       hasNodeType(node, 'header') ||
@@ -384,6 +493,11 @@ export class SchemaPreprocessor<
     ) {
       delete node.object.example;
       delete node.object.examples;
+
+      if (node.responseObject) {
+        delete node.responseObject.example;
+        delete node.responseObject.examples;
+      }
     }
   }
 
@@ -430,45 +544,29 @@ export class SchemaPreprocessor<
   private preProcessSchema(
     parent: VisitorNode<'schema'> | undefined,
     node: VisitorNode<'schema'>,
-    state: VisitorState,
   ): void {
-    if (isReferenceObject(parent?.object) || isReferenceObject(node.object)) {
+    if (
+      isReferenceObject(parent?.object) ||
+      isReferenceObject(parent?.responseObject) ||
+      isReferenceObject(node.object) ||
+      isReferenceObject(node.responseObject)
+    ) {
       throw new Error('Object should have been unwrapped.');
     }
 
-    const parentSchemas = [parent?.object];
-    const nodeSchemas = [node.object];
+    this.handleSerDes(node.object);
+    this.handleSerDes(node.responseObject);
 
-    /*
-    // TODO: Should be response doc
-    if (this.apiDoc) {
-      const parentResponseSchema = _get(this.apiDoc, parent?.path);
-      const nodeResponseSchema = _get(this.apiDoc, node.path);
-      parentSchemas.push(parentResponseSchema);
-      nodeSchemas.push(nodeResponseSchema);
-    }
-    */
+    // NOTE: only using request schemas, not response schemas!
+    this.handleReadonly(parent?.object, node.object, node.path);
+    // NOTE: only using response schemas, not request schemas!
+    this.handleWriteonly(
+      parent?.responseObject,
+      node.responseObject,
+      node.path,
+    );
 
-    // visit the node in both the request and response schema
-    for (let i = 0; i < nodeSchemas.length; i++) {
-      const kind = i === 0 ? 'request' : 'response';
-
-      const parentSchema = parentSchemas[i];
-      const nodeSchema = nodeSchemas[i];
-
-      const options = state[kind];
-      options.path = node.path;
-
-      this.handleSerDes(nodeSchema);
-
-      if (options.type === 'request') {
-        this.handleReadonly(parentSchema, nodeSchema, options);
-      } else {
-        this.handleWriteonly(parentSchema, nodeSchema, options);
-      }
-
-      this.processDiscriminator(parent, node);
-    }
+    this.processDiscriminator(parent, node);
   }
 
   private processDiscriminator(
@@ -482,8 +580,8 @@ export class SchemaPreprocessor<
       schemaObj.oneOf !== undefined
         ? 'oneOf'
         : schemaObj.anyOf
-        ? 'anyOf'
-        : undefined;
+          ? 'anyOf'
+          : undefined;
 
     if (xOf && schemaObj.discriminator?.propertyName !== undefined) {
       nodeState.options = schemaObj[xOf].flatMap((refObject) => {
@@ -564,7 +662,7 @@ export class SchemaPreprocessor<
 
         for (const option of options) {
           ancestor._discriminator.validators[option] =
-            this.ajv.compile(newSchema);
+            this.resolver.ajv.compile(newSchema);
         }
       }
     }
@@ -598,52 +696,42 @@ export class SchemaPreprocessor<
    *
    * See [`createAjv`](../../framework/ajv/index.ts) for custom keyword definitions.
    *
-   * @param {object} nodeSchema - schema
+   * @param {object} schema - schema
    */
-  private handleSerDes(nodeSchema: VisitorObjects['schema']): void {
-    if (isReferenceObject(nodeSchema)) {
-      throw new Error('Object should have been unwrapped.');
-    }
+  private handleSerDes(schema: OpenAPIV3.SchemaObject | undefined): void {
+    if (schema === undefined) return;
 
     if (
-      nodeSchema.type === 'string' &&
-      !!nodeSchema.format &&
-      this.serDesMap[nodeSchema.format]
+      schema.type === 'string' &&
+      !!schema.format &&
+      this.serDesMap[schema.format]
     ) {
-      const serDes = this.serDesMap[nodeSchema.format];
-      (<any>nodeSchema)['x-eov-type'] = nodeSchema.type;
-      if ('nullable' in nodeSchema) {
+      const serDes = this.serDesMap[schema.format];
+
+      (<any>schema)['x-eov-type'] = schema.type;
+
+      if ('nullable' in schema) {
         // Ajv requires `type` keyword with `nullable` (regardless of value).
-        (<any>nodeSchema).type = [
-          'string',
-          'number',
-          'boolean',
-          'object',
-          'array',
-        ];
+        (<any>schema).type = ['string', 'number', 'boolean', 'object', 'array'];
       } else {
-        delete nodeSchema.type;
+        delete schema.type;
       }
       if (serDes.deserialize) {
-        nodeSchema['x-eov-req-serdes'] = serDes;
+        schema['x-eov-req-serdes'] = serDes;
       }
       if (serDes.serialize) {
-        nodeSchema['x-eov-res-serdes'] = serDes;
+        schema['x-eov-res-serdes'] = serDes;
       }
     }
   }
 
   private handleReadonly(
-    parentSchema: VisitorObjects['schema'] | undefined,
-    nodeSchema: VisitorObjects['schema'],
-    state: State<'request'>,
+    parentSchema: OpenAPIV3.SchemaObject | undefined,
+    nodeSchema: OpenAPIV3.SchemaObject,
+    path: string[],
   ) {
-    if (isReferenceObject(parentSchema) || isReferenceObject(nodeSchema)) {
-      throw new Error('Object should have been unwrapped.');
-    }
-
     const required = parentSchema?.required ?? [];
-    const prop = state?.path?.[state?.path?.length - 1];
+    const prop = path[path.length - 1];
     const index = required.indexOf(prop);
     if (nodeSchema.readOnly && index > -1) {
       // remove required if readOnly
@@ -657,18 +745,14 @@ export class SchemaPreprocessor<
   }
 
   private handleWriteonly(
-    parentSchema: VisitorObjects['schema'] | undefined,
-    nodeSchema: VisitorObjects['schema'],
-    state: State<'response'>,
+    parentSchema: OpenAPIV3.SchemaObject | undefined,
+    nodeSchema: OpenAPIV3.SchemaObject,
+    path: string[],
   ) {
-    if (isReferenceObject(parentSchema) || isReferenceObject(nodeSchema)) {
-      throw new Error('Object should have been unwrapped.');
-    }
-
     const required = parentSchema?.required ?? [];
-    const prop = state?.path?.[state?.path?.length - 1];
+    const prop = path[path.length - 1];
     const index = required.indexOf(prop);
-    if (nodeSchema.writeOnly && index > -1) {
+    if (nodeSchema?.writeOnly && index > -1) {
       // remove required if writeOnly
       parentSchema.required = required
         .slice(0, index)
@@ -679,40 +763,6 @@ export class SchemaPreprocessor<
     }
   }
 
-  private resolveObject<ObjectType extends VisitorTypesWithReference>(
-    object: VisitorObjects[ObjectType] | undefined,
-  ):
-    | Exclude<VisitorObjects[ObjectType], OpenAPIV3.ReferenceObject>
-    | undefined {
-    if (!object) return undefined;
-
-    const ref = object['$ref'];
-
-    if (ref && this.resolvedSchemaCache.has(ref)) {
-      return this.resolvedSchemaCache.get(ref) as Exclude<
-        VisitorObjects[ObjectType],
-        OpenAPIV3.ReferenceObject
-      >;
-    }
-
-    let res = (ref ? this.ajv.getSchema(ref)?.schema : object) as Exclude<
-      VisitorObjects[ObjectType],
-      OpenAPIV3.ReferenceObject
-    >;
-
-    if (ref && !res) {
-      const path = ref.split('/').join('.');
-      const p = path.substring(path.indexOf('.') + 1);
-      res = _get(this.apiDoc, p);
-    }
-
-    if (ref) {
-      this.resolvedSchemaCache.set(ref, res);
-    }
-
-    return res;
-  }
-
   private getChildrenForDocument(
     parent: VisitorNode<'document'>,
   ): VisitorNode<any>[] {
@@ -720,13 +770,13 @@ export class SchemaPreprocessor<
 
     if (isDocumentV3_1(parent.object)) {
       children.push(
-        VisitorNode.fromParent(parent, 'componentsV3_1', 'components'),
+        ...VisitorNode.fromParent(parent, 'componentsV3_1', 'components'),
       );
       children.push(
         ...VisitorNode.fromParentDict(parent, 'pathItem', 'webhooks'),
       );
     } else {
-      children.push(VisitorNode.fromParent(parent, 'components'));
+      children.push(...VisitorNode.fromParent(parent, 'components'));
     }
 
     children.push(...VisitorNode.fromParentDict(parent, 'pathItem', 'paths'));
@@ -770,6 +820,7 @@ export class SchemaPreprocessor<
       new VisitorNode(
         'components',
         parent.object,
+        parent.responseObject,
         parent.traversedObjects,
         parent.path,
       ),
@@ -789,7 +840,7 @@ export class SchemaPreprocessor<
 
     HttpMethods.forEach((method) => {
       if (method in parent.object)
-        children.push(VisitorNode.fromParent(parent, 'operation', method));
+        children.push(...VisitorNode.fromParent(parent, 'operation', method));
     });
 
     children.push(
@@ -802,18 +853,25 @@ export class SchemaPreprocessor<
   private getChildrenForSchema(
     parent: VisitorNode<'schema'>,
   ): VisitorNode<any>[] {
-    if (isReferenceObject(parent.object)) {
+    if (
+      isReferenceObject(parent.object) ||
+      isReferenceObject(parent.responseObject)
+    ) {
       throw new Error('Object should have been unwrapped.');
     }
 
     const children = [];
 
-    if (typeof parent.object.additionalProperties !== 'boolean') {
+    if (
+      typeof parent.object.additionalProperties !== 'boolean' &&
+      typeof parent.responseObject?.additionalProperties !== 'boolean'
+    ) {
       // constructing this manually, as the type of additional properties includes boolean
       children.push(
         new VisitorNode(
           'schema',
           parent.object.additionalProperties,
+          parent.responseObject?.additionalProperties,
           parent.traversedObjects,
           [...parent.path, 'additionalProperties'],
         ),
@@ -824,13 +882,13 @@ export class SchemaPreprocessor<
     );
 
     if (parent.object.type === 'array' && 'items' in parent.object) {
-      children.push(VisitorNode.fromParent(parent, 'schema', 'items'));
+      children.push(...VisitorNode.fromParent(parent, 'schema', 'items'));
     } else {
       if ('not' in parent.object) {
-        children.push(VisitorNode.fromParent(parent, 'schema', 'not'));
+        children.push(...VisitorNode.fromParent(parent, 'schema', 'not'));
       }
 
-      (['allOf', 'oneOf', 'anyOf'] as const).forEach((property) => {
+      xOfObjects.forEach((property) => {
         children.push(
           ...VisitorNode.fromParentArray(parent, 'schema', property),
         );
@@ -849,7 +907,7 @@ export class SchemaPreprocessor<
       ...VisitorNode.fromParentArray(parent, 'parameter', 'parameters'),
     );
 
-    children.push(VisitorNode.fromParent(parent, 'requestBody'));
+    children.push(...VisitorNode.fromParent(parent, 'requestBody'));
     children.push(
       ...VisitorNode.fromParentDict(parent, 'response', 'responses'),
     );
@@ -900,7 +958,7 @@ export class SchemaPreprocessor<
   ): VisitorNode<any>[] {
     const children = [];
 
-    children.push(VisitorNode.fromParent(parent, 'schema'));
+    children.push(...VisitorNode.fromParent(parent, 'schema'));
     children.push(
       ...VisitorNode.fromParentDict(parent, 'mediaType', 'content'),
     );
@@ -913,7 +971,7 @@ export class SchemaPreprocessor<
   ): VisitorNode<any>[] {
     const children = [];
 
-    children.push(VisitorNode.fromParent(parent, 'schema'));
+    children.push(...VisitorNode.fromParent(parent, 'schema'));
     children.push(
       ...VisitorNode.fromParentDict(parent, 'encoding', 'encoding'),
     );
@@ -941,7 +999,7 @@ export class SchemaPreprocessor<
       ]),
     );
     */
-    children.push(VisitorNode.fromParent(parent, 'schema'));
+    children.push(...VisitorNode.fromParent(parent, 'schema'));
     children.push(
       ...VisitorNode.fromParentDict(parent, 'mediaType', 'content'),
     );
@@ -960,10 +1018,13 @@ export class SchemaPreprocessor<
 
     forEachValue(parent.object, (pathItem, key) => {
       children.push(
-        new VisitorNode('pathItem', pathItem, parent.traversedObjects, [
-          ...parent.path,
-          key,
-        ]),
+        new VisitorNode(
+          'pathItem',
+          pathItem,
+          parent.responseObject[key],
+          parent.traversedObjects,
+          [...parent.path, key],
+        ),
       );
     });
 
@@ -994,7 +1055,7 @@ function isReferenceNode(
 function isReferenceObject<SchemaType extends VisitorTypesWithReference>(
   object: VisitorObjects[SchemaType] | undefined,
 ): object is OpenAPIV3.ReferenceObject {
-  return object !== undefined && '$ref' in object && !!object.$ref;
+  return !!object && '$ref' in object && !!object.$ref;
 }
 
 function hasNodeType<ObjectType extends VisitorTypes>(
@@ -1033,8 +1094,4 @@ function findKeys(
 
 function getKeyFromRef(ref: string) {
   return ref.split('/components/schemas/')[1];
-}
-
-function isInteger(str: string): boolean {
-  return /^\d+$/.test(str);
 }
