@@ -243,6 +243,17 @@ export class SchemaPreprocessor<
             node.object,
           );
 
+          if (seenObjects.has(resolvedObject)) {
+            if (hasNodeType(node, 'schema')) {
+              this.processDiscriminator(
+                hasNodeType(parent, 'schema') ? parent : undefined,
+                node,
+              );
+            }
+
+            return;
+          }
+
           // Resolve reference object in parent, then process again with resolved schema
           // As every object (aka schema) is 'pass-by-reference', this will update the actual apiDoc.
           if (node.pathFromParent && node.pathFromParent.length > 0) {
