@@ -78,15 +78,21 @@ type DiscriminatorState = {
 };
 
 class VisitorNode<NodeType extends VisitorTypes> {
-  public discriminator: DiscriminatorState = {};
   public originalRef?: string;
+  public traversedObjects: Set<OpenAPIObject>; // track circular references
+  public discriminator: DiscriminatorState = {};
 
   constructor(
     public type: NodeType,
     public object: VisitorObjects[NodeType] | undefined,
-    public path: string[],
+    traversedObjects: Set<OpenAPIObject> = new Set(),
+    public path: string[] = [],
     public pathFromParent?: string[],
-  ) {}
+  ) {
+    // copy traversed object to not affect other children of the same parent
+    this.traversedObjects = new Set(traversedObjects);
+    this.traversedObjects.add(object);
+  }
 
   static fromParent<
     ParentType extends VisitorTypes,
@@ -105,6 +111,7 @@ class VisitorNode<NodeType extends VisitorTypes> {
     return new VisitorNode(
       type,
       parent.object[propertyPath] as unknown as VisitorObjects[NodeType],
+      parent.traversedObjects,
       [...parent.path, propertyPath],
     );
   }
@@ -135,6 +142,7 @@ class VisitorNode<NodeType extends VisitorTypes> {
         new VisitorNode(
           type,
           value,
+          parent.traversedObjects,
           [...parent.path, dictPath, key],
           [dictPath, key],
         ),
@@ -170,6 +178,7 @@ class VisitorNode<NodeType extends VisitorTypes> {
         new VisitorNode(
           type,
           value,
+          parent.traversedObjects,
           [...parent.path, arrayPath, `${index}`],
           [arrayPath, `${index}`],
         ),
@@ -208,7 +217,7 @@ export class SchemaPreprocessor<
   }
 
   public preProcess(): { apiDoc: OpenAPISchema; apiDocRes: OpenAPISchema } {
-    const root = new VisitorNode('document', this.apiDoc, []);
+    const root = new VisitorNode('document', this.apiDoc);
 
     this.traverseSchema(root);
 
@@ -234,23 +243,33 @@ export class SchemaPreprocessor<
           return;
         }
 
-        if (seenObjects.has(node.object)) return;
-
+        // resolve references
         if (isReferenceNode(node) && isReferenceObject(node.object)) {
           node.originalRef = node.object.$ref;
+
+          // TODO: Seemingly we do not want to "unreference" these schema properties.
+          // Find way to implement this more elegantly.
+          if (
+            node.pathFromParent &&
+            ['allOf', 'oneOf', 'anyOf'].includes(node.pathFromParent[0]) &&
+            hasNodeType(node, 'schema')
+          ) {
+            this.processDiscriminator(
+              hasNodeType(parent, 'schema') ? parent : undefined,
+              node,
+            );
+            return;
+          }
 
           const resolvedObject = this.resolveObject<typeof node.type>(
             node.object,
           );
 
-          if (seenObjects.has(resolvedObject)) {
-            if (hasNodeType(node, 'schema')) {
-              this.processDiscriminator(
-                hasNodeType(parent, 'schema') ? parent : undefined,
-                node,
-              );
-            }
-
+          // stop when detecting circular references
+          if (
+            resolvedObject === undefined ||
+            node.traversedObjects.has(resolvedObject)
+          ) {
             return;
           }
 
@@ -271,10 +290,9 @@ export class SchemaPreprocessor<
           }
 
           node.object = resolvedObject;
-
-          return traverse(parent, node as VisitorNode<NodeType>, state);
         }
 
+        if (seenObjects.has(node.object)) return;
         seenObjects.add(node.object);
 
         this.visitNode(parent, node, state);
@@ -748,7 +766,14 @@ export class SchemaPreprocessor<
       ...VisitorNode.fromParentDict(parent, 'pathItem', 'pathItems'),
     );
     // process components V3.1 also like normal components
-    children.push(new VisitorNode('components', parent.object, parent.path));
+    children.push(
+      new VisitorNode(
+        'components',
+        parent.object,
+        parent.traversedObjects,
+        parent.path,
+      ),
+    );
 
     return children;
   }
@@ -786,10 +811,12 @@ export class SchemaPreprocessor<
     if (typeof parent.object.additionalProperties !== 'boolean') {
       // constructing this manually, as the type of additional properties includes boolean
       children.push(
-        new VisitorNode('schema', parent.object.additionalProperties, [
-          ...parent.path,
-          'additionalProperties',
-        ]),
+        new VisitorNode(
+          'schema',
+          parent.object.additionalProperties,
+          parent.traversedObjects,
+          [...parent.path, 'additionalProperties'],
+        ),
       );
     }
     children.push(
@@ -933,7 +960,10 @@ export class SchemaPreprocessor<
 
     forEachValue(parent.object, (pathItem, key) => {
       children.push(
-        new VisitorNode('pathItem', pathItem, [...parent.path, key]),
+        new VisitorNode('pathItem', pathItem, parent.traversedObjects, [
+          ...parent.path,
+          key,
+        ]),
       );
     });
 
