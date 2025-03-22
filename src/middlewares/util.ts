@@ -109,7 +109,7 @@ export function ajvErrorsToValidatorError(
         params?.unevaluatedProperty &&
         e.instancePath + '/' + params.unevaluatedProperty;
       const path =
-        required ?? additionalProperty ?? unevaluatedProperty?? e.instancePath ?? e.schemaPath;
+        required ?? additionalProperty ?? unevaluatedProperty ?? e.instancePath ?? e.schemaPath;
       return {
         path,
         message: e.message,
