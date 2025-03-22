@@ -1,3 +1,11 @@
+##  (2025-03-22)
+
+* chore(deps): bump serialize-javascript and mocha (#1045) ([03ecefe](https://github.com/cdimascio/express-openapi-validator/commit/03ecefe)), closes [#1045](https://github.com/cdimascio/express-openapi-validator/issues/1045)
+* Fix error reporting for unresolved property (#1054) ([2910393](https://github.com/cdimascio/express-openapi-validator/commit/2910393)), closes [#1054](https://github.com/cdimascio/express-openapi-validator/issues/1054)
+* Fixes spacing/linting ([6269e95](https://github.com/cdimascio/express-openapi-validator/commit/6269e95))
+
+
+
 2025-03-02
 ===================
 
