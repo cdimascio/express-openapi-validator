@@ -328,7 +328,7 @@ export class RequestParameterMutator {
      * forcing convert to array if scheme describes param as array + explode
      */
     const field = REQUEST_FIELDS[$in];
-    if (req[field]?.[name] && !(req[field][name] instanceof Array)) {
+    if (req[field]?.[name] && !Array.isArray(req[field][name])) {
       const value = [req[field][name]];
       req[field][name] = value;
     }
