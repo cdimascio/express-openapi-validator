@@ -1,3 +1,10 @@
+##  (2025-04-04)
+
+* removed unused imports ([014a0ef](https://github.com/cdimascio/express-openapi-validator/commit/014a0ef))
+* fix: use `Array.isArray` instead of `instanceof Array`  for checking whether parameters are already  ([c944951](https://github.com/cdimascio/express-openapi-validator/commit/c944951)), closes [#1056](https://github.com/cdimascio/express-openapi-validator/issues/1056)
+
+
+
 ##  (2025-03-22)
 
 * chore(deps): bump serialize-javascript and mocha (#1045) ([03ecefe](https://github.com/cdimascio/express-openapi-validator/commit/03ecefe)), closes [#1045](https://github.com/cdimascio/express-openapi-validator/issues/1045)
