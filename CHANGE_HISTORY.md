@@ -1,3 +1,11 @@
+##  (2025-04-06)
+
+* updates types in tests ([debebb9](https://github.com/cdimascio/express-openapi-validator/commit/debebb9))
+* upgrades dependencies ([3e91cab](https://github.com/cdimascio/express-openapi-validator/commit/3e91cab))
+* v5.4.9 ([a785f71](https://github.com/cdimascio/express-openapi-validator/commit/a785f71))
+
+
+
 ##  (2025-04-04)
 
 * removed unused imports ([014a0ef](https://github.com/cdimascio/express-openapi-validator/commit/014a0ef))
