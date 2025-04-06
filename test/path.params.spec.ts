@@ -18,7 +18,7 @@ describe('path params', () => {
       3005,
       (app) => {
         app.get(
-          [`${app.basePath}/users/:id?`, `${app.basePath}/users_alt/:id?`],
+          [`${app.basePath}/users/{:id}`, `${app.basePath}/users_alt/{:id}`],
           (req, res) => {
             res.json({
               id: req.params.id,
@@ -30,7 +30,7 @@ describe('path params', () => {
             id: req.params.name,
           });
         });
-        app.get(`${app.basePath}/multi_users/:ids?`, (req, res) => {
+        app.get(`${app.basePath}/multi_users/{:ids}`, (req, res) => {
           res.json({
             ids: req.params.ids,
           });
