@@ -90,7 +90,7 @@ describe(packageJson.name, () => {
           },
         },
 
-        '/some/{wildcard}*': {
+        '/some/*wildcard': {
           parameters: [
             {
               name: 'wildcard',
@@ -129,8 +129,8 @@ describe(packageJson.name, () => {
             .post(`/api/test/:id\\:clone`, (req, res) => {
               res.status(200).json({ ...req.body, id: 'id-test' });
             })
-            .get('/api/some/:wildcard(*wildcardSuffix)', (req, res) => {
-              const wildcard = req.params.wildcard;
+            .get('/api/some/*wildcard', (req, res) => {
+              const wildcard = (req.params as { wildcard: string }).wildcard;
               console.log(`Wildcard: ${wildcard}`);
               res.status(200).send(`Matched wildcard: ${wildcard}`);
             }),
