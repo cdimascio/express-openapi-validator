@@ -4,25 +4,34 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
     const apiSpec = path.join('test', 'resources', 'query.params.yaml');
-    app = await createApp({ apiSpec }, 3005, app =>
+    app = await createApp({ apiSpec }, 3005, (app) =>
       app.use(
         `${app.basePath}`,
         express
           .Router()
-          .post(`/pets/nullable`, (req, res) => res.json(req.body))
-          .get(`/no_reserved`, (req, res) => res.json(req.body))
-          .get(`/no_query_params`, (req, res) => res.json({ complete: true }))
-          .get(`/allow_reserved`, (req, res) => res.json(req.body))
-          .get(`/unknown_query_params/allow`, (req, res) =>
-            res.json({ complete: true }),
-          ),
+          .post(`/pets/nullable`, (req, res) => {
+            res.json(req.body);
+          })
+          .get(`/no_reserved`, (req, res) => {
+            res.json(req.body);
+          })
+          .get(`/no_query_params`, (req, res) => {
+            res.json({ complete: true });
+          })
+          .get(`/allow_reserved`, (req, res) => {
+            res.json(req.body);
+          })
+          .get(`/unknown_query_params/allow`, (req, res) => {
+            res.json({ complete: true });
+          }),
       ),
     );
   });
@@ -50,7 +59,7 @@ describe(packageJson.name, () => {
         name: 'max',
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         expect(r.body.errors).to.be.an('array');
       }));
 
@@ -58,7 +67,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/no_query_params`)
       .expect(200)
-      .then(r => {
+      .then((r) => {
         expect(r.body.complete).to.equal(true);
       }));
 
@@ -74,7 +83,7 @@ describe(packageJson.name, () => {
         unknown_prop: 'test',
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         expect(r.body.errors).to.be.an('array');
       }));
 
@@ -98,13 +107,11 @@ describe(packageJson.name, () => {
         owner_name: 'carmine',
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         expect(r.body)
           .to.have.property('message')
           .that.equals("Empty value found for query parameter 'breed'");
-        expect(r.body.errors)
-          .to.be.an('array')
-          .with.length(1);
+        expect(r.body.errors).to.be.an('array').with.length(1);
         expect(r.body.errors[0].path).to.equal('/query/breed');
       }));
 
@@ -131,7 +138,7 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/no_reserved?value=ThisHas$ReservedChars!`)
       .expect(400)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.message).equals(
           "Parameter 'value' must be url encoded. Its value may not contain reserved characters.",

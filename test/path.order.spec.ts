@@ -3,9 +3,10 @@ import * as express from 'express';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
@@ -15,10 +16,12 @@ describe(packageJson.name, () => {
         `${app.basePath}`,
         express
           .Router()
-          .get(`/users/:id`, (req, res) => res.json({ path: req.path }))
-          .post(`/users/jimmy`, (req, res) =>
-            res.json({ ...req.body, path: req.path }),
-          ),
+          .get(`/users/:id`, (req, res) => {
+            res.json({ path: req.path });
+          })
+          .post(`/users/jimmy`, (req, res) => {
+            res.json({ ...req.body, path: req.path });
+          }),
       ),
     );
   });

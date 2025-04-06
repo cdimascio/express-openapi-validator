@@ -2,11 +2,12 @@ import * as path from 'path';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 const apiSpecPath = path.join('test', 'resources', 'path.params.yaml');
 
 describe('path params', () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // set up express app
@@ -27,7 +28,7 @@ describe('path params', () => {
         );
         app.get(`${app.basePath}/user_lookup\\::name`, (req, res) => {
           res.json({
-            id: req.params.name,
+            id: req.params['name'],
           });
         });
         app.get(`${app.basePath}/multi_users/:ids?`, (req, res) => {

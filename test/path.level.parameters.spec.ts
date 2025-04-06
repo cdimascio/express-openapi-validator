@@ -4,9 +4,10 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
@@ -26,9 +27,9 @@ describe(packageJson.name, () => {
       (app) =>
         app.use(
           `${app.basePath}`,
-          express
-            .Router()
-            .get(`/path_level_parameters`, (_req, res) => res.send()),
+          express.Router().get(`/path_level_parameters`, (_req, res) => {
+            res.send();
+          }),
         ),
     );
   });
@@ -42,7 +43,7 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/path_level_parameters?operationLevel=123`)
       .send()
       .expect(400)
-      .then(r => {
+      .then((r) => {
         expect(r.body.errors).to.be.an('array');
         expect(r.body.errors).to.have.length(1);
         const message = r.body.errors[0].message;
@@ -54,7 +55,7 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/path_level_parameters?pathLevel=123`)
       .send()
       .expect(400)
-      .then(r => {
+      .then((r) => {
         expect(r.body.errors).to.be.an('array');
         expect(r.body.errors).to.have.length(1);
         const message = r.body.errors[0].message;
@@ -68,10 +69,10 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/path_level_parameters`)
       .send()
       .expect(400)
-      .then(r => {
+      .then((r) => {
         expect(r.body.errors).to.be.an('array');
         expect(r.body.errors).to.have.length(2);
-        const messages = r.body.errors.map(err => err.message);
+        const messages = r.body.errors.map((err) => err.message);
         expect(messages).to.have.members([
           "must have required property 'pathLevel'",
           "must have required property 'operationLevel'",
@@ -80,7 +81,9 @@ describe(packageJson.name, () => {
 
   it('should return 200 if both pathLevel and operationLevel query parameter are provided', async () =>
     request(app)
-      .get(`${app.basePath}/path_level_parameters?operationLevel=123&pathLevel=123`)
+      .get(
+        `${app.basePath}/path_level_parameters?operationLevel=123&pathLevel=123`,
+      )
       .send()
       .expect(200));
 });

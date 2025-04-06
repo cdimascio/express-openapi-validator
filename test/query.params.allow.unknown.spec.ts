@@ -4,10 +4,10 @@ import * as express from 'express';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
-  let basePath = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
@@ -15,12 +15,12 @@ describe(packageJson.name, () => {
     app = await createApp(
       { apiSpec, validateRequests: { allowUnknownQueryParameters: true } },
       3005,
-      app =>
+      (app) =>
         app.use(
           `${app.basePath}`,
-          express
-            .Router()
-            .post(`/pets/nullable`, (req, res) => res.json(req.body)),
+          express.Router().post(`/pets/nullable`, (req, res) => {
+            res.json(req.body);
+          }),
         ),
     );
   });
@@ -62,7 +62,7 @@ describe(packageJson.name, () => {
         unknown_prop: 'test',
       })
       .expect(400)
-      .then(r => {
+      .then((r) => {
         expect(r.body.errors).to.be.an('array');
       }));
 });

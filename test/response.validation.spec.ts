@@ -3,12 +3,13 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 const today = new Date();
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // set up express app
@@ -20,36 +21,35 @@ describe(packageJson.name, () => {
       3005,
       (app) => {
         app.get(`${app.basePath}/error`, (req, res) => {
-          return res.status(400).json({
+          res.status(400).json({
             message: 'test',
             code: 400,
           });
         });
         app.get(`${app.basePath}/ref_response_body`, (req, res) => {
-          return res.json({ id: 213, name: 'name', kids: [] });
+          res.json({ id: 213, name: 'name', kids: [] });
         });
         app.get(`${app.basePath}/empty_response`, (req, res) => {
           if (req.query.mode === 'non_empty_response') {
-            return res.status(204).json({});
+            res.status(204).json({});
+          } else {
+            res.status(204).json();
           }
-          return res.status(204).json();
         });
         app.get(`${app.basePath}/boolean`, (req, res) => {
-          return res.json(req.query.value);
+          res.json(req.query.value);
         });
         app.get(`${app.basePath}/object`, (req, res) => {
-          return res.json([
-            { id: 1, name: 'name', tag: 'tag', bought_at: null },
-          ]);
+          res.json([{ id: 1, name: 'name', tag: 'tag', bought_at: null }]);
         });
         app.post(`${app.basePath}/object`, (req, res) => {
-          return req.query.mode === 'array'
+          req.query.mode === 'array'
             ? res.json([req.body])
             : res.json(req.body);
         });
         app.get(`${app.basePath}/users`, (req, res) => {
           const json = ['user1', 'user2', 'user3'];
-          return res.json(json);
+          res.json(json);
         });
         app.get(`${app.basePath}/pets`, (req, res) => {
           let json = {};
@@ -69,10 +69,10 @@ describe(packageJson.name, () => {
           } else if (req.query.mode === 'empty_object') {
             json = {};
           } else if (req.query.mode === 'empty_response') {
-            return res.json();
+            res.json();
+            return;
           }
-
-          return res.json(json);
+          res.json(json);
         });
         app.post(`${app.basePath}/no_additional_props`, (req, res) => {
           res.json(req.body);
@@ -109,7 +109,7 @@ describe(packageJson.name, () => {
         expect(r.body.id).to.be.a('number').that.equals(213);
       }));
 
-  it('should fail if response field has a value of incorrect type', async () =>
+  it('should fail if response field has a value of incorrect type', () =>
     request(app)
       .get(`${app.basePath}/pets?mode=bad_type`)
       .expect(500)
@@ -119,7 +119,7 @@ describe(packageJson.name, () => {
       }));
 
   // TODO add test for allOf - when allOf is used an array value passes when object is expected
-  it('should fail if response is array when expecting object', async () =>
+  it('should fail if response is array when expecting object', () =>
     request(app)
       .get(`${app.basePath}/object`)
       .expect(500)
@@ -138,7 +138,7 @@ describe(packageJson.name, () => {
         expect(r.body).to.have.property('code').that.equals(500);
       }));
 
-  it('should return 200 if returns expect object (using allOf) with type object', async () =>
+  it('should return 200 if returns expect object (using allOf) with type object', () =>
     request(app)
       .post(`${app.basePath}/object`)
       .send({ id: 1, name: 'fido' })

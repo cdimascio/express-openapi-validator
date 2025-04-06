@@ -3,9 +3,10 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import { OpenAPIV3 } from '../src/framework/types';
+import { AppWithServer } from './common/app.common';
 
 describe('no components', () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
@@ -13,9 +14,9 @@ describe('no components', () => {
     app = await createApp({ apiSpec, validateResponses: true }, 3005, (app) =>
       app.use(
         `${app.basePath}`,
-        express
-          .Router()
-          .get(`/ping`, (req, res) => res.json({ success: true })),
+        express.Router().get(`/ping`, (req, res) => {
+          res.json({ success: true });
+        }),
       ),
     );
   });

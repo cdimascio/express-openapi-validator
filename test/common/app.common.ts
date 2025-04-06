@@ -2,6 +2,11 @@ import { Request, Response } from 'express';
 import * as http from 'http';
 import * as express from 'express';
 
+export interface AppWithServer extends express.Application {
+  server: http.Server;
+  basePath: string;
+}
+
 export function startServer(app, port: number): Promise<http.Server> {
   return new Promise((resolve, reject) => {
     const http = require('http');

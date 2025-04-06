@@ -2,9 +2,10 @@ import * as path from 'path';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 describe('oneOf with discriminator', () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'one.of.2.yaml');
@@ -12,9 +13,9 @@ describe('oneOf with discriminator', () => {
       { apiSpec },
       3005,
       (app) => {
-        app.post(`${app.basePath}/discriminator_implied`, (req, res) =>
-          res.json(req.body),
-        );
+        app.post(`${app.basePath}/discriminator_implied`, (req, res) => {
+          res.json(req.body);
+        });
         app.post(`${app.basePath}/pets`, (req, res) => {
           res.json(req.body);
         });

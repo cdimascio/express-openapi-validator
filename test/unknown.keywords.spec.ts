@@ -1,9 +1,10 @@
 import * as path from 'path';
 import * as request from 'supertest';
 import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 describe('Unknown x- keywords', () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'unknown.keywords.yaml');
@@ -13,11 +14,11 @@ describe('Unknown x- keywords', () => {
       },
       3005,
       (app) => {
-        app.post(`${app.basePath}/persons`, (req, res) =>
+        app.post(`${app.basePath}/persons`, (req, res) => {
           res.json({
             ...req.body,
-          }),
-        );
+          });
+        });
       },
       true,
     );

@@ -2,9 +2,10 @@ import * as path from 'path';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 describe('wildcard path params', () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     const apiSpec = path.join('test', 'resources', 'wildcard.path.params.yaml');
@@ -15,36 +16,36 @@ describe('wildcard path params', () => {
       3001,
       (app) => {
         app
-          .get(`${app.basePath}/d1/:id`, (req, res) =>
+          .get(`${app.basePath}/d1/:id`, (req, res) => {
             res.json({
               ...req.params,
-            }),
-          )
-          .get(`${app.basePath}/d2/:path(*)`, (req, res) =>
+            });
+          })
+          .get(`${app.basePath}/d2/:path(*)`, (req, res) => {
             res.json({
               ...req.params,
-            }),
-          )
-          .get(`${app.basePath}/d3/:path(*)`, (req, res) =>
+            });
+          })
+          .get(`${app.basePath}/d3/:path(*)`, (req, res) => {
             res.json({
               ...req.params,
-            }),
-          )
-          .get(`${app.basePath}/d3`, (req, res) =>
+            });
+          })
+          .get(`${app.basePath}/d3`, (req, res) => {
             res.json({
               success: true,
-            }),
-          )
-          .get(`${app.basePath}/d4/:multi/spaced/:path(*)`, (req, res) =>
+            });
+          })
+          .get(`${app.basePath}/d4/:multi/spaced/:path(*)`, (req, res) => {
             res.json({
               ...req.params,
-            }),
-          )
-          .get(`${app.basePath}/d5/:multi/:path(*)`, (req, res) =>
+            });
+          })
+          .get(`${app.basePath}/d5/:multi/:path(*)`, (req, res) => {
             res.json({
               ...req.params,
-            }),
-          );
+            });
+          });
       },
     );
   });

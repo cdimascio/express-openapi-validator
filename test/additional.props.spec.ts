@@ -4,9 +4,16 @@ import * as express from 'express';
 import { expect } from 'chai';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { RequestHandler } from 'express';
+import { Server } from 'http';
+
+interface AppWithServer extends express.Application {
+  server: Server;
+  basePath: string;
+}
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
@@ -15,7 +22,7 @@ describe(packageJson.name, () => {
       'resources',
       'additional.properties.yaml',
     );
-    app = await createApp(
+    const createdApp = await createApp(
       {
         apiSpec,
         validateRequests: {
@@ -23,19 +30,27 @@ describe(packageJson.name, () => {
         },
       },
       3005,
-      (app) =>
-        app.use(
-          `${app.basePath}/additional_props`,
-          express
-            .Router()
-            .post(`/false`, (req, res) => res.json(req.body))
-            .post(`/true`, (req, res) => res.json(req.body)),
-        ),
+      (app) => {
+        const router = express.Router();
+        router
+          .post('/false', (req, res) => {
+            res.json(req.body);
+          })
+          .post('/true', (req, res) => {
+            res.json(req.body);
+          });
+        
+        app.use(`${app.basePath}/additional_props`, router);
+      },
     );
+    
+    app = createdApp as unknown as AppWithServer;
   });
 
   after(() => {
-    app.server.close();
+    if (app && app.server) {
+      app.server.close();
+    }
   });
 
   it('should return 400 if additionalProperties=false, and type is invalid', async () =>

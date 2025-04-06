@@ -2,6 +2,7 @@ import * as path from 'path';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 const apiSpecPath = path.join(
   'test',
@@ -10,7 +11,7 @@ const apiSpecPath = path.join(
 );
 
 describe('response validation with type coercion', () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // set up express app
@@ -25,11 +26,11 @@ describe('response validation with type coercion', () => {
           const q = req.query.q;
 
           if (q === '200') {
-            return res.status(200).json({ data: 'good' });
+            res.status(200).json({ data: 'good' });
           } else if (q === '400') {
-            return res.status(400).json({ message: 'message', code: 400 });
+            res.status(400).json({ message: 'message', code: 400 });
           } else if (q === '400_bad') {
-            return res.status(400).json({ bad: 'malformed' });
+            res.status(400).json({ bad: 'malformed' });
           }
         });
       },

@@ -2,11 +2,12 @@ import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import * as OpenApiValidator from '../src';
+import { AppWithServer } from './common/app.common';
 
 describe('security.defaults', () => {
   let app = express();
   let basePath = '/api';
-  let server = null;
+  let server;
 
   before(async () => {
     const router = express.Router();
@@ -23,12 +24,12 @@ describe('security.defaults', () => {
       }),
     );
 
-    router.get('/', (req, res) => res.status(200).send('home api\n'));
-    router.get('/notDefined', (req, res) =>
-      res.status(200).send('url api not defined\n'),
-    );
+    router.get('/', (req, res) => {res.status(200).send('home api\n')});
+    router.get('/notDefined', (req, res) => {
+      res.status(200).send('url api not defined\n')
+  });
 
-    app.get('/', (req, res) => res.status(200).send('home\n'));
+    app.get('/', (req, res) => {res.status(200).send('home\n')});
     app.use(basePath, router);
 
     app.use((err, req, res, next) => {

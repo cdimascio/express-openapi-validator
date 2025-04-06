@@ -61,7 +61,7 @@ export class RequestValidator {
     req: OpenApiRequest,
     res: Response,
     next: NextFunction,
-  ): void {
+  ): void | Promise<void> {
     if (!req.openapi) {
       // this path was not found in open api and
       // this path is not defined under an openapi base path

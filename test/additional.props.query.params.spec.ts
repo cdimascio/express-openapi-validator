@@ -1,12 +1,13 @@
-import * as path from 'path';
-import * as express from 'express';
-import * as request from 'supertest';
-import { createApp } from './common/app';
-import * as packageJson from '../package.json';
 import { expect } from 'chai';
+import * as express from 'express';
+import * as path from 'path';
+import * as request from 'supertest';
+import * as packageJson from '../package.json';
+import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer
 
   before(async () => {
     // Set up the express app
@@ -19,9 +20,9 @@ describe(packageJson.name, () => {
       app.use(
         express
           .Router()
-          .get(`/params_with_additional_props`, (req, res) =>
-            res.status(200).json(req.body),
-          ),
+          .get(`/params_with_additional_props`, (req, res) => {
+            res.status(200).json(req.body)
+  }),
       ),
     );
   });

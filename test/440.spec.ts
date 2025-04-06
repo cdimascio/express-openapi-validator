@@ -1,11 +1,12 @@
 import * as express from 'express';
 import * as request from 'supertest';
-import { createApp } from './common/app';
 import * as packageJson from '../package.json';
 import { OpenAPIV3 } from '../src/framework/types';
+import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
@@ -45,16 +46,20 @@ describe(packageJson.name, () => {
         },
       },
     };
-    app = await createApp({
-      apiSpec,
-      validateRequests: true,
-      validateResponses: true, 
-    }, 3005, (app) =>
-      app.use(
-        express
-          .Router()
-          .post(`/test/abc123`, (req, res) => res.status(200).json(req.body)),
-      ),
+    app = await createApp(
+      {
+        apiSpec,
+        validateRequests: true,
+        validateResponses: true,
+      },
+      3005,
+      (app) => {
+        app.use(
+          express.Router().post('/test/abc123', function (req, res) {
+            res.status(200).json(req.body);
+          }),
+        );
+      },
     );
   });
 

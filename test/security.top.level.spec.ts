@@ -3,10 +3,11 @@ import * as express from 'express';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 describe('security.top.level', () => {
-  let app = null;
-  let basePath = null;
+  let app: AppWithServer;
+  let basePath: string;
 
   before(async () => {
     // Set up the express app
@@ -18,15 +19,27 @@ describe('security.top.level', () => {
       `${basePath}`,
       express
         .Router()
-        .get(`/api_key`, (req, res) => res.json({ logged_in: true }))
-        .get(`/api_query_key`, (req, res) => res.json({ logged_in: true }))
-        .get(`/api_query_keys`, (req, res) => res.json({ logged_in: true }))
-        .get(`/api_key_or_anonymous`, (req, res) =>
-          res.json({ logged_in: true }),
-        )
-        .get('/anonymous', (req, res) => res.json({ logged_in: true }))
-        .get('/anonymous_2', (req, res) => res.json({ logged_in: true }))
-        .get(`/bearer`, (req, res) => res.json({ logged_in: true })),
+        .get(`/api_key`, (req, res) => {
+          res.json({ logged_in: true });
+        })
+        .get(`/api_query_key`, (req, res) => {
+          res.json({ logged_in: true });
+        })
+        .get(`/api_query_keys`, (req, res) => {
+          res.json({ logged_in: true });
+        })
+        .get(`/api_key_or_anonymous`, (req, res) => {
+          res.json({ logged_in: true });
+        })
+        .get('/anonymous', (req, res) => {
+          res.json({ logged_in: true });
+        })
+        .get('/anonymous_2', (req, res) => {
+          res.json({ logged_in: true });
+        })
+        .get(`/bearer`, (req, res) => {
+          res.json({ logged_in: true });
+        }),
     );
   });
 
@@ -38,7 +51,7 @@ describe('security.top.level', () => {
     request(app)
       .get(`${basePath}/api_key`)
       .expect(401)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -56,7 +69,7 @@ describe('security.top.level', () => {
       .get(`${basePath}/api_key_undefined_path`)
       .set('X-API-Key', 'test')
       .expect(404)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -68,7 +81,7 @@ describe('security.top.level', () => {
       .post(`${basePath}/api_key`)
       .set('X-API-Key', 'test')
       .expect(405)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -98,15 +111,13 @@ describe('security.top.level', () => {
         .expect(200),
   );
   it('should return 200 if apikey or anonymous', async () =>
-    request(app)
-      .get(`${basePath}/api_key_or_anonymous`)
-      .expect(200));
+    request(app).get(`${basePath}/api_key_or_anonymous`).expect(200));
 
   it('should override api key with bearer and return 401 if bearer is missing', async () =>
     request(app)
       .get(`${basePath}/bearer`)
       .expect(401)
-      .then(r => {
+      .then((r) => {
         const body = r.body;
         expect(body.errors).to.be.an('array');
         expect(body.errors).to.have.length(1);
@@ -122,12 +133,8 @@ describe('security.top.level', () => {
       .expect(200));
 
   it('should override api key with anonymous', async () =>
-    request(app)
-      .get(`${basePath}/anonymous_2`)
-      .expect(200));
+    request(app).get(`${basePath}/anonymous_2`).expect(200));
 
   it('should override api key with anonymous', async () =>
-    request(app)
-      .get(`${basePath}/anonymous`)
-      .expect(200));
+    request(app).get(`${basePath}/anonymous`).expect(200));
 });

@@ -1,12 +1,12 @@
-import * as path from 'path';
 import * as express from 'express';
-import { expect } from 'chai';
+import * as path from 'path';
 import * as request from 'supertest';
-import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 describe.skip(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
   after(() => {
     app.server.close();
   });
@@ -16,7 +16,9 @@ describe.skip(packageJson.name, () => {
     app = await createApp({ apiSpec, coerceTypes: false }, 3005, (app) =>
       app.use(
         `/`,
-        express.Router().get(`/test`, (req, res) => res.json(req.body)),
+        express.Router().get(`/test`, (req, res) => {
+          res.json(req.body);
+        }),
       ),
     );
 

@@ -3,9 +3,10 @@ import * as express from 'express';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import { expect } from 'chai';
+import { AppWithServer } from './common/app.common';
 
 describe('one.of readonly', () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
@@ -14,15 +15,15 @@ describe('one.of readonly', () => {
       app.use(
         express
           .Router()
-          .post(`${app.basePath}/any_of_one_required`, (req, res) =>
-            res.status(200).json({ success: true }),
-          )
-          .post(`${app.basePath}/any_of`, (req, res) =>
-            res.status(200).json({ success: true }),
-          )
-          .post(`${app.basePath}/one_of`, (req, res) =>
-            res.status(200).json({ success: true }),
-          ),
+          .post(`${app.basePath}/any_of_one_required`, (req, res) => {
+            res.status(200).json({ success: true });
+          })
+          .post(`${app.basePath}/any_of`, (req, res) => {
+            res.status(200).json({ success: true });
+          })
+          .post(`${app.basePath}/one_of`, (req, res) => {
+            res.status(200).json({ success: true });
+          }),
       ),
     );
   });

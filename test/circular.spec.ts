@@ -1,12 +1,14 @@
-import * as path from 'path';
 import * as express from 'express';
-import { expect } from 'chai';
+import { Server } from 'http';
+import * as path from 'path';
 import * as request from 'supertest';
-import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
+
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // Set up the express app
@@ -14,13 +16,17 @@ describe(packageJson.name, () => {
     app = await createApp({ apiSpec }, 3005, (app) =>
       app.use(
         `${app.basePath}`,
-        express.Router().post(`/circular`, (req, res) => res.json(req.body)),
+        express.Router().post('/circular', (req, res) => {
+          res.json(req.body);
+        }),
       ),
     );
   });
 
   after(() => {
-    app.server.close();
+    if (app && app.server) {
+      app.server.close();
+    }
   });
 
   it('should validate circular ref successfully', async () =>

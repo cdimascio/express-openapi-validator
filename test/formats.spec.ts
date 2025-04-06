@@ -2,11 +2,12 @@ import * as path from 'path';
 import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
+import { AppWithServer } from './common/app.common';
 
 const apiSpecPath = path.join('test', 'resources', 'formats.yaml');
 
 describe('path params', () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // set up express app
@@ -28,10 +29,12 @@ describe('path params', () => {
       },
       3005,
       (app) => {
-        app.get(`${app.basePath}/fees`, (req, res) => res.json([req.query]));
-        app.all(`${app.basePath}/formats/1`, (req, res) =>
-          res.json([req.query]),
-        );
+        app.get(`${app.basePath}/fees`, (req, res) => {
+          res.json([req.query]);
+        });
+        app.all(`${app.basePath}/formats/1`, (req, res) => {
+          res.json([req.query]);
+        });
         app.use((err, req, res, next) => {
           res.status(err.status ?? 500).json({
             message: err.message,
