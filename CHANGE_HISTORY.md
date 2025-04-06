@@ -1,3 +1,25 @@
+##  (2025-04-06)
+
+* allow mutation for express 5 validaiton (#1043) ([a84f611](https://github.com/cdimascio/express-openapi-validator/commit/a84f611)), closes [#1043](https://github.com/cdimascio/express-openapi-validator/issues/1043)
+* caches pre-processed resolved schemas ([85a2920](https://github.com/cdimascio/express-openapi-validator/commit/85a2920))
+* handle req.query mutations for express 5 ([2e02653](https://github.com/cdimascio/express-openapi-validator/commit/2e02653))
+* handle req.query mutations for express 5 ([86374a3](https://github.com/cdimascio/express-openapi-validator/commit/86374a3))
+* handle req.query mutations for express 5 ([1d69d8a](https://github.com/cdimascio/express-openapi-validator/commit/1d69d8a))
+* handle req.query mutations for express 5 ([456b0a8](https://github.com/cdimascio/express-openapi-validator/commit/456b0a8))
+* update README ([4edacd8](https://github.com/cdimascio/express-openapi-validator/commit/4edacd8))
+* Update README.md ([5e8e01b](https://github.com/cdimascio/express-openapi-validator/commit/5e8e01b))
+* Update README.md ([f9d6747](https://github.com/cdimascio/express-openapi-validator/commit/f9d6747))
+* v5.4.3 ([c7d61e4](https://github.com/cdimascio/express-openapi-validator/commit/c7d61e4))
+* test(express-5): change routes in tests to new path route syntax (#1036) ([536e0b0](https://github.com/cdimascio/express-openapi-validator/commit/536e0b0)), closes [#1036](https://github.com/cdimascio/express-openapi-validator/issues/1036)
+
+
+
+##  (2025-02-23)
+
+* caches pre-processed resolved schemas ([ac02bdf](https://github.com/cdimascio/express-openapi-validator/commit/ac02bdf))
+
+
+
 ##  (2025-02-09)
 
 * allow mutation for express 5 validaiton (#1043) ([0439224](https://github.com/cdimascio/express-openapi-validator/commit/0439224)), closes [#1043](https://github.com/cdimascio/express-openapi-validator/issues/1043)
