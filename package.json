@@ -59,7 +59,7 @@
     "commitizen": "^4.3.1",
     "cookie-parser": "^1.4.7",
     "coveralls": "^3.1.1",
-    "express": "^5.0.1",
+    "express": "^5.1.0",
     "mocha": "^11.1.0",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.9",
