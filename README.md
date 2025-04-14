@@ -22,7 +22,9 @@
 - 🎈 file upload
 - ✏️ OpenAPI 3.0.x and 3.1.x spec support
 
-_Express 5 support is in progress--a subset of functionality is working. Try it out and provide feedback!_
+_Express 5 support is in progress--a subset of functionality is working. Try it out and provide feedback!_ 
+
+_Express 5 support: (7 tests fail, 436 pass). Please contribute fixes to the `express-5-support` branch._
 
 **Docs:**
 - 📖 [documentation](https://cdimascio.github.io/express-openapi-validator-documentation/)
