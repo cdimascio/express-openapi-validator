@@ -41,7 +41,7 @@ _Express 5 support: (7 tests fail, 436 pass). Please contribute fixes to the `ex
 ```shell
 npm install express-openapi-validator
 
-# for v6.0.0-alpha
+# for v6.0.0-alpha (for express-5 support)
 npm install express-openapi-validator@alpha
 
 ```
