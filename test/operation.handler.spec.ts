@@ -21,7 +21,7 @@ describe('operation handler', () => {
       .to.have.property('options')
       .to.deep.include({ operationHandlers: false });
 
-    defaultNumberOfRoutes = app._router.stack.length;
+    defaultNumberOfRoutes = app.router.stack.length;
   });
 
   it('should not install handlers when nothing provided', async () => {

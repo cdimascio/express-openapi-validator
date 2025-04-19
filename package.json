@@ -1,6 +1,6 @@
 {
   "name": "express-openapi-validator",
-  "version": "5.4.9",
+  "version": "6.0.0-alpha.9",
   "description": "Automatically validate API requests and responses with OpenAPI 3 and Express.",
   "main": "dist/index.js",
   "scripts": {
@@ -59,7 +59,7 @@
     "commitizen": "^4.3.1",
     "cookie-parser": "^1.4.7",
     "coveralls": "^3.1.1",
-    "express": "^4.21.2",
+    "express": "^5.1.0",
     "mocha": "^11.1.0",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.9",

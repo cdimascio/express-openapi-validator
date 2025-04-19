@@ -21,12 +21,12 @@ describe('wildcard path params', () => {
               ...req.params,
             });
           })
-          .get(`${app.basePath}/d2/:path(*)`, (req, res) => {
+          .get(`${app.basePath}/d2/*path`, (req, res) => {
             res.json({
               ...req.params,
             });
           })
-          .get(`${app.basePath}/d3/:path(*)`, (req, res) => {
+          .get(`${app.basePath}/d3/*path`, (req, res) => {
             res.json({
               ...req.params,
             });
@@ -36,12 +36,12 @@ describe('wildcard path params', () => {
               success: true,
             });
           })
-          .get(`${app.basePath}/d4/:multi/spaced/:path(*)`, (req, res) => {
+          .get(`${app.basePath}/d4/:multi/spaced/*path`, (req, res) => {
             res.json({
               ...req.params,
             });
           })
-          .get(`${app.basePath}/d5/:multi/:path(*)`, (req, res) => {
+          .get(`${app.basePath}/d5/:multi/*path`, (req, res) => {
             res.json({
               ...req.params,
             });
