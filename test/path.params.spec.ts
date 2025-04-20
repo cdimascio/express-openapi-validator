@@ -52,17 +52,14 @@ describe('path params', () => {
     app.server.close();
   });
 
-  // TODO - fails with express 4
   it('should url decode path parameters (type level)', async () =>
     request(app)
       .get(`${app.basePath}/users/c%20dimascio`)
       .expect(200)
       .then((r) => {
-        console.log(r.body)
         expect(r.body.id).to.equal('c dimascio');
       }));
 
-  // TODO - fails with express 4
   it('should url decode path parameters (path level)', async () =>
     request(app)
       .get(`${app.basePath}/users_alt/c%20dimascio`)
@@ -71,7 +68,6 @@ describe('path params', () => {
         expect(r.body.id).to.equal('c dimascio');
       }));
 
-  // TODO - fails with express 4
   it('should handle path parameter with style=simple', async () =>
     request(app)
       .get(`${app.basePath}/multi_users/aa,bb,cc`)
