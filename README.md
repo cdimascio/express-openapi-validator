@@ -22,7 +22,7 @@
 - 🎈 file upload
 - ✏️ OpenAPI 3.0.x and 3.1.x spec support
 
-_[Express 5 support](https://github.com/cdimascio/express-openapi-validator/pull/1034): all tests now pass with v6.0.0-alpha.9!. Try it out and [provide feedback](https://github.com/cdimascio/express-openapi-validator/pull/1034))!_ 
+_Express 5 support available in `>=v5.5.0-beta.1`!_
 
 
 **Docs:**
@@ -39,10 +39,6 @@ _[Express 5 support](https://github.com/cdimascio/express-openapi-validator/pull
 
 ```shell
 npm install express-openapi-validator
-
-# for v6.0.0-alpha (for express-5 support)
-npm install express-openapi-validator@alpha
-
 ```
 
 ## Usage
