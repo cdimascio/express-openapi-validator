@@ -39,6 +39,9 @@ _Express 5 support available in `>=v5.5.0-beta.1`!_
 
 ```shell
 npm install express-openapi-validator
+
+## For express 5 suppport
+npm install express-openapi-validator@beta
 ```
 
 ## Usage
