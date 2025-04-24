@@ -48,6 +48,7 @@ describe(packageJson.name, () => {
       })
       .expect(200)
       .then((response) => {
+        console.log(response.body);
         expect(response.body).to.deep.equal({
           settings: {
             onlyValidated: true,

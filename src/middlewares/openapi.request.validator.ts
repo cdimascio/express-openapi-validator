@@ -1,4 +1,5 @@
 import Ajv, { ValidateFunction } from 'ajv';
+import { parse } from 'qs';
 import { NextFunction, RequestHandler, Response } from 'express';
 import { createRequestAjv } from '../framework/ajv';
 import {
@@ -139,13 +140,14 @@ export class RequestValidator {
         }
         req.params = openapi.pathParams ?? req.params;
       }
-
       // HACK for express 5, temporarily make req.query mutable
       const reqQueryDescriptor = Object.getOwnPropertyDescriptor(req, 'query');
       Object.defineProperty(req, 'query', {
-          writable: true,
-          value: req.query,
-      })
+        writable: true,
+        value: req.query,
+      });
+      // TODO should be in RequestParameterMutator?
+      req.query = this.normalizeQueryFields(req.query);
       const schemaProperties = validator.allSchemaProperties;
       const mutator = new RequestParameterMutator(
         this.ajv,
@@ -162,6 +164,13 @@ export class RequestValidator {
           schemaProperties.query,
           securityQueryParam,
         );
+      }
+
+      const schemaBody = <any>validator?.schemaBody;
+      if (contentType.mediaType === 'multipart/form-data') {
+        // make req.body {}
+        req.body ??= {};
+        this.multipartNested(req, schemaBody);
       }
 
       // HACK for express 5, Restore the original descriptor
@@ -183,11 +192,6 @@ export class RequestValidator {
         cookies,
         body: req.body,
       };
-      const schemaBody = <any>validator?.schemaBody;
-
-      if (contentType.mediaType === 'multipart/form-data') {
-        this.multipartNested(req, schemaBody);
-      }
 
       const discriminator = schemaBody?.properties?.body?._discriminator;
       const discriminatorValidator = this.discriminatorValidator(
@@ -286,6 +290,28 @@ export class RequestValidator {
       }
     }
   }
+
+  /**
+   * Mutates and normalizes the req.query object by parsing braket notation query string key values pairs
+   * into its corresponding key=<json-object> and update req.query with the parsed value
+   * for instance, req.query that equals { filter[name]: test} is translated into { filter: { name: 'test' }, where 
+   * the query string field is set as filter and its value is the full javascript object (translated from bracket notation)
+   * @param keys
+   * @returns
+   */
+  private normalizeQueryFields(query: { [key: string]: any }): {
+    [key: string]: any;
+  } {
+    Object.keys(query).forEach((key) => {
+      const bracketNotation = key.includes('[');
+      if (bracketNotation) {
+        const normalizedKey = key.split('[')[0];
+        query[normalizedKey] = parse(`${key}=${query[key]}`)[normalizedKey];
+        delete query[key];
+      }
+    });
+    return query;
+  }
 }
 
 class Validator {
@@ -354,8 +380,12 @@ class Security {
     apiDocs: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
     schema: OperationObject,
   ): string[] {
-    const hasPathSecurity = schema.security ? schema.security.length > 0 : false;
-    const hasRootSecurity = apiDocs.security ? apiDocs.security.length > 0 : false;
+    const hasPathSecurity = schema.security
+      ? schema.security.length > 0
+      : false;
+    const hasRootSecurity = apiDocs.security
+      ? apiDocs.security.length > 0
+      : false;
 
     let usedSecuritySchema: SecurityRequirementObject[] = [];
     if (hasPathSecurity) {

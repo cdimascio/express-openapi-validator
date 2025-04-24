@@ -4,6 +4,7 @@ import * as request from 'supertest';
 import { createApp } from './common/app';
 
 import { date, dateTime } from '../src/framework/base.serdes';
+import { AppWithServer } from './common/app.common';
 
 const apiSpecPath = path.join('test', 'resources', '699.yaml');
 
@@ -27,7 +28,7 @@ class BadDate extends Date {
 }
 
 describe('699', () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // set up express app
@@ -53,7 +54,7 @@ describe('699', () => {
       },
       3005,
       (app) => {
-        app.get([`${app.basePath}/users/:id?`], (req, res) => {
+        app.get([`${app.basePath}/users/:id`], (req, res) => {
           if (typeof req.params.id !== 'object') {
             throw new Error("Should be deserialized to ObjectId object");
           }
@@ -156,7 +157,7 @@ describe('699', () => {
 
 
 describe('699 serialize response components only', () => {
-  let app = null;
+  let app: AppWithServer;
 
   before(async () => {
     // set up express app
@@ -174,14 +175,14 @@ describe('699 serialize response components only', () => {
           dateTime.serializer,
           {
             format: "mongo-objectid",
-            serialize: (o) => o.toString(),
+            serialize: (o: any) => o.toString(),
           },
         ],
         unknownFormats: ['mongo-objectid', 'string-list'],
       },
       3005,
       (app) => {
-        app.get([`${app.basePath}/users/:id?`], (req, res) => {
+        app.get([`${app.basePath}/users/:id`], (req, res) => {
           if (typeof req.params.id !== 'string') {
             throw new Error("Should be not be deserialized to ObjectId object");
           }

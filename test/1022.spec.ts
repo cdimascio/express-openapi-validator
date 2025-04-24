@@ -5,6 +5,9 @@ import * as packageJson from '../package.json';
 import { OpenAPIV3 } from '../src/framework/types';
 import { createApp } from './common/app';
 import { AppWithServer } from './common/app.common';
+import * as pkg from '../package.json';
+
+const expressVersion = pkg.devDependencies.express;
 
 describe(packageJson.name, () => {
   let app: AppWithServer;
@@ -90,7 +93,7 @@ describe(packageJson.name, () => {
           },
         },
 
-        '/some/{wildcard}*': {
+        '/some/*wildcard': {
           parameters: [
             {
               name: 'wildcard',
@@ -119,22 +122,25 @@ describe(packageJson.name, () => {
         validateResponses: true,
       },
       3005,
-      (app) =>
+      (app) => {
+        const firstDigit = expressVersion.match(/\d/)?.[0];
+        const pathWildcard = firstDigit === '4' ? ':wildcard(*)' : '*wildcard';
         app.use(
           express
             .Router()
             .get(`/api/test/:id`, (req, res) => {
               res.status(200).json({ id: 'id-test', label: 'label' });
             })
-            .post(`/api/test/:id:clone`, (req, res) => {
+            .post(`/api/test/:id\\:clone`, (req, res) => {
               res.status(200).json({ ...req.body, id: 'id-test' });
             })
-            .get('/api/some/:wildcard(*)', (req, res) => {
-              const wildcard = req.params.wildcard;
+            .get(`/api/some/${pathWildcard}`, (req, res) => {
+              const wildcard = (req.params as { wildcard: string }).wildcard;
               console.log(`Wildcard: ${wildcard}`);
               res.status(200).send(`Matched wildcard: ${wildcard}`);
             }),
-        ),
+        );
+      },
     );
   });
 

@@ -33,7 +33,8 @@ describe('a multipart request', () => {
                 metadata: req.body.metadata,
               });
             })
-            .post(`/sample_*`, (req, res) => {
+            // .post(`/sample_*suffix`, (req, res) => {
+            .post(/^\/sample_.*/, (req, res) => {
               res.json(req.body);
             }),
         ),
@@ -47,6 +48,7 @@ describe('a multipart request', () => {
   });
 
   describe('that contains $refs', () => {
+    // TODO - fails with express 4 - parse multipart
     it('should validate a request body with a schemaObject $ref', async () =>
       request(app)
         .post(`${app.basePath}/sample_4`)
@@ -54,6 +56,7 @@ describe('a multipart request', () => {
         .attach('image', 'package.json')
         .expect(200));
 
+    // TODO - fails with express 4 - parse multipart
     it('should validate a requestBody $ref', async () =>
       request(app)
         .post(`${app.basePath}/sample_5`)
@@ -61,6 +64,7 @@ describe('a multipart request', () => {
         .attach('image', 'package.json')
         .expect(200));
 
+    // TODO - fails with express 4 - parse multipart
     it('should validate a requestBody $ref that contains a schemaObject $ref', async () =>
       request(app)
         .post(`${app.basePath}/sample_6`)

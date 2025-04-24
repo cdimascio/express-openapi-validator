@@ -6,6 +6,9 @@ import * as OpenApiValidator from '../src';
 import * as resolvers from '../src/resolvers';
 import { createApp } from './common/app';
 import { OpenApiValidatorOpts } from '../src/framework/types';
+import * as pkg from '../package.json';
+
+const expressVersion = pkg.devDependencies.express;
 
 describe('operation handler', () => {
   let defaultNumberOfRoutes = null;
@@ -21,7 +24,11 @@ describe('operation handler', () => {
       .to.have.property('options')
       .to.deep.include({ operationHandlers: false });
 
-    defaultNumberOfRoutes = app._router.stack.length;
+    // TODO - need _router for express 4
+    const firstDigit = expressVersion.match(/\d/)?.[0];
+    defaultNumberOfRoutes = firstDigit === '4'
+      ? app._router.stack.length
+      : app.router.stack.length;
   });
 
   it('should not install handlers when nothing provided', async () => {
