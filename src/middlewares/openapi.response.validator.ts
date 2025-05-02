@@ -6,7 +6,7 @@ import {
   augmentAjvErrors,
   ContentType,
   ajvErrorsToValidatorError,
-  findResponseContent,
+  findResponseContent, useAjvCache,
 } from './util';
 import {
   OpenAPIV3,
@@ -109,7 +109,7 @@ export class ResponseValidator {
 
     let validators = this.validatorsCache[key];
     if (!validators) {
-      validators = this.buildValidators(responses);
+      validators = this.buildValidators(responses, key);
       this.validatorsCache[key] = validators;
     }
     return validators;
@@ -212,7 +212,7 @@ export class ResponseValidator {
    * @param responses
    * @returns a map of validators
    */
-  private buildValidators(responses: OpenAPIV3.ResponsesObject): {
+  private buildValidators(responses: OpenAPIV3.ResponsesObject, ajvCacheKey: string): {
     [key: string]: ValidateFunction;
   } {
     const validationTypes = (response) => {
@@ -295,9 +295,10 @@ export class ResponseValidator {
         const schema = contentTypeSchemas[contentType];
         schema.paths = this.spec.paths; // add paths for resolution with multi-file
         schema.components = this.spec.components; // add components for resolution w/ multi-file
+        const validator = useAjvCache(this.ajvBody, schema, `${ajvCacheKey}-${contentType}`)
         validators[code] = {
           ...validators[code],
-          [contentType]: this.ajvBody.compile(<object>schema),
+          [contentType]: validator,
         };
       }
     }

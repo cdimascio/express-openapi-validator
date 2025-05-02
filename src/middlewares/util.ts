@@ -1,6 +1,6 @@
 import type { ErrorObject } from 'ajv-draft-04';
 import { Request } from 'express';
-import { ValidationError } from '../framework/types';
+import { AjvInstance, ValidationError } from '../framework/types';
 
 export class ContentType {
   public readonly mediaType: string = null;
@@ -171,3 +171,20 @@ export const zipObject = (keys, values) =>
     return acc
   }, {})
 
+/**
+ * Tries to fetch a schema from ajv instance by the provided key and adds and
+ * compiles the schema under provided key. We provide a key to avoid ajv library
+ * using the whole schema as a cache key, leading to a lot of unnecessary memory
+ * usage - this is not recommended by the library either:
+ * https://ajv.js.org/guide/managing-schemas.html#cache-key-schema-vs-key-vs-id
+ *
+ * @param ajvCacheKey - Key which will be used for ajv cache
+ */
+export function useAjvCache(ajv: AjvInstance, schema: object, ajvCacheKey: string) {
+  let validator = ajv.getSchema(ajvCacheKey);
+  if (!validator) {
+    ajv.addSchema(schema, ajvCacheKey);
+    validator = ajv.getSchema(ajvCacheKey);
+  }
+  return validator
+}
