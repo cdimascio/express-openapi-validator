@@ -172,8 +172,8 @@ export const zipObject = (keys, values) =>
   }, {})
 
 /**
- * Tries to fetch a schema from ajv instance by the provided key and adds and
- * compiles the schema under provided key. We provide a key to avoid ajv library
+ * Tries to fetch a schema from ajv instance by the provided key otherwise adds (and
+ * compiles) the schema under provided key. We provide a key to avoid ajv library
  * using the whole schema as a cache key, leading to a lot of unnecessary memory
  * usage - this is not recommended by the library either:
  * https://ajv.js.org/guide/managing-schemas.html#cache-key-schema-vs-key-vs-id
