@@ -295,7 +295,7 @@ export class ResponseValidator {
         const schema = contentTypeSchemas[contentType];
         schema.paths = this.spec.paths; // add paths for resolution with multi-file
         schema.components = this.spec.components; // add components for resolution w/ multi-file
-        const validator = useAjvCache(this.ajvBody, schema, `${ajvCacheKey}-${contentType}`)
+        const validator = useAjvCache(this.ajvBody, <object>schema, `${ajvCacheKey}-${code}-${contentType}`)
         validators[code] = {
           ...validators[code],
           [contentType]: validator,
