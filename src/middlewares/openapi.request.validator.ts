@@ -19,7 +19,8 @@ import { ParametersSchemaParser } from './parsers/schema.parse';
 import {
   ContentType,
   ajvErrorsToValidatorError,
-  augmentAjvErrors, useAjvCache,
+  augmentAjvErrors,
+  useAjvCache,
 } from './util';
 
 type OperationObject = OpenAPIV3.OperationObject;
