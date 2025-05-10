@@ -21,6 +21,7 @@ import {
   ContentType,
   ajvErrorsToValidatorError,
   augmentAjvErrors,
+  useAjvCache,
 } from './util';
 
 type OperationObject = OpenAPIV3.OperationObject;
@@ -29,7 +30,6 @@ type ReferenceObject = OpenAPIV3.ReferenceObject;
 type SecurityRequirementObject = OpenAPIV3.SecurityRequirementObject;
 type SecuritySchemeObject = OpenAPIV3.SecuritySchemeObject;
 type ApiKeySecurityScheme = OpenAPIV3.ApiKeySecurityScheme;
-
 export class RequestValidator {
   private middlewareCache: { [key: string]: RequestHandler } = {};
   private apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
@@ -80,7 +80,7 @@ export class RequestValidator {
     const key = `${req.method}-${path}-${contentTypeKey}`;
 
     if (!this.middlewareCache[key]) {
-      const middleware = this.buildMiddleware(path, reqSchema, contentType);
+      const middleware = this.buildMiddleware(path, reqSchema, contentType, key);
       this.middlewareCache[key] = middleware;
     }
     return this.middlewareCache[key](req, res, next);
@@ -104,6 +104,7 @@ export class RequestValidator {
     path: string,
     reqSchema: OperationObject,
     contentType: ContentType,
+    ajvCacheKey: string
   ): RequestHandler {
     const apiDoc = this.apiDoc;
     const schemaParser = new ParametersSchemaParser(this.ajv, apiDoc);
@@ -113,7 +114,7 @@ export class RequestValidator {
     const validator = new Validator(this.apiDoc, parameters, body, {
       general: this.ajv,
       body: this.ajvBody,
-    });
+    }, ajvCacheKey);
 
     const allowUnknownQueryParameters = !!(
       reqSchema['x-eov-allow-unknown-query-parameters'] ??
@@ -330,6 +331,7 @@ class Validator {
       general: Ajv;
       body: Ajv;
     },
+    ajvCacheKey: string
   ) {
     this.apiDoc = apiDoc;
     this.schemaGeneral = this._schemaGeneral(parametersSchema);
@@ -338,8 +340,8 @@ class Validator {
       ...(<any>this.schemaGeneral).properties, // query, header, params props
       body: (<any>this.schemaBody).properties.body, // body props
     };
-    this.validatorGeneral = ajv.general.compile(this.schemaGeneral);
-    this.validatorBody = ajv.body.compile(this.schemaBody);
+    this.validatorGeneral = useAjvCache(ajv.general, this.schemaGeneral, ajvCacheKey);
+    this.validatorBody = useAjvCache(ajv.body, this.schemaBody, ajvCacheKey);
   }
 
   private _schemaGeneral(parameters: ParametersSchema): object {
