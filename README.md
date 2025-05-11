@@ -21,6 +21,7 @@
 - ✂️ **\$ref** support; split specs over multiple files
 - 🎈 file upload
 - ✏️ OpenAPI 3.0.x and 3.1.x spec support
+- ✨ Express 4 and 5 support
 
 
 
@@ -29,9 +30,9 @@
 
 [![GitHub stars](https://img.shields.io/github/stars/cdimascio/express-openapi-validator.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/cdimascio/express-openapi-validator/stargazers/) [![Twitter URL](https://img.shields.io/twitter/url/https/github.com/cdimascio/express-openapi-validator.svg?style=social)](https://twitter.com/intent/tweet?text=Check%20out%20express-openapi-validator%20by%20%40CarmineDiMascio%20https%3A%2F%2Fgithub.com%2Fcdimascio%2Fexpress-openapi-validator%20%F0%9F%91%8D)
 
-[OAS 3.1 (beta)](https://github.com/cdimascio/express-openapi-validator/pull/882) is available in `>=v5.4.0`!
+[OAS 3.1](https://github.com/cdimascio/express-openapi-validator/pull/882) is available in `>=v5.4.0`!
 
-_Express 5 support available in `>=v5.5.0-beta.1`!_
+[Express 5](https://expressjs.com/en/5x/api.html) support available in `>=v5.5.0`!_
 
 
 [NestJS](https://github.com/cdimascio/express-openapi-validator/tree/master/examples/9-nestjs)
@@ -42,9 +43,6 @@ _Express 5 support available in `>=v5.5.0-beta.1`!_
 
 ```shell
 npm install express-openapi-validator
-
-## For express 5 suppport
-npm install express-openapi-validator@beta
 ```
 
 ## Usage
