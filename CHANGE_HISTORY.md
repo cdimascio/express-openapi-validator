@@ -1,3 +1,18 @@
+##  (2025-05-11)
+
+* fix tests for node 24 ([e94cb27](https://github.com/cdimascio/express-openapi-validator/commit/e94cb27))
+* Optimise Ajv cache usage (#1062) ([990995b](https://github.com/cdimascio/express-openapi-validator/commit/990995b)), closes [#1062](https://github.com/cdimascio/express-openapi-validator/issues/1062)
+* Update README.md ([218a4b1](https://github.com/cdimascio/express-openapi-validator/commit/218a4b1))
+* Update README.md ([c500595](https://github.com/cdimascio/express-openapi-validator/commit/c500595))
+* Update README.md (#1059) ([b24a071](https://github.com/cdimascio/express-openapi-validator/commit/b24a071)), closes [#1059](https://github.com/cdimascio/express-openapi-validator/issues/1059)
+* v 5.5.0-beta.2 - upgrades dependencies ([f2f6c37](https://github.com/cdimascio/express-openapi-validator/commit/f2f6c37))
+* v5.5.0 ([3562d7b](https://github.com/cdimascio/express-openapi-validator/commit/3562d7b))
+* v5.5.0 ([92f64c7](https://github.com/cdimascio/express-openapi-validator/commit/92f64c7))
+* v5.5.0 ([81766f1](https://github.com/cdimascio/express-openapi-validator/commit/81766f1))
+* v5.5.0-beta.1 ([a52b312](https://github.com/cdimascio/express-openapi-validator/commit/a52b312))
+
+
+
 ##  (2025-04-06)
 
 * allow mutation for express 5 validaiton (#1043) ([a84f611](https://github.com/cdimascio/express-openapi-validator/commit/a84f611)), closes [#1043](https://github.com/cdimascio/express-openapi-validator/issues/1043)
