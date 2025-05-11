@@ -15,7 +15,7 @@ export async function createApp(
   apiRouter = undefined,
 ) {
   var app = express();
-  (<any>app).basePath = '/v1';
+  (app as any).basePath = '/v1';
 
   app.use(express.json());
   app.use(express.json({ type: 'application/*+json' }));

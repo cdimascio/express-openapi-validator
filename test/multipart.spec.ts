@@ -44,7 +44,7 @@ describe('a multipart request', () => {
     fileNames.length = 0;
   });
   after(() => {
-    (<any>app).server.close();
+    app.server.close();
   });
 
   describe('that contains $refs', () => {
@@ -129,7 +129,7 @@ describe('a multipart request', () => {
 
       const imgStream = fs.createReadStream(testImage);
       imgStream.on('end', () => req.end(done));
-      imgStream.pipe(<any>req, { end: false });
+      imgStream.pipe(req as any, { end: false });
     });
 
     it('should validate multipart file and metadata', async () => {
@@ -162,7 +162,7 @@ describe('when request does not use parsers', () => {
   let app;
 
   after(() => {
-    (<any>app).server.close();
+    app.server.close();
   });
 
   before(async () => {

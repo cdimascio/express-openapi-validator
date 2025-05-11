@@ -3,10 +3,11 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  const apps = [];
-  let basePath = null;
+  const apps: AppWithServer[] = [];
+  let basePath;
 
   before(() => {
     const apiSpecPath = path.join('test', 'resources', 'openapi.yaml');
@@ -33,7 +34,7 @@ describe(packageJson.name, () => {
     ]).then(([a1, a2]) => {
       apps.push(a1);
       apps.push(a2);
-      basePath = (<any>a1).basePath;
+      basePath = a1.basePath;
     });
   });
 

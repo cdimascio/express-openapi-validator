@@ -1,8 +1,12 @@
 import { expect } from 'chai';
 import * as request from 'supertest';
+import * as  express from 'express';
+import * as path from 'path';
+import * as http from 'http';
+import * as OpenApiValidator from '../src';
 
 describe('multi-spec', () => {
-  let app = null;
+  let app: any = null;
 
   before(async () => {
     // Set up the express app
@@ -10,7 +14,7 @@ describe('multi-spec', () => {
   });
 
   after(() => {
-    app.server.close();
+    if (app && app.server) (app as any).server.close();
   });
 
   it('create campaign should return 200', async () =>
@@ -32,11 +36,6 @@ describe('multi-spec', () => {
 });
 
 function createServer() {
-  const express = require('express');
-  const path = require('path');
-  const http = require('http');
-  const OpenApiValidator = require('../src');
-
   const app = express();
   app.use(express.urlencoded({ extended: false }));
   app.use(express.text());
@@ -116,6 +115,6 @@ function createServer() {
     });
   }
 
-  app.server = server;
+  (app as any).server = server;
   return app;
 }

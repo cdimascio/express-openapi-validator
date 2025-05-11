@@ -37,7 +37,7 @@ describe(packageJson.name, () => {
     );
   });
   after(() => {
-    (<any>app).server.close();
+    app.server.close();
   });
   describe(`multipart disabled`, () => {
     it('should throw 400 when required multipart file field', async () =>

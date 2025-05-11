@@ -70,8 +70,8 @@ describe('security.handlers', () => {
       }));
 
   it('should return 401 if apikey handler returns false', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers!.ApiKeyAuth = <any>function (req, scopes, schema) {
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).ApiKeyAuth = function (req, scopes, schema) {
       expect(scopes).to.be.an('array').with.length(0);
       false;
     };
@@ -88,8 +88,8 @@ describe('security.handlers', () => {
   });
 
   it('should return 401 if apikey handler returns Promise with false', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers!.ApiKeyAuth = <any>function (req, scopes, schema) {
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).ApiKeyAuth = function (req, scopes, schema) {
       expect(scopes).to.be.an('array').with.length(0);
       return Promise.resolve(false);
     };
@@ -106,8 +106,8 @@ describe('security.handlers', () => {
   });
 
   it('should return 401 if cookie auth handler returns Promise with false', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers!.CookieAuth = <any>function (req, scopes, schema) {
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).CookieAuth = function (req, scopes, schema) {
       expect(scopes).to.be.an('array').with.length(0);
       return Promise.resolve(false);
     };
@@ -124,8 +124,8 @@ describe('security.handlers', () => {
   });
 
   it('should return 401 if apikey handler returns Promise reject with custom message', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers!.ApiKeyAuth = (req, scopes, schema) => {
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).ApiKeyAuth = (req, scopes, schema) => {
       expect(scopes).to.be.an('array').with.length(0);
       return Promise.reject(new Error('rejected promise'));
     };
@@ -142,8 +142,8 @@ describe('security.handlers', () => {
   });
 
   it('should return 401 if apikey header is missing', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers!.ApiKeyAuth = (req, scopes, schema) => true;
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).ApiKeyAuth = (req, scopes, schema) => true;
     return request(app)
       .get(`${basePath}/api_key`)
       .expect(401)
@@ -156,8 +156,8 @@ describe('security.handlers', () => {
   });
 
   it('should return 200 if apikey header exists and handler returns true', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    (<any>validateSecurity.handlers!).ApiKeyAuth = function (
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).ApiKeyAuth = function (
       req,
       scopes,
       schema: OpenAPIV3.ApiKeySecurityScheme,
@@ -175,8 +175,8 @@ describe('security.handlers', () => {
   });
 
   it('should return 404 if apikey header exists and handler returns true but path doesnt exist', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    (<any>validateSecurity.handlers!).ApiKeyAuth = (
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).ApiKeyAuth = (
       req,
       scopes,
       schema: OpenAPIV3.ApiKeySecurityScheme,
@@ -194,8 +194,8 @@ describe('security.handlers', () => {
   });
 
   it('should return 401 if auth header is missing for basic auth', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers!.BasicAuth = (req, scopes, schema) => true;
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).BasicAuth = (req, scopes, schema) => true;
     return request(app)
       .get(`${basePath}/basic`)
       .expect(401)
@@ -208,8 +208,8 @@ describe('security.handlers', () => {
   });
 
   it('should return 401 if auth header has malformed basic auth', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers!.BasicAuth = (req, scopes, schema) => true;
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).BasicAuth = (req, scopes, schema) => true;
     return request(app)
       .get(`${basePath}/basic`)
       .set('Authorization', 'XXXX')
@@ -225,8 +225,8 @@ describe('security.handlers', () => {
   });
 
   it('should return 401 if auth header is missing for bearer auth', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers!.BearerAuth = (req, scopes, schema) => true;
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).BearerAuth = (req, scopes, schema) => true;
     return request(app)
       .get(`${basePath}/bearer`)
       .expect(401)
@@ -239,8 +239,8 @@ describe('security.handlers', () => {
   });
 
   it('should return 401 if auth header has malformed bearer auth', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers!.BearerAuth = (req, scopes, schema) => true;
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).BearerAuth = (req, scopes, schema) => true;
     return request(app)
       .get(`${basePath}/bearer`)
       .set('Authorization', 'XXXX')
@@ -256,8 +256,8 @@ describe('security.handlers', () => {
   });
 
   it('should return 200 if bearer auth succeeds', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    (<any>validateSecurity.handlers!).BearerAuth = (
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).BearerAuth = (
       req,
       scopes,
       schema: OpenAPIV3.HttpSecurityScheme,
@@ -274,7 +274,7 @@ describe('security.handlers', () => {
   });
 
   it('should return 200 if oauth2 auth succeeds', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity!;
+    const validateSecurity = eovConf.validateSecurity! as ValidateSecurityOpts;
     const handlers = validateSecurity.handlers! as any;
     handlers.OAuth2 = function(
       req: express.Request,
@@ -291,7 +291,7 @@ describe('security.handlers', () => {
   });
 
   it('should return 403 if oauth2 handler throws 403', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity!;
+    const validateSecurity = eovConf.validateSecurity! as ValidateSecurityOpts;
     const handlers = validateSecurity.handlers! as any;
     handlers!.OAuth2 = function (
       req,
@@ -314,7 +314,7 @@ describe('security.handlers', () => {
   });
 
   it('should return 200 if openid auth succeeds', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity!;
+    const validateSecurity = eovConf.validateSecurity! as ValidateSecurityOpts;
     const handlers = validateSecurity.handlers! as any;
     handlers!.OpenID = (
       req,
@@ -331,7 +331,7 @@ describe('security.handlers', () => {
   });
 
   it('should return 500 if security handlers are defined, but not for all securities', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
     const handlers = validateSecurity.handlers! as any;
     delete validateSecurity.handlers!.OpenID;
     handlers!.Test = (
@@ -358,14 +358,14 @@ describe('security.handlers', () => {
   });
 
   it('should return 200 if api_key or anonymous and no api key is supplied', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers!.ApiKeyAuth = <any>((req, scopes, schema) => true);
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).ApiKeyAuth = (req, scopes, schema) => true;
     return request(app).get(`${basePath}/api_key_or_anonymous`).expect(200);
   });
 
   it('should return 200 if api_key or anonymous and api key is supplied', async () => {
-    const validateSecurity = <ValidateSecurityOpts>eovConf.validateSecurity;
-    validateSecurity.handlers!.ApiKeyAuth = <any>((req, scopes, schema) => true);
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).ApiKeyAuth = (req, scopes, schema) => true;
     return request(app)
       .get(`${basePath}/api_key_or_anonymous`)
       .set('x-api-key', 'XXX')

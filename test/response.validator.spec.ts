@@ -9,11 +9,11 @@ import { OpenAPIV3, OpenApiRequest } from '../src/framework/types';
 
 const apiSpecPath = path.join('test', 'resources', 'response.validation.yaml');
 const apiSpec = jsyaml.safeLoad(fs.readFileSync(apiSpecPath, 'utf8'));
-const fakeReq: OpenApiRequest = <any>{
+const fakeReq: OpenApiRequest = {
   method: 'GET',
   headers: { 'content-type': 'application/json' },
   openapi: { expressRoute: '/api/test' },
-};
+} as any;
 describe(packageJson.name, () => {
   it('should validate the using default (in this case the error object)', async () => {
     const v = new ResponseValidator(cloneDeep(apiSpec), {

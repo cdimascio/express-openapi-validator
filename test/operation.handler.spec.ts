@@ -7,6 +7,7 @@ import * as resolvers from '../src/resolvers';
 import { createApp } from './common/app';
 import { OpenApiValidatorOpts } from '../src/framework/types';
 import * as pkg from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 const expressVersion = pkg.devDependencies.express;
 
@@ -20,7 +21,7 @@ describe('operation handler', () => {
     const mwf = OpenApiValidator.middleware;
     app.use(mwf({ apiSpec }));
 
-    expect((<any>mwf)._oav)
+    expect((mwf as any)._oav)
       .to.have.property('options')
       .to.deep.include({ operationHandlers: false });
 
@@ -38,7 +39,7 @@ describe('operation handler', () => {
     const mwf = OpenApiValidator.middleware;
     app.use(mwf({ apiSpec }));
 
-    expect((<any>mwf)._oav)
+    expect((mwf as any)._oav)
       .to.have.property('options')
       .to.deep.include({ operationHandlers: false });
   });
@@ -55,7 +56,7 @@ describe('operation handler', () => {
 
     app.use(oav);
 
-    expect((<any>mwf)._oav)
+    expect((mwf as any)._oav)
       .to.have.property('options')
       .to.deep.include({
         operationHandlers: {
@@ -87,7 +88,7 @@ describe('operation handler', () => {
 
     app.use(oav);
 
-    expect((<any>mwf)._oav)
+    expect((mwf as any)._oav)
       .to.have.property('options')
       .to.deep.include({ operationHandlers: handler });
 
@@ -96,8 +97,8 @@ describe('operation handler', () => {
 });
 
 describe('custom operation handler', () => {
-  let app = null;
-  let basePath = null;
+  let app: AppWithServer;
+  let basePath;
   const apiSpec = path.join(
     __dirname,
     'resources/eov-operations.modulepath.yaml',

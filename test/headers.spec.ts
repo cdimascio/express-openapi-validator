@@ -3,9 +3,10 @@ import { expect } from 'chai';
 import * as request from 'supertest';
 import { createApp } from './common/app';
 import * as packageJson from '../package.json';
+import { AppWithServer } from './common/app.common';
 
 describe(packageJson.name, () => {
-  let app = null;
+  let app: AppWithServer;
 
   /**
    * Required to create app for each step, since 'buildMiddleware' is cached by media-type in contentType.
@@ -22,7 +23,7 @@ describe(packageJson.name, () => {
   });
 
   afterEach(() => {
-    (<any>app).server.close();
+    app.server.close();
   });
 
   it('should throw 400 if required header is missing', async () =>
