@@ -11,6 +11,7 @@ import * as url from 'url';
 import { dereferenceParameter, normalizeParameter } from './util';
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
+import { parse } from 'qs';
 
 type SchemaObject = OpenAPIV3.SchemaObject;
 type ReferenceObject = OpenAPIV3.ReferenceObject;
@@ -67,6 +68,8 @@ export class RequestParameterMutator {
       url.parse(req.originalUrl).query,
     );
 
+    req.query = this.handleBracketNotationQueryFields(req.query);
+
     (parameters || []).forEach((p) => {
       const parameter = dereferenceParameter(this._apiDocs, p);
       const { name, schema } = normalizeParameter(this.ajv, parameter);
@@ -96,14 +99,27 @@ export class RequestParameterMutator {
       if (parameter.content) {
         this.handleContent(req, name, parameter);
       } else if (parameter.in === 'query' && this.isObjectOrXOf(schema)) {
+        // handle bracket notation and mutates query param
+        
+
         if (style === 'form' && explode) {
           this.parseJsonAndMutateRequest(req, parameter.in, name);
           this.handleFormExplode(req, name, <SchemaObject>schema, parameter);
         } else if (style === 'deepObject') {
           this.handleDeepObject(req, queryString, name, schema);
+        } else if (style === 'form' && !explode && schema.type === 'object') {
+          const value = req.query[name];
+          if (typeof value === 'string') {
+            const kvPairs = this.csvToKeyValuePairs(value);
+            if (kvPairs) {
+              req.query[name] = kvPairs;
+              return;
+            }
+          }
+          this.parseJsonAndMutateRequest(req, parameter.in, name);
         } else {
           this.parseJsonAndMutateRequest(req, parameter.in, name);
-        }
+      }
       } else if (type === 'array' && !explode) {
         const delimiter = ARRAY_DELIMITER[parameter.style];
         this.validateArrayDelimiter(delimiter, parameter);
@@ -411,4 +427,52 @@ export class RequestParameterMutator {
       return m;
     }, new Map<string, string[]>());
   }
+
+  private csvToKeyValuePairs(csvString: string): Record<string, string> | undefined {
+    const hasBrace = csvString.split('{').length > 1;
+    const items = csvString.split(',');
+    
+    if (hasBrace) {
+      // if it has a brace, we assume its JSON and skip creating k v pairs
+      // TODO improve json check, but ensure its cheap
+      return;
+    }
+  
+    if (items.length % 2 !== 0) {
+      // if the number of elements is not event, 
+      // then we do not have k v pairs, so return undefined
+      return;
+    }
+
+    const result = {};
+    
+    for (let i = 0; i < items.length - 1; i += 2) {
+      result[items[i]] = items[i + 1];
+    }
+    
+    return result;
+  }
+
+  /**
+   * Mutates and normalizes the req.query object by parsing braket notation query string key values pairs
+   * into its corresponding key=<json-object> and update req.query with the parsed value
+   * for instance, req.query that equals { filter[name]: test} is translated into { filter: { name: 'test' }, where 
+   * the query string field is set as filter and its value is the full javascript object (translated from bracket notation)
+   * @param keys
+   * @returns
+   */
+  private handleBracketNotationQueryFields(query: { [key: string]: any }): {
+    [key: string]: any;
+  } {
+    Object.keys(query).forEach((key) => {
+      const bracketNotation = key.includes('[');
+      if (bracketNotation) {
+        const normalizedKey = key.split('[')[0];
+        query[normalizedKey] = parse(`${key}=${query[key]}`)[normalizedKey];
+        delete query[key];
+      }
+    });
+    return query;
+  }
+  
 }

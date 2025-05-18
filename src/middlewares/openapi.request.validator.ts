@@ -1,5 +1,4 @@
 import Ajv, { ValidateFunction } from 'ajv';
-import { parse } from 'qs';
 import { NextFunction, RequestHandler, Response } from 'express';
 import { createRequestAjv } from '../framework/ajv';
 import {
@@ -147,8 +146,6 @@ export class RequestValidator {
         writable: true,
         value: req.query,
       });
-      // TODO should be in RequestParameterMutator?
-      req.query = this.normalizeQueryFields(req.query);
       const schemaProperties = validator.allSchemaProperties;
       const mutator = new RequestParameterMutator(
         this.ajv,
@@ -290,28 +287,6 @@ export class RequestValidator {
         });
       }
     }
-  }
-
-  /**
-   * Mutates and normalizes the req.query object by parsing braket notation query string key values pairs
-   * into its corresponding key=<json-object> and update req.query with the parsed value
-   * for instance, req.query that equals { filter[name]: test} is translated into { filter: { name: 'test' }, where 
-   * the query string field is set as filter and its value is the full javascript object (translated from bracket notation)
-   * @param keys
-   * @returns
-   */
-  private normalizeQueryFields(query: { [key: string]: any }): {
-    [key: string]: any;
-  } {
-    Object.keys(query).forEach((key) => {
-      const bracketNotation = key.includes('[');
-      if (bracketNotation) {
-        const normalizedKey = key.split('[')[0];
-        query[normalizedKey] = parse(`${key}=${query[key]}`)[normalizedKey];
-        delete query[key];
-      }
-    });
-    return query;
   }
 }
 
