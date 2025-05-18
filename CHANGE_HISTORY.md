@@ -1,3 +1,12 @@
+##  (2025-05-18)
+
+* fixes 1064: type: object and explode: false in query parameter is not working as expected (#1066) ([7ff2fee](https://github.com/cdimascio/express-openapi-validator/commit/7ff2fee)), closes [#1066](https://github.com/cdimascio/express-openapi-validator/issues/1066)
+* Update README.md ([d47f1f6](https://github.com/cdimascio/express-openapi-validator/commit/d47f1f6))
+* Update README.md ([44e2d8f](https://github.com/cdimascio/express-openapi-validator/commit/44e2d8f))
+* v5.5.1 ([306b2ea](https://github.com/cdimascio/express-openapi-validator/commit/306b2ea))
+
+
+
 ##  (2025-05-11)
 
 * fix tests for node 24 ([e94cb27](https://github.com/cdimascio/express-openapi-validator/commit/e94cb27))
