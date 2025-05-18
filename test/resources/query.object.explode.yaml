@@ -1,0 +1,28 @@
+openapi: 3.0.0
+info:
+  title: Query Object Explode Test
+  version: '1'
+servers:
+  - url: /v1
+paths:
+  /users:
+    get:
+      parameters:
+        - name: id
+          in: query
+          required: true
+          style: form
+          explode: false
+          schema:
+            type: object
+            properties:
+              role:
+                type: string
+              firstName:
+                type: string
+            required:
+              - role
+              - firstName
+      responses:
+        200:
+          description: 'Success'
