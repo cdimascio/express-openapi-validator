@@ -1,3 +1,10 @@
+##  (2025-05-19)
+
+* v5.5.2 ([9f640cf](https://github.com/cdimascio/express-openapi-validator/commit/9f640cf))
+* fix: add qs as dependency (#1067) ([eef4922](https://github.com/cdimascio/express-openapi-validator/commit/eef4922)), closes [#1067](https://github.com/cdimascio/express-openapi-validator/issues/1067)
+
+
+
 ##  (2025-05-18)
 
 * fixes 1064: type: object and explode: false in query parameter is not working as expected (#1066) ([7ff2fee](https://github.com/cdimascio/express-openapi-validator/commit/7ff2fee)), closes [#1066](https://github.com/cdimascio/express-openapi-validator/issues/1066)
