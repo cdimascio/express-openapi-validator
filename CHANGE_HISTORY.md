@@ -1,3 +1,9 @@
+##  (2025-05-24)
+
+* chore(deps): bump multer from 1.4.5-lts.2 to 2.0.0 (#1069) ([9426f16](https://github.com/cdimascio/express-openapi-validator/commit/9426f16)), closes [#1069](https://github.com/cdimascio/express-openapi-validator/issues/1069)
+
+
+
 ##  (2025-05-19)
 
 * v5.5.2 ([9f640cf](https://github.com/cdimascio/express-openapi-validator/commit/9f640cf))
