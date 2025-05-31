@@ -12,7 +12,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express-openapi-validator": "^5.3.7",
+    "express-openapi-validator": "^5.5.3",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
