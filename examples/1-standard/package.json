@@ -15,6 +15,6 @@
     "nodemon": "^3.1.10"
   },
   "dependencies": {
-    "express-openapi-validator": "^5.5.4"
+    "express-openapi-validator": "^5.5.6"
   }
 }
