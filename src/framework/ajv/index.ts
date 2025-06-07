@@ -34,7 +34,6 @@ function createAjv(
   const { ajvFormats, ...ajvOptions } = options;
 
   const ajv = factoryAjv(openApiSpec.openapi, {
-    allErrors: true,
     ...ajvOptions,
     formats
   })

@@ -11,10 +11,10 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "dependencies": {
-    "express-openapi-validator": "^5.5.3"
-  },
   "devDependencies": {
     "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "express-openapi-validator": "^5.5.4"
   }
 }
