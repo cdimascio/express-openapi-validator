@@ -1,3 +1,18 @@
+##  (2025-06-07)
+
+* allErrors default remains false for >-5 ([22ce174](https://github.com/cdimascio/express-openapi-validator/commit/22ce174))
+* allErrors default remains false for >-5 ([901c8dd](https://github.com/cdimascio/express-openapi-validator/commit/901c8dd))
+* allErrors default remains false for >-5 ([0671ed9](https://github.com/cdimascio/express-openapi-validator/commit/0671ed9))
+* Delete test.txt ([ef8105c](https://github.com/cdimascio/express-openapi-validator/commit/ef8105c))
+* fixes #1037 returns all errors, rather than just the first ([8fa449b](https://github.com/cdimascio/express-openapi-validator/commit/8fa449b)), closes [#1037](https://github.com/cdimascio/express-openapi-validator/issues/1037)
+* v5.5.4 ([af80f33](https://github.com/cdimascio/express-openapi-validator/commit/af80f33))
+* chore(deps): bump multer and express-openapi-validator (#1076) ([2c3a1e7](https://github.com/cdimascio/express-openapi-validator/commit/2c3a1e7)), closes [#1076](https://github.com/cdimascio/express-openapi-validator/issues/1076)
+* chore(deps): bump multer from 2.0.0 to 2.0.1 in /examples/1-standard (#1080) ([d1f5ec5](https://github.com/cdimascio/express-openapi-validator/commit/d1f5ec5)), closes [#1080](https://github.com/cdimascio/express-openapi-validator/issues/1080)
+* fix: examples/1-standard/package.json & examples/1-standard/package-lock.json to reduce vulnerabilit ([3810afc](https://github.com/cdimascio/express-openapi-validator/commit/3810afc)), closes [#1074](https://github.com/cdimascio/express-openapi-validator/issues/1074)
+* fix: examples/2-standard-multiple-api-specs/package.json & examples/2-standard-multiple-api-specs/pa ([fc86598](https://github.com/cdimascio/express-openapi-validator/commit/fc86598)), closes [#1075](https://github.com/cdimascio/express-openapi-validator/issues/1075)
+
+
+
 ##  (2025-05-24)
 
 * chore(deps): bump multer from 1.4.5-lts.2 to 2.0.0 (#1069) ([9426f16](https://github.com/cdimascio/express-openapi-validator/commit/9426f16)), closes [#1069](https://github.com/cdimascio/express-openapi-validator/issues/1069)
