@@ -83,7 +83,6 @@ export class OpenApiValidator {
       options.validateRequests = {
         allowUnknownQueryParameters: false,
         coerceTypes: false,
-        allErrors: true,
       };
     }
 
