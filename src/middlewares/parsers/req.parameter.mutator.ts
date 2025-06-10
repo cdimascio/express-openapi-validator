@@ -454,25 +454,52 @@ export class RequestParameterMutator {
   }
 
   /**
-   * Mutates and normalizes the req.query object by parsing braket notation query string key values pairs
-   * into its corresponding key=<json-object> and update req.query with the parsed value
-   * for instance, req.query that equals { filter[name]: test} is translated into { filter: { name: 'test' }, where 
-   * the query string field is set as filter and its value is the full javascript object (translated from bracket notation)
-   * @param keys
-   * @returns
+   * Handles query parameters with bracket notation.
+   * - If the parameter in the OpenAPI spec has literal brackets in its name (e.g., 'filter[name]'),
+   *   it will be treated as a literal parameter name.
+   * - Otherwise, it will be parsed as a nested object using qs.
+   * @param query The query parameters object to process
+   * @returns The processed query parameters object
    */
   private handleBracketNotationQueryFields(query: { [key: string]: any }): {
     [key: string]: any;
   } {
+    // Get the OpenAPI parameters for the current request
+    const openApiParams = (query._openapi?.schema?.parameters || []) as ParameterObject[];
+    
+    // Create a Set of parameter names that have literal brackets in the spec
+    const literalBracketParams = new Set<string>(
+      openApiParams
+        .filter(p => p.in === 'query' && p.name.includes('[') && p.name.endsWith(']'))
+        .map(p => p.name)
+    );
+
+    // Create a new object to avoid mutating the original during iteration
+    const result: { [key: string]: any } = { ...query };
+    
     Object.keys(query).forEach((key) => {
-      const bracketNotation = key.includes('[');
-      if (bracketNotation) {
-        const normalizedKey = key.split('[')[0];
-        query[normalizedKey] = parse(`${key}=${query[key]}`)[normalizedKey];
-        delete query[key];
+      // Only process keys that contain brackets
+      if (key.includes('[') && key.endsWith(']')) {
+        if (literalBracketParams.has(key)) {
+          // If the parameter is defined with literal brackets in the spec, preserve it as-is
+          result[key] = query[key];
+        } else {
+          // Otherwise, use qs.parse to handle it as a nested object
+          const normalizedKey = key.split('[')[0];
+          const parsed = parse(`${key}=${query[key]}`);
+          
+          // Use the parsed value for the normalized key
+          if (parsed[normalizedKey] !== undefined) {
+            result[normalizedKey] = parsed[normalizedKey];
+          }
+          
+          // Remove the original bracketed key
+          delete result[key];
+        }
       }
     });
-    return query;
+    
+    return result;
   }
   
 }
