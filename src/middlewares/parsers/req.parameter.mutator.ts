@@ -490,7 +490,14 @@ export class RequestParameterMutator {
           
           // Use the parsed value for the normalized key
           if (parsed[normalizedKey] !== undefined) {
-            result[normalizedKey] = parsed[normalizedKey];
+            // If we already have a value for this key, merge the objects
+            if (result[normalizedKey] && typeof result[normalizedKey] === 'object' && 
+                typeof parsed[normalizedKey] === 'object' && 
+                !Array.isArray(parsed[normalizedKey])) {
+              result[normalizedKey] = { ...result[normalizedKey], ...parsed[normalizedKey] };
+            } else {
+              result[normalizedKey] = parsed[normalizedKey];
+            }
           }
           
           // Remove the original bracketed key
