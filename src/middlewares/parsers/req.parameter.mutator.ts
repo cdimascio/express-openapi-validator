@@ -119,7 +119,7 @@ export class RequestParameterMutator {
           this.parseJsonAndMutateRequest(req, parameter.in, name);
         } else {
           this.parseJsonAndMutateRequest(req, parameter.in, name);
-      }
+        }
       } else if (type === 'array' && !explode) {
         const delimiter = ARRAY_DELIMITER[parameter.style];
         this.validateArrayDelimiter(delimiter, parameter);
@@ -453,56 +453,130 @@ export class RequestParameterMutator {
     return result;
   }
 
+  // Cache for literal bracket parameters per endpoint
+  private readonly literalBracketParamsCache = new Map<string, Set<string>>();
+
+
   /**
    * Handles query parameters with bracket notation.
-   * - If the parameter in the OpenAPI spec has literal brackets in its name (e.g., 'filter[name]'),
-   *   it will be treated as a literal parameter name.
-   * - Otherwise, it will be parsed as a nested object using qs.
    * @param query The query parameters object to process
    * @returns The processed query parameters object
    */
   private handleBracketNotationQueryFields(query: { [key: string]: any }): {
     [key: string]: any;
   } {
-    // Get the OpenAPI parameters for the current request
-    const openApiParams = (query._openapi?.schema?.parameters || []) as ParameterObject[];
-    
-    // Create a Set of parameter names that have literal brackets in the spec
-    const literalBracketParams = new Set<string>(
-      openApiParams
-        .filter(p => p.in === 'query' && p.name.includes('['))
-        .map(p => p.name)
-    );
+    const handler = new BracketNotationHandler(query);
+    return handler.process();
+  }
+}
 
-    
+/**
+ * Handles parsing of query parameters with bracket notation.
+ * - If a parameter in the OpenAPI spec has literal brackets in its name (e.g., 'filter[name]'),
+ *   it will be treated as a literal parameter name.
+ * - Otherwise, it will be parsed as a nested object using qs.
+ */
+class BracketNotationHandler {
+  // Cache for literal bracket parameters per endpoint
+  private static readonly literalBracketParamsCache = new Map<
+    string,
+    Set<string>
+  >();
+
+  constructor(private readonly query: { [key: string]: any }) {}
+
+  /**
+   * Process the query parameters to handle bracket notation
+   */
+  public process(): { [key: string]: any } {
+    const literalBracketParams = this.getLiteralBracketParams();
+
+    const query = this.query;
     Object.keys(query).forEach((key) => {
       // Only process keys that contain brackets
       if (key.includes('[')) {
         // Only process keys that do not contain literal bracket notation
         if (!literalBracketParams.has(key)) {
-          // Otherwise, use qs.parse to handle it as a nested object
+          // Use qs.parse to handle it as a nested object
           const normalizedKey = key.split('[')[0];
-          const parsed = parse(`${key}=${query[key]}`);
-          
+          const parsed = parse(`${key}=${this.query[key]}`);
+
           // Use the parsed value for the normalized key
           if (parsed[normalizedKey] !== undefined) {
             // If we already have a value for this key, merge the objects
-            if (query[normalizedKey] && typeof query[normalizedKey] === 'object' && 
-                typeof parsed[normalizedKey] === 'object' && 
-                !Array.isArray(parsed[normalizedKey])) {
-              query[normalizedKey] = { ...query[normalizedKey], ...parsed[normalizedKey] };
+            if (
+              query[normalizedKey] &&
+              typeof query[normalizedKey] === 'object' &&
+              typeof parsed[normalizedKey] === 'object' &&
+              !Array.isArray(parsed[normalizedKey])
+            ) {
+              query[normalizedKey] = {
+                ...query[normalizedKey],
+                ...parsed[normalizedKey],
+              };
             } else {
               query[normalizedKey] = parsed[normalizedKey];
             }
           }
-          
-          // Remove the original bracketed key
+
+          // Remove the original bracketed key from the query
           delete query[key];
         }
       }
     });
-    
+
     return query;
   }
-  
+
+  /**
+   * Gets a cache key for the current request's OpenAPI schema
+   * Combines path, method, and operation ID to create a key
+   */
+  private getCacheKey(): string | null {
+    const schema = this.query._openapi?.schema;
+    if (!schema) return null;
+
+    // Use all available identifiers to ensure uniqueness
+    const path = schema.path ?? '';
+    const method = (schema.method ?? '');
+    const operationId = schema.operationId ?? '';
+    
+    // Combine all parts with a consistent separator
+    return `${path}|${method}|${operationId}`;
+  }
+
+  /**
+   * Gets the set of parameter names that should be treated as literal bracket notation
+   */
+  private getLiteralBracketParams(): Set<string> {
+    const cacheKey = this.getCacheKey();
+
+    if (
+      cacheKey &&
+      BracketNotationHandler.literalBracketParamsCache.has(cacheKey)
+    ) {
+      return BracketNotationHandler.literalBracketParamsCache.get(cacheKey)!;
+    }
+
+    // Get the OpenAPI parameters for the current request
+    const openApiParams = (this.query._openapi?.schema?.parameters ||
+      []) as ParameterObject[];
+
+    // Create a Set of parameter names that have literal brackets in the spec
+    const literalBracketParams = new Set<string>(
+      openApiParams
+        .filter((p) => p.in === 'query' && p.name.includes('['))
+        .map((p) => p.name),
+    );
+
+    // Cache the result for future requests to this endpoint
+    if (cacheKey) {
+      BracketNotationHandler.literalBracketParamsCache.set(
+        cacheKey,
+        literalBracketParams,
+      );
+    }
+
+    return literalBracketParams;
+  }
 }
