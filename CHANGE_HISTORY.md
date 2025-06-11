@@ -1,3 +1,12 @@
+##  (2025-06-11)
+
+* fix(#1071): Fix query param validation for literal bracket notation in param names ([122ac9d](https://github.com/cdimascio/express-openapi-validator/commit/122ac9d))
+* fix(#1071): Fix query param validation for literal bracket notation in param names (#1084) ([319b303](https://github.com/cdimascio/express-openapi-validator/commit/319b303)), closes [#1084](https://github.com/cdimascio/express-openapi-validator/issues/1084)
+* upgrade example to 5.5.6 ([0b852b9](https://github.com/cdimascio/express-openapi-validator/commit/0b852b9))
+* chore(deps): bump multer in /examples/2-standard-multiple-api-specs (#1082) ([631e4cc](https://github.com/cdimascio/express-openapi-validator/commit/631e4cc)), closes [#1082](https://github.com/cdimascio/express-openapi-validator/issues/1082)
+
+
+
 ##  (2025-06-07)
 
 * allErrors default remains false for >-5 ([22ce174](https://github.com/cdimascio/express-openapi-validator/commit/22ce174))
