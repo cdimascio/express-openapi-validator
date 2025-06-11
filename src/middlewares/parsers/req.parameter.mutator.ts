@@ -470,20 +470,16 @@ export class RequestParameterMutator {
     // Create a Set of parameter names that have literal brackets in the spec
     const literalBracketParams = new Set<string>(
       openApiParams
-        .filter(p => p.in === 'query' && p.name.includes('[') && p.name.endsWith(']'))
+        .filter(p => p.in === 'query' && p.name.includes('['))
         .map(p => p.name)
     );
 
-    // Create a new object to avoid mutating the original during iteration
-    const result: { [key: string]: any } = { ...query };
     
     Object.keys(query).forEach((key) => {
       // Only process keys that contain brackets
-      if (key.includes('[') && key.endsWith(']')) {
-        if (literalBracketParams.has(key)) {
-          // If the parameter is defined with literal brackets in the spec, preserve it as-is
-          result[key] = query[key];
-        } else {
+      if (key.includes('[')) {
+        // Only process keys that do not contain literal bracket notation
+        if (!literalBracketParams.has(key)) {
           // Otherwise, use qs.parse to handle it as a nested object
           const normalizedKey = key.split('[')[0];
           const parsed = parse(`${key}=${query[key]}`);
@@ -491,22 +487,22 @@ export class RequestParameterMutator {
           // Use the parsed value for the normalized key
           if (parsed[normalizedKey] !== undefined) {
             // If we already have a value for this key, merge the objects
-            if (result[normalizedKey] && typeof result[normalizedKey] === 'object' && 
+            if (query[normalizedKey] && typeof query[normalizedKey] === 'object' && 
                 typeof parsed[normalizedKey] === 'object' && 
                 !Array.isArray(parsed[normalizedKey])) {
-              result[normalizedKey] = { ...result[normalizedKey], ...parsed[normalizedKey] };
+              query[normalizedKey] = { ...query[normalizedKey], ...parsed[normalizedKey] };
             } else {
-              result[normalizedKey] = parsed[normalizedKey];
+              query[normalizedKey] = parsed[normalizedKey];
             }
           }
           
           // Remove the original bracketed key
-          delete result[key];
+          delete query[key];
         }
       }
     });
     
-    return result;
+    return query;
   }
   
 }
