@@ -495,7 +495,7 @@ class BracketNotationHandler {
         if (!literalBracketParams.has(key)) {
           // Use qs.parse to handle it as a nested object
           const normalizedKey = key.split('[')[0];
-          const parsed = parse(`${key}=${this.query[key]}`);
+          const parsed = parse(`${key}=${query[key]}`);
 
           // Use the parsed value for the normalized key
           if (parsed[normalizedKey] !== undefined) {
