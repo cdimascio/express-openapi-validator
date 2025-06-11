@@ -100,7 +100,6 @@ export class RequestParameterMutator {
         this.handleContent(req, name, parameter);
       } else if (parameter.in === 'query' && this.isObjectOrXOf(schema)) {
         // handle bracket notation and mutates query param
-        
 
         if (style === 'form' && explode) {
           this.parseJsonAndMutateRequest(req, parameter.in, name);
@@ -428,28 +427,30 @@ export class RequestParameterMutator {
     }, new Map<string, string[]>());
   }
 
-  private csvToKeyValuePairs(csvString: string): Record<string, string> | undefined {
+  private csvToKeyValuePairs(
+    csvString: string,
+  ): Record<string, string> | undefined {
     const hasBrace = csvString.split('{').length > 1;
     const items = csvString.split(',');
-    
+
     if (hasBrace) {
       // if it has a brace, we assume its JSON and skip creating k v pairs
       // TODO improve json check, but ensure its cheap
       return;
     }
-  
+
     if (items.length % 2 !== 0) {
-      // if the number of elements is not event, 
+      // if the number of elements is not event,
       // then we do not have k v pairs, so return undefined
       return;
     }
 
     const result = {};
-    
+
     for (let i = 0; i < items.length - 1; i += 2) {
       result[items[i]] = items[i + 1];
     }
-    
+
     return result;
   }
 
@@ -534,9 +535,9 @@ class BracketNotationHandler {
 
     // Use all available identifiers to ensure uniqueness
     const path = schema.path ?? '';
-    const method = (schema.method ?? '');
+    const method = schema.method ?? '';
     const operationId = schema.operationId ?? '';
-    
+
     // Combine all parts with a consistent separator
     return `${path}|${method}|${operationId}`;
   }
