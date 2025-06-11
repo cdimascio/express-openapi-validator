@@ -453,10 +453,6 @@ export class RequestParameterMutator {
     return result;
   }
 
-  // Cache for literal bracket parameters per endpoint
-  private readonly literalBracketParamsCache = new Map<string, Set<string>>();
-
-
   /**
    * Handles query parameters with bracket notation.
    * @param query The query parameters object to process
