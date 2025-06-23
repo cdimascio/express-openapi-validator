@@ -40,7 +40,6 @@ describe('security.handlers', () => {
         },
         testKey: async (req, scopes, schema) => {
           let key = req.query.key;
-          console.log('-------key');
           if (key !== "ok") {
             throw new MyForbiddenError("Wrong key value");
           }
@@ -71,10 +70,8 @@ describe('security.handlers', () => {
         .get('/no_security', (req, res) => {res.json({ logged_in: true })})
         .get("/test_key", function(req, res, next) {
           if (req.query.key === "ok") {
-            console.log('-------key ok');
             throw new MyUserError("Everything is fine");
           } else {
-            console.log('-------key wrong');
             throw new MyForbiddenError("Wrong key value");
           }
         }),
