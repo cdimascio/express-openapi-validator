@@ -90,6 +90,7 @@ paths:
         "401":
           description: unauthorized
 
+
   /multi_auth:
     get:
       security:
@@ -127,6 +128,18 @@ paths:
         "401":
           description: unauthorized
 
+  /test_key:
+    get:
+      security:
+        - testKey: []
+      description: Test authentication
+      responses:
+        "200":
+          description: Some html content
+          content:
+            text/html:
+              schema:
+                type: string
 components:
   securitySchemes:
     BasicAuth:
@@ -156,3 +169,7 @@ components:
             read: Grants read access
             write: Grants write access
             admin: Grants access to admin operations
+    testKey:
+      type: apiKey
+      name: key
+      in: query

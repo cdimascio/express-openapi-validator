@@ -7,7 +7,7 @@ import {
   OpenApiValidatorOpts,
   ValidateSecurityOpts,
   OpenAPIV3,
-  SecurityHandlers,
+  HttpError,
 } from '../src/framework/types';
 import { AppWithServer } from './common/app.common';
 
@@ -16,12 +16,36 @@ import { AppWithServer } from './common/app.common';
 describe('security.handlers', () => {
   let app: AppWithServer;
   let basePath: string;
+
+  class MyForbiddenError extends HttpError {
+    constructor(message: string) {
+      super({
+        status: 403,
+        path: '/test_key',
+        name: 'MyForbiddenError',
+        message: message,
+      });
+    }
+  }
+  
+  class MyUserError extends Error {
+  }
+  
   const eovConf: OpenApiValidatorOpts = {
     apiSpec: path.join('test', 'resources', 'security.yaml'),
     validateSecurity: {
       handlers: {
         ApiKeyAuth: (req, scopes, schema) => {
           throw Error('custom api key handler failed');
+        },
+        testKey: async (req, scopes, schema) => {
+          let key = req.query.key;
+          console.log('-------key');
+          if (key !== "ok") {
+            throw new MyForbiddenError("Wrong key value");
+          }
+
+          return true;
         },
       },
     },
@@ -44,8 +68,30 @@ describe('security.handlers', () => {
         .get(`/api_key_or_anonymous`, (req, res) =>{
           res.json({ logged_in: true })
   })
-        .get('/no_security', (req, res) => {res.json({ logged_in: true })}),
+        .get('/no_security', (req, res) => {res.json({ logged_in: true })})
+        .get("/test_key", function(req, res, next) {
+          if (req.query.key === "ok") {
+            console.log('-------key ok');
+            throw new MyUserError("Everything is fine");
+          } else {
+            console.log('-------key wrong');
+            throw new MyForbiddenError("Wrong key value");
+          }
+        }),
     );
+    app.use((err, req, res, next) => {
+        if (err instanceof MyUserError) {
+          // OK
+          res.status(200);
+          res.send(`<h1>Error matches to MyUserError</h1>`);
+        } else if (err instanceof MyForbiddenError) {
+          // FAIL: YOU NEVER GET HERE
+          res.status(403);
+          res.send(`<h1>Error matches to MyForbiddenError</h1>`);
+        } else {
+          res.send(`<h1>Unknown error</h1>` + JSON.stringify(err));
+        }
+      });
   });
 
   after(() => {
@@ -54,6 +100,12 @@ describe('security.handlers', () => {
 
   it('should return 200 if no security', async () =>
     request(app).get(`${basePath}/no_security`).expect(200));
+
+  it('should return 200 if test_key handler returns true', async () =>
+    request(app).get(`${basePath}/test_key?key=ok`).expect(200));
+
+  it('should return 403 if test_key handler throws exception', async () =>
+    request(app).get(`${basePath}/test_key?key=wrong`).expect(403));
 
   it('should return 401 if apikey handler throws exception', async () =>
     request(app)

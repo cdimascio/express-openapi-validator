@@ -138,16 +138,10 @@ class SecuritySchemes {
       }
       return Promise.all(
         Object.keys(s).map(async (securityKey) => {
-          var _a, _b, _c;
+
           try {
             const scheme = this.securitySchemes[securityKey];
-            const handler =
-              (_b =
-                (_a = this.securityHandlers) === null || _a === void 0
-                  ? void 0
-                  : _a[securityKey]) !== null && _b !== void 0
-                ? _b
-                : fallbackHandler;
+            const handler = this.securityHandlers?.[securityKey] ?? fallbackHandler;
             const scopesTmp = s[securityKey];
             const scopes = Array.isArray(scopesTmp) ? scopesTmp : [];
             if (!scheme) {
@@ -180,7 +174,7 @@ class SecuritySchemes {
           } catch (e) {
             return {
               success: false,
-              status: (_c = e.status) !== null && _c !== void 0 ? _c : 401,
+              status: e.status ?? 401,
               error: e,
             };
           }
