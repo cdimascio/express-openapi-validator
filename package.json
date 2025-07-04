@@ -36,7 +36,7 @@
   "author": "Carmine DiMascio <cdimascio@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^12.0.1",
+    "@apidevtools/json-schema-ref-parser": "^14.0.3",
     "@types/multer": "^1.4.12",
     "ajv": "^8.17.1",
     "ajv-draft-04": "^1.0.0",
@@ -63,7 +63,7 @@
     "commitizen": "^4.3.1",
     "cookie-parser": "^1.4.7",
     "coveralls": "^3.1.1",
-    "express": "^5.1.0",
+    "express": "^4.21.2",
     "mocha": "^11.2.2",
     "morgan": "^1.10.0",
     "nodemon": "^3.1.10",
