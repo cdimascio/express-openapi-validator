@@ -37,7 +37,7 @@
   "license": "MIT",
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^14.0.3",
-    "@types/multer": "^1.4.12",
+    "@types/multer": "^1.4.13",
     "ajv": "^8.17.1",
     "ajv-draft-04": "^1.0.0",
     "ajv-formats": "^3.0.1",
