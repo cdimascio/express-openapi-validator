@@ -94,6 +94,19 @@ describe(packageJson.name, () => {
         });
       }));
 
+  it('custom error handler not invoked if has unknown query parameter, but is allowed', async () => {
+    app.server.close();
+    app = await buildApp({ allowUnknownQueryParameters: true });
+
+    request(app)
+      .get(`${app.basePath}/pets?limit=3&unknown_param=123`)
+      .expect(200)
+      .then((r: any) => {
+        expect(r.body).is.an('array').with.length(3);
+        expect(onErrorArgs).to.equal(null);
+      });
+  });
+
   it('custom error handler invoked if request query field has the wrong type', async () =>
     request(app)
       .get(`${app.basePath}/pets?limit=not_an_integer`)
