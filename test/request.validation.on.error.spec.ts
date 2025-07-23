@@ -30,16 +30,16 @@ describe(packageJson.name, () => {
       },
       3005,
       (app) => {
-        app.get(`${app.basePath}/users`, (_req, res) => {
-          const json = ['user1', 'user2', 'user3'];
-          res.json(json);
-        });
         app.get(`${app.basePath}/pets`, (req, res) => {
-          let json = {};
-          if (req.query.mode === 'bad_type') {
-            json = [{ id: 'bad_id', name: 'name', tag: 'tag' }];
-          } else if (req.query.mode === 'bad_type_throw') {
-            json = [{ id: 'bad_id_throw', name: 'name', tag: 'tag' }];
+          let json = [
+            { id: '1', name: 'fido' },
+            { id: '2', name: 'rex' },
+            { id: '3', name: 'spot' },
+          ];
+          if (req.query.limit === 'not_an_integer') {
+            json = [{ id: 'bad_limit', name: 'not an int' }];
+          } else if (req.query.limit === 'bad_type_throw') {
+            json = [{ id: 'bad_limit_throw', name: 'name' }];
           }
           res.json(json);
         });
@@ -67,7 +67,7 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/pets?limit=not_an_integer`)
       .expect(200)
       .then((r: any) => {
-        const data = [{ id: 'bad_id', name: 'name', tag: 'tag' }];
+        const data = [{ id: 'bad_limit', name: 'not an int' }];
         expect(r.body).to.eql(data);
         expect(onErrorArgs?.length).to.equal(3);
         expect(onErrorArgs![0].message).to.equal(
@@ -93,7 +93,7 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/pets?mode=bad_type_throw`)
       .expect(500)
       .then((r: any) => {
-        const data = [{ id: 'bad_id_throw', name: 'name', tag: 'tag' }];
+        const data = [{ id: 'bad_limit_throw', name: 'name' }];
         expect(r.body.message).to.equal('error in onError handler');
         expect(onErrorArgs!.length).to.equal(3);
         expect(onErrorArgs![0].message).to.equal(

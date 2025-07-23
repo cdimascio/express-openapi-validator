@@ -110,10 +110,10 @@ paths:
       description: find pets
       operationId: findPets
       parameters:
-        - name: limit
+        - name: mode
           in: query
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: pet response
