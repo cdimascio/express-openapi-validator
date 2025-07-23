@@ -7,54 +7,66 @@ import { AppWithServer } from './common/app.common';
 
 const apiSpecPath = path.join('test', 'resources', 'request.validation.yaml');
 
+let onErrorArgs: any[] | null;
+
+async function buildApp({
+  allowUnknownQueryParameters,
+}: {
+  allowUnknownQueryParameters: boolean;
+}): Promise<AppWithServer> {
+  return await createApp(
+    {
+      apiSpec: apiSpecPath,
+      validateResponses: false,
+      validateRequests: {
+        allowUnknownQueryParameters,
+        onError: function (_err, req) {
+          console.log(`XXX in onError`);
+          onErrorArgs = [_err, req];
+          if (req.query['limit'] === 'bad_type_throw') {
+            throw new Error('error in onError handler');
+          }
+          console.log(`XXX not throwing`);
+        },
+      },
+    },
+    3005,
+    (app) => {
+      app.get(`${app.basePath}/pets`, (req, res) => {
+        debugger;
+        console.log(`XXX in route`);
+        let json = [
+          { id: '1', name: 'fido' },
+          { id: '2', name: 'rex' },
+          { id: '3', name: 'spot' },
+        ];
+        if (req.query.limit === 'not_an_integer') {
+          json = [{ id: 'bad_limit', name: 'not an int' }];
+        } else if (req.query.unknown_param === '123') {
+          json = [{ id: 'unknown_param', name: 'unknown' }];
+        } else if (req.query.limit === 'bad_type_throw') {
+          json = [{ id: 'bad_limit_throw', name: 'name' }];
+        }
+        console.log(`XXX returning json`, json);
+        res.json(json);
+      });
+      app.use((err, _req, res, _next) => {
+        res.status(err.status ?? 500).json({
+          message: err.message,
+          code: err.status ?? 500,
+        });
+      });
+    },
+    false,
+  );
+}
+
 describe(packageJson.name, () => {
   let app: AppWithServer;
 
-  let onErrorArgs: any[] | null;
   before(async () => {
     // set up express app
-    app = await createApp(
-      {
-        apiSpec: apiSpecPath,
-        validateResponses: false,
-        validateRequests: {
-          onError: function (_err, req) {
-            console.log(`XXX in onError`);
-            onErrorArgs = [_err, req];
-            if (req.query['limit'] === 'bad_type_throw') {
-              throw new Error('error in onError handler');
-            }
-            console.log(`XXX not throwing`);
-          },
-        },
-      },
-      3005,
-      (app) => {
-        app.get(`${app.basePath}/pets`, (req, res) => {
-          debugger;
-          console.log(`XXX in route`);
-          let json = [
-            { id: '1', name: 'fido' },
-            { id: '2', name: 'rex' },
-            { id: '3', name: 'spot' },
-          ];
-          if (req.query.limit === 'not_an_integer') {
-            json = [{ id: 'bad_limit', name: 'not an int' }];
-          } else if (req.query.limit === 'bad_type_throw') {
-            json = [{ id: 'bad_limit_throw', name: 'name' }];
-          }
-          console.log(`XXX returning json`, json);
-          res.json(json);
-        });
-        app.use((err, _req, res, _next) => {
-          res.status(err.status ?? 500).json({
-            message: err.message,
-            code: err.status ?? 500,
-          });
-        });
-      },
-      false,
-    );
+    app = await buildApp({ allowUnknownQueryParameters: false });
   });
 
   afterEach(() => {
@@ -64,6 +76,23 @@ describe(packageJson.name, () => {
   after(() => {
     app.server.close();
   });
+
+  it('custom error handler invoked if has unknown query parameter', async () =>
+    request(app)
+      .get(`${app.basePath}/pets?limit=3&unknown_param=123`)
+      .expect(200)
+      .then((r: any) => {
+        const data = [{ id: 'unknown_param', name: 'unknown' }];
+        expect(r.body).to.eql(data);
+        expect(onErrorArgs?.length).to.equal(2);
+        expect(onErrorArgs![0].message).to.equal(
+          "Unknown query parameter 'unknown_param'",
+        );
+        expect(onErrorArgs![1].query).to.eql({
+          limit: 3,
+          unknown_param: '123',
+        });
+      }));
 
   it('custom error handler invoked if request query field has the wrong type', async () =>
     request(app)
@@ -95,7 +124,6 @@ describe(packageJson.name, () => {
       .get(`${app.basePath}/pets?limit=bad_type_throw`)
       .expect(500)
       .then((r: any) => {
-        const data = [{ id: 'bad_limit_throw', name: 'name' }];
         expect(r.body.message).to.equal('error in onError handler');
         expect(onErrorArgs!.length).to.equal(2);
         expect(onErrorArgs![0].message).to.equal(
