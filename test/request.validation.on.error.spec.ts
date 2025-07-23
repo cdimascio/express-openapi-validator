@@ -18,9 +18,9 @@ describe(packageJson.name, () => {
         apiSpec: apiSpecPath,
         validateResponses: false,
         validateRequests: {
-          onError: function (_err, body, req) {
+          onError: function (_err, req) {
             console.log(`XXX in onError`);
-            onErrorArgs = Array.from(arguments);
+            onErrorArgs = [_err, req];
             if (req.query['limit'] === 'bad_type_throw') {
               throw new Error('error in onError handler');
             }
@@ -72,13 +72,12 @@ describe(packageJson.name, () => {
       .then((r: any) => {
         const data = [{ id: 'bad_limit', name: 'not an int' }];
         expect(r.body).to.eql(data);
-        expect(onErrorArgs?.length).to.equal(3);
+        expect(onErrorArgs?.length).to.equal(2);
         expect(onErrorArgs![0].message).to.equal(
           'request/query/limit must be integer',
         );
-        expect(onErrorArgs![1]).to.eql(data);
-        expect(onErrorArgs![2].query).to.eql({
-          mode: 'bad_type',
+        expect(onErrorArgs![1].query).to.eql({
+          limit: 'not_an_integer',
         });
       }));
 
@@ -98,10 +97,12 @@ describe(packageJson.name, () => {
       .then((r: any) => {
         const data = [{ id: 'bad_limit_throw', name: 'name' }];
         expect(r.body.message).to.equal('error in onError handler');
-        expect(onErrorArgs!.length).to.equal(3);
+        expect(onErrorArgs!.length).to.equal(2);
         expect(onErrorArgs![0].message).to.equal(
-          '/response/0/id must be integer',
+          'request/query/limit must be integer',
         );
-        expect(onErrorArgs![1]).to.eql(data);
+        expect(onErrorArgs![1].query).to.eql({
+          limit: 'bad_type_throw',
+        });
       }));
 });

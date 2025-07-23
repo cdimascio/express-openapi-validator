@@ -179,7 +179,7 @@ export class RequestValidator {
           );
         } catch (error) {
           if (this.requestOpts.onError) {
-            this.requestOpts.onError(error, body, req);
+            this.requestOpts.onError(error, req);
             console.log(`XXX invoked errorhandler`);
           } else {
             throw error;
@@ -243,7 +243,7 @@ export class RequestValidator {
         });
         error.errors = err.errors;
         if (this.requestOpts.onError) {
-          this.requestOpts.onError(error, body, req);
+          this.requestOpts.onError(error, req);
           next();
         } else {
           throw error;
