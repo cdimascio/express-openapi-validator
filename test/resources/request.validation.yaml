@@ -232,8 +232,9 @@ components:
             - id
           properties:
             id:
-              type: integer
-              format: int64
+              type: string
+            name:
+              type: string
 
     Users:
       description: 'Generic list of values from database schema'

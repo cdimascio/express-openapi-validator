@@ -21,7 +21,7 @@ describe(packageJson.name, () => {
           onError: function (_err, body, req) {
             console.log(`XXX in onError`);
             onErrorArgs = Array.from(arguments);
-            if (req.query['mode'] === 'bad_type_throw') {
+            if (req.query['limit'] === 'bad_type_throw') {
               throw new Error('error in onError handler');
             }
             console.log(`XXX not throwing`);
@@ -31,6 +31,8 @@ describe(packageJson.name, () => {
       3005,
       (app) => {
         app.get(`${app.basePath}/pets`, (req, res) => {
+          debugger;
+          console.log(`XXX in route`);
           let json = [
             { id: '1', name: 'fido' },
             { id: '2', name: 'rex' },
@@ -41,6 +43,7 @@ describe(packageJson.name, () => {
           } else if (req.query.limit === 'bad_type_throw') {
             json = [{ id: 'bad_limit_throw', name: 'name' }];
           }
+          console.log(`XXX returning json`, json);
           res.json(json);
         });
         app.use((err, _req, res, _next) => {
@@ -71,7 +74,7 @@ describe(packageJson.name, () => {
         expect(r.body).to.eql(data);
         expect(onErrorArgs?.length).to.equal(3);
         expect(onErrorArgs![0].message).to.equal(
-          '/response/0/id must be integer',
+          'request/query/limit must be integer',
         );
         expect(onErrorArgs![1]).to.eql(data);
         expect(onErrorArgs![2].query).to.eql({
@@ -90,7 +93,7 @@ describe(packageJson.name, () => {
 
   it('returns error if custom error handler throws', async () =>
     request(app)
-      .get(`${app.basePath}/pets?mode=bad_type_throw`)
+      .get(`${app.basePath}/pets?limit=bad_type_throw`)
       .expect(500)
       .then((r: any) => {
         const data = [{ id: 'bad_limit_throw', name: 'name' }];
