@@ -21,12 +21,10 @@ async function buildApp({
       validateRequests: {
         allowUnknownQueryParameters,
         onError: function (_err, req) {
-          console.log(`XXX in onError`);
           onErrorArgs = [_err, req];
           if (req.query['limit'] === 'bad_type_throw') {
             throw new Error('error in onError handler');
           }
-          console.log(`XXX not throwing`);
         },
       },
     },
@@ -34,7 +32,6 @@ async function buildApp({
     (app) => {
       app.get(`${app.basePath}/pets`, (req, res) => {
         debugger;
-        console.log(`XXX in route`);
         let json = [
           { id: '1', name: 'fido' },
           { id: '2', name: 'rex' },
@@ -47,7 +44,6 @@ async function buildApp({
         } else if (req.query.limit === 'bad_type_throw') {
           json = [{ id: 'bad_limit_throw', name: 'name' }];
         }
-        console.log(`XXX returning json`, json);
         res.json(json);
       });
       app.use((err, _req, res, _next) => {

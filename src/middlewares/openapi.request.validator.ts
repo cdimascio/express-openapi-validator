@@ -180,13 +180,11 @@ export class RequestValidator {
         } catch (error) {
           if (this.requestOpts.onError) {
             this.requestOpts.onError(error, req);
-            console.log(`XXX invoked errorhandler`);
           } else {
             throw error;
           }
         }
       }
-      console.log(`XXX done`);
 
       const schemaBody = <any>validator?.schemaBody;
       if (contentType.mediaType === 'multipart/form-data') {
