@@ -12,8 +12,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express-openapi-validator": "^5.3.7",
-    "morgan": "^1.10.0"
+    "express-openapi-validator": "^5.5.3",
+    "morgan": "^1.10.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
