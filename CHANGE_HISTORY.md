@@ -1,3 +1,14 @@
+##  (2025-07-27)
+
+* throw provided exception example ([d2df3ed](https://github.com/cdimascio/express-openapi-validator/commit/d2df3ed))
+* throw provided exception example ([307cddd](https://github.com/cdimascio/express-openapi-validator/commit/307cddd))
+* v5.5.8 ([bcd119e](https://github.com/cdimascio/express-openapi-validator/commit/bcd119e))
+* fix: package.json & package-lock.json to reduce vulnerabilities (#1096) ([2fc8a6a](https://github.com/cdimascio/express-openapi-validator/commit/2fc8a6a)), closes [#1096](https://github.com/cdimascio/express-openapi-validator/issues/1096)
+* chore: upgrade @apidevtools/json-schema-ref-parser to v14.x (#1090) ([20077d2](https://github.com/cdimascio/express-openapi-validator/commit/20077d2)), closes [#1090](https://github.com/cdimascio/express-openapi-validator/issues/1090)
+* chore(deps): bump multer and express-openapi-validator (#1085) ([ac16300](https://github.com/cdimascio/express-openapi-validator/commit/ac16300)), closes [#1085](https://github.com/cdimascio/express-openapi-validator/issues/1085)
+
+
+
 ##  (2025-06-11)
 
 * fix(#1071): Fix query param validation for literal bracket notation in param names ([122ac9d](https://github.com/cdimascio/express-openapi-validator/commit/122ac9d))
