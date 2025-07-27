@@ -13,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "express-openapi-validator": "^5.5.3",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.4",
