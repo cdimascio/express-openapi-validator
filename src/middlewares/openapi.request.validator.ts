@@ -46,6 +46,7 @@ export class RequestValidator {
     delete this.apiDoc.components?.examples;
     this.requestOpts.allowUnknownQueryParameters =
       options.allowUnknownQueryParameters;
+    this.requestOpts.onError = options.onError;
 
     this.ajv = createRequestAjv(
       apiDoc,
@@ -157,11 +158,19 @@ export class RequestValidator {
       mutator.modifyRequest(req);
 
       if (!allowUnknownQueryParameters) {
-        this.processQueryParam(
-          req.query,
-          schemaProperties.query,
-          securityQueryParam,
-        );
+        try {
+          this.processQueryParam(
+            req.query,
+            schemaProperties.query,
+            securityQueryParam,
+          );
+        } catch (error) {
+          if (this.requestOpts.onError) {
+            this.requestOpts.onError(error, req);
+          } else {
+            throw error;
+          }
+        }
       }
 
       const schemaBody = <any>validator?.schemaBody;
@@ -218,7 +227,12 @@ export class RequestValidator {
           message: message,
         });
         error.errors = err.errors;
-        throw error;
+        if (this.requestOpts.onError) {
+          this.requestOpts.onError(error, req);
+          next();
+        } else {
+          throw error;
+        }
       }
     };
   }

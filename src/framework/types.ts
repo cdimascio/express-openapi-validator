@@ -61,6 +61,7 @@ export type ValidateRequestOpts = {
   allowUnknownQueryParameters?: boolean;
   coerceTypes?: boolean | 'array';
   removeAdditional?: boolean | 'all' | 'failing';
+  onError?: (err: InternalServerError, req: Request) => void;
 };
 
 export type ValidateResponseOpts = {

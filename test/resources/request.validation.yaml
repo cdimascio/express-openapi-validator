@@ -1,0 +1,288 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  description: A sample API that uses a petstore as an example to demonstrate features in the OpenAPI 3.0 specification
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: Swagger API Team
+    email: apiteam@swagger.io
+    url: http://swagger.io
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: /v1
+paths:
+  /error:
+    get:
+      responses:
+        '400':
+          description: empty
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - oops
+                properties:
+                  oops:
+                    type: string
+
+  /ref_response_body:
+    get:
+      operationId: refResponseBody
+      responses:
+        '200':
+          $ref: '#/components/responses/ResponseBody'
+  /empty_response:
+    description: get empty response
+    summary: get empty response
+    get:
+      description: get empty response
+      operationId: getEmptyResponse
+      parameters:
+        - name: mode
+          in: query
+          schema:
+            type: string
+      responses:
+        '204':
+          description: empty
+          
+  /boolean:
+    description: get boolean responses
+    get:
+      operationId: boolean
+      parameters:
+        - name: value
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: boolean
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /object:
+    description: endpoints for pets
+    summary: endpoints for pets
+    get:
+      operationId: object
+      parameters:
+        - name: mode
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Object'
+    post:
+      operationId: postObject
+      parameters:
+        - name: mode
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+
+  /pets:
+    description: endpoints for pets
+    summary: endpoints for pets
+    get:
+      description: find pets
+      operationId: findPets
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /humans:
+    get:
+      description: find humans
+      operationId: humans
+      responses:
+        '200':
+          description: humans response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Human'
+            multipart/form-data:
+              schema:
+                properties:
+                  stuff:
+                    type: string
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Get users
+      operationId: getUsers
+      parameters: []
+      responses:
+        '200':
+          description: the users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+
+  /no_additional_props:
+    post:
+      description: Get todos
+      operationId: getTodos
+      # security:
+      #   - bearerAuth: []
+      responses:
+        '200':
+          description: no additional props
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoAdditionalProps'
+
+components:
+  responses:
+    ResponseBody:
+      description: Sample response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Human'
+
+  schemas:
+    Object:
+      type: object
+      required:
+        - name
+        - id
+      properties:
+        id:
+          type: integer
+          format: int64
+        bought_at:
+          type: string
+          format: date-time
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        tag:
+          type: string
+    NewPet:
+      required:
+        - name
+      properties:
+        bought_at:
+          type: string
+          format: date-time
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        tag:
+          type: string
+
+    Pet:
+      allOf:
+        - $ref: '#/components/schemas/NewPet'
+        - type: object # need to specify type object or e.g. array will pass validation
+          required:
+            - id
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+
+    Users:
+      description: 'Generic list of values from database schema'
+      type: array
+      items:
+        type: string
+
+    Human:
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        kids:
+          type: array
+          items:
+            $ref: '#/components/schemas/Human'
+
+    NoAdditionalProps:
+      type: object
+      additionalProperties: false
+      properties:
+        token_type:
+          type: string
+        expires_in:
+          type: integer
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        user:
+          additionalProperties: false
+          type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
