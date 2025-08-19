@@ -1,0 +1,75 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  description: A sample API
+  termsOfService: http://swagger.io/terms/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /pets:
+    get:
+      description: |
+        Returns all pets
+      operationId: findPets
+      parameters:
+        - name: pet_type
+          in: query
+          description: maximum number of results to return
+          required: true
+          schema:
+            type: string
+            enum:
+              - doggy
+              - kitty
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Pet:
+      required:
+        - id
+        - name
+        - type
+      properties:
+        pet_id:
+          readOnly: true
+          type: number
+        pet_name:
+          type: string
+        pet_tag:
+          type: string
+        -pet_type:
+          $ref: '#/components/schemas/PetType'
+
+    PetType:
+      type: string
+      enum:
+        - doggy
+        - kitty
+
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
