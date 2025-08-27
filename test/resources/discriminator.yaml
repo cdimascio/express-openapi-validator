@@ -1,0 +1,222 @@
+openapi: 3.0.0
+info:
+  title: Operation Discriminator Test API
+  description: 'API for testing discriminator functionality with Operation-like structure'
+  version: 1.0.0
+  contact: {}
+servers:
+  - url: /v1
+security: []
+tags: []
+paths:
+  /operations:
+    post:
+      tags:
+        - Operations
+      summary: Submit batch operations
+      description: This endpoint processes multiple operations in one atomic request
+      operationId: OperationsController_submitBatchOperations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                operations:
+                  type: array
+                  minItems: 1
+                  description: Ordered list of operations to execute
+                  items:
+                    $ref: '#/components/schemas/Operation'
+              required:
+                - operations
+      responses:
+        '204':
+          description: No Content - operations successfully processed
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+        '422':
+          description: Unprocessable Entity
+        '500':
+          description: Internal Server Error
+
+components:
+  schemas:
+    Operation:
+      oneOf:
+        - $ref: '#/components/schemas/CreateScreenOperation'
+        - $ref: '#/components/schemas/UpdateScreenOperation'
+        - $ref: '#/components/schemas/CreateQuestionOperation'
+        - $ref: '#/components/schemas/UpdateQuestionOperation'
+      discriminator:
+        propertyName: type
+
+    CreateScreenOperation:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - data
+      description: Operation that creates a new Screen entity
+      properties:
+        type:
+          type: string
+          enum:
+            - create_screen
+          description: Discriminator for this operation
+        data:
+          $ref: '#/components/schemas/ScreenIn'
+
+    UpdateScreenOperation:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - data
+      description: Operation that updates an existing Screen entity
+      properties:
+        type:
+          type: string
+          enum:
+            - update_screen
+          description: Discriminator for this operation
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            id:
+              $ref: '#/components/schemas/Identity'
+            props:
+              $ref: '#/components/schemas/ScreenIn'
+
+    CreateQuestionOperation:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - data
+      description: Operation that creates a new Question entity
+      properties:
+        type:
+          type: string
+          enum:
+            - create_question
+        data:
+          $ref: '#/components/schemas/QuestionIn'
+
+    UpdateQuestionOperation:
+      type: object
+      additionalProperties: false
+      required:
+        - type
+        - data
+      description: Operation that updates an existing Question entity
+      properties:
+        type:
+          type: string
+          enum:
+            - update_question
+        data:
+          type: object
+          additionalProperties: false
+          properties:
+            id:
+              $ref: '#/components/schemas/Identity'
+            props:
+              $ref: '#/components/schemas/QuestionIn'
+
+    Identity:
+      type: string
+      format: uuid
+      description: Unique identifier (UUID)
+
+    Key:
+      type: string
+      description: Business-level identifier
+      minLength: 2
+      maxLength: 100
+
+    TranslationKey:
+      type: string
+      description: i18n key for text
+      maxLength: 77
+      minLength: 1
+
+    ScreenType:
+      type: string
+      description: Type of the screen
+      enum:
+        - normal
+        - intermediate
+
+    Step:
+      type: string
+      description: Screen step in the questionnaire
+      maxLength: 200
+      minLength: 1
+      nullable: true
+
+    ScreenIn:
+      type: object
+      additionalProperties: false
+      required:
+        - key
+        - titleTranslationKey
+        - type
+        - step
+      properties:
+        key:
+          $ref: '#/components/schemas/Key'
+        titleTranslationKey:
+          $ref: '#/components/schemas/TranslationKey'
+        type:
+          $ref: '#/components/schemas/ScreenType'
+        step:
+          $ref: '#/components/schemas/Step'
+
+    UiElementType:
+      type: string
+      description: Presentation type
+      enum:
+        - input
+        - checkbox
+        - select
+        - radio
+
+    QuestionValueType:
+      type: string
+      enum:
+        - string
+        - number
+        - boolean
+      description: Type of value that can be stored for this question
+
+    QuestionIn:
+      type: object
+      properties:
+        key:
+          $ref: '#/components/schemas/Key'
+        titleTranslationKey:
+          $ref: '#/components/schemas/TranslationKey'
+        uiElementType:
+          $ref: '#/components/schemas/UiElementType'
+        valueType:
+          $ref: '#/components/schemas/QuestionValueType'
+      required:
+        - key
+        - titleTranslationKey
+        - uiElementType
+        - valueType
