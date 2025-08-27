@@ -59,7 +59,7 @@ const postOps = (app: any, op: Op) =>
     .send({ operations: [op] })
     .expect(204);
 
-describe.only('Operation discriminator', () => {
+describe('Operation discriminator', () => {
   let app: AppWithServer;
 
   before(async () => {
@@ -174,7 +174,7 @@ describe.only('Operation discriminator', () => {
           expect(error.errorCode).to.equal('discriminator.openapi.validation');
         }));
 
-    it.only('should return 400 for create_screen operation with missing required fields', async () =>
+    it('should return 400 for create_screen operation with missing required fields', async () =>
       request(app)
         .post(`${app.basePath}/operations`)
         .set('content-type', 'application/json')
