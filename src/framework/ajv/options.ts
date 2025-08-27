@@ -30,7 +30,7 @@ export class AjvOptions {
   }
 
   get request(): RequestValidatorOptions {
-    const { allErrors, allowUnknownQueryParameters, coerceTypes, removeAdditional } = <
+    const { allErrors, allowUnknownQueryParameters, coerceTypes, removeAdditional, discriminator } = <
       ValidateRequestOpts
     >this.options.validateRequests;
     return {
@@ -39,6 +39,7 @@ export class AjvOptions {
       allowUnknownQueryParameters,
       coerceTypes,
       removeAdditional,
+      discriminator
     };
   }
 

@@ -121,4 +121,34 @@ describe('AjvOptions', () => {
     expect(options.serDesMap['custom-1']).has.property('serialize');
     expect(options.serDesMap['custom-1']).has.property('deserialize');
   });
+
+  it('should handle discriminator parameter when not specified (undefined by default)', () => {
+    const ajv = new AjvOptions(baseOptions);
+    const options = ajv.request;
+    expect(options.discriminator).to.be.undefined;
+  });
+
+  it('should set discriminator to true when specified', () => {
+    const ajv = new AjvOptions({
+      ...baseOptions,
+      validateRequests: {
+        ...baseOptions.validateRequests,
+        discriminator: true,
+      },
+    });
+    const options = ajv.request;
+    expect(options.discriminator).to.be.true;
+  });
+
+  it('should set discriminator to false when specified', () => {
+    const ajv = new AjvOptions({
+      ...baseOptions,
+      validateRequests: {
+        ...baseOptions.validateRequests,
+        discriminator: false,
+      },
+    });
+    const options = ajv.request;
+    expect(options.discriminator).to.be.false;
+  });
 });

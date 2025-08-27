@@ -7,7 +7,7 @@ import AjvDraft4 from 'ajv-draft-04';
 import Ajv2020 from 'ajv/dist/2020';
 export { OpenAPIFrameworkArgs };
 
-export type AjvInstance = AjvDraft4 | Ajv2020 
+export type AjvInstance = AjvDraft4 | Ajv2020
 
 export type BodySchema =
   | OpenAPIV3.ReferenceObject
@@ -61,6 +61,7 @@ export type ValidateRequestOpts = {
   allowUnknownQueryParameters?: boolean;
   coerceTypes?: boolean | 'array';
   removeAdditional?: boolean | 'all' | 'failing';
+  discriminator?: boolean;
 };
 
 export type ValidateResponseOpts = {
