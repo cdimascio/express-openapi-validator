@@ -59,7 +59,7 @@ const postOps = (app: any, op: Op) =>
     .send({ operations: [op] })
     .expect(204);
 
-describe.only('Operation discriminator', () => {
+describe('Operation discriminator', () => {
   let app: AppWithServer;
 
   before(async () => {

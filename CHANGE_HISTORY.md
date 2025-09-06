@@ -1,3 +1,18 @@
+##  (2025-09-06)
+
+* Add deep discriminator support (#1106) ([0c4fe03](https://github.com/cdimascio/express-openapi-validator/commit/0c4fe03)), closes [#1106](https://github.com/cdimascio/express-openapi-validator/issues/1106)
+* Dependency bump for snyk and npm vulnerabilities (#1099) ([99c370c](https://github.com/cdimascio/express-openapi-validator/commit/99c370c)), closes [#1099](https://github.com/cdimascio/express-openapi-validator/issues/1099)
+* chore(deps): bump cookie and express (#1029) ([e76e354](https://github.com/cdimascio/express-openapi-validator/commit/e76e354)), closes [#1029](https://github.com/cdimascio/express-openapi-validator/issues/1029)
+* chore(deps): bump form-data from 3.0.1 to 3.0.4 in /examples/9-nestjs (#1097) ([a582000](https://github.com/cdimascio/express-openapi-validator/commit/a582000)), closes [#1097](https://github.com/cdimascio/express-openapi-validator/issues/1097)
+* chore(deps): bump multer in /examples/4-eov-operations-babel (#1091) ([4f97239](https://github.com/cdimascio/express-openapi-validator/commit/4f97239)), closes [#1091](https://github.com/cdimascio/express-openapi-validator/issues/1091)
+* chore(deps): bump on-headers and morgan (#1094) ([167b7e1](https://github.com/cdimascio/express-openapi-validator/commit/167b7e1)), closes [#1094](https://github.com/cdimascio/express-openapi-validator/issues/1094)
+* fix: examples/2-standard-multiple-api-specs/package.json & examples/2-standard-multiple-api-specs/pa ([41a3821](https://github.com/cdimascio/express-openapi-validator/commit/41a3821)), closes [#1098](https://github.com/cdimascio/express-openapi-validator/issues/1098)
+* fix: examples/3-eov-operations/package.json & examples/3-eov-operations/package-lock.json to reduce  ([574187f](https://github.com/cdimascio/express-openapi-validator/commit/574187f)), closes [#1095](https://github.com/cdimascio/express-openapi-validator/issues/1095)
+* fix: examples/4-eov-operations-babel/package.json & examples/4-eov-operations-babel/package-lock.jso ([4aab85d](https://github.com/cdimascio/express-openapi-validator/commit/4aab85d)), closes [#1100](https://github.com/cdimascio/express-openapi-validator/issues/1100)
+* fix: upgrade @types/multer from 1.4.12 to 1.4.13 (#1092) ([ab6d1ab](https://github.com/cdimascio/express-openapi-validator/commit/ab6d1ab)), closes [#1092](https://github.com/cdimascio/express-openapi-validator/issues/1092)
+
+
+
 ##  (2025-07-27)
 
 * throw provided exception example ([d2df3ed](https://github.com/cdimascio/express-openapi-validator/commit/d2df3ed))
