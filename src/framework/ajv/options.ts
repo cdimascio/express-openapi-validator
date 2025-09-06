@@ -39,7 +39,7 @@ export class AjvOptions {
       allowUnknownQueryParameters,
       coerceTypes,
       removeAdditional,
-      discriminator
+      discriminator,
     };
   }
 

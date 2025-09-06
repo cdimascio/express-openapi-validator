@@ -24,7 +24,7 @@ type Op =
           key?: string;
           titleTranslationKey?: string;
           type?: 'normal' | 'intermediate';
-          step?: string;
+          step: string | null;
           descriptionTranslationKey?: string;
           description?: string;
         };
@@ -59,7 +59,7 @@ const postOps = (app: any, op: Op) =>
     .send({ operations: [op] })
     .expect(204);
 
-describe('Operation discriminator', () => {
+describe.only('Operation discriminator', () => {
   let app: AppWithServer;
 
   before(async () => {
