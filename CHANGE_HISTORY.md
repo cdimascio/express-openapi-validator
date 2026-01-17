@@ -1,3 +1,13 @@
+##  (2026-01-17)
+
+* v5.6.1 ([58e7a16](https://github.com/cdimascio/express-openapi-validator/commit/58e7a16))
+* v5.6.1 ([0acdd7a](https://github.com/cdimascio/express-openapi-validator/commit/0acdd7a))
+* fix: package.json & package-lock.json to reduce vulnerabilities (#1127) ([48e08a7](https://github.com/cdimascio/express-openapi-validator/commit/48e08a7)), closes [#1127](https://github.com/cdimascio/express-openapi-validator/issues/1127)
+* fix: upgrade @apidevtools/json-schema-ref-parser from 14.0.3 to 14.1.0 (#1104) ([ff51b76](https://github.com/cdimascio/express-openapi-validator/commit/ff51b76)), closes [#1104](https://github.com/cdimascio/express-openapi-validator/issues/1104)
+* chore(deps): bump on-headers and morgan in /examples/6-multi-file-spec (#1103) ([6493afe](https://github.com/cdimascio/express-openapi-validator/commit/6493afe)), closes [#1103](https://github.com/cdimascio/express-openapi-validator/issues/1103)
+
+
+
 ##  (2025-09-06)
 
 * Add deep discriminator support (#1106) ([0c4fe03](https://github.com/cdimascio/express-openapi-validator/commit/0c4fe03)), closes [#1106](https://github.com/cdimascio/express-openapi-validator/issues/1106)
