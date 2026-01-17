@@ -18,7 +18,7 @@ declare module 'multer' {
     /* Error Message */
     message: string;
     /* Error code */
-    code: ErrorCodes;
+    code: ErrorCode;
     /* Field Name */
     field?: string;
   }
