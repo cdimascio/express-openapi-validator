@@ -1,3 +1,22 @@
+##  (2026-01-20)
+
+* upgrades multer from 1.x to 2.0.0, impacting multer.ErrorCodes type (now ErrorCode) ([d9da257](https://github.com/cdimascio/express-openapi-validator/commit/d9da257))
+* v5.6.1 ([3ea686d](https://github.com/cdimascio/express-openapi-validator/commit/3ea686d))
+* v5.6.1 ([58e7a16](https://github.com/cdimascio/express-openapi-validator/commit/58e7a16))
+* v5.6.1 ([0acdd7a](https://github.com/cdimascio/express-openapi-validator/commit/0acdd7a))
+* v5.6.2 ([f6953b6](https://github.com/cdimascio/express-openapi-validator/commit/f6953b6))
+* chore(deps): bump body-parser in /examples/1-standard ([8271f2c](https://github.com/cdimascio/express-openapi-validator/commit/8271f2c))
+* chore(deps): bump js-yaml in /examples/4-eov-operations-babel ([02f35a3](https://github.com/cdimascio/express-openapi-validator/commit/02f35a3))
+* chore(deps): bump multer in /examples/6-multi-file-spec ([38af363](https://github.com/cdimascio/express-openapi-validator/commit/38af363))
+* chore(deps): bump on-headers and morgan in /examples/6-multi-file-spec (#1103) ([6493afe](https://github.com/cdimascio/express-openapi-validator/commit/6493afe)), closes [#1103](https://github.com/cdimascio/express-openapi-validator/issues/1103)
+* chore(deps): bump qs and @nestjs/platform-express in /examples/9-nestjs ([97b5aff](https://github.com/cdimascio/express-openapi-validator/commit/97b5aff))
+* chore(deps): bump qs from 6.14.0 to 6.14.1 in /examples/1-standard (#1126) ([fd79836](https://github.com/cdimascio/express-openapi-validator/commit/fd79836)), closes [#1126](https://github.com/cdimascio/express-openapi-validator/issues/1126)
+* fix: examples/4-eov-operations-babel/package.json & examples/4-eov-operations-babel/package-lock.jso ([81b4e5c](https://github.com/cdimascio/express-openapi-validator/commit/81b4e5c)), closes [#1123](https://github.com/cdimascio/express-openapi-validator/issues/1123)
+* fix: package.json & package-lock.json to reduce vulnerabilities (#1127) ([48e08a7](https://github.com/cdimascio/express-openapi-validator/commit/48e08a7)), closes [#1127](https://github.com/cdimascio/express-openapi-validator/issues/1127)
+* fix: upgrade @apidevtools/json-schema-ref-parser from 14.0.3 to 14.1.0 (#1104) ([ff51b76](https://github.com/cdimascio/express-openapi-validator/commit/ff51b76)), closes [#1104](https://github.com/cdimascio/express-openapi-validator/issues/1104)
+
+
+
 ##  (2026-01-17)
 
 * v5.6.1 ([58e7a16](https://github.com/cdimascio/express-openapi-validator/commit/58e7a16))
