@@ -1,7 +1,6 @@
 import Ajv from 'ajv';
 import ajv = require('ajv');
 import * as cloneDeep from 'lodash.clonedeep';
-import * as _get from 'lodash.get';
 import { createRequestAjv } from '../../framework/ajv';
 import {
   OpenAPIV3,
@@ -63,6 +62,10 @@ function isNonArraySchemaObject(
   node: ArraySchemaObject | NonArraySchemaObject | ReferenceObject,
 ): node is NonArraySchemaObject {
   return !isArraySchemaObject(node) && !isReferenceObject(node);
+}
+
+function _get(object: Object, path: string[] | undefined): any {
+  return path?.reduce((o, p) => o?.[p], object);
 }
 
 class Root<T> extends Node<T, T> {
@@ -643,9 +646,9 @@ export class SchemaPreprocessor {
     }
     let res = (ref ? this.ajv.getSchema(ref)?.schema : schema) as T;
     if (ref && !res) {
-      const path = ref.split('/').join('.');
-      const p = path.substring(path.indexOf('.') + 1);
-      res = _get(this.apiDoc, p);
+      const path = ref.split('/');
+      path.shift();
+      res = _get(this.apiDoc, path);
     }
     if (ref) {
       this.resolvedSchemaCache.set(ref, res);
