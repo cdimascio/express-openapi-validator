@@ -161,7 +161,7 @@ class SecuritySchemes {
               throw new InternalServerError({ message });
             }
             new AuthValidator(req, scheme, scopes).validate();
-            // If we reach here, validation passed and credentials were provided
+            // If we reach here, AuthValidator did not report validation errors for this scheme
             validatorPassed = true;
             // expected handler results are:
             // - throw exception,
