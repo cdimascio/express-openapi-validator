@@ -88,9 +88,18 @@ export function security(
         next();
       } else {
         const errors = extractErrorsFromResults(results);
-        // Prioritize errors where authentication was actually attempted
-        const attemptedErrors = errors.filter(e => e.attempted);
-        const errorToThrow = attemptedErrors.length > 0 ? attemptedErrors[0] : errors[0];
+        // Prefer server/configuration errors (5xx) so misconfigurations surface
+        const serverErrors = errors.filter(
+          (e) => typeof e.status === 'number' && e.status >= 500 && e.status < 600,
+        );
+        let errorToThrow;
+        if (serverErrors.length > 0) {
+          errorToThrow = serverErrors[0];
+        } else {
+          // Otherwise, prioritize errors where authentication was actually attempted
+          const attemptedErrors = errors.filter((e) => e.attempted);
+          errorToThrow = attemptedErrors.length > 0 ? attemptedErrors[0] : errors[0];
+        }
         throw errorToThrow;
       }
     } catch (e) {
