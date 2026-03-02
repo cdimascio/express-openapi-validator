@@ -22,7 +22,7 @@ interface SecurityHandlerResult {
   success: boolean;
   status?: number;
   error?: string;
-  attempted?: boolean; // true if credentials were provided and handler was called
+  attempted?: boolean; // true if AuthValidator.validate() passed for this scheme and the handler was called
 }
 
 function extractErrorsFromResults(results: (SecurityHandlerResult | SecurityHandlerResult[])[]) {
