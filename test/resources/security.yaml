@@ -19,6 +19,17 @@ paths:
           description: OK
         "401":
           description: unauthorized
+  
+  /bearer_or_apikey:
+    get:
+      security:
+        - BearerAuth: []
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: unauthorized
 
   /no_security:
     get:
