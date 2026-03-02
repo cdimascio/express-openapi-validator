@@ -21,7 +21,7 @@ type SecuritySchemesMap = {
 interface SecurityHandlerResult {
   success: boolean;
   status?: number;
-  error?: string;
+  error?: any;
   attempted?: boolean; // true if AuthValidator.validate() passed for this scheme and the handler was called
 }
 
