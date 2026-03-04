@@ -1,4 +1,5 @@
 import Ajv, { ValidateFunction } from 'ajv';
+import * as localize from 'ajv-i18n';
 import { NextFunction, RequestHandler, Response } from 'express';
 import { createRequestAjv } from '../framework/ajv';
 import {
@@ -35,6 +36,7 @@ export class RequestValidator {
   private ajv: Ajv;
   private ajvBody: Ajv;
   private requestOpts: ValidateRequestOpts = {};
+  private ajvLocale: string | (() => string | undefined) | undefined;
 
   constructor(
     apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
@@ -46,6 +48,7 @@ export class RequestValidator {
     delete this.apiDoc.components?.examples;
     this.requestOpts.allowUnknownQueryParameters =
       options.allowUnknownQueryParameters;
+    this.ajvLocale = options.ajvLocale;
 
     this.ajv = createRequestAjv(
       apiDoc,
@@ -206,11 +209,14 @@ export class RequestValidator {
       if (valid && validBody) {
         next();
       } else {
-        const errors = augmentAjvErrors(
-          []
-            .concat(validator.validatorGeneral.errors ?? [])
-            .concat(validatorBody.errors ?? []),
-        );
+        const rawErrors = []
+          .concat(validator.validatorGeneral.errors ?? [])
+          .concat(validatorBody.errors ?? []);
+        const locale = typeof this.ajvLocale === 'function' ? this.ajvLocale() : this.ajvLocale;
+        if (locale && localize[locale]) {
+          localize[locale](rawErrors);
+        }
+        const errors = augmentAjvErrors(rawErrors);
         const err = ajvErrorsToValidatorError(400, errors);
         const message = this.ajv.errorsText(errors, { dataVar: 'request' });
         const error: BadRequest = new BadRequest({
