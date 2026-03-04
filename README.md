@@ -70,6 +70,44 @@ app.use(
 );
 ```
 
+### Internationalization (i18n)
+
+Validation error messages can be localized using [ajv-i18n](https://github.com/ajv-validator/ajv-i18n). Set `ajvLocale` to a supported locale key (e.g. `'de'`, `'ru'`, `'zh'`).
+
+**Static locale** — all errors use the same language:
+
+```javascript
+app.use(
+  OpenApiValidator.middleware({
+    apiSpec: './openapi.yaml',
+    ajvLocale: 'de', // German error messages
+  }),
+);
+```
+
+**Dynamic locale** — resolve the locale per-request via a function. This works with any request-scoped mechanism such as `AsyncLocalStorage`:
+
+```javascript
+import { AsyncLocalStorage } from 'async_hooks';
+
+const localeStorage = new AsyncLocalStorage();
+
+// Upstream middleware: store the locale for the current request
+app.use((req, res, next) => {
+  const lang = req.headers['accept-language']?.split(',')[0]?.trim() ?? 'en';
+  localeStorage.run(lang, next);
+});
+
+app.use(
+  OpenApiValidator.middleware({
+    apiSpec: './openapi.yaml',
+    ajvLocale: () => localeStorage.getStore(), // called fresh on every request
+  }),
+);
+```
+
+Supported locales include: `ar`, `ca`, `cs`, `de`, `en`, `es`, `fi`, `fr`, `hu`, `id`, `it`, `ja`, `ko`, `nb`, `nl`, `pl`, `pt-BR`, `ru`, `sk`, `sv`, `th`, `tr`, `uk`, `vi`, `zh`, `zh-TW`.
+
 3. Register an error handler
 
 ```javascript

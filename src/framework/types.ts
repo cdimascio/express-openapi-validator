@@ -46,6 +46,12 @@ export interface Options extends ajv.Options {
   // Specific options
   serDesMap?: SerDesMap;
   ajvFormats?: FormatsPluginOptions;
+  /**
+   * Locale for ajv-i18n (e.g. 'ru', 'de', 'zh'). Localizes AJV validation error messages.
+   * Can be a static string or a function that returns the locale per-request (e.g. reading
+   * from AsyncLocalStorage or a request-scoped context).
+   */
+  ajvLocale?: string | (() => string | undefined);
 }
 
 export interface RequestValidatorOptions extends Options, ValidateRequestOpts { }
@@ -169,6 +175,12 @@ export interface OpenApiValidatorOpts {
   serDes?: SerDes[];
   formats?: Format[] | Record<string, ajv.Format>;
   ajvFormats?: FormatsPluginOptions;
+  /**
+   * Locale for ajv-i18n (e.g. 'ru', 'de', 'zh'). Localizes AJV validation error messages.
+   * Can be a static string or a function that returns the locale per-request (e.g. reading
+   * from AsyncLocalStorage or a request-scoped context).
+   */
+  ajvLocale?: string | (() => string | undefined);
   fileUploader?: boolean | multer.Options;
   multerOpts?: multer.Options;
   $refParser?: {

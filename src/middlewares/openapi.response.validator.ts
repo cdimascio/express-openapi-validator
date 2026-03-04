@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import Ajv, { ValidateFunction, Options } from 'ajv';
+import * as localize from 'ajv-i18n';
 import mung from '../framework/modded.express.mung';
 import { createResponseAjv } from '../framework/ajv';
 import {
@@ -33,6 +34,7 @@ export class ResponseValidator {
   } = {};
   private eovOptions: ValidateResponseOpts;
   private serial: number;
+  private ajvLocale: string | (() => string | undefined) | undefined;
 
   constructor(
     openApiSpec: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
@@ -44,6 +46,7 @@ export class ResponseValidator {
     this.ajvBody = createResponseAjv(openApiSpec, options);
     this.eovOptions = eovOptions;
     this.serial = serial;
+    this.ajvLocale = (options as any).ajvLocale;
 
     // This is a pseudo-middleware function. It doesn't get registered with
     // express via `use`
@@ -194,7 +197,12 @@ export class ResponseValidator {
     });
 
     if (!valid) {
-      const errors = augmentAjvErrors(validator.errors);
+      const rawErrors = validator.errors;
+      const locale = typeof this.ajvLocale === 'function' ? this.ajvLocale() : this.ajvLocale;
+      if (locale && localize[locale]) {
+        localize[locale](rawErrors);
+      }
+      const errors = augmentAjvErrors(rawErrors);
       const message = this.ajvBody.errorsText(errors, {
         dataVar: '', // responses
       });
