@@ -15,6 +15,7 @@ import {
   OpenApiRequestMetadata,
   InternalServerError,
   ValidateResponseOpts,
+  ResponseValidatorOptions,
 } from '../framework/types';
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
@@ -38,7 +39,7 @@ export class ResponseValidator {
 
   constructor(
     openApiSpec: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
-    options: Options = {},
+    options: ResponseValidatorOptions = {},
     eovOptions: ValidateResponseOpts = {},
     serial: number = -1,
   ) {
@@ -46,7 +47,7 @@ export class ResponseValidator {
     this.ajvBody = createResponseAjv(openApiSpec, options);
     this.eovOptions = eovOptions;
     this.serial = serial;
-    this.ajvLocale = (options as any).ajvLocale;
+    this.ajvLocale = options.ajvLocale;
 
     // This is a pseudo-middleware function. It doesn't get registered with
     // express via `use`

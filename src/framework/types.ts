@@ -54,6 +54,8 @@ export interface Options extends ajv.Options {
   ajvLocale?: string | (() => string | undefined);
 }
 
+export interface ResponseValidatorOptions extends Options, ValidateResponseOpts { }
+
 export interface RequestValidatorOptions extends Options, ValidateRequestOpts { }
 
 export type ValidateRequestOpts = {

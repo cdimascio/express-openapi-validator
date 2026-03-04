@@ -2,6 +2,7 @@ import {
   NormalizedOpenApiValidatorOpts,
   Options,
   RequestValidatorOptions,
+  ResponseValidatorOptions,
   ValidateRequestOpts,
   ValidateResponseOpts,
 } from '../types';
@@ -16,7 +17,7 @@ export class AjvOptions {
     return this.baseOptions();
   }
 
-  get response(): Options {
+  get response(): ResponseValidatorOptions {
     const { allErrors, coerceTypes, removeAdditional } = <ValidateResponseOpts>(
       this.options.validateResponses
     );

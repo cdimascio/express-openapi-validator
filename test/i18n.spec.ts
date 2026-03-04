@@ -120,6 +120,32 @@ describe('i18n – ajvLocale', () => {
         expect(msg).to.not.match(/must NOT have more than/i);
       });
     });
+
+    it('response errors should be in German when locale function returns "de"', async () => {
+      currentLocale = 'de';
+      const res = await request(app)
+        .get(`${app.basePath}/persons?bname=Maximillian`)
+        .expect(500);
+
+      const messages: string[] = res.body.errors.map((e) => e.message);
+      expect(messages.length).to.be.greaterThan(0);
+      messages.forEach((msg) => {
+        expect(msg).to.not.match(/must NOT have more than/i);
+      });
+    });
+
+    it('response errors should be in Russian when locale function returns "ru"', async () => {
+      currentLocale = 'ru';
+      const res = await request(app)
+        .get(`${app.basePath}/persons?bname=Maximillian`)
+        .expect(500);
+
+      const messages: string[] = res.body.errors.map((e) => e.message);
+      expect(messages.length).to.be.greaterThan(0);
+      messages.forEach((msg) => {
+        expect(msg).to.not.match(/must NOT have more than/i);
+      });
+    });
   });
 
   describe('no locale (default English)', () => {
@@ -131,6 +157,7 @@ describe('i18n – ajvLocale', () => {
           apiSpec,
           formats: { 'starts-with-b': (v) => /^b/i.test(v) },
           validateRequests: { allErrors: true },
+          validateResponses: { allErrors: true },
         },
         3010,
         defineRoutes,
@@ -155,6 +182,19 @@ describe('i18n – ajvLocale', () => {
       );
       expect(hasEnglish).to.be.true;
     });
+
+    it('response errors should be in English when no ajvLocale is set', async () => {
+      const res = await request(app)
+        .get(`${app.basePath}/persons?bname=Maximillian`)
+        .expect(500);
+
+      const messages: string[] = res.body.errors.map((e) => e.message);
+      expect(messages.length).to.be.greaterThan(0);
+      const hasEnglish = messages.some((msg) =>
+        /must NOT have more than/i.test(msg),
+      );
+      expect(hasEnglish).to.be.true;
+    });
   });
 
   describe('unknown locale key', () => {
@@ -167,6 +207,7 @@ describe('i18n – ajvLocale', () => {
           formats: { 'starts-with-b': (v) => /^b/i.test(v) },
           ajvLocale: 'xx-UNKNOWN',
           validateRequests: { allErrors: true },
+          validateResponses: { allErrors: true },
         },
         3011,
         defineRoutes,
@@ -190,6 +231,19 @@ describe('i18n – ajvLocale', () => {
       );
       expect(hasEnglish).to.be.true;
     });
+
+    it('response errors should fall back to English for an unknown locale', async () => {
+      const res = await request(app)
+        .get(`${app.basePath}/persons?bname=Maximillian`)
+        .expect(500);
+
+      const messages: string[] = res.body.errors.map((e) => e.message);
+      expect(messages.length).to.be.greaterThan(0);
+      const hasEnglish = messages.some((msg) =>
+        /must NOT have more than/i.test(msg),
+      );
+      expect(hasEnglish).to.be.true;
+    });
   });
 
   describe('function locale returning undefined', () => {
@@ -202,6 +256,7 @@ describe('i18n – ajvLocale', () => {
           formats: { 'starts-with-b': (v) => /^b/i.test(v) },
           ajvLocale: () => undefined,
           validateRequests: { allErrors: true },
+          validateResponses: { allErrors: true },
         },
         3012,
         defineRoutes,
@@ -217,6 +272,19 @@ describe('i18n – ajvLocale', () => {
         .set('content-type', 'application/json')
         .send({ bname: 'Maximillian' })
         .expect(400);
+
+      const messages: string[] = res.body.errors.map((e) => e.message);
+      expect(messages.length).to.be.greaterThan(0);
+      const hasEnglish = messages.some((msg) =>
+        /must NOT have more than/i.test(msg),
+      );
+      expect(hasEnglish).to.be.true;
+    });
+
+    it('response errors should fall back to English when locale function returns undefined', async () => {
+      const res = await request(app)
+        .get(`${app.basePath}/persons?bname=Maximillian`)
+        .expect(500);
 
       const messages: string[] = res.body.errors.map((e) => e.message);
       expect(messages.length).to.be.greaterThan(0);
