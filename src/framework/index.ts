@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as $RefParser from '@apidevtools/json-schema-ref-parser';
+
 import { OpenAPISchemaValidator } from './openapi.schema.validator';
 import { BasePath } from './base.path';
 import {
@@ -72,12 +72,15 @@ export class OpenAPIFramework {
     };
   }
 
-  private loadSpec(
+  private async loadSpec(
     filePath: string | object,
     $refParser: { mode: 'bundle' | 'dereference' } = { mode: 'bundle' },
   ): Promise<OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1> {
     // Because of this issue ( https://github.com/APIDevTools/json-schema-ref-parser/issues/101#issuecomment-421755168 )
     // We need this workaround ( use '$RefParser.dereference' instead of '$RefParser.bundle' ) if asked by user
+    const $RefParserPackage = await (new Function('return import("@apidevtools/json-schema-ref-parser")')());
+    const $RefParser = $RefParserPackage.default;
+
     if (typeof filePath === 'string') {
       const origCwd = process.cwd();
       const absolutePath = path.resolve(origCwd, filePath);
