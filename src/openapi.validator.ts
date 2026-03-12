@@ -15,6 +15,9 @@ import {
   OpenApiRequestMetadata,
   ValidateSecurityOpts,
   OpenAPIV3,
+  BeforeRequestBodyValidationHandlers,
+  AfterResponseBodyValidationHandlers,
+  InternalServerError,
 } from './framework/types';
 import { defaultResolver } from './resolvers';
 import { OperationHandlerOptions } from './framework/types';
@@ -189,6 +192,14 @@ export class OpenApiValidator {
       });
     }
 
+    // before request body validation hook middleware
+    if (this.options.beforeRequestBodyValidation) {
+      const beforeHookMw = this.beforeRequestBodyValidationMiddleware(
+        this.options.beforeRequestBodyValidation,
+      );
+      middlewares.push(beforeHookMw);
+    }
+
     // request middleware
     if (this.options.validateRequests) {
       let reqmw;
@@ -208,7 +219,11 @@ export class OpenApiValidator {
       middlewares.push(function responseMiddleware(req, res, next) {
         return pContext
           .then(({ responseApiDoc, context: { serial } }) => {
-            resmw = resmw || self.responseValidationMiddleware(responseApiDoc, serial);
+            resmw = resmw || self.responseValidationMiddleware(
+              responseApiDoc,
+              serial,
+              self.options.afterResponseBodyValidation,
+            );
             return resmw(req, res, next);
           })
           .catch(next);
@@ -291,13 +306,50 @@ export class OpenApiValidator {
     return (req, res, next) => requestValidator.validate(req, res, next);
   }
 
-  private responseValidationMiddleware(apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1, serial: number) {
+  private beforeRequestBodyValidationMiddleware(
+    handlers: BeforeRequestBodyValidationHandlers,
+  ): OpenApiRequestHandler {
+    return async function beforeRequestBodyValidationHook(req, res, next) {
+      try {
+        if (!req.openapi) {
+          // Route not matched by OpenAPI spec — skip
+          return next();
+        }
+        const handlerName: string =
+          req.openapi.schema['x-eov-before-request-body-validation'] as string;
+        if (!handlerName) {
+          // No hook configured for this operation
+          return next();
+        }
+        const handler = handlers[handlerName];
+        if (!handler) {
+          return next(
+            new InternalServerError({
+              path: (req as any).path,
+              message: `beforeRequestBodyValidation handler '${handlerName}' not found`,
+            }),
+          );
+        }
+        await handler(req, req.openapi.schema);
+        next();
+      } catch (err) {
+        next(err);
+      }
+    };
+  }
+
+  private responseValidationMiddleware(
+    apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
+    serial: number,
+    afterResponseBodyValidation?: AfterResponseBodyValidationHandlers,
+  ) {
     return new middlewares.ResponseValidator(
       apiDoc,
       this.ajvOpts.response,
       // This has already been converted from boolean if required
       this.options.validateResponses as ValidateResponseOpts,
-      serial
+      serial,
+      afterResponseBodyValidation,
     ).validate();
   }
 
