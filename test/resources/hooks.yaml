@@ -1,0 +1,152 @@
+openapi: "3.0.2"
+info:
+  version: 1.0.0
+  title: Hooks Test
+  description: Test spec for beforeRequestBodyValidation and afterResponseBodyValidation hooks
+
+servers:
+  - url: /v1/
+
+paths:
+  /hooks/echo:
+    post:
+      x-eov-before-request-body-validation: transformRequest
+      operationId: echoPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - value
+              properties:
+                name:
+                  type: string
+                value:
+                  type: number
+                extra:
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - name
+                  - value
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: number
+                  extra:
+                    type: string
+
+  /hooks/items:
+    get:
+      x-eov-after-response-body-validation: transformResponse
+      operationId: itemsGet
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - id
+                    - name
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+
+  /hooks/both:
+    post:
+      x-eov-before-request-body-validation: transformRequest
+      x-eov-after-response-body-validation: transformResponse
+      operationId: bothPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                extra:
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - name
+                properties:
+                  name:
+                    type: string
+                  extra:
+                    type: string
+                  transformed:
+                    type: boolean
+
+  /hooks/plain:
+    get:
+      operationId: plainGet
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+
+  /hooks/missing-handler:
+    post:
+      x-eov-before-request-body-validation: nonExistentHandler
+      operationId: missingHandlerPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        "200":
+          description: OK
+
+  /hooks/missing-after-handler:
+    get:
+      x-eov-after-response-body-validation: nonExistentAfterHandler
+      operationId: missingAfterHandlerGet
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
