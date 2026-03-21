@@ -2,6 +2,7 @@ import {
   NormalizedOpenApiValidatorOpts,
   Options,
   RequestValidatorOptions,
+  ResponseValidatorOptions,
   ValidateRequestOpts,
   ValidateResponseOpts,
 } from '../types';
@@ -16,7 +17,7 @@ export class AjvOptions {
     return this.baseOptions();
   }
 
-  get response(): Options {
+  get response(): ResponseValidatorOptions {
     const { allErrors, coerceTypes, removeAdditional } = <ValidateResponseOpts>(
       this.options.validateResponses
     );
@@ -54,6 +55,7 @@ export class AjvOptions {
       validateFormats,
       serDes,
       ajvFormats,
+      ajvLocale,
     } = this.options;
     const serDesMap = {};
     for (const serDesObject of serDes) {
@@ -82,6 +84,7 @@ export class AjvOptions {
       formats,
       serDesMap,
       ajvFormats,
+      ajvLocale,
     };
 
     return options;

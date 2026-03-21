@@ -31,7 +31,7 @@ function createAjv(
   options: Options = {},
   request = true,
 ): AjvInstance {
-  const { ajvFormats, ...ajvOptions } = options;
+  const { ajvFormats, ajvLocale, ...ajvOptions } = options;
 
   const ajv = factoryAjv(openApiSpec.openapi, {
     ...ajvOptions,
