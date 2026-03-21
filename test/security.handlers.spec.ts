@@ -64,6 +64,7 @@ describe('security.handlers', () => {
         .get(`/cookie_auth`, (req, res) => {res.json({ logged_in: true })})
         .get(`/oauth2`, (req, res) => {res.json({ logged_in: true })})
         .get(`/openid`, (req, res) => {res.json({ logged_in: true })})
+        .get(`/bearer_or_apikey`, (req, res) => {res.json({ logged_in: true })})
         .get(`/api_key_or_anonymous`, (req, res) =>{
           res.json({ logged_in: true })
   })
@@ -410,6 +411,30 @@ describe('security.handlers', () => {
     const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
     (validateSecurity.handlers! as any).ApiKeyAuth = (req, scopes, schema) => true;
     return request(app).get(`${basePath}/api_key_or_anonymous`).expect(200);
+  });
+
+  it('should return error from attempted security scheme, not first defined scheme', async () => {
+    // This test verifies the fix for the issue where when multiple security schemes
+    // are defined (e.g., BearerAuth OR ApiKeyAuth) and only one is attempted (ApiKeyAuth),
+    // the error from the attempted scheme should be returned, not the error from the
+    // first defined scheme (BearerAuth).
+    const validateSecurity = eovConf.validateSecurity as ValidateSecurityOpts;
+    (validateSecurity.handlers! as any).BearerAuth = (req, scopes, schema) => true;
+    (validateSecurity.handlers! as any).ApiKeyAuth = (req, scopes, schema) => {
+      throw new Error('Invalid API key provided');
+    };
+    
+    return request(app)
+      .get(`${basePath}/bearer_or_apikey`)
+      .set('X-API-Key', 'wrong-key') // Provide API key but not Bearer token
+      .expect(401)
+      .then((r) => {
+        const body = r.body;
+        expect(body.errors).to.be.an('array');
+        expect(body.errors).to.have.length(1);
+        // Should return the API key error, not the Bearer token error
+        expect(body.errors[0].message).to.equals('Invalid API key provided');
+      });
   });
 
   it('should return 200 if api_key or anonymous and api key is supplied', async () => {

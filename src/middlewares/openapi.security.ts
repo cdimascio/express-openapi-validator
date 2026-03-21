@@ -21,7 +21,8 @@ type SecuritySchemesMap = {
 interface SecurityHandlerResult {
   success: boolean;
   status?: number;
-  error?: string;
+  error?: any;
+  attempted?: boolean; // true if AuthValidator.validate() passed for this scheme and the handler was called
 }
 
 function extractErrorsFromResults(results: (SecurityHandlerResult | SecurityHandlerResult[])[]) {
@@ -87,7 +88,19 @@ export function security(
         next();
       } else {
         const errors = extractErrorsFromResults(results);
-        throw errors[0];
+        // Prefer server/configuration errors (5xx) so misconfigurations surface
+        const serverErrors = errors.filter(
+          (e) => typeof e.status === 'number' && e.status >= 500 && e.status < 600,
+        );
+        let errorToThrow;
+        if (serverErrors.length > 0) {
+          errorToThrow = serverErrors[0];
+        } else {
+          // Otherwise, prioritize errors where authentication was actually attempted
+          const attemptedErrors = errors.filter((e) => e.attempted);
+          errorToThrow = attemptedErrors.length > 0 ? attemptedErrors[0] : errors[0];
+        }
+        throw errorToThrow;
       }
     } catch (e) {
       const message = e?.error?.message || 'unauthorized';
@@ -138,7 +151,7 @@ class SecuritySchemes {
       }
       return Promise.all(
         Object.keys(s).map(async (securityKey) => {
-
+          let validatorPassed = false;
           try {
             const scheme = this.securitySchemes[securityKey];
             const handler = this.securityHandlers?.[securityKey] ?? fallbackHandler;
@@ -157,6 +170,8 @@ class SecuritySchemes {
               throw new InternalServerError({ message });
             }
             new AuthValidator(req, scheme, scopes).validate();
+            // If we reach here, AuthValidator did not report validation errors for this scheme
+            validatorPassed = true;
             // expected handler results are:
             // - throw exception,
             // - return true,
@@ -167,7 +182,7 @@ class SecuritySchemes {
             const securityScheme = <OpenAPIV3.SecuritySchemeObject>scheme;
             const success = await handler(req, scopes, securityScheme);
             if (success === true) {
-              return { success };
+              return { success, attempted: true };
             } else {
               throw Error();
             }
@@ -176,6 +191,7 @@ class SecuritySchemes {
               success: false,
               status: e.status ?? 401,
               error: e,
+              attempted: validatorPassed,
             };
           }
         }),
