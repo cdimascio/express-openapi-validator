@@ -256,7 +256,7 @@ export class SchemaPreprocessor {
         Array.isArray(schema.type) && schema.type.includes('array'))
       ) && schema.items) {
         // `type` may be an array of options in OpenAPI 3.1
-        // (e.g. ['array', 'null']),
+        // (e.g. ['array', 'null'])
         const child = new Node(node, schema.items, [...node.path, 'items']);
         recurse(node, child, opts);
       } else if (schema.properties) {
@@ -460,7 +460,7 @@ export class SchemaPreprocessor {
     state: TraversalState,
   ) {
     // `type` may be a string (`'string'`) or, in OpenAPI 3.1, an array of
-    // options (e.g. `['string', 'null']`). A serdes format is a string format,
+    // options (e.g. `['string', 'null']`)
     const types = Array.isArray(schema.type) ? schema.type : [schema.type];
     const isSerDesString =
       types.includes('string') &&
@@ -476,7 +476,7 @@ export class SchemaPreprocessor {
         // Ajv requires `type` keyword with `nullable` (regardless of value).
         (<any>schema).type = ['string', 'number', 'boolean', 'object', 'array'];
       } else if (types.includes('null')) {
-        // Normalize the OpenAPI 3.1 `['string', 'null']` form to `nullable` so
+        // Normalize the OpenAPI 3.1 `['string', 'null']` form to `nullable`.
         (<any>schema).nullable = true;
         (<any>schema).type = ['string', 'number', 'boolean', 'object', 'array'];
       } else {
