@@ -1,0 +1,72 @@
+openapi: 3.1.0
+info:
+  title: Xquik API
+  version: '1.0'
+servers:
+  - url: /api/v1
+paths:
+  /x/tweets/search:
+    get:
+      operationId: searchTweets
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+            maximum: 200
+      security:
+        - apiKey: []
+        - oauthBearer: []
+        - {}
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTweets'
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+    oauthBearer:
+      type: http
+      scheme: bearer
+  schemas:
+    PaginatedTweets:
+      type: object
+      required:
+        - tweets
+        - has_next_page
+        - next_cursor
+      properties:
+        tweets:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchTweet'
+        has_next_page:
+          type: boolean
+        next_cursor:
+          type: string
+    SearchTweet:
+      type: object
+      required:
+        - id
+        - text
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+        author:
+          type: object
+          additionalProperties: true
