@@ -1,0 +1,93 @@
+openapi: '3.0.0'
+info:
+  version: 1.0.0
+  title: Swagger Petstore
+  description: A sample API
+  termsOfService: http://swagger.io/terms/
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /users:
+    get:
+      description: |
+        Returns all pets
+      operationId: findUser
+      parameters:
+        - name: type
+          in: query
+          description: maximum number of results to return
+          required: true
+          schema:
+            type: string
+            enum:
+              - dog
+              - cat
+        - name: tags
+          in: query
+          description: tags to filter by
+          required: false
+          style: form
+          schema:
+            type: array
+            items:
+              type: string
+        - name: limit
+          in: query
+          description: maximum number of results to return
+          required: true
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 20
+      responses:
+        '200':
+          description: pet response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Pet:
+      required:
+        - id
+        - name
+        - type
+      properties:
+        id:
+          readOnly: true
+          type: number
+        name:
+          type: string
+        tag:
+          type: string
+        type:
+          $ref: '#/components/schemas/PetType'
+
+    PetType:
+      type: string
+      enum:
+        - dog
+        - cat
+
+    Error:
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
