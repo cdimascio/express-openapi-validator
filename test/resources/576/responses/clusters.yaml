@@ -1,0 +1,7 @@
+description: Clusters
+content:
+  'application/json':
+    schema:
+      type: array
+      items:
+        $ref: '../components/cluster.yaml'

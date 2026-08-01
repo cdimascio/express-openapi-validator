@@ -1,0 +1,10 @@
+get:
+  tags:
+    - Users
+  description: Returns a list of users
+  operationId: getUsers
+  responses:
+    '200':
+      $ref: '../responses/users.yaml'
+    '400':
+      $ref: '../responses/400.yaml'

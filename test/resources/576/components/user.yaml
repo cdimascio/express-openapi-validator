@@ -1,0 +1,9 @@
+type: object
+properties:
+  user_id:
+    type: string
+  name:
+    type: string
+example:
+  user_id: "1"
+  name: John

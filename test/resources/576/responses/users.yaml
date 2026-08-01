@@ -1,0 +1,7 @@
+description: Users
+content:
+  "application/json":
+    schema:
+      type: array
+      items:
+        $ref: "../components/user.yaml"
