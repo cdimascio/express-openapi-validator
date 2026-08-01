@@ -32,17 +32,19 @@ export class OpenApiContext {
     this.serial = spec.serial;
   }
 
-  public isManagedRoute(path: string): boolean {
+  public isManagedRoute(path: string, method: string): boolean {
     for (const bp of this.basePaths) {
-      if (path.startsWith(bp) && !this.shouldIgnoreRoute(path)) {
+      if (path.startsWith(bp) && !this.shouldIgnoreRoute(path, method)) {
         return true;
       }
     }
     return false;
   }
 
-  public shouldIgnoreRoute(path: string) {
-    return typeof this.ignorePaths === 'function' ? this.ignorePaths(path) : this.ignorePaths?.test(path);
+  public shouldIgnoreRoute(path: string, method: string): boolean {
+    return typeof this.ignorePaths === 'function'
+      ? this.ignorePaths(path, method)
+      : this.ignorePaths?.test(path);
   }
 
   public routePair(route: string): RoutePair {
