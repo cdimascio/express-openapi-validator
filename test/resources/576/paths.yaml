@@ -1,0 +1,4 @@
+/clusters:
+  $ref: "paths/clusters.yaml"
+/users:
+  $ref: "paths/users.yaml"

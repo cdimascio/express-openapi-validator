@@ -1,0 +1,17 @@
+openapi: '3.0.3'
+info:
+  version: 0.0.1
+  title: My API
+  description: Best API ever
+  contact:
+    name: My Support
+    email: support@example.com
+servers:
+  - url: 127.0.0.1/v1
+paths:
+  $ref: paths.yaml
+components:
+  schemas: {}
+tags:
+  - name: Clusters
+  - name: Users
