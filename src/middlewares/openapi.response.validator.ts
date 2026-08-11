@@ -14,6 +14,7 @@ import {
   OpenApiRequestMetadata,
   InternalServerError,
   ValidateResponseOpts,
+  AfterResponseBodyValidationHandlers,
 } from '../framework/types';
 import * as mediaTypeParser from 'media-typer';
 import * as contentTypeParser from 'content-type';
@@ -33,17 +34,20 @@ export class ResponseValidator {
   } = {};
   private eovOptions: ValidateResponseOpts;
   private serial: number;
+  private afterResponseBodyValidationHandlers?: AfterResponseBodyValidationHandlers;
 
   constructor(
     openApiSpec: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1,
     options: Options = {},
     eovOptions: ValidateResponseOpts = {},
     serial: number = -1,
+    afterResponseBodyValidationHandlers?: AfterResponseBodyValidationHandlers,
   ) {
     this.spec = openApiSpec;
     this.ajvBody = createResponseAjv(openApiSpec, options);
     this.eovOptions = eovOptions;
     this.serial = serial;
+    this.afterResponseBodyValidationHandlers = afterResponseBodyValidationHandlers;
 
     // This is a pseudo-middleware function. It doesn't get registered with
     // express via `use`
@@ -53,6 +57,67 @@ export class ResponseValidator {
   }
 
   public validate(): RequestHandler {
+    if (this.afterResponseBodyValidationHandlers) {
+      // Use async mung to support async after-response-body-validation hooks
+      const self = this;
+      return mung.jsonAsync(async (body, req, res) => {
+        if (req.openapi && self.serial == req.openapi.serial) {
+          const openapi = <OpenApiRequestMetadata>req.openapi;
+          // instead of openapi.schema, use openapi._responseSchema to get the response copy
+          const responses: OpenAPIV3.ResponsesObject = (<any>openapi)
+            ._responseSchema?.responses;
+
+          const validators = self._getOrBuildValidator(req, responses);
+          const path = req.originalUrl;
+          const statusCode = res.statusCode;
+          const contentType = res.getHeaders()['content-type'];
+          const accept = req.headers['accept'];
+          // if response has a content type use it, else use accept headers
+          const accepts: [string] = contentType
+            ? [contentType]
+            : accept
+            ? accept.split(',').map((h) => h.trim())
+            : [];
+
+          try {
+            self._validate({
+              validators,
+              body,
+              statusCode,
+              path,
+              accepts, // return 406 if not acceptable
+            });
+          } catch (err) {
+            // If a custom error handler was provided, we call that
+            if (err instanceof InternalServerError && self.eovOptions.onError) {
+              self.eovOptions.onError(err, body, req);
+              return body;
+            } else {
+              // No custom error handler, or something unexpected happened.
+              throw err;
+            }
+          }
+
+          // After successful validation, invoke the per-route after-response hook if configured
+          const handlerName: string =
+            openapi.schema['x-eov-after-response-body-validation'] as string;
+          if (handlerName) {
+            const handler = self.afterResponseBodyValidationHandlers[handlerName];
+            if (!handler) {
+              throw new InternalServerError({
+                path: path,
+                message: `afterResponseBodyValidation handler '${handlerName}' not found`,
+              });
+            }
+            const result = await handler(body, req, openapi.schema);
+            return result !== undefined ? result : body;
+          }
+        }
+        return body;
+      });
+    }
+
+    // Default synchronous path (no after-response-body-validation handlers configured)
     return mung.json((body, req, res) => {
       if (req.openapi && this.serial == req.openapi.serial) {
         const openapi = <OpenApiRequestMetadata>req.openapi;
@@ -65,7 +130,7 @@ export class ResponseValidator {
         const statusCode = res.statusCode;
         const contentType = res.getHeaders()['content-type'];
         const accept = req.headers['accept'];
-        // ir response has a content type use it, else use accept headers
+        // if response has a content type use it, else use accept headers
         const accepts: [string] = contentType
           ? [contentType]
           : accept

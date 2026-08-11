@@ -176,6 +176,8 @@ export interface OpenApiValidatorOpts {
   };
   operationHandlers?: false | string | OperationHandlerOptions;
   validateFormats?: boolean | 'fast' | 'full';
+  beforeRequestBodyValidation?: BeforeRequestBodyValidationHandlers;
+  afterResponseBodyValidation?: AfterResponseBodyValidationHandlers;
 }
 
 export interface NormalizedOpenApiValidatorOpts extends OpenApiValidatorOpts {
@@ -563,6 +565,25 @@ export interface OpenApiRequestMetadata {
 export interface OpenApiRequest extends Request {
   openapi?: OpenApiRequestMetadata;
 }
+
+export type BeforeRequestBodyValidationHandler = (
+  req: OpenApiRequest,
+  schema: OpenAPIV3.OperationObject,
+) => void | Promise<void>;
+
+export type BeforeRequestBodyValidationHandlers = {
+  [handlerName: string]: BeforeRequestBodyValidationHandler;
+};
+
+export type AfterResponseBodyValidationHandler = (
+  body: any,
+  req: OpenApiRequest,
+  schema: OpenAPIV3.OperationObject,
+) => any | Promise<any>;
+
+export type AfterResponseBodyValidationHandlers = {
+  [handlerName: string]: AfterResponseBodyValidationHandler;
+};
 
 export type OpenApiRequestHandler = (
   req: OpenApiRequest,
