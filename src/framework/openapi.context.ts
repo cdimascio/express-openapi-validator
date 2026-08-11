@@ -1,3 +1,4 @@
+import { pathToRegexp } from 'path-to-regexp';
 import { OpenAPIV3 } from './types';
 import { Spec, RouteMetadata } from './openapi.spec.loader';
 
@@ -5,6 +6,12 @@ export interface RoutePair {
   expressRoute: string;
   openApiRoute: string;
 }
+
+interface RouteMatcher {
+  regexp: RegExp;
+  paramKeys: string[];
+}
+
 export class OpenApiContext {
   public readonly apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1;
   public readonly expressRouteMap = {};
@@ -15,6 +22,7 @@ export class OpenApiContext {
   public readonly serial: number;
   private readonly basePaths: string[];
   private readonly ignorePaths: RegExp | Function;
+  private readonly routeMatcherCache = new Map<string, RouteMatcher>();
 
   constructor(
     spec: Spec,
@@ -54,6 +62,28 @@ export class OpenApiContext {
       };
     }
     return null;
+  }
+
+  public getRouteMatcher(
+    expressRoute: string,
+    strict: boolean,
+    sensitive: boolean,
+  ): RouteMatcher {
+    const cacheKey = JSON.stringify([expressRoute, strict, sensitive]);
+    let matcher = this.routeMatcherCache.get(cacheKey);
+    if (!matcher) {
+      const pathOpts = {
+        sensitive,
+        strict,
+      };
+      const regexpObj = pathToRegexp(expressRoute, pathOpts);
+      matcher = {
+        regexp: regexpObj.regexp,
+        paramKeys: regexpObj.keys.map((k) => `${k.name}`),
+      };
+      this.routeMatcherCache.set(cacheKey, matcher);
+    }
+    return matcher;
   }
 
   private methods(route: string) {

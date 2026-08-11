@@ -1,5 +1,4 @@
 import { zipObject } from './util';
-import { pathToRegexp } from 'path-to-regexp';
 import { Response, NextFunction } from 'express';
 import { OpenApiContext } from '../framework/openapi.context';
 import {
@@ -82,17 +81,16 @@ export function applyOpenApiMetadata(
       const _schema = responseApiDoc?.paths[pathKey][method.toLowerCase()];
       const strict = !!req.app.enabled('strict routing');
       const sensitive = !!req.app.enabled('case sensitive routing');
-      const pathOpts = {
-        sensitive,
+      const matcher = openApiContext.getRouteMatcher(
+        expressRoute,
         strict,
-      };
-      const regexpObj = pathToRegexp(expressRoute, pathOpts);
-      const matchedRoute = regexpObj.regexp.exec(path);
+        sensitive,
+      );
+      const matchedRoute = matcher.regexp.exec(path);
       if (matchedRoute) {
-        const paramKeys = regexpObj.keys.map((k) => k.name);
         try {
           const paramsVals = matchedRoute.slice(1).map(decodeURIComponent);
-          const pathParams = zipObject(paramKeys, paramsVals);
+          const pathParams = zipObject(matcher.paramKeys, paramsVals);
 
           const r = {
             schema,
