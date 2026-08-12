@@ -22,7 +22,8 @@ export function applyOpenApiMetadata(
     const path = req.path.startsWith(req.baseUrl)
       ? req.path
       : `${req.baseUrl}/${req.path}`;
-    if (openApiContext.shouldIgnoreRoute(path)) {
+    const { method } = req;
+    if (openApiContext.shouldIgnoreRoute(path, method)) {
       return next();
     }
     const matched = lookupRoute(req, openApiContext.useRequestUrl);
@@ -56,7 +57,7 @@ export function applyOpenApiMetadata(
         (<any>req.openapi)._responseSchema = (<any>matched)._responseSchema;
       }
     } else if (
-      openApiContext.isManagedRoute(path) &&
+      openApiContext.isManagedRoute(path, method) &&
       !openApiContext.ignoreUndocumented
     ) {
       throw new NotFound({
@@ -71,7 +72,9 @@ export function applyOpenApiMetadata(
     req: OpenApiRequest,
     useRequestUrl: boolean,
   ): OpenApiRequestMetadata {
-    const path = useRequestUrl ? req.url.split('?')[0] : req.originalUrl.split('?')[0];
+    const path = useRequestUrl
+      ? req.url.split('?')[0]
+      : req.originalUrl.split('?')[0];
     const method = req.method;
     const routeEntries = Object.entries(openApiContext.expressRouteMap);
     for (const [expressRoute, methods] of routeEntries) {
