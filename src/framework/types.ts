@@ -9,6 +9,16 @@ export { OpenAPIFrameworkArgs };
 
 export type AjvInstance = AjvDraft4 | Ajv2020
 
+/**
+ * Creates the Ajv instance a validator uses, in place of the built-in
+ * `ajv-draft-04` (OpenAPI 3.0) and `ajv/dist/2020` (OpenAPI 3.1) classes.
+ * `version` is the document's `openapi` field and `options` are the options
+ * the built-in class would be given. The instance must offer the Ajv API this
+ * library calls: `compile`, `addSchema`, `getSchema`, `addFormat`,
+ * `addKeyword`, `removeKeyword` and `errorsText`.
+ */
+export type AjvFactory = (version: string, options: ajv.Options) => AjvInstance
+
 export type BodySchema =
   | OpenAPIV3.ReferenceObject
   | OpenAPIV3.SchemaObject
@@ -46,6 +56,7 @@ export interface Options extends ajv.Options {
   // Specific options
   serDesMap?: SerDesMap;
   ajvFormats?: FormatsPluginOptions;
+  ajvFactory?: AjvFactory;
 }
 
 export interface RequestValidatorOptions extends Options, ValidateRequestOpts { }
@@ -176,6 +187,7 @@ export interface OpenApiValidatorOpts {
   };
   operationHandlers?: false | string | OperationHandlerOptions;
   validateFormats?: boolean | 'fast' | 'full';
+  ajvFactory?: AjvFactory;
 }
 
 export interface NormalizedOpenApiValidatorOpts extends OpenApiValidatorOpts {
@@ -537,6 +549,7 @@ export interface OpenAPIFrameworkPathObject {
 interface OpenAPIFrameworkArgs {
   apiDoc: OpenAPIV3.DocumentV3 | OpenAPIV3.DocumentV3_1 | string;
   validateApiSpec?: boolean;
+  ajvFactory?: AjvFactory;
   $refParser?: {
     mode: 'bundle' | 'dereference';
   };

@@ -2,12 +2,18 @@ import { Options } from "ajv";
 import AjvDraft4 from 'ajv-draft-04';
 import Ajv2020 from 'ajv/dist/2020';
 import { assertVersion } from "../openapi/assert.version";
-import { AjvInstance } from "../types";
+import { AjvFactory, AjvInstance } from "../types";
 
-export const factoryAjv = (version: string, options: Options): AjvInstance => {
+export const factoryAjv = (version: string, options: Options, ajvFactory?: AjvFactory): AjvInstance => {
   const { minor } = assertVersion(version)
 
   let ajvInstance: AjvInstance
+
+  if (ajvFactory) {
+    ajvInstance = ajvFactory(version, options);
+    if (minor == '1') ajvInstance.addFormat('media-range', true);
+    return ajvInstance
+  }
 
   if (minor === '0') {
     ajvInstance = new AjvDraft4(options);

@@ -4,13 +4,14 @@ import {
   ValidateFunction,
 } from 'ajv-draft-04';
 import addFormats from 'ajv-formats';
-import { OpenAPIV3 } from './types.js';
+import { AjvFactory, OpenAPIV3 } from './types.js';
 import { factoryAjv } from './ajv/factory';
 import { factorySchema } from './openapi/factory.schema';
 
 export interface OpenAPISchemaValidatorOpts {
   version: string;
   validateApiSpec: boolean;
+  ajvFactory?: AjvFactory;
   extensions?: object;
 }
 export class OpenAPISchemaValidator {
@@ -28,7 +29,7 @@ export class OpenAPISchemaValidator {
       options.validateSchema = false;
     }
 
-    const ajvInstance = factoryAjv(opts.version, options)
+    const ajvInstance = factoryAjv(opts.version, options, opts.ajvFactory)
     const schema = factorySchema(opts.version)
 
     addFormats(ajvInstance, ['email', 'regex', 'uri', 'uri-reference']);

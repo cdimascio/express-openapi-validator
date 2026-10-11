@@ -31,12 +31,12 @@ function createAjv(
   options: Options = {},
   request = true,
 ): AjvInstance {
-  const { ajvFormats, ...ajvOptions } = options;
+  const { ajvFormats, ajvFactory, ...ajvOptions } = options;
 
   const ajv = factoryAjv(openApiSpec.openapi, {
     ...ajvOptions,
     formats
-  })
+  }, ajvFactory)
 
   // Clean openApiSpec
   traverse(openApiSpec, { allKeys: true }, <traverse.Callback>(schema => {
@@ -66,11 +66,34 @@ function createAjv(
     // Alias for `type` that can execute AFTER x-eov-res-serdes
     // There is a `type` keyword which this is positioned "next to",
     // as well as high-level type assertion that runs before any keywords.
-    ajv.addKeyword({
-      ...ajvType,
-      keyword: 'x-eov-type',
-      before: 'type',
-    });
+    if (ajvFactory) {
+      // The built-in keyword is Ajv's own generated-code JTD `type`, which
+      // another implementation cannot run. `x-eov-type` only ever holds
+      // 'string' (see SchemaPreprocessor.handleSerDes), and null passes where
+      // the schema is nullable, as the JTD keyword reads it.
+      ajv.addKeyword({
+        keyword: 'x-eov-type',
+        before: 'type',
+        errors: true,
+        compile: (type: string, parentSchema: any) => {
+          const nullable = parentSchema?.nullable === true ||
+            (Array.isArray(parentSchema?.type) && parentSchema.type.includes('null'));
+          const validate: DataValidateFunction = (data) => {
+            if ((nullable && data === null) || typeof data === type) return true;
+            // The path is left to the validator, which knows where the value is.
+            validate.errors = [{ keyword: 'type', params: { type }, message: `must be ${type}` } as any];
+            return false;
+          };
+          return validate;
+        },
+      });
+    } else {
+      ajv.addKeyword({
+        ...ajvType,
+        keyword: 'x-eov-type',
+        before: 'type',
+      });
+    }
   }
 
   if (request) {

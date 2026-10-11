@@ -54,6 +54,7 @@ export class AjvOptions {
       validateFormats,
       serDes,
       ajvFormats,
+      ajvFactory,
     } = this.options;
     const serDesMap = {};
     for (const serDesObject of serDes) {
@@ -82,6 +83,7 @@ export class AjvOptions {
       formats,
       serDesMap,
       ajvFormats,
+      ajvFactory,
     };
 
     return options;
