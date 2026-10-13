@@ -406,7 +406,7 @@ export class RequestParameterMutator {
     const vs = pairs.get(name);
     if (!vs) return;
     for (const v of vs) {
-      const svs = allowComma ? v.split(',') : [v];
+      const svs = allowComma ? (v ?? '').split(',') : [v];
       for (const sv of svs) {
         if (sv?.match(RESERVED_CHARS)) {
           const message = `Parameter '${name}' must be url encoded. Its value may not contain reserved characters.`;
