@@ -29,6 +29,12 @@ describe(packageJson.name, () => {
           .get(`/allow_reserved`, (req, res) => {
             res.json(req.body);
           })
+          .get(`/no_explode`, (req, res) => {
+            res.json({ query: req.query });
+          })
+          .get(`/no_explode/required`, (req, res) => {
+            res.json({ query: req.query });
+          })
           .get(`/unknown_query_params/allow`, (req, res) => {
             res.json({ complete: true });
           }),
@@ -149,4 +155,21 @@ describe(packageJson.name, () => {
     request(app)
       .get(`${app.basePath}/allow_reserved?value=ThisHas$ReservedChars!`)
       .expect(200));
+
+  it('should treat a valueless `explode: false` query param like an empty value', async () => {
+    const bare = await request(app).get(`${app.basePath}/no_explode?tags`);
+    const empty = await request(app).get(`${app.basePath}/no_explode?tags=`);
+    expect(bare.status).to.not.equal(500);
+    expect(bare.status).to.equal(empty.status);
+    expect(bare.body).to.deep.equal(empty.body);
+  });
+
+  it('should return 400, not 500, for a valueless required explode: false query param', async () =>
+    request(app)
+      .get(`${app.basePath}/no_explode/required?tags`)
+      .expect(400)
+      .then((r) => {
+        expect(r.body.errors).to.be.an('array').with.length(1);
+        expect(r.body.errors[0].path).to.equal('/query/tags');
+      }));
 });
