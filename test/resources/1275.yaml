@@ -1,0 +1,72 @@
+openapi: 3.0.3
+info:
+  title: literal special characters in paths
+  version: 1.0.0
+servers:
+  - url: /v1
+
+paths:
+  /health:
+    get:
+      responses:
+        200:
+          description: ok
+
+  /People('{name}'):
+    get:
+      parameters:
+        - $ref: '#/components/parameters/name'
+      responses:
+        200:
+          description: ok
+
+  /Orders({id})/Items!:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        200:
+          description: ok
+
+  /files/{id}+meta:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        200:
+          description: ok
+
+  /a*b/[{id}]:
+    get:
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        200:
+          description: ok
+
+  /users/{user-id}:
+    get:
+      parameters:
+        - name: user-id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ok
+
+components:
+  parameters:
+    name:
+      name: name
+      in: path
+      required: true
+      schema:
+        type: string
+    id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer

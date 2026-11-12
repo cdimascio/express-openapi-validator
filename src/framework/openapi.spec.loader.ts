@@ -1,3 +1,4 @@
+import { stringify, Token, TokenData } from 'path-to-regexp';
 import { dereferenceParameter } from '../middlewares/parsers/util';
 import { OpenAPIFramework } from './index';
 import {
@@ -82,11 +83,8 @@ export class OpenApiSpecLoader {
                   .map(param => param.name);
 
                 const openApiRoute = `${bp}${path}`;
-                const expressRoute = `${openApiRoute}`
-                  .split(':')
-                  .map(toExpressParams)
-                  .join('\\:');
-  
+                const expressRoute = toExpressParams(openApiRoute);
+
                 routes.push({
                   basePath: bp,
                   expressRoute,
@@ -112,29 +110,34 @@ export class OpenApiSpecLoader {
     };
   }
 
-  private toExpressParams(part: string): string {
-    // substitute wildcard path with express equivalent
-    // {/path} => /path(*) <--- RFC 6570 format (not supported by openapi)
-    // const pass1 = part.replace(/\{(\/)([^\*]+)(\*)}/g, '$1:$2$3');
-
-    //if wildcard path use new path-to-regex expected model
-    if(/[*]/g.test(part)){
-      // /v1/{path}* => /v1/*path)
-      // /v1/{path}(*) => /v1/*path)
-      const pass1 = part.replace(/\/{([^}]+)}\({0,1}(\*)\){0,1}/g, '/$2$1');
-
-      // substitute params with express equivalent
-      // /path/{multi}/test/{/*path}=> /path/:multi/test/{/*path}
-      return pass1.replace(/\{([^\/}]+)}/g, ':$1');
-      //return pass1;
-    }
-    // instead create our own syntax that is compatible with express' pathToRegex
-    // /{path}* => /:path*)
-    // /{path}(*) => /:path*)
-    const pass1 = part.replace(/\/{([^}]+)}\({0,1}(\*)\){0,1}/g, '/:$1$2');
-
-    // substitute params with express equivalent
+  private toExpressParams(path: string): string {
+    // convert an openapi path template to a path-to-regexp route
     // /path/{id} => /path/:id
-    return pass1.replace(/\{([^}]+)}/g, ':$1');
+    // /path/{path}* => /path/*path
+    // /path/{path}(*) => /path/*path
+    // /path/*path => /path/*path
+    // (a wildcard must be a whole path segment)
+    // all other characters match literally. stringify escapes the ones
+    // path-to-regexp treats as syntax, e.g. ( ) * + ? ! [ ] { } :
+    // /People('{name}') => /People\(':name'\)
+    const params = /(?<=\/)(?:{([^}]+)}\(?\*\)?|\*(\w+))(?=\/|$)|{([^}]+)}/g;
+    const tokens: Token[] = [];
+    const addText = (value: string) => {
+      if (value) tokens.push({ type: 'text', value });
+    };
+    let textStart = 0;
+    let match: RegExpExecArray | null;
+    while ((match = params.exec(path))) {
+      const [found, wildcard, rawWildcard, param] = match;
+      addText(path.slice(textStart, match.index));
+      tokens.push(
+        param
+          ? { type: 'param', name: param }
+          : { type: 'wildcard', name: wildcard ?? rawWildcard },
+      );
+      textStart = match.index + found.length;
+    }
+    addText(path.slice(textStart));
+    return stringify(new TokenData(tokens));
   }
 }
